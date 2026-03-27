@@ -36,7 +36,6 @@
       overflow-x: hidden;
     }
 
-    /* Scanline overlay */
     body::before {
       content: '';
       position: fixed;
@@ -52,7 +51,6 @@
       z-index: 9999;
     }
 
-    /* ── TOPBAR ── */
     .topbar {
       background: var(--bg2);
       border-bottom: 1px solid var(--border);
@@ -104,7 +102,6 @@
       gap: 8px;
     }
 
-    /* ── WINDOW CHROME ── */
     .window {
       background: var(--bg2);
       border: 1px solid var(--border);
@@ -152,7 +149,6 @@
       padding: 20px;
     }
 
-    /* ── PROMPT LINE ── */
     .prompt {
       color: var(--muted);
       font-size: 10px;
@@ -169,7 +165,6 @@
       font-size: 10px;
     }
 
-    /* ── TABS ── */
     .tab-row {
       display: flex;
       gap: 0;
@@ -199,7 +194,6 @@
       border-bottom-color: var(--green);
     }
 
-    /* ── FORM FIELDS ── */
     .field-group {
       margin-bottom: 16px;
     }
@@ -267,7 +261,6 @@
 
     .input-wrap .eye-toggle:hover { color: var(--green); }
 
-    /* ── BUTTONS ── */
     .btn {
       font-family: var(--mono);
       font-size: 11px;
@@ -329,7 +322,6 @@
       font-size: 12px;
     }
 
-    /* ── STAT CARDS ── */
     .stat-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -380,7 +372,6 @@
       letter-spacing: 0.08em;
     }
 
-    /* ── TABLE ── */
     .data-table {
       width: 100%;
       border-collapse: collapse;
@@ -428,7 +419,6 @@
       -webkit-overflow-scrolling: touch;
     }
 
-    /* ── BLINK CURSOR ── */
     @keyframes blink {
       0%, 100% { opacity: 1; }
       50%       { opacity: 0; }
@@ -444,7 +434,6 @@
       margin-left: 2px;
     }
 
-    /* ── BADGE ── */
     .badge {
       display: inline-block;
       font-size: 9px;
@@ -459,14 +448,12 @@
     .badge-red   { color: var(--red);   border-color: var(--red); }
     .badge-amber { color: var(--amber); border-color: var(--amber); }
 
-    /* ── DIVIDER ── */
     .divider {
       border: none;
       border-top: 1px solid var(--border);
       margin: 20px 0;
     }
 
-    /* ── EMPTY STATE ── */
     .empty-state {
       text-align: center;
       padding: 48px 20px;
@@ -485,7 +472,6 @@
       line-height: 1.8;
     }
 
-    /* ── LAYOUT ── */
     .container {
       max-width: 900px;
       margin: 0 auto;
@@ -506,10 +492,8 @@
       .data-table td:nth-child(4) { display: none; }
     }
 
-    /* ── HIDDEN ── */
     .hidden { display: none !important; }
 
-    /* ── SECTION HEADER ── */
     .section-header {
       display: flex;
       align-items: center;
@@ -532,7 +516,6 @@
       color: var(--green2);
     }
 
-    /* ── ALERT / FEEDBACK ── */
     .inline-alert {
       font-size: 11px;
       padding: 10px 14px;
@@ -557,7 +540,6 @@
 </head>
 <body>
 
-  <!-- TOPBAR -->
   <nav class="topbar">
     <div class="topbar-left">
       <div class="topbar-logo">TRAVISGUARDIAN</div>
@@ -568,7 +550,6 @@
 
   <div class="container">
 
-    <!-- AUTH SECTION -->
     <div id="auth-section">
 
       <div class="window" style="max-width:460px;margin:0 auto;">
@@ -587,7 +568,6 @@
             <button class="tab-btn" onclick="showRegisterForm()" id="register-tab">Register</button>
           </div>
 
-          <!-- LOGIN FORM -->
           <div id="login-form">
             <div class="prompt">authenticate querier identity</div>
 
@@ -609,7 +589,6 @@
             </form>
           </div>
 
-          <!-- REGISTER FORM -->
           <div id="register-form" class="hidden">
             <div class="prompt">create new querier account</div>
 
@@ -656,10 +635,8 @@
       </div>
     </div>
 
-    <!-- DASHBOARD -->
     <div id="dashboard" class="hidden">
 
-      <!-- Stats -->
       <div class="stat-grid">
         <div class="stat-card success">
           <div class="stat-label">Successful Queries</div>
@@ -673,7 +650,6 @@
         </div>
       </div>
 
-      <!-- Query Form -->
       <div class="window">
         <div class="window-titlebar">
           fingerprint.query — initiate_stk_push
@@ -703,7 +679,6 @@
         </div>
       </div>
 
-      <!-- Results Table -->
       <div class="window">
         <div class="window-titlebar">
           queries.log — revealed_fingerprints
@@ -726,256 +701,6 @@
     </div>
   </div>
 
-  <script>
-    let currentToken = null;
-
-    function togglePassword(btn) {
-      const input = btn.previousElementSibling;
-      if (input.type === 'password') {
-        input.type = 'text';
-        btn.textContent = 'HIDE';
-      } else {
-        input.type = 'password';
-        btn.textContent = 'SHOW';
-      }
-    }
-
-    // ================== REGISTER ==================
-    async function handleRegister(e) {
-      e.preventDefault();
-      const payload = {
-        fullName: document.getElementById('reg-fullname').value.trim(),
-        location: document.getElementById('reg-location').value.trim(),
-        phone: document.getElementById('reg-phone').value.trim(),
-        email: document.getElementById('reg-email').value.trim() || undefined,
-        password: document.getElementById('reg-password').value
-      };
-
-      if (payload.password !== document.getElementById('reg-confirm').value) {
-        alert("Passwords do not match");
-        return;
-      }
-
-      try {
-        const res = await fetch('/register', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-
-        if (data.error) {
-          alert(data.error);
-        } else {
-          alert("✅ Account created successfully! Please login now.");
-          showLoginForm();
-        }
-      } catch (err) {
-        alert("Registration failed. Please check your connection.");
-      }
-    }
-
-    // ================== LOGIN ==================
-    async function handleLogin(e) {
-      e.preventDefault();
-
-      const phone = document.getElementById('login-phone').value.trim();
-      const password = document.getElementById('login-password').value;
-
-      if (!phone || !password) {
-        alert("Please enter phone number and password");
-        return;
-      }
-
-      try {
-        const res = await fetch('/login', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ phone, password })
-        });
-
-        const data = await res.json();
-
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-
-        currentToken = data.token;
-        localStorage.setItem('token', data.token);
-
-        alert("✅ Login successful! Welcome to your dashboard.");
-
-        hideAllSections();
-        document.getElementById('dashboard').classList.remove('hidden');
-
-        renderNav();
-        loadDashboard();
-
-      } catch (err) {
-        console.error("Login error:", err);
-        alert("Login failed. Please check your connection.");
-      }
-    }
-
-    function logout() {
-      localStorage.removeItem('token');
-      currentToken = null;
-      renderNav();
-      hideAllSections();
-      showLoginForm();
-    }
-
-    function renderNav() {
-      const container = document.getElementById('nav-buttons');
-      if (currentToken) {
-        container.innerHTML = `<button onclick="logout()" class="btn btn-danger">■ &nbsp;Logout</button>`;
-      } else {
-        container.innerHTML = '';
-      }
-    }
-
-    function showLoginForm() {
-      hideAllSections();
-      document.getElementById('auth-section').classList.remove('hidden');
-      document.getElementById('login-form').classList.remove('hidden');
-      document.getElementById('register-form').classList.add('hidden');
-      document.getElementById('login-tab').classList.add('active');
-      document.getElementById('register-tab').classList.remove('active');
-    }
-
-    function showRegisterForm() {
-      hideAllSections();
-      document.getElementById('auth-section').classList.remove('hidden');
-      document.getElementById('register-form').classList.remove('hidden');
-      document.getElementById('login-form').classList.add('hidden');
-      document.getElementById('register-tab').classList.add('active');
-      document.getElementById('login-tab').classList.remove('active');
-    }
-
-    function hideAllSections() {
-      document.getElementById('auth-section').classList.add('hidden');
-      document.getElementById('dashboard').classList.add('hidden');
-    }
-
-    async function loadDashboard() {
-      hideAllSections();
-      document.getElementById('dashboard').classList.remove('hidden');
-
-      try {
-        const res = await fetch('/me', {
-          headers: { Authorization: `Bearer ${currentToken}` }
-        });
-        const user = await res.json();
-
-        document.getElementById('success-count').textContent = user.successQueries || 0;
-        document.getElementById('failure-count').textContent = user.failureQueries || 0;
-
-        await loadMyQueries();
-      } catch (err) {
-        console.error("Dashboard load error:", err);
-      }
-    }
-
-    async function loadMyQueries() {
-      if (!currentToken) return;
-
-      try {
-        const res = await fetch('/my-queries', {
-          headers: { Authorization: `Bearer ${currentToken}` }
-        });
-
-        if (!res.ok) throw new Error("Failed to load queries");
-
-        const logs = await res.json();
-        const container = document.getElementById('queries-list');
-
-        if (logs.length === 0) {
-          container.innerHTML = `
-            <div class="empty-state">
-              <div class="empty-icon">▒▒▒</div>
-              <p>NO RECORDS FOUND<br>Make a successful payment to reveal fingerprints.</p>
-            </div>`;
-          return;
-        }
-
-        let html = `
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Target Phone</th>
-                <th>Revealed Fingerprint</th>
-                <th>Receipt</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>`;
-
-        logs.forEach(log => {
-          html += `
-            <tr>
-              <td>${log.targetPhone}</td>
-              <td><span class="fp-value">${log.formattedFP}</span></td>
-              <td><span class="badge badge-green">${log.receipt || '—'}</span></td>
-              <td style="color:var(--muted);font-size:11px;white-space:nowrap;">
-                ${new Date(log.queriedAt).toLocaleString()}
-              </td>
-            </tr>`;
-        });
-
-        html += `</tbody></table>`;
-        container.innerHTML = html;
-
-      } catch (err) {
-        console.error("Failed to load queries:", err);
-        document.getElementById('queries-list').innerHTML =
-          `<div class="empty-state"><p style="color:var(--red);">ERR: Failed to load records. Check connection.</p></div>`;
-      }
-    }
-
-    async function initiateQuery() {
-      const targetPhone = document.getElementById('target-phone').value.trim();
-      const payerMsisdn = document.getElementById('payer-msisdn').value.trim();
-
-      if (!targetPhone || !payerMsisdn) {
-        alert("Please fill both phone numbers");
-        return;
-      }
-
-      try {
-        const res = await fetch('/initiate-stk', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${currentToken}`
-          },
-          body: JSON.stringify({ targetPhone, payerMsisdn })
-        });
-
-        const data = await res.json();
-        alert(data.message || data.error || "STK Push sent. Check your phone.");
-
-        if (!data.error) {
-          setTimeout(loadMyQueries, 8000);
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Failed to initiate payment. Please try again.");
-      }
-    }
-
-    // Initialize
-    window.onload = () => {
-      currentToken = localStorage.getItem('token');
-      renderNav();
-      if (currentToken) {
-        hideAllSections();
-        document.getElementById('dashboard').classList.remove('hidden');
-        loadDashboard();
-      } else {
-        showLoginForm();
-      }
-    };
-  </script>
+  <script src="subAdmin.js"></script>
 </body>
 </html>
