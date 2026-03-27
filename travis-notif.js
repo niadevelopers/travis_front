@@ -1,11 +1,4 @@
-// travis-notif.js
-// Save this file in the same folder as your script.js and sw.js
-
 const travisNotif = (() => {
-
-  // ── Mark today as recorded ─────────────────────────────────
-  // Uses your exact saveData() and your exact DB/store names.
-  // Call this after every successful commitTransaction().
 
   async function markTodayRecorded() {
     try {
@@ -13,18 +6,12 @@ const travisNotif = (() => {
         id:   "notif-recorded",
         date: new Date().toDateString()
       });
-      // Tell SW to re-check so the 9:30 PM fallback stays quiet
       const reg = await navigator.serviceWorker.ready;
       if (reg.active) reg.active.postMessage({ type: 'RESCHEDULE' });
     } catch (e) {
       console.warn('Travis: could not mark today as recorded', e);
     }
   }
-
-  // ── Permission banner ──────────────────────────────────────
-  // Shows 8 seconds after app loads — never immediately.
-  // Only appears if permission hasn't been granted or denied yet.
-  // If user clicks "Not now", waits 3 days before asking again.
 
   function showBanner() {
     if (Notification.permission !== 'default') return;
@@ -78,9 +65,7 @@ const travisNotif = (() => {
     document.getElementById('tn-allow').onclick = async () => {
       banner.remove();
       const result = await Notification.requestPermission();
-      if (result === 'granted') {
-        // SW is already registered by your existing boot() code.
-        // We just need to make sure it's active.
+      if (result === 'granted') {  
         await navigator.serviceWorker.ready;
         showToast('Reminders set — Travis will check in at 7:00 PM daily');
       } else {
@@ -90,12 +75,9 @@ const travisNotif = (() => {
 
     document.getElementById('tn-skip').onclick = () => {
       banner.remove();
-      // Ask again in 3 days
       localStorage.setItem('travis-notif-skip', Date.now() + 3 * 24 * 60 * 60 * 1000);
     };
   }
-
-  // ── Toast ──────────────────────────────────────────────────
 
   function showToast(msg) {
     const t = document.createElement('div');
@@ -123,25 +105,17 @@ const travisNotif = (() => {
     }, 3000);
   }
 
-  // ── Listen for SW → open ledger ───────────────────────────
-  // When user taps the notification, SW sends OPEN_LEDGER.
-  // We navigate them to the 'book' (ledger) view.
-
   function listenForSW() {
     if (!('serviceWorker' in navigator)) return;
     navigator.serviceWorker.addEventListener('message', e => {
       if (e.data && e.data.type === 'OPEN_LEDGER') {
-        nav('book'); // your existing nav() function
+        nav('book'); 
       }
     });
   }
 
-  // ── Init ───────────────────────────────────────────────────
-  // Called once inside your boot() function after the app loads.
-
   function init() {
     listenForSW();
-    // Show banner after 8s — user has had time to settle into the app
     setTimeout(showBanner, 8000);
   }
 
