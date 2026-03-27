@@ -1,0 +1,2197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travis Guardian v1.0|| Full Production Machine</title>
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
+        body { font-family: 'Space+Grotesk', sans-serif; background-color: #020617; color: #f8fafc; margin: 0; }
+        .glass { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(74, 222, 128, 0.2); }
+        .neon-border { border: 2px solid #4ade80; box-shadow: 0 0 15px rgba(74, 222, 128, 0.3); }
+        .btn-elite { transition: all 0.2s; border: 2px solid #4ade80; cursor: pointer; }
+        .btn-elite:hover { background: #4ade80; color: #020617; }
+        .user-msg { background: #1e293b; padding: 12px; border-radius: 12px 12px 0 12px; align-self: flex-end; max-width: 80%; }
+        .travis-msg { background: #064e3b; border-left: 4px solid #4ade80; padding: 12px; border-radius: 0 12px 12px 12px; align-self: flex-start; max-width: 80%; }
+        input, select { background: #0f172a !important; color: white !important; outline: none; border: 2px solid #334155; transition: border 0.3s; }
+        input:focus { border-color: #4ade80; }
+        .leak-red { color: #ef4444; text-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+        .velocity-fast { color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+        .progress-bg { background: #1e293b; height: 8px; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; transition: width 0.5s ease-in-out; }
+        .risk-heatmap { background: linear-gradient(90deg, #4ade80 0%, #eab308 50%, #ef4444 100%); height: 4px; border-radius: 2px; }
+
+* {
+    -ms-overflow-style: none;      
+    scrollbar-width: none;         
+}
+
+*::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+html, body, .glass, .neon-border, #view-port, #chat-box, #obligation-list {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.glass::-webkit-scrollbar,
+.neon-border::-webkit-scrollbar,
+#view-port::-webkit-scrollbar,
+#chat-box::-webkit-scrollbar,
+#obligation-list::-webkit-scrollbar {
+    display: none !important;
+}
+
+#custom-alert {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.custom-alert-box {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 380px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    text-align: center;
+    animation: alertPop 0.3s ease;
+}
+
+@keyframes alertPop {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+#custom-alert-message {
+    padding: 28px 24px 20px;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: #1e3a8a;
+}
+
+#custom-alert-ok {
+    width: 100%;
+    padding: 16px;
+    background: #1e40af;
+    color: white;
+    border: none;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#custom-alert-ok:hover {
+    background: #1e3a8a;
+}
+
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<div id="install-overlay" class="fixed inset-0 bg-[#020617] z-[9999] flex items-center justify-center p-4">
+    <div class="max-w-md w-full glass p-10 border-4 border-[#4ade80] text-center">
+        <h1 class="text-5xl font-black mb-2 italic text-[#4ade80]">TRAVIS <span class="text-white">v1.0</span></h1>
+        <p class="text-3xl font-black mb-6 text-white">INSTALL REQUIRED</p>
+        <p class="text-xl mb-8 text-slate-400">This application runs only as a secure standalone app.<br>Browser tabs are blocked for security reasons.</p>
+        <div class="bg-red-950/30 border border-red-500/50 p-4 rounded mb-8">
+            <p class="text-red-400 text-sm font-bold">Device fingerprint will be sent to server on install.</p>
+            <p class="text-[10px] text-slate-400 mt-1">Admin will provide your activation code after.</p>
+        </div>
+        
+      <button id="install-btn" onclick="triggerInstall()" class="w-full bg-[#4ade80] text-black py-6 text-3xl font-black btn-elite" disabled>
+  INSTALL APP NOW
+</button>
+
+        <p id="install-status" class="text-sm mt-6 text-slate-300">Preparing install…</p>
+        <p class="text-[10px] mt-8 opacity-50">Must install to continue. No bypass.</p>
+    </div>
+</div>
+
+<div id="activation-overlay" class="fixed inset-0 bg-[#020617] z-[100] flex items-center justify-center p-4 hidden">
+    <div class="max-w-md w-full glass p-10 border-4 border-[#4ade80] text-center">
+        <h1 class="text-5xl font-black mb-2 italic text-[#4ade80]">TRAVIS <span class="text-white">v1.0</span></h1>
+        <p class="text-3xl font-black mb-6 text-white">DEVICE ACTIVATION</p>
+        <p class="text-slate-400 mb-8">Device fingerprinted.<br>Enter code provided by admin.</p>
+        <div class="bg-slate-900 p-6 rounded-xl mb-8">
+            <label class="block text-[#4ade80] text-sm font-bold mb-3">ACTIVATION CODE</label>
+            <input id="act-code" type="text" placeholder="TRV-KE-XXXXXXXX-XXXX" 
+                   class="w-full p-5 text-2xl font-mono text-center tracking-widest bg-[#0f172a] border-2 border-[#4ade80]/50 rounded-xl focus:border-[#4ade80]">
+        </div>
+        <button onclick="attemptActivation()" class="w-full bg-[#4ade80] text-black py-6 text-3xl font-black btn-elite">ACTIVATE</button>
+        <div class="mt-8 text-xs text-slate-400">
+            <span onclick="location.reload()" class="cursor-pointer hover:text-white underline">Reload</span>
+        </div>
+    </div>
+</div>
+
+<div id="setup-overlay" class="fixed inset-0 bg-[#020617] z-[100] flex items-center justify-center p-4 hidden">
+    <div class="max-w-4xl w-full glass p-10 border-4 border-[#4ade80] max-h-[90vh] overflow-y-auto">
+        <h1 class="text-5xl font-black mb-2 italic text-[#4ade80]">TRAVIS <span class="text-white">v1.0</span></h1>
+        <p class="text-xl mb-8 text-slate-400">Production-Ready Intelligence</p>
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <button id="btn-p" onclick="setUserType('personal')" class="p-6 border-2 border-slate-700 font-bold">PERSONAL</button>
+            <button id="btn-b" onclick="setUserType('business')" class="p-6 border-2 border-slate-700 font-bold">BUSINESS</button>
+        </div>
+        <div class="space-y-6">
+            <input id="user-name" type="text" placeholder="Entity Name" class="w-full p-4 text-xl">
+            <div class="bg-slate-900/50 p-6 border-2 border-slate-800">
+                <div class="flex justify-between items-center mb-4">
+                    <p class="text-[#4ade80] font-bold text-sm uppercase">Monthly Mandatory Obligations</p>
+                    <button onclick="addObligationRow()" class="text-xs bg-[#4ade80] text-black px-3 py-1 font-bold">+ ADD</button>
+                </div>
+                <div id="obligation-list" class="space-y-3"></div>
+            </div>
+        </div>
+        <button onclick="finalizeSetup()" class="w-full mt-8 bg-[#4ade80] text-black py-6 text-3xl font-black btn-elite">ACTIVATE MACHINE</button>
+    </div>
+</div>
+
+<div id="app" class="max-w-7xl mx-auto hidden"> 
+       <header class="flex justify-between items-end mb-8 border-b-2 border-slate-800 pb-6">
+        <div>
+            <h2 id="display-name" class="text-4xl font-black uppercase tracking-tighter">---</h2>
+            <p id="display-mode" class="text-[#4ade80] font-mono uppercase text-sm tracking-widest">---</p>
+        </div>
+        <div id="header-verdict" class="px-4 py-2 border-2 border-[#4ade80] rounded font-black uppercase tracking-widest">SYSTEM READY</div>
+    </header>
+
+    <div id="dashboard-grid" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"></div>
+
+    <nav class="flex flex-wrap gap-2 mb-8">
+        <button onclick="nav('dash')" class="btn-elite px-6 py-2 font-bold uppercase">Dashboard</button>
+        <button onclick="nav('ask')" class="bg-blue-600 text-white px-6 py-2 font-bold hover:bg-blue-500 uppercase">Consult Travis</button>
+        <button onclick="nav('obs')" class="bg-yellow-600 text-white px-6 py-2 font-bold hover:bg-yellow-500 uppercase">Obligations</button>
+        <button onclick="showTxModal()" class="bg-[#4ade80] text-black px-6 py-2 font-bold uppercase">New Entry</button>
+        <button onclick="nav('book')" class="btn-elite px-6 py-2 font-bold uppercase">Ledger</button>
+        <!-- New Help Button -->
+        <button onclick="showHelpModal()" 
+            class="btn-elite px-6 py-2 font-bold uppercase flex items-center gap-2 hover:bg-slate-700">
+            ❔ Help
+        </button>
+    </nav>
+
+    <main id="view-port" class="min-h-[500px]"></main>
+</div>
+
+<div id="tx-modal" class="fixed inset-0 bg-black/95 z-[200] hidden flex items-center justify-center p-4">
+    <div class="max-w-xl w-full glass p-8 neon-border">
+        <div id="live-hud" class="mb-6 p-4 bg-slate-900 border border-[#4ade80]/30 rounded space-y-2">
+            <div class="flex justify-between text-[10px] uppercase font-bold">
+                <span class="text-slate-400">New Daily Cap:</span>
+                <span id="hud-cap" class="text-[#4ade80]">KSh 0</span>
+            </div>
+            <div class="flex justify-between text-[10px] uppercase font-bold">
+                <span class="text-slate-400">Coverage:</span>
+                <span id="hud-cover" class="text-white">RESERVED</span>
+            </div>
+            <div id="hud-warning" class="text-[9px] text-red-500 font-black uppercase animate-pulse hidden italic text-center pt-1 border-t border-red-900/50">High Risk: Exceeds Survival Ceiling</div>
+        </div>
+        
+        <div class="space-y-4">
+            <div><label class="text-[#4ade80] block mb-1 text-[10px] font-bold">SOURCE (Debit)</label><select id="tx-debit" class="w-full p-4 border-2 border-slate-700"></select></div>
+            <div><label class="text-[#ef4444] block mb-1 text-[10px] font-bold">DESTINATION (Credit)</label><select id="tx-credit" class="w-full p-4 border-2 border-slate-700"></select></div>
+            <input id="tx-amount" type="number" oninput="updateLiveHud()" placeholder="Amount (KSh)" class="w-full p-4 text-2xl font-bold">
+            <input id="tx-desc" type="text" placeholder="Description/Note" class="w-full p-4">
+        </div>
+        <div class="grid grid-cols-2 gap-4 mt-8">
+            <button onclick="commitTransaction()" class="bg-[#4ade80] text-black py-4 font-black uppercase">Post To Ledger</button>
+            <button onclick="closeTxModal()" class="border-2 border-slate-700 text-slate-400 font-bold uppercase">Cancel</button>
+        </div>
+    </div>
+
+</div>
+
+
+<div id="recovery-overlay" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[99999]">
+  <div class="text-center text-white max-w-xs">
+    <div class="animate-spin w-16 h-16 border-4 border-white border-t-transparent rounded-full mx-auto mb-6"></div>
+    <p class="text-2xl font-semibold mb-2">You recently cleared browser data</p>
+    <p class="text-sm opacity-80">Please wait while we restore your financial records from device backup...</p>
+    <p id="recovery-status" class="text-xs mt-6 opacity-60">Initializing recovery...</p>
+  </div>
+</div>
+
+<div id="custom-alert" class="hidden">
+    <div class="custom-alert-box">
+        <div id="custom-alert-message"></div>
+        <button id="custom-alert-ok">OK</button>
+    </div>
+</div>
+
+
+
+<!-- Help / Double-Entry Reference Modal -->
+<div id="help-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[9999] p-4">
+    <div class="glass max-w-5xl w-full max-h-[92vh] rounded-2xl overflow-hidden border border-slate-700 flex flex-col">
+        
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-6 border-b border-slate-700 bg-slate-900">
+            <div>
+                <h2 class="text-2xl font-black uppercase tracking-widest text-white">Double-Entry Guide</h2>
+                <p class="text-sm text-slate-400 mt-1">How to correctly record every transaction</p>
+            </div>
+            <button onclick="closeHelpModal()" 
+                    class="text-4xl leading-none text-slate-400 hover:text-white transition-colors">×</button>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-auto p-6 text-sm space-y-10">
+            
+            <!-- ASSETS -->
+            <div>
+                <h3 class="font-bold text-lg mb-4 text-emerald-400 flex items-center gap-2">
+                    <span></span> ASSETS (What you own)
+                </h3>
+                <table class="w-full border-collapse text-left text-slate-300">
+                    <thead class="bg-slate-800">
+                        <tr>
+                            <th class="p-3 border border-slate-700">Account</th>
+                            <th class="p-3 border border-slate-700">Increases (Debit this)</th>
+                            <th class="p-3 border border-slate-700">Decreases (Credit this)</th>
+                            <th class="p-3 border border-slate-700">Usually paired with</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="p-3 border border-slate-700">Cash, M-Pesa, Bank Account, Bank / M-Pesa, Savings, Petty Cash</td><td class="p-3 border border-slate-700">Money received or topped up</td><td class="p-3 border border-slate-700">Payments or transfers out</td><td class="p-3 border border-slate-700">Sales / Expense</td></tr>
+                        <tr><td class="p-3 border border-slate-700">Accounts Receivable (Debtors)</td><td class="p-3 border border-slate-700">Sell on credit (customer now owes you)</td><td class="p-3 border border-slate-700">Customer pays you</td><td class="p-3 border border-slate-700">Sales Revenue</td></tr>
+                        <tr><td class="p-3 border border-slate-700">Inventory</td><td class="p-3 border border-slate-700">Buy stock / goods</td><td class="p-3 border border-slate-700">Sell goods</td><td class="p-3 border border-slate-700">Bank / M-Pesa or Cost of Goods Sold</td></tr>
+                        <tr><td class="p-3 border border-slate-700">Fixed Assets</td><td class="p-3 border border-slate-700">Buy equipment, furniture, etc.</td><td class="p-3 border border-slate-700">Sell or dispose asset</td><td class="p-3 border border-slate-700">Bank / M-Pesa</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- INCOME -->
+            <div>
+                <h3 class="font-bold text-lg mb-4 text-emerald-400 flex items-center gap-2">
+                    <span></span> INCOME / REVENUE
+                </h3>
+                <table class="w-full border-collapse text-left text-slate-300">
+                    <thead class="bg-slate-800">
+                        <tr>
+                            <th class="p-3 border border-slate-700">Account</th>
+                            <th class="p-3 border border-slate-700">Increases (Credit this)</th>
+                            <th class="p-3 border border-slate-700">Usually paired with (Debit)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="p-3 border border-slate-700">Salary, Side Hustle, Allowance, Dividends, Other Income, Sales Revenue, Service Revenue, Other Revenue</td><td class="p-3 border border-slate-700">Receive money or make a sale</td><td class="p-3 border border-slate-700">Cash / Bank / M-Pesa / Accounts Receivable</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- EXPENSES -->
+            <div>
+                <h3 class="font-bold text-lg mb-4 text-amber-400 flex items-center gap-2">
+                    <span></span> EXPENSES
+                </h3>
+                <table class="w-full border-collapse text-left text-slate-300">
+                    <thead class="bg-slate-800">
+                        <tr>
+                            <th class="p-3 border border-slate-700">Account</th>
+                            <th class="p-3 border border-slate-700">Increases (Debit this)</th>
+                            <th class="p-3 border border-slate-700">Usually paired with (Credit)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="p-3 border border-slate-700">Food & Groceries, Rent, Bills, Transport, Medical, School, Payroll, Utilities, Cost of Goods Sold, Tax, Office Supplies, Entertainment, Marketing, Professional Fees, etc.</td><td class="p-3 border border-slate-700">Pay for expense</td><td class="p-3 border border-slate-700">Cash / M-Pesa / Bank / Petty Cash</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- LIABILITIES -->
+            <div>
+                <h3 class="font-bold text-lg mb-4 text-blue-400 flex items-center gap-2">
+                    <span></span> LIABILITIES & TRANSFERS
+                </h3>
+                <table class="w-full border-collapse text-left text-slate-300">
+                    <thead class="bg-slate-800">
+                        <tr>
+                            <th class="p-3 border border-slate-700">Account</th>
+                            <th class="p-3 border border-slate-700">Increases (Credit this)</th>
+                            <th class="p-3 border border-slate-700">Decreases (Debit this)</th>
+                            <th class="p-3 border border-slate-700">Usually paired with</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="p-3 border border-slate-700">Loan Repayment, Loans Payable, Accounts Payable, Credit</td><td class="p-3 border border-slate-700">Borrow money or owe someone</td><td class="p-3 border border-slate-700">Repay loan or pay supplier</td><td class="p-3 border border-slate-700">Cash / Bank Account</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="p-5 bg-slate-900 border border-slate-700 rounded-2xl text-xs leading-relaxed">
+                <strong class="text-emerald-400">Golden Rule:</strong> Debit the account that receives value. Credit the account that gives value.<br>
+                Always choose two different accounts. Use this guide whenever you're unsure (especially for Accounts Receivable and Inventory).
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-5 border-t border-slate-700 bg-slate-900 text-center">
+            <button onclick="closeHelpModal()" 
+                    class="px-10 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl font-bold uppercase transition-colors">
+                Close Guide
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+function showCustomAlert(message, callback = null) {
+    const alertBox = document.getElementById('custom-alert');
+    const messageEl = document.getElementById('custom-alert-message');
+    const okBtn = document.getElementById('custom-alert-ok');
+
+    messageEl.innerHTML = message;
+    alertBox.style.display = 'flex';
+
+    const newOkBtn = okBtn.cloneNode(true);
+    okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+
+    newOkBtn.addEventListener('click', () => {
+        alertBox.style.display = 'none';
+        if (callback && typeof callback === 'function') {
+            callback();
+        }
+    });
+}
+
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => {
+      })
+      .catch(err => {
+        console.error('Service Worker registration failed:', err);
+        document.getElementById('install-status').innerText = 'Service worker failed – install may not work';
+      });
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// === PWA INSTALL HANDLING ===
+// === PWA INSTALL SETUP ===
+// PWA Setup
+// PWA
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-btn').disabled = false;
+});
+
+window.addEventListener('appinstalled', () => {
+  setTimeout(showPhoneModal, 600);
+});
+
+// === YOUR ORIGINAL FUNCTIONS ===
+function generateFingerprint() {
+  let saved = localStorage.getItem('fp');
+  if (saved && saved.length === 32) return saved;
+
+  const canvas = (function() {
+    try {
+      const c = document.createElement('canvas');
+      c.width = 256; c.height = 60;
+      const ctx = c.getContext('2d');
+      ctx.textBaseline = "top";
+      ctx.font = "14px 'Arial'";
+      ctx.fillStyle = "#f60";
+      ctx.fillRect(125, 1, 62, 20);
+      ctx.fillStyle = "#069";
+      ctx.fillText("TravisGuardian • 2026", 2, 15);
+      ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+      ctx.fillText("TravisGuardian • 2026", 4, 17);
+      return c.toDataURL(); 
+    } catch(e) { return 'canvas-fail'; }
+  })();
+
+  const signals = [
+    navigator.userAgent || 'UA-unknown',
+    navigator.language || 'xx-XX',
+    navigator.hardwareConcurrency || '0',
+    screen.width + '×' + screen.height + '×' + (screen.colorDepth || 0),
+    screen.availWidth + '×' + screen.availHeight,
+    new Date().getTimezoneOffset(),
+    Intl.DateTimeFormat().resolvedOptions().timeZone || 'tz-unknown',
+    canvas.substring(0, 200), 
+  ].join('|||');
+
+  let hash = 5381;
+  for (let i = 0; i < signals.length; i++) {
+    hash = ((hash << 5) + hash + signals.charCodeAt(i)) | 0;
+  }
+
+  let fp = '';
+  while (fp.length < 32) {
+    hash = (hash * 31 + 0x9E3779B9) | 0; 
+    fp += (Math.abs(hash) % 36).toString(36).toUpperCase();
+  }
+  fp = fp.substring(0, 32);
+
+  localStorage.setItem('fp', fp);
+  return fp;
+}
+
+function encryptFingerprint(fp) {
+  const key = "TRAVIS-GUARDIAN-SECURE-2026-x7k9";
+  let encrypted = '';
+  for (let i = 0; i < fp.length; i++) {
+    encrypted += String.fromCharCode(fp.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+  }
+  return btoa(encrypted);
+}
+
+// Phone Modal + Send
+function showPhoneModal() {
+  if (document.getElementById('phone-modal')) return;
+
+  const modal = document.createElement('div');
+  modal.id = 'phone-modal';
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:center;z-index:10000;';
+  modal.innerHTML = `
+    <div style="background:#1f1f1f;padding:30px;border-radius:16px;max-width:400px;width:90%;text-align:center;">
+      <h3 style="color:#4ade80;margin-bottom:20px;">Link Device Fingerprint</h3>
+      <input id="modal-phone" type="tel" placeholder="254712345678" style="width:100%;padding:16px;font-size:18px;border-radius:8px;border:none;background:#333;color:white;margin-bottom:20px;">
+      <button onclick="submitPhoneAndFP()" style="width:100%;padding:16px;background:#4ade80;color:black;font-weight:bold;border:none;border-radius:8px;">Submit Phone</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+async function submitPhoneAndFP() {
+  const input = document.getElementById('modal-phone');
+  const phone = input.value.trim();
+
+  if (!phone) {
+    alert("Phone number is required.");
+    return;
+  }
+
+  const fp = generateFingerprint();
+  const encrypted = encryptFingerprint(fp);
+
+  try {
+    await fetch('/store-fingerprint', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ encrypted, phone, ts: Date.now() })
+    });
+    alert("✅ Phone + Fingerprint sent successfully!");
+    document.getElementById('phone-modal').remove();
+  } catch (err) {
+    alert("Failed to send data. Check connection.");
+  }
+}
+
+// Install Button
+async function triggerInstall() {
+  if (!deferredPrompt) {
+    alert("Install not ready. Refresh the page.");
+    return;
+  }
+
+  try {
+    await deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async function attemptActivation() {
+    const entered = document.getElementById('act-code').value
+        .trim()
+        .toUpperCase()
+        .replace(/[^0-9A-Z-]/g, '');
+
+    const fp = localStorage.getItem('fp');
+
+    if (!fp || fp.length !== 32) {
+        showCustomAlert("No valid device fingerprint found.<br><br>Please restart installation process.");
+        return;
+    }
+
+
+    const next8 = fp.slice(3, 11);
+    const expected = `TRV-KE-${next8}-5634`;
+
+    if (entered === expected) {
+        let meta = await getData("meta", "config") || {};
+        await saveData("meta", {
+            ...meta,
+            id: "config",
+            activated: true,
+            fingerprint: fp,
+            activatedAt: Date.now()
+        });
+
+        document.getElementById('activation-overlay').classList.add('hidden');
+        location.reload();
+    } else {
+        showCustomAlert("Invalid activation code.");
+        document.getElementById('act-code').value = '';
+        document.getElementById('act-code').focus();
+    }
+}
+
+
+let db;
+let backupDirHandle = null; 
+let state = { user: null, transactions: [], obligations: [] };
+
+
+const BACKUP_FILE = "travis-finance-backup.enc";  
+
+async function deriveKey(password, salt) {
+    const enc = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+        "raw",
+        enc.encode(password),
+        "PBKDF2",
+        false,
+        ["deriveBits", "deriveKey"]
+    );
+
+    return crypto.subtle.deriveKey(
+        {
+            name: "PBKDF2",
+            salt: salt,
+            iterations: 600000,      
+            hash: "SHA-256"
+        },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+    );
+}
+
+async function encryptData(data, password) {
+    const enc = new TextEncoder();
+    const jsonString = JSON.stringify(data);
+    const iv = crypto.getRandomValues(new Uint8Array(12));  
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+
+    const key = await deriveKey(password, salt);
+
+    const encrypted = await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv: iv },
+        key,
+        enc.encode(jsonString)
+    );
+
+    const result = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+    result.set(salt, 0);
+    result.set(iv, salt.length);
+    result.set(new Uint8Array(encrypted), salt.length + iv.length);
+
+    return result;
+}
+
+async function decryptData(encryptedBytes, password) {
+    const salt = encryptedBytes.slice(0, 16);
+    const iv = encryptedBytes.slice(16, 28);
+    const ciphertext = encryptedBytes.slice(28);
+
+    const key = await deriveKey(password, salt);
+
+    const decrypted = await crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: iv },
+        key,
+        ciphertext
+    );
+
+    const dec = new TextDecoder();
+    const jsonString = dec.decode(decrypted);
+    return JSON.parse(jsonString);
+}
+
+async function getData(storeName, id) {
+    if (!db) return null;
+    try {
+        const tx = db.transaction(storeName, "readonly");
+        const store = tx.objectStore(storeName);
+        return new Promise((resolve) => {
+            const req = store.get(id);
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => resolve(null);
+        });
+    } catch (e) {
+        return null;
+    }
+}
+
+async function getAllData(storeName) {
+    if (!db) return [];
+    try {
+        const tx = db.transaction(storeName, "readonly");
+        const store = tx.objectStore(storeName);
+        return new Promise((resolve) => {
+            const req = store.getAll();
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => resolve([]);
+        });
+    } catch (e) {
+        return [];
+    }
+}
+
+async function backupUIAssets() {
+    if (!backupDirHandle) return;
+
+    const criticalFiles = [
+        { name: "index.html" },
+        { name: "tailwind-app.css" },
+        { name: "script.js" },
+        { name: "sw.js" },
+        { name: "input-app.css" }
+    ];
+
+    for (const file of criticalFiles) {
+        try {
+            const response = await fetch(file.name);
+            if (!response.ok) continue;
+
+            const blob = await response.blob();
+            const fileHandle = await backupDirHandle.getFileHandle(file.name, { create: true });
+            const writable = await fileHandle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+
+        } catch (e) {
+            console.warn(`Failed to backup ${file.name}`, e);
+        }
+    }
+}
+
+async function rebuildUIFromDevice() {
+    if (!backupDirHandle) return false;
+
+    try {
+        const uiFiles = ["index.html", "tailwind-app.css", "script.js", "sw.js", "input-app.css"];
+        const cache = await caches.open("travis-ui-cache-v1");
+
+        for (const filename of uiFiles) {
+            const fileHandle = await backupDirHandle.getFileHandle(filename);
+            const file = await fileHandle.getFile();
+            const buffer = await file.arrayBuffer();
+
+            await cache.put(`/${filename}`, new Response(buffer, {
+                headers: { 
+                    "Content-Type": filename.endsWith(".css") ? "text/css" : 
+                                   filename.endsWith(".js") ? "text/javascript" : "text/html" 
+                }
+            }));
+        }
+        return true;
+    } catch (e) {
+        console.error("UI rebuild failed", e);
+        return false;
+    }
+}
+
+async function saveBackup() {
+    if (!backupDirHandle || !db) return;
+
+    try {
+        const backupData = {};
+
+        for (const storeName of ["meta", "tx"]) {
+            const t = db.transaction(storeName, "readonly");
+            const store = t.objectStore(storeName);
+            backupData[storeName] = await new Promise(res => {
+                const r = store.getAll();
+                r.onsuccess = () => res(r.result);
+                r.onerror = () => res([]);
+            });
+        }
+
+        const PASSWORD = "Travisguardian"; 
+
+        const encryptedBytes = await encryptData(backupData, PASSWORD);
+
+        const fileHandle = await backupDirHandle.getFileHandle(BACKUP_FILE, { create: true });
+        const writable = await fileHandle.createWritable();
+        await writable.write(encryptedBytes);
+        await writable.close();
+
+        console.log("Encrypted backup saved successfully");
+    } catch (e) {
+        console.error("Silent backup failed", e);
+    }
+}
+
+async function readBackupContent() {
+    try {
+        if (!window.tempBackupFileHandle) {
+            return { data: null, error: "No file handle" };
+        }
+
+        const file = await window.tempBackupFileHandle.getFile();
+        const arrayBuffer = await file.arrayBuffer();
+        const encryptedBytes = new Uint8Array(arrayBuffer);
+
+        const password = prompt("Enter the backup password to decrypt your data:");
+
+        if (!password) {
+            return { data: null, error: "Password required" };
+        }
+
+        const data = await decryptData(encryptedBytes, password);
+
+        return { data, error: null };
+
+    } catch (e) {
+        console.error("Failed to decrypt backup:", e);
+        return { 
+            data: null, 
+            error: e.name === "OperationError" 
+                ? "Wrong password or corrupted file" 
+                : "Failed to read/decrypt backup file" 
+        };
+    }
+}
+
+async function restoreFromBackup() {
+    const { data: backup, error: readError } = await readBackupContent();
+    if (readError) {
+        console.error("Restore aborted - read error:", readError);
+        return { success: false, error: `Could not read the backup file: ${readError}` };
+    }
+    if (!backup) {
+        return { success: false, error: "Backup file was empty or invalid" };
+    }
+
+    try {
+        for (const storeName of ["meta", "tx"]) {
+            if (!backup[storeName] || !Array.isArray(backup[storeName])) continue;
+
+            const tx = db.transaction(storeName, "readwrite");
+            const store = tx.objectStore(storeName);
+
+            await new Promise((res, rej) => {
+                const clearReq = store.clear();
+                clearReq.onsuccess = res;
+                clearReq.onerror = () => rej(clearReq.error);
+            });
+
+            for (const item of backup[storeName]) {
+                await new Promise((res, rej) => {
+                    const putReq = store.put(item);
+                    putReq.onsuccess = res;
+                    putReq.onerror = () => rej(putReq.error);
+                });
+            }
+
+            await new Promise((res) => { tx.oncomplete = res; });
+        }
+
+        let fp = null;
+        const config = await getData("meta", "config");
+        if (config?.fingerprint) {
+            fp = config.fingerprint;
+        } else if (backup.meta) {
+            const cfgItem = backup.meta.find(item => item && item.id === "config");
+            fp = cfgItem?.fingerprint || null;
+        }
+
+        if (fp) {
+            localStorage.setItem("fp", fp);
+        }
+
+        return { success: true, error: null };
+
+    } catch (e) {
+        console.error("Restore operation failed during write:", e);
+        return { success: false, error: `Failed to write data to database: ${e.message || String(e)}` };
+    }
+}
+
+async function setupBackupFolder() {
+    if ('showDirectoryPicker' in window) {
+        try {
+            backupDirHandle = await window.showDirectoryPicker({
+                mode: "readwrite",
+                startIn: "documents"
+            });
+
+            const tx = db.transaction("meta", "readwrite");
+            await tx.objectStore("meta").put({ id: "backupHandle", value: backupDirHandle });
+            await tx.done;
+
+            console.log("✅ Desktop: Persistent folder backup enabled");
+            await backupUIAssets();
+            return true;
+        } catch (err) {
+            console.warn("User cancelled folder picker", err);
+            return false;
+        }
+    }
+
+    console.log("📱 Mobile: Full silent folder backup not supported.");
+    return false;
+}
+
+async function manualRestoreFlow() {
+    try {
+        let fileHandle;
+
+        if ('showOpenFilePicker' in window) {
+            const [handle] = await window.showOpenFilePicker({
+                types: [{
+                    description: "Travis Finance Backup",
+                    accept: { "application/octet-stream": [".enc"] }
+                }],
+                multiple: false
+            });
+            fileHandle = handle;
+        } else {
+            alert("Your browser does not support file selection.");
+            return { success: false, error: "File picker not supported" };
+        }
+
+        window.tempBackupFileHandle = fileHandle;
+
+        const result = await restoreFromBackup();
+
+        delete window.tempBackupFileHandle;
+
+        if (result.success) {
+            await rebuildUIFromDevice();
+            await backupUIAssets();
+            return { success: true };
+        }
+        return { success: false, error: "Restore failed" };
+
+    } catch (err) {
+        console.error("Restore flow error:", err);
+        return { success: false, error: "User cancelled or error occurred" };
+    }
+}
+
+async function runRecoveryOnStart() {
+    const overlay = document.getElementById("recovery-overlay");
+    if (!overlay) return;
+
+    overlay.classList.add("hidden");
+    try {
+        const result = await getData("meta", "backupHandle");
+        if (result?.value) backupDirHandle = result.value;
+    } catch (e) {}
+
+    const hasConfig = !!(await getData("meta", "config"));
+    const hasFp = !!localStorage.getItem("fp");
+
+    if (hasConfig && hasFp) {
+        return;
+    }
+
+    if (backupDirHandle) {
+        console.log("🔄 Rebuilding UI from device files before showing recovery...");
+        await rebuildUIFromDevice();
+    }
+
+    overlay.classList.remove("hidden");
+
+    overlay.innerHTML = `
+        <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.78);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:system-ui,sans-serif;">
+            <div style="background:white;border-radius:16px;max-width:460px;width:92%;box-shadow:0 25px 70px rgba(0,0,0,0.3);overflow:hidden;">
+                <div style="background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;padding:28px 24px;text-align:center;">
+                    <h2 style="margin:0 0 8px 0;font-size:1.5rem;">🔒 Travis Guardian</h2>
+                    <p style="margin:0;opacity:0.95;">Your Personal Financial Advisor</p>
+                </div>
+                <div style="padding:32px 28px;text-align:center;">
+                    <div style="width:70px;height:70px;background:#f0f9ff;color:#1e40af;font-size:36px;border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;border:5px solid #e0f2fe;">📁</div>
+                    <h3 style="margin:0 0 16px 0;font-size:1.35rem;color:#1e3a8a;">Restore Everything?</h3>
+                    <p style="color:#475569;line-height:1.6;margin-bottom:28px;font-size:1.02rem;">
+                        Browser data was cleared.<br>
+                        Select your backup file to restore <strong>financial data + UI</strong>.
+                    </p>
+                    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+                        <button id="restore-btn" style="background:#1e40af;color:white;border:none;padding:16px 24px;font-size:1.05rem;font-weight:600;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;">📂 Select Backup File & Restore All</button>
+                        <button id="skip-btn" style="background:transparent;color:#64748b;border:2px solid #cbd5e1;padding:14px 24px;font-size:1rem;font-weight:500;border-radius:10px;cursor:pointer;">Continue as New User</button>
+                    </div>
+                    <p style="margin:0;font-size:0.82rem;color:#64748b;">First-time users: choose “Continue as New User”</p>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const restoreBtn = document.getElementById("restore-btn");
+    const skipBtn = document.getElementById("skip-btn");
+
+    restoreBtn.replaceWith(restoreBtn.cloneNode(true));
+    skipBtn.replaceWith(skipBtn.cloneNode(true));
+
+    document.getElementById("restore-btn").onclick = async () => {
+        const btn = document.getElementById("restore-btn");
+        btn.disabled = true;
+        btn.textContent = "Restoring data + UI...";
+
+        const result = await manualRestoreFlow();
+
+        if (result.success) {
+            await backupUIAssets();
+            overlay.innerHTML = `<div style="padding:50px;text-align:center;background:white;border-radius:16px;max-width:400px;"><p style="color:green;font-size:19px;"> Everything restored!<br>Reloading nice UI...</p></div>`;
+            setTimeout(() => location.reload(), 1200);
+        } else {
+            overlay.innerHTML = `<div style="padding:30px;text-align:center;color:red;background:white;border-radius:16px;"><p> ${result.error || "Restore failed"}</p><button onclick="location.reload()" style="margin-top:15px;padding:12px 24px;">Try Again</button></div>`;
+        }
+    };
+
+    document.getElementById("skip-btn").onclick = () => overlay.classList.add("hidden");
+};
+
+async function startFingerprintBackgroundProbe() {
+    const tryRestoreFP = async () => {
+        if (localStorage.getItem("fp")) return true;
+
+        const config = await getData("meta", "config");
+        if (config?.fingerprint) {
+            localStorage.setItem("fp", config.fingerprint);
+            return true;
+        }
+        return false;
+    };
+
+    setTimeout(() => tryRestoreFP(), 80);
+
+    let attempts = 0;
+    const interval = setInterval(async () => {
+        attempts++;
+        if (await tryRestoreFP() || attempts > 12) clearInterval(interval);
+    }, 5000);
+}
+
+async function initDB() {
+    return new Promise((resolve) => {
+        const req = indexedDB.open("TravisGuardian_v1.0", 1);
+
+        req.onupgradeneeded = (e) => {
+            const d = e.target.result;
+            if (!d.objectStoreNames.contains("meta")) d.createObjectStore("meta", { keyPath: "id" });
+            if (!d.objectStoreNames.contains("tx")) d.createObjectStore("tx", { keyPath: "id" });
+        };
+
+        req.onsuccess = async (e) => {
+            db = e.target.result;
+
+            startFingerprintBackgroundProbe();
+            await runRecoveryOnStart();
+
+            resolve();
+        };
+
+        req.onerror = () => resolve();
+    });
+}
+
+
+let travisMemory = {
+    conversationCount: 0,
+    lastQuestion: "",
+    lastPurpose: "",
+    lastVerdict: "",
+    
+    // CONVERSATIONAL MEMORY — this makes Travis remember the whole chat
+    chatContext: {
+        pendingClarification: null,   // "hiring_salary", "inventory_unit_cost", "asset_type", etc.
+        lastTopic: null,
+        providedData: {}              // e.g. {salaryPerEmployee: 8000, inventoryUnitCost: 2500}
+    }
+};
+
+function isObligation(spendDesc) {
+    if (!state.obligations || state.obligations.length === 0) return false;
+    return state.obligations.some(o => 
+        spendDesc.toLowerCase().includes(o.label.toLowerCase())
+    );
+}
+
+function getStatusSummary() {
+    const fin = getFin();
+    const risk = calculateInsolvencyRisk();
+    return {
+        cash: Math.round(fin.safeCash),
+        dailyCap: Math.floor(fin.daily),
+        daysRem: fin.daysRem,
+        riskLabel: risk.label,
+        riskColor: risk.color,
+        riskScore: risk.score
+    };
+}
+
+function updateLiveHud() {
+    const amount = parseFloat(document.getElementById('tx-amount').value) || 0;
+    const credit = document.getElementById('tx-credit').value;
+    const fin = getFin();
+    
+    const projectedSafe = isLiquid(credit) ? fin.safeCash - amount : fin.safeCash;
+    const newCap = projectedSafe / fin.daysRem;
+    
+    document.getElementById('hud-cap').innerText = `KSh ${newCap.toFixed(0)}`;
+    document.getElementById('hud-cover').innerText = `KSh ${fin.pending.toLocaleString()} Reserved`;
+    
+    const warn = document.getElementById('hud-warning');
+    if (isLiquid(credit) && amount > fin.daily) {
+        warn.classList.remove('hidden');
+    } else {
+        warn.classList.add('hidden');
+    }
+}
+
+function getFin() {
+    const now = new Date();
+    const daysRem = Math.max(1, new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate());
+
+    // === DYNAMIC LIQUID BALANCE ===
+    let liquid = 0;
+    
+    // Get ALL asset accounts that should count as liquid
+    const liquidAssets = [
+        "Cash", "M-Pesa", "Bank Account", "Savings",
+        "Bank / M-Pesa", "Petty Cash", "Accounts Receivable"
+    ];
+
+    liquidAssets.forEach(acc => {
+        liquid += getBalance(acc);
+    });
+
+    // === OBLIGATIONS CALCULATION (unchanged but kept for clarity) ===
+    const obsStatus = state.obligations.map(o => {
+        let paid = 0;
+        state.transactions.forEach(t => {
+            const tDate = new Date(t.id);
+            if (tDate.getMonth() === now.getMonth() && 
+                (t.desc.toLowerCase().includes(o.label.toLowerCase()) || 
+                 t.credit === o.label)) {
+                paid += t.amount;
+            }
+        });
+        return { 
+            ...o, 
+            paid, 
+            pending: Math.max(0, o.amount - paid), 
+            variance: paid - o.amount 
+        };
+    });
+
+    const pending = obsStatus.reduce((a, b) => a + b.pending, 0);
+    const safeCash = liquid - pending;
+
+    return { 
+        liquid, 
+        pending, 
+        safeCash, 
+        daysRem, 
+        obsStatus, 
+        daily: safeCash / daysRem 
+    };
+}
+
+function calculateInsolvencyRisk() {
+    const fin = getFin();
+    const velocity = (function(){
+        const now = new Date();
+        const weekAgo = new Date(); weekAgo.setDate(now.getDate() - 7);
+        let ts = 0;
+        state.transactions.forEach(t => { if (new Date(t.id) >= weekAgo && isLiquid(t.credit)) ts += t.amount; });
+        return ts / 7;
+    })();
+
+    if (velocity <= fin.daily) return { score: 5, label: "LOW", color: "#4ade80" };
+    if (velocity > fin.daily && velocity < (fin.daily * 1.5)) return { score: 45, label: "MODERATE", color: "#eab308" };
+    if (velocity >= (fin.daily * 1.5)) return { score: 85, label: "CRITICAL", color: "#ef4444" };
+    return { score: 0, label: "UNDETERMINED", color: "#94a3b8" };
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ============================================================
+//  TRAVIS — Financial Advisor Engine
+//  Drop-in replacement for handleAsk()
+//  Requires: getFin(), getStatusSummary(), state.user.type
+// ============================================================
+
+function handleAsk() {
+  const input  = document.getElementById('chat-input');
+  const box    = document.getElementById('chat-box');
+  const rawQ   = input.value.trim();
+  if (!rawQ) return;
+
+  travisMemory.conversationCount++;
+  travisMemory.lastQuestion = rawQ;
+
+  const q      = rawQ.toLowerCase().trim();
+  const fin    = getFin();
+  const status = getStatusSummary();
+  const isBiz  = state.user.type === 'business';
+
+  // ── Amount extraction ──────────────────────────────────────
+  let amount = 0;
+  const cleaned = q.replace(/,/g, '');
+  const numMatch = cleaned.match(/(\d+(?:\.\d+)?)\s*(k|thousand|ksh|shillings|bob)?/i);
+  if (numMatch) {
+    amount = parseFloat(numMatch[1]);
+    if (numMatch[2] && /k|thousand/i.test(numMatch[2])) amount *= 1000;
+  }
+
+  // ── Intent detection ──────────────────────────────────────
+  const has = (...words) => words.some(w => q.includes(w));
+
+  const intent = {
+    spend:      has('can i buy','spend','afford','pay for','get','purchase','take','eat','drinking','treat'),
+    loan:       has('loan','borrow','fuliza','mshwari','credit','overdraft','tala','branch','faidi'),
+    stock:      has('stock','restock','inventory','buy goods','buy stock','goods','merchandise','reorder'),
+    staff:      has('worker','staff','employee','hire','employ','payroll','salary for','wage','add person','new person'),
+    tax:        has('tax','kra','vat','paye','itax','filing','returns','pin','tpin'),
+    asset:      has('asset','equipment','machine','laptop','fridge','freezer','generator','vehicle','matatu','bodaboda','buy equipment'),
+    status:     has('how is','how am i','status','situation','doing','trajectory','projection','next week','coming week','end of month','how are things','where do i','summarize','overview','tell me about'),
+    profit:     has('profit','make money','more money','grow','increase','boost','make more','earn more','how to improve'),
+    habit:      has('habit','pattern','how much should i','daily limit','how much can i spend','what can i spend'),
+    savings:    has('save','saving','set aside','emergency','reserve','future'),
+    pricing:    has('price','charge','how much to sell','selling price','markup','margin','what should i charge'),
+    cashflow:   has('cash flow','cashflow','money in','money out','income','revenue this','when will'),
+    rent:       has('rent','landlord','pay rent','lease'),
+    school:     has('school','fees','tuition','education','college','university'),
+    medical:    has('hospital','clinic','medicine','doctor','nhif','treatment','sick'),
+    family:     has('family','relative','cousin','sibling','parents','send money','upcountry','harambee','chama'),
+    invest:     has('invest','investment','shares','stocks','unit trust','sacco','crypto','nse'),
+    compare:    has('vs','versus','compare','which is better','should i'),
+    withdraw:   has('withdraw','take out','mpesa','atm','till'),
+  };
+
+  // ── Financial context ──────────────────────────────────────
+  const buffer      = status.cash;                           // free cash after obligations
+  const dailyCap    = status.dailyCap;                       // safe max daily spend
+  const risk        = status.riskLabel;                      // LOW | MODERATE | CRITICAL
+  const daysLeft    = fin.daysRem;
+  const safeCash    = fin.safeCash;
+  const obligations = safeCash - buffer;                     // total monthly obligations
+  const projectedEOM = buffer - (dailyCap * daysLeft);      // projected buffer at month end
+  const spendRatio  = amount > 0 ? (amount / buffer) : 0;   // what % of buffer this spend is
+
+  // ── Color tokens (theme-safe) ──────────────────────────────
+  const riskColor = {
+    LOW:      'var(--color-text-success)',
+    MODERATE: 'var(--color-text-warning)',
+    CRITICAL: 'var(--color-text-danger)',
+  }[risk] || 'var(--color-text-secondary)';
+
+  // ── Response builder ───────────────────────────────────────
+  function buildResponse(advice) {
+    const riskBar = `
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;
+    padding:10px 12px;background:var(--color-background-secondary);
+    border-radius:var(--border-radius-md);margin-bottom:14px;font-size:13px;">
+    <div style="display:flex;align-items:center;gap:5px;white-space:nowrap;">
+      <span style="color:var(--color-text-secondary);font-size:12px;">Risk</span>
+      <span style="font-weight:500;color:${riskColor};">${risk}</span>
+    </div>
+    <span style="color:var(--color-border-secondary);font-size:11px;">·</span>
+    <div style="display:flex;align-items:center;gap:5px;white-space:nowrap;">
+      <span style="color:var(--color-text-secondary);font-size:12px;">Daily cap</span>
+      <span style="font-weight:500;color:var(--color-text-primary);">KSh ${dailyCap.toLocaleString()}</span>
+    </div>
+    <span style="color:var(--color-border-secondary);font-size:11px;">·</span>
+    <div style="display:flex;align-items:center;gap:5px;white-space:nowrap;">
+      <span style="color:var(--color-text-secondary);font-size:12px;">Buffer</span>
+      <span style="font-weight:500;color:var(--color-text-primary);">KSh ${buffer.toLocaleString()}</span>
+    </div>
+    <span style="color:var(--color-border-secondary);font-size:11px;">·</span>
+    <div style="display:flex;align-items:center;gap:5px;white-space:nowrap;">
+      <span style="color:var(--color-text-secondary);font-size:12px;">Days left</span>
+      <span style="font-weight:500;color:var(--color-text-primary);">${daysLeft}</span>
+    </div>
+  </div>`;
+
+    const conclusionBlock = `
+      <div style="margin-top:16px;padding:12px 14px;border-left:3px solid ${riskColor};
+        background:var(--color-background-secondary);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;">
+        <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);
+          text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">My advice</div>
+        <div style="font-size:15px;color:var(--color-text-primary);line-height:1.6;">
+          ${advice.conclusion}
+        </div>
+      </div>`;
+
+    const quickActions = advice.actions && advice.actions.length ? `
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;">
+        ${advice.actions.map(a => `
+          <button onclick="document.getElementById('chat-input').value='${a.q}';handleAsk();"
+            style="font-size:12px;padding:5px 12px;border-radius:var(--border-radius-md);
+            border:0.5px solid var(--color-border-secondary);background:transparent;
+            color:var(--color-text-secondary);cursor:pointer;">
+            ${a.label} ↗
+          </button>`).join('')}
+      </div>` : '';
+
+    return `
+      ${riskBar}
+      <div style="font-size:15px;line-height:1.75;color:var(--color-text-primary);margin-bottom:4px;">
+        ${advice.body}
+      </div>
+      ${conclusionBlock}
+      ${quickActions}`;
+  }
+
+  // ── RESPONSE INTELLIGENCE ENGINE ──────────────────────────
+
+  let advice = { body: '', conclusion: '', actions: [] };
+
+  // ── 1. SPENDING DECISION (with amount) ────────────────────
+  if (amount > 0 && (intent.spend || intent.rent || intent.school || intent.medical || intent.family || intent.stock)) {
+
+    const isObligation = intent.rent || intent.school || intent.medical;
+    const isEssential  = isObligation || intent.family;
+    const fitsDaily    = amount <= dailyCap;
+    const pctOfBuffer  = Math.round(spendRatio * 100);
+    const remaining    = buffer - amount;
+    const newDailyCap  = daysLeft > 0 ? Math.floor(remaining / daysLeft) : 0;
+
+    if (isObligation) {
+      // Essential obligation
+      if (buffer < 0) {
+        advice.body = `You're asking about spending KSh ${amount.toLocaleString()} on what sounds like a real obligation — and I'm not going to pretend that's easy to hear — but right now your free cash is already negative at KSh ${Math.abs(buffer).toLocaleString()}, which means you're already spending money you don't have. Paying this now would deepen the hole. That doesn't mean ignore it — it means you need to either bring in money fast (collect debts, push sales, call a trusted person) or negotiate a short delay on this specific payment.`;
+        advice.conclusion = `Don't pay this today unless someone will cut you off or lock you out. Negotiate 3–5 days, use that window to raise cash first.`;
+      } else if (!fitsDaily) {
+        advice.body = `This is a real obligation — rent, fees, medical, those don't move. The issue is that KSh ${amount.toLocaleString()} is bigger than your current daily safe limit of KSh ${dailyCap.toLocaleString()}, which means paying it in full today will eat ${pctOfBuffer}% of your buffer and leave you with only KSh ${remaining.toLocaleString()} to manage the next ${daysLeft} days. That's a tight squeeze — your daily breathing room drops to about KSh ${newDailyCap.toLocaleString()} per day after this, which ${newDailyCap < 200 ? 'is dangerously low' : 'is manageable but leaves zero room for surprises'}.`;
+        advice.conclusion = `Pay it — obligations must be honoured. But immediately after, cut all discretionary spending for the rest of this week and focus on cash inflow to rebuild that buffer.`;
+      } else {
+        advice.body = `KSh ${amount.toLocaleString()} for an obligation is a legitimate expense, and your buffer can absorb it. After paying this, you'll still have KSh ${remaining.toLocaleString()} free, and your daily cap adjusts to about KSh ${newDailyCap.toLocaleString()} — which ${newDailyCap >= 500 ? 'is still comfortable' : 'is tighter than before, so watch the small daily spends this week'}.`;
+        advice.conclusion = `Go ahead and pay it. Log it immediately and recalculate your budget for the remaining ${daysLeft} days.`;
+      }
+    } else if (intent.stock && isBiz) {
+      // Stock purchase for business
+      const maxSafe = Math.floor(buffer * 0.5);
+      if (amount > buffer) {
+        advice.body = `You want to restock for KSh ${amount.toLocaleString()} but your entire free cash buffer is only KSh ${buffer.toLocaleString()} — so this would wipe you out completely and leave nothing for wages, rent, or emergencies. Even if the stock sells well, there's a gap between buying and selling, and during that gap you'd have zero liquidity. That's how shops end up closing not because they had no goods — but because they couldn't pay a bill while waiting for sales.`;
+        advice.conclusion = `Restock at a maximum of KSh ${maxSafe.toLocaleString()} — that's 50% of your buffer. Keep the other half liquid. Turning over smaller stock faster is safer than betting everything on one big order.`;
+      } else if (amount > maxSafe) {
+        advice.body = `Restocking KSh ${amount.toLocaleString()} is possible from a cash standpoint since your buffer covers it, but it would consume ${pctOfBuffer}% of your free cash. The problem with tying up that much in stock is that it assumes your sales velocity is high enough to convert those goods to cash before your next major obligation falls due. With ${daysLeft} days left this month, the question is whether your stock typically moves within 7–10 days or it sits.`;
+        advice.conclusion = `If your stock moves fast (within 7 days), go ahead but no more than KSh ${Math.floor(buffer * 0.6).toLocaleString()}. If your goods are slow-moving, cut the order to KSh ${maxSafe.toLocaleString()} to protect liquidity.`;
+      } else {
+        advice.body = `KSh ${amount.toLocaleString()} for restocking sits at a healthy ${pctOfBuffer}% of your buffer, leaving you KSh ${remaining.toLocaleString()} in free cash. That's responsible purchasing — you're not over-leveraging your cash into goods. As long as the margin on what you're buying justifies the spend (you should be marking up at least 20–30%), this is money working for you.`;
+        advice.conclusion = `Go ahead. Just make sure you track what you bought, at what price, and set a target selling price before the goods hit the shelf.`;
+      }
+    } else {
+      // General discretionary spend
+      if (risk === 'CRITICAL' || buffer <= 0) {
+        advice.body = `You're thinking about spending KSh ${amount.toLocaleString()} right now, but I have to be straight with you — your financial position is critical. Your buffer is KSh ${buffer.toLocaleString()}, which means there's almost no room between you and not being able to meet your obligations. Spending KSh ${amount.toLocaleString()} here would take ${pctOfBuffer}% of what's left and push you closer to not making it to end of month.`;
+        advice.conclusion = `Hold off on this. It's not about the amount being huge — it's about what month end looks like if you keep going. Protect the buffer first.`;
+      } else if (!fitsDaily) {
+        advice.body = `KSh ${amount.toLocaleString()} would push you past your safe daily limit of KSh ${dailyCap.toLocaleString()}. That's not automatically a disaster — but it does mean you're borrowing from tomorrow's budget today. After this spend, your remaining ${daysLeft - 1} days would each have roughly KSh ${newDailyCap.toLocaleString()} to work with instead of ${dailyCap.toLocaleString()}. Whether that's a problem depends on how many other costs are still coming this month.`;
+        advice.conclusion = risk === 'LOW'
+          ? `You can stretch it this once, but log it and don't do this two days in a row.`
+          : `I'd reduce it to around KSh ${Math.floor(dailyCap * 0.8).toLocaleString()} or delay to a day when you've had good income.`;
+      } else {
+        advice.body = `KSh ${amount.toLocaleString()} fits inside your daily cap of KSh ${dailyCap.toLocaleString()} and represents just ${pctOfBuffer}% of your buffer — that's a manageable spend. After this, you'd still have KSh ${remaining.toLocaleString()} available and ${daysLeft} days would still be workable at KSh ${newDailyCap.toLocaleString()} each.`;
+        advice.conclusion = `This is fine. Go ahead, log it, and you're still on track.`;
+      }
+    }
+    advice.actions = [
+      { label: 'My 7-day forecast', q: 'Show me my 7-day cash forecast' },
+      { label: 'How much can I spend today', q: 'How much can I safely spend today?' },
+    ];
+  }
+
+  // ── 2. LOAN ───────────────────────────────────────────────
+  else if (intent.loan) {
+    const loanAmount = amount || 0;
+    const typicalRate = 0.15; // 15% monthly for mobile loans
+    const monthlyRepayment = loanAmount > 0 ? Math.round(loanAmount * (1 + typicalRate)) : 0;
+    const dailyRepayment = daysLeft > 0 ? Math.round(monthlyRepayment / 30) : 0;
+
+    if (risk === 'CRITICAL') {
+      advice.body = `I hear you on the loan — when things are tight, borrowing feels like the fastest fix. But your account is already in critical risk territory with a buffer of KSh ${buffer.toLocaleString()}, and adding a loan repayment on top of that is like patching a leaking roof while standing in a flood. Mobile loans like Fuliza or Tala charge 15–20% monthly, so even a KSh ${loanAmount > 0 ? loanAmount.toLocaleString() : '5,000'} loan means you're paying back KSh ${loanAmount > 0 ? monthlyRepayment.toLocaleString() : '5,750+'} — and that repayment will come directly out of the same cash that's already stretched.`;
+      advice.conclusion = `Avoid the loan right now. Instead, identify one income you can accelerate this week — collect a debt someone owes you, push a sale, reduce what you spend — before adding any new repayment obligation.`;
+    } else if (risk === 'MODERATE') {
+      advice.body = `A loan is possible from a cashflow standpoint, but only if it's going to earn more than it costs. Mobile loans at 15% monthly mean KSh ${loanAmount > 0 ? loanAmount.toLocaleString() : '10,000'} borrowed becomes KSh ${loanAmount > 0 ? monthlyRepayment.toLocaleString() : '11,500'} owed. If you're using it to buy stock that turns over in 7 days and nets you 30% margin — that math works. If you're borrowing to cover daily expenses or a one-time cost that doesn't generate income, you'll pay the interest and be back in the same position, just poorer.`;
+      advice.conclusion = loanAmount > 0
+        ? `Only take this loan if it will generate at least KSh ${Math.round(monthlyRepayment * 1.2).toLocaleString()} back within 30 days. If you can't see that income clearly, it's not worth it.`
+        : `Before deciding, calculate exactly what you'll use the loan for and whether it pays back more than 115% of what you borrow. If it doesn't, find another way.`;
+    } else {
+      advice.body = `Your financials are in a stable position right now — buffer is healthy and risk is low, which actually means you're in the best negotiating position you'll have. If you're taking a loan to invest in something that grows the business, this is a reasonable time to do it. ${loanAmount > 0 ? `At KSh ${loanAmount.toLocaleString()}, you'd be repaying roughly KSh ${monthlyRepayment.toLocaleString()} next month — that's about KSh ${dailyRepayment.toLocaleString()} per day added to your obligations.` : 'Just calculate the daily repayment cost against your current daily cap before committing.'} The danger is treating a loan as free money — it isn't.`;
+      advice.conclusion = `Go ahead if the purpose is productive. Make sure the repayment fits inside your daily cap without pushing you into moderate risk. If it does, you've done the math right.`;
+    }
+    advice.actions = [
+      { label: 'Can I afford repayments', q: 'What loan repayment can I afford per month?' },
+      { label: 'How to boost income instead', q: 'How can I increase my income without a loan?' },
+    ];
+  }
+
+  // ── 3. STAFF / HIRING ─────────────────────────────────────
+  else if (intent.staff) {
+    const proposedWage = amount || 0;
+    const safeWageBudget = Math.floor(buffer * 0.25); // max 25% of buffer on wages
+    const affordableCount = proposedWage > 0 ? Math.floor(safeWageBudget / proposedWage) : 0;
+
+    if (risk === 'CRITICAL' || buffer < 5000) {
+      advice.body = `Wanting to grow the team shows ambition, and that's good. But right now your buffer is KSh ${buffer.toLocaleString()} — that's the money available after all your obligations. Hiring someone means committing to a wage every single month, regardless of whether sales are good or bad that month. With this buffer, one bad week and you'd be unable to pay them, which destroys trust and your reputation as an employer faster than anything else.`;
+      advice.conclusion = `Don't hire right now. The business isn't stable enough to guarantee a consistent wage. Get the buffer above KSh 15,000 first, then revisit.`;
+    } else if (proposedWage > 0) {
+      if (proposedWage > safeWageBudget) {
+        advice.body = `You're thinking about bringing someone on at KSh ${proposedWage.toLocaleString()} per month. Based on your current buffer of KSh ${buffer.toLocaleString()}, a safe wage budget is around KSh ${safeWageBudget.toLocaleString()} — which is 25% of your free cash, the standard threshold before wages start squeezing other obligations. At KSh ${proposedWage.toLocaleString()}, this hire would take ${Math.round((proposedWage/buffer)*100)}% of your buffer, which is too aggressive unless revenue is guaranteed to increase.`;
+        advice.conclusion = `Either negotiate the wage down to KSh ${safeWageBudget.toLocaleString()} or less, or look for a commission-based arrangement where you only pay when they generate sales. Fixed wages above your buffer threshold are a risk.`;
+      } else {
+        advice.body = `At KSh ${proposedWage.toLocaleString()} per month, this hire sits within your safe wage budget of KSh ${safeWageBudget.toLocaleString()}. After this commitment, your effective buffer would adjust to reflect the recurring monthly cost, and you'd still have room to operate. The question isn't just whether you can afford the wage — it's whether this person will generate or free up more value than they cost.`;
+        advice.conclusion = `Financially this works. Before hiring, define exactly what this person will do to move money — more sales, faster service, more hours covered. A hire that pays for themselves within 60 days is a good hire.`;
+      }
+    } else {
+      advice.body = `Whether you can add staff depends entirely on your wage budget and the business's current cash flow. Your buffer is KSh ${buffer.toLocaleString()}, and a safe guideline is that total wages shouldn't exceed 25–30% of that buffer per month — so you have room for wages of up to KSh ${safeWageBudget.toLocaleString()} monthly ${risk === 'LOW' ? 'without hurting your cash position' : 'but even that would tighten things'}.`;
+      advice.conclusion = `Tell me the wage you have in mind and I'll calculate whether the numbers work. Don't hire on a handshake without checking the math first.`;
+      advice.actions = [{ label: 'Calculate for a specific wage', q: 'Can I hire someone at KSh 8000 per month?' }];
+    }
+  }
+
+  // ── 4. TAXES ──────────────────────────────────────────────
+  else if (intent.tax) {
+    advice.body = `Tax is one of those things people delay until KRA makes it painful — and KRA's penalties are not small. A late filing penalty alone starts at KSh 20,000 or 5% of tax owed, whichever is higher, and interest compounds monthly at 1%. The irony is that with your current buffer of KSh ${buffer.toLocaleString()}, you might be able to handle the actual tax obligation comfortably, but a penalty on top could tip you into ${risk === 'LOW' ? 'moderate' : 'critical'} risk. The other thing worth knowing: if you're on the turnover tax regime (for businesses under KSh 1M annual revenue), the rate is just 1.5% of gross sales — which is often much lower than people expect.`;
+    advice.conclusion = `File on time, every time, even if you can't pay everything immediately. A filed-but-unpaid return is better than an unfiled one. If you're behind, go to iTax and file now — late is still better than never.`;
+    advice.actions = [
+      { label: 'How much tax should I set aside', q: 'How much should I set aside for taxes each month?' },
+    ];
+  }
+
+  // ── 5. ASSETS / EQUIPMENT ────────────────────────────────
+  else if (intent.asset) {
+    const assetCost = amount || 0;
+    const pct = assetCost > 0 ? Math.round((assetCost / buffer) * 100) : 0;
+
+    advice.body = assetCost > 0
+      ? `Buying equipment for KSh ${assetCost.toLocaleString()} is a capital decision — it comes out of your buffer in one hit, which is ${pct}% of your KSh ${buffer.toLocaleString()} free cash. The question that matters is payback period: how many days or months will this asset take to pay for itself through the revenue it generates or the costs it saves? If it's within 3 months, it's a smart buy. If it's 6 months or longer, you need to think about whether your cash position can stay healthy through that whole payback window.`
+      : `Buying equipment is a capital decision, not an expense — you're converting cash into something that should earn its keep. The key number is payback period: how long before this asset generates enough to cover what you paid for it? Your buffer is KSh ${buffer.toLocaleString()}, and any asset purchase that takes more than 40% of that in one go needs serious justification.`;
+
+    if (risk === 'CRITICAL') {
+      advice.conclusion = `This is the wrong time for a capital purchase. Your operating position is critical — protect cash liquidity first. Revisit this once risk drops to moderate or low.`;
+    } else if (assetCost > buffer * 0.5) {
+      advice.conclusion = `At ${pct}% of your buffer, this would strain your liquidity. Look at leasing, hire-purchase, or phased payment options. Avoid a lump-sum cash buy right now.`;
+    } else {
+      advice.conclusion = `If this asset pays back within 60–90 days, go ahead. Just make sure you have at least KSh ${Math.round(buffer * 0.4).toLocaleString()} remaining after purchase for operational expenses — don't clean out the buffer for equipment.`;
+    }
+    advice.actions = [
+      { label: 'Can I use a loan for this', q: 'Should I take a loan to buy equipment?' },
+    ];
+  }
+
+  // ── 6. SAVINGS ────────────────────────────────────────────
+  else if (intent.savings) {
+    const safeSavingsRate = risk === 'LOW' ? 0.15 : risk === 'MODERATE' ? 0.07 : 0;
+    const monthlySavings  = Math.floor(buffer * safeSavingsRate);
+
+    if (risk === 'CRITICAL') {
+      advice.body = `The instinct to save is a good one — but saving while your operating buffer is negative or critical is like filling a bucket that has a hole in it. Right now, every shilling needs to stay in circulation to keep the business or household alive. Locking money away in a savings account when you might need it tomorrow for rent or stock is a mistake most financial advisors will tell you directly.`;
+      advice.conclusion = `Don't save right now. Fix the cash flow first — get risk down to moderate, then start putting 5–10% aside. Saving from stability is smart. Saving from crisis is just reducing your liquidity.`;
+    } else {
+      advice.body = `With your buffer at KSh ${buffer.toLocaleString()} and risk at ${risk}, you have room to start saving. A realistic savings rate at your current position is around ${Math.round(safeSavingsRate * 100)}%, which would be KSh ${monthlySavings.toLocaleString()} per month. Put this in a money market fund or SACCO — not a savings account paying 2% — because inflation will quietly eat a savings account. A money market fund in Kenya typically earns 8–12% annually, which means your savings are actually growing.`;
+      advice.conclusion = `Start with KSh ${monthlySavings.toLocaleString()} per month, put it somewhere it earns interest (not a mattress), and treat it as an expense — not optional. The goal is 3 months of obligations as your emergency fund, which is KSh ${Math.round(obligations * 3).toLocaleString()}.`;
+    }
+  }
+
+  // ── 7. PRICING / MARGINS ──────────────────────────────────
+  else if (intent.pricing) {
+    advice.body = `Pricing is where most small businesses lose quietly — not through big mistakes, but through margins that are too thin. The minimum healthy markup for a retail duka or small business in Kenya is 25–30% above cost price, but that's the floor. After you account for spoilage, theft, loan interest, and the cost of your own time, you often need 40–50% to actually profit. If you're buying goods at KSh 100 and selling at KSh 120, you have a 20% markup — which sounds reasonable until you factor in that a late delivery or one bad month wipes that out.`;
+    advice.conclusion = `Review your top 5 selling items and check what you're making per unit after cost. If any item is below 25% margin, either raise the price or stop stocking it. Busy sales with thin margins are worse than fewer sales with healthy margins.`;
+    advice.actions = [
+      { label: 'Calculate markup for an item', q: 'Help me calculate the right selling price for a product' },
+    ];
+  }
+
+  // ── 8. INVESTMENT ─────────────────────────────────────────
+  else if (intent.invest) {
+    advice.body = `Investing is smart — but the sequence matters. Before putting money into shares, SACCOs, or crypto, your operating cash needs to be healthy. Your buffer right now is KSh ${buffer.toLocaleString()} and risk is ${risk}. ${risk === 'LOW' ? 'That\'s a solid position to start from.' : 'That\'s not a stable enough base yet.'} The rule is simple: invest only what you can afford to lose access to for 6–12 months. That\'s not money you might need for rent or stock. For most people at your position, a SACCO is the most practical start — low risk, earns 10–14% annually, and you can borrow against it. NSE shares need patience and a bigger buffer. Crypto is speculation, not investment.`;
+    advice.conclusion = risk === 'LOW'
+      ? `If your 3-month emergency fund is already covered (KSh ${Math.round(obligations * 3).toLocaleString()}), you can start investing up to 10–15% of your monthly surplus. Start with a SACCO if you don't have one.`
+      : `Build the emergency fund first. Once you have 3 months of obligations saved, then talk about investing. Investing while your buffer is thin is just gambling with money you need.`;
+  }
+
+  // ── 9. STATUS / PROJECTION / HOW AM I DOING ───────────────
+  else if (intent.status || intent.cashflow) {
+    const projectedLabel = projectedEOM >= 0
+      ? `end the month with roughly KSh ${projectedEOM.toLocaleString()} left`
+      : `fall short by KSh ${Math.abs(projectedEOM).toLocaleString()} before month end`;
+
+    const dailyContext = dailyCap <= 0
+      ? `you have no safe daily spend budget right now — meaning even small daily costs are coming from money earmarked for obligations`
+      : dailyCap < 300
+      ? `your daily budget is very tight at KSh ${dailyCap.toLocaleString()} — enough for basics only`
+      : `you have KSh ${dailyCap.toLocaleString()} of safe daily spend, which is decent room to work with`;
+
+    advice.body = `Looking at your numbers right now: you have KSh ${buffer.toLocaleString()} in free cash after obligations, ${daysLeft} days left this month, and ${dailyContext}. If you continue at your current spending pace, you'll ${projectedLabel}. Your insolvency risk is ${risk} — ${risk === 'LOW' ? 'meaning you\'re in a stable position and likely to make it through the month without a crisis' : risk === 'MODERATE' ? 'which means you\'re not in immediate danger but you\'re in the zone where one unexpected expense could tip things' : 'which is serious — your current trajectory does not lead to a safe month end without a change in spending or income'}.`;
+
+    advice.conclusion = risk === 'LOW'
+      ? `You're in good shape. Keep your daily spend under KSh ${dailyCap.toLocaleString()}, avoid any large discretionary buys this week, and you'll finish the month with breathing room.`
+      : risk === 'MODERATE'
+      ? `You need to actively cut at least one category of non-essential spending this week and look for one way to bring in extra cash — even a small side sale. Don't let moderate become critical.`
+      : `This is a real emergency position. Stop all non-essential spending today, call in any debts owed to you, and focus every energy on cash inflow for the next 5 days. The numbers don't leave room for delay.`;
+
+    advice.actions = [
+      { label: 'What should I cut', q: 'What expenses should I cut right now?' },
+      { label: 'How to increase income', q: 'How can I bring in more money this week?' },
+      { label: '7-day projection', q: 'Give me a 7-day cash projection' },
+    ];
+  }
+
+  // ── 10. SPENDING HABITS / DAILY LIMIT ─────────────────────
+  else if (intent.habit) {
+    const weeklyBudget = dailyCap * 7;
+    const obligationPct = safeCash > 0 ? Math.round((obligations / safeCash) * 100) : 0;
+
+    advice.body = `Your safe daily spending limit is KSh ${dailyCap.toLocaleString()} — that's what you can spend per day without endangering your ability to pay obligations by end of month. Over a week, that's KSh ${weeklyBudget.toLocaleString()}. Right now, ${obligationPct}% of your total cash is committed to obligations, which leaves ${100 - obligationPct}% as free cash. ${obligationPct > 70 ? 'That\'s a high obligation load — most of your money is already spoken for before the month starts, which leaves very little room for anything unexpected.' : 'That\'s a manageable split — you have real discretionary room if you\'re disciplined about daily spend.'}`;
+
+    advice.conclusion = `Treat KSh ${dailyCap.toLocaleString()} as your absolute daily ceiling, not a target. On days when you spend less, don't "catch up" the next day — let that surplus rebuild your buffer. Consistent spending below the cap is how you improve your position every week.`;
+  }
+
+  // ── 11. HOW TO MAKE PROFIT / GROW ─────────────────────────
+  else if (intent.profit) {
+    advice.body = `Profit growth in a small ${isBiz ? 'business' : 'income situation'} comes from two directions — more money coming in, or less going out — and the fastest wins are usually on the cost side, not the sales side. Looking at your current position: with a buffer of KSh ${buffer.toLocaleString()} and risk at ${risk}, ${risk === 'CRITICAL' ? 'the first move has to be expense reduction — there\'s no point chasing new sales when the current cost structure is already unsustainable' : 'you have a foundation to work from, and the highest leverage move is usually improving your margins before growing volume'}. Most small businesses in Kenya don't fail because of low sales — they fail because their costs grow as fast as their revenue.`;
+    advice.conclusion = isBiz
+      ? `Start with a margin audit: check your top 5 products and identify which ones actually make money after cost. Then cut or reprice the ones that don't. Once margins are healthy, scaling sales actually builds profit — otherwise you just sell more to make the same.`
+      : `Look at your biggest monthly outflow and ask whether you can reduce it by 10–15%. That's faster than finding new income. Then identify any skill or service you can monetise on the side — in Nairobi, one extra income stream of even KSh 3,000–5,000 monthly changes your risk profile significantly.`;
+  }
+
+  // ── 12. FAMILY / SOCIAL OBLIGATIONS ──────────────────────
+  else if (intent.family && amount === 0) {
+    advice.body = `Family obligations — harambees, upcountry contributions, chama — are a real part of life in Kenya and ignoring them has social consequences that go beyond money. But they're also one of the most common reasons people's personal finances stay unstable, because they're unpredictable and hard to refuse. Your buffer is KSh ${buffer.toLocaleString()} right now. If you have recurring family obligations, they should be budgeted in advance — not treated as emergencies every time they arrive.`;
+    advice.conclusion = `Set a fixed monthly family contribution ceiling — something you can always honour without compromising your obligations. If a request exceeds that ceiling, contribute what you budgeted, not what was asked. "I've set aside KSh X for family this month" is a complete sentence.`;
+  }
+
+  // ── 13. WITHDRAWAL / MPESA ────────────────────────────────
+  else if (intent.withdraw) {
+    const withdrawAmount = amount || dailyCap;
+    advice.body = `Withdrawing KSh ${withdrawAmount.toLocaleString()} from your account${withdrawAmount > dailyCap ? ` is above your safe daily cap of KSh ${dailyCap.toLocaleString()}, which means it would accelerate your spending beyond what the buffer can sustain if this is for daily use.` : ` sits within your daily cap, so it's fine from a budget standpoint.`} The real question with withdrawals is always: what is this money for? Cash has a way of disappearing faster than mobile money — once it's in your hand, it's psychologically easier to spend on things you wouldn't approve through M-Pesa.`;
+    advice.conclusion = withdrawAmount > dailyCap
+      ? `Only withdraw what you have a specific, immediate purpose for. If you need KSh ${withdrawAmount.toLocaleString()}, have a clear breakdown of where it's going before it hits your hand.`
+      : `This amount is fine. Just make sure you're withdrawing for a specific purpose — not as a "just in case" that ends up spent on impulse.`;
+  }
+
+  // ── 14. FALLBACK — general question or unrecognised ───────
+  else {
+    advice.body = `Your current financial position: buffer is KSh ${buffer.toLocaleString()}, daily safe spend is KSh ${dailyCap.toLocaleString()}, risk is ${risk}, and you have ${daysLeft} days until month end. ${projectedEOM >= 0 ? `On current trajectory you'll end the month with KSh ${projectedEOM.toLocaleString()} remaining.` : `On current trajectory you'll be short by KSh ${Math.abs(projectedEOM).toLocaleString()} before month end.`} Whatever decision you're thinking about, that's the context it sits in.`;
+    advice.conclusion = `Ask me about a specific decision — a purchase, a loan, hiring, pricing, saving, or anything money-related — and I'll give you a direct answer based on your actual numbers.`;
+    advice.actions = [
+      { label: 'How am I doing this month', q: 'Give me a full status summary' },
+      { label: 'What should I do today', q: 'What is the most important financial action I should take today?' },
+      { label: 'How to make more profit', q: 'How can I increase my profit this month?' },
+    ];
+  }
+
+  // ── Render to chat ─────────────────────────────────────────
+  const html = buildResponse(advice);
+
+  box.innerHTML += `
+    <div style="text-align:right;margin-bottom:8px;">
+      <span class="user-msg" style="font-size:14px;display:inline-block;">${rawQ}</span>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:20px;">
+      <div style="font-size:10px;font-weight:700;color:var(--color-text-secondary);margin-top:4px;min-width:28px;">TRV</div>
+      <div class="travis-msg" style="font-size:14px;flex:1;">${html}</div>
+    </div>`;
+
+  input.value = '';
+  box.scrollTop = box.scrollHeight;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function nav(view) {
+    const port = document.getElementById('view-port');
+    const fin = getFin();
+    updateHeader(fin);
+
+    if(view === 'dash') {
+        const risk = calculateInsolvencyRisk();
+        const leaks = fin.obsStatus.filter(o => o.variance > 0);
+        
+        port.innerHTML = `
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1 space-y-4">
+                    <div class="glass p-6 border-l-4" style="border-color: ${risk.color}">
+                        <p class="text-[10px] opacity-40 uppercase tracking-widest">Insolvency Risk Score</p>
+                        <h1 class="text-4xl font-black mb-3" style="color: ${risk.color}">${risk.label}</h1>
+                        <div class="risk-heatmap overflow-hidden"><div class="bg-white/20 h-full" style="width: ${100 - risk.score}%"></div></div>
+                        <p class="text-[9px] mt-2 opacity-50 italic">Based on 7D Velocity vs. Projected Ceiling.</p>
+                    </div>
+
+                    <div class="glass p-6 border-l-4 border-red-500 bg-red-950/10">
+                        <p class="text-[10px] text-red-500 font-bold uppercase tracking-widest mb-4">Leak Finder</p>
+                        <div class="space-y-1">
+                            ${leaks.length > 0 ? leaks.map(l => `<div class="flex justify-between border-b border-red-900/30 py-2"><span class="text-xs uppercase">${l.label}</span><span class="leak-red font-bold">+KSh ${l.variance.toLocaleString()}</span></div>`).join('') : '<p class="text-[10px] opacity-30 italic">No budget variances detected.</p>'}
+                        </div>
+                    </div>
+
+                    <div class="glass p-6 border-l-4 border-[#4ade80]">
+                        <p class="text-[10px] opacity-40 uppercase tracking-widest">Disposable Buffer</p>
+                        <h1 class="text-4xl font-black">KSh ${fin.safeCash.toLocaleString()}</h1>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 glass p-6 neon-border relative min-h-[350px]">
+                    <h3 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Performance Analytics</h3>
+                    <div class="h-[300px]"><canvas id="analyticsChart"></canvas></div>
+                </div>
+            </div>`;
+        setTimeout(() => renderChart(), 100);
+    }
+    
+    if(view === 'obs') {
+        let rows = fin.obsStatus.map(o => `
+            <div class="flex justify-between items-center p-4 bg-slate-900 border-b border-slate-800">
+                <div><p class="font-bold uppercase">${o.label}</p><p class="text-[10px] opacity-40 uppercase">Budget: ${o.amount.toLocaleString()} | Spent: ${o.paid.toLocaleString()}</p></div>
+                <div class="text-right">
+                    <p class="${o.pending <= 0 ? 'text-green-400' : 'text-yellow-500'} font-black text-sm uppercase">${o.pending <= 0 ? 'Settled' : 'KSh ' + o.pending.toLocaleString()}</p>
+                    ${o.variance > 0 ? `<p class="text-[9px] text-red-500 font-bold uppercase tracking-tighter">+${o.variance.toLocaleString()} OVER</p>` : ''}
+                </div>
+            </div>`).join('');
+        port.innerHTML = `<div class="glass p-6 neon-border">
+            <div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-black uppercase italic">Mandatory Reserve</h3><button onclick="document.getElementById('setup-overlay').classList.remove('hidden')" class="text-[10px] border border-slate-700 px-2 py-1">EDIT LIST</button></div>
+            ${rows || '<p class="opacity-30">No obligations.</p>'}
+            <button onclick="factoryReset()" class="mt-20 text-red-900 text-[10px] font-bold uppercase tracking-widest hover:text-red-500">Full System Wipe</button>
+        </div>`;
+    }
+
+    if(view === 'ask') {
+        port.innerHTML = `<div class="max-w-4xl glass p-6 mx-auto flex flex-col h-[550px] neon-border">
+            <div id="chat-box" class="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 flex flex-col">
+                <div class="travis-msg text-xs italic">Probability Engine and Leak Finder active. How can I protect your capital?</div>
+            </div>
+            <div class="flex gap-2 p-2 bg-slate-900 border-2 border-slate-800">
+                <input id="chat-input" type="text" placeholder="Consult Travis..." class="flex-1 p-4 bg-transparent border-none">
+                <button onclick="handleAsk()" class="bg-[#4ade80] text-black px-8 font-black rounded uppercase">Send</button>
+            </div>
+        </div>`;
+        document.getElementById('chat-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleAsk(); });
+    }
+
+    if(view === 'book') {
+    let rows = state.transactions.map(t => {
+        const amountStr = t.amount.toLocaleString();
+        return `
+            <tr class="border-b border-slate-800 hover:bg-slate-900/50 transition-colors">
+                <td class="p-4 font-mono text-xs opacity-60 whitespace-nowrap">
+                    ${new Date(t.id).toLocaleDateString('en-KE')}
+                </td>
+                <td class="p-4 max-w-xs">
+                    <div class="font-black italic uppercase text-slate-200 break-words">
+                        ${t.desc}
+                    </div>
+                    <div class="flex items-center gap-2 mt-2 text-xs">
+                        <span class="bg-green-900/40 text-green-400 px-2 py-0.5 rounded font-bold">${t.debit}</span>
+                        <span class="opacity-40">→</span>
+                        <span class="bg-red-900/40 text-red-400 px-2 py-0.5 rounded font-bold">${t.credit}</span>
+                    </div>
+                </td>
+                <td class="p-4 text-right font-mono text-green-400 font-bold whitespace-nowrap">
+                    +${amountStr}
+                </td>
+                <td class="p-4 text-right font-mono text-red-400 font-bold whitespace-nowrap">
+                    -${amountStr}
+                </td>
+            </tr>`;
+    }).join('');
+
+    port.innerHTML = `
+        <div class="glass rounded-xl border border-slate-800 overflow-hidden">
+            <div class="overflow-x-auto">   <!-- This enables horizontal scrolling -->
+                <table class="w-full min-w-[700px] text-left border-collapse">   <!-- min-w prevents collapsing -->
+                    <thead>
+                        <tr class="bg-slate-900/80 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                            <th class="p-4 border-b border-slate-800 w-28">Date</th>
+                            <th class="p-4 border-b border-slate-800">Transaction Details</th>
+                            <th class="p-4 border-b border-slate-800 text-right w-32">Debit (+)</th>
+                            <th class="p-4 border-b border-slate-800 text-right w-32">Credit (-)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows || '<tr><td colspan="4" class="p-12 text-center opacity-40 italic">No transactions recorded yet.</td></tr>'}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Optional helpful footer -->
+            <div class="bg-slate-950 p-3 text-[10px] text-slate-500 flex items-center justify-between">
+                <div>Scroll horizontally → to see full descriptions</div>
+                <div class="font-mono">${state.transactions.length} entries</div>
+            </div>
+        </div>`;
+      }
+}
+
+function renderChart() {
+    const ctx = document.getElementById('analyticsChart')?.getContext('2d');
+    if (!ctx) return;
+    const fin = getFin();
+    const now = new Date();
+    let labels = []; let spendData = []; let revData = []; let capData = [];
+
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date(); d.setDate(now.getDate() - i);
+        labels.push(d.toLocaleDateString('en-KE', { weekday: 'short' }));
+        let ds = 0, dr = 0;
+        state.transactions.forEach(t => {
+            if (new Date(t.id).toDateString() === d.toDateString()) {
+                if (isLiquid(t.credit)) ds += t.amount;
+                if (isLiquid(t.debit)) dr += t.amount;
+            }
+        });
+        spendData.push(ds); revData.push(dr); capData.push(fin.daily);
+    }
+
+    if (window.travisChart) window.travisChart.destroy();
+    window.travisChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                { label: 'CEILING', data: capData, borderColor: '#3b82f6', borderDash: [5, 5], pointRadius: 0, fill: false },
+                { label: 'SPEND', data: spendData, borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0.4 },
+                { label: 'REVENUE', data: revData, borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.1)', fill: true, tension: 0.4 }
+            ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } } }
+    });
+}
+
+function updateHeader(fin) {
+    const grid = document.getElementById('dashboard-grid');
+    grid.innerHTML = `
+        <div class="glass p-4 border-l-4 border-blue-500"><p class="text-[10px] opacity-40 uppercase">Total Liquid</p><p class="text-xl font-bold">KSh ${fin.liquid.toLocaleString()}</p></div>
+        <div class="glass p-4 border-l-4 border-red-500"><p class="text-[10px] opacity-40 uppercase">Reserved Bills</p><p class="text-xl font-bold">KSh ${fin.pending.toLocaleString()}</p></div>
+        <div class="glass p-4 border-l-4 border-[#4ade80]"><p class="text-[10px] opacity-40 uppercase">Survival Window</p><p class="text-xl font-bold">${fin.daysRem} Days</p></div>
+        <div class="glass p-4 border-l-4 border-purple-500"><p class="text-[10px] opacity-40 uppercase">Daily Ceiling</p><p class="text-xl font-bold">KSh ${Math.max(0, fin.daily).toFixed(0)}</p></div>
+    `;
+    const v = document.getElementById('header-verdict');
+    v.innerText = fin.safeCash < 0 ? "⚠️ INSOLVENT" : "🛡️ SYSTEM STABLE";
+    v.className = fin.safeCash < 0 ? "px-4 py-2 border-2 border-red-500 text-red-500 rounded font-black animate-pulse" : "px-4 py-2 border-2 border-[#4ade80] text-[#4ade80] rounded font-black";
+}
+
+//function isLiquid(acc) { return ["Cash", "M-Pesa", "Bank/M-Pesa", "Petty Cash"].includes(acc); }
+function isLiquid(acc) {
+    if (!acc) return false;
+    
+    // All Asset accounts should be considered liquid for cash flow purposes
+    const liquidAssetNames = [
+        "Cash", "M-Pesa", "Bank Account", "Savings",
+        "Bank / M-Pesa", "Petty Cash", 
+        "Accounts Receivable"   // debatable, but often treated as near-liquid
+    ];
+    
+    return liquidAssetNames.includes(acc);
+}
+
+function getBalance(acc) {
+    let balance = 0;
+    
+    // 1. Calculate the raw numerical balance based on Debits and Credits
+    state.transactions.forEach(t => {
+        if (t.debit === acc) balance += t.amount;
+        if (t.credit === acc) balance -= t.amount;
+    });
+
+    // 2. Comprehensive list of Assets from your dropdowns
+    const assetTypes = [
+        // Personal Assets
+        "Cash", 
+        "M-Pesa", 
+        "Bank Account", 
+        "Savings",
+        
+        // Business Assets
+        "Bank / M-Pesa", 
+        "Petty Cash", 
+        "Accounts Receivable", 
+        "Inventory", 
+        "Fixed Assets"
+    ];
+
+    /**
+     * 3. The Logic:
+     * If the account is an Asset, return the balance as is (Debit balance is positive).
+     * If it is Income, Expense, or Liability, return -balance (Credit balance is positive).
+     */
+    return assetTypes.includes(acc) ? balance : -balance;
+}
+
+function showHelpModal() {
+    const modal = document.getElementById('help-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeHelpModal() {
+    const modal = document.getElementById('help-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+
+function showTxModal() {
+    const d = document.getElementById('tx-debit');
+    const c = document.getElementById('tx-credit');
+    d.innerHTML = c.innerHTML = "";
+
+    const isPersonal = state.user.type === 'personal';
+
+    const createColoredOptgroup = (label, color, accounts) => {
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = `● ${label}`; 
+        optgroup.style.color = color;    
+
+        accounts.forEach(account => {
+            const option = new Option(account, account);
+            optgroup.appendChild(option);
+        });
+        return optgroup;
+    };
+
+    if (isPersonal) {
+        const personalSelect = (select) => {
+            select.appendChild(createColoredOptgroup("ASSETS (Money you have)", "#22c55e", [
+                "Cash", "M-Pesa", "Bank Account", "Savings"
+            ]));
+
+            select.appendChild(createColoredOptgroup("INCOME (Money coming in - GOOD!)", "#22c55e", [
+                "Salary", "Side Hustle", "Allowance", 
+                "Dividends", "Other Income"
+            ]));
+
+            select.appendChild(createColoredOptgroup("NECESSARY EXPENSES (Must pay)", "#d97706", [  
+                "Food & Groceries", "Rent", "Bills", 
+                "Transport", " Medical", "School"
+            ]));
+
+            select.appendChild(createColoredOptgroup("AVOIDABLE EXPENSES (Can cut back)", "#ef4444", [  
+                "Entertainment", "Clothes", "Travel (fun)", 
+                "Other Fun Spending"
+            ]));
+
+            select.appendChild(createColoredOptgroup("LIABILITIES & TRANSFERS", "#3b82f6", [  
+                "Loan Repayment", "Credit"
+            ]));
+        };
+
+        personalSelect(d);
+        personalSelect(c);
+    } 
+    else {
+        const businessSelect = (select) => {
+            select.appendChild(createColoredOptgroup("ASSETS (What the business owns)", "#22c55e", [
+                "Bank / M-Pesa", "Petty Cash", "Accounts Receivable", 
+                "Inventory", "Fixed Assets"
+            ]));
+
+            select.appendChild(createColoredOptgroup("REVENUE (Money coming in - GOOD!)", "#22c55e", [
+                "Sales Revenue", "Service Revenue", "Other Revenue"
+            ]));
+
+            select.appendChild(createColoredOptgroup("NECESSARY OPERATING EXPENSES", "#d97706", [
+                "Rent", "Payroll", "Utilities", "Cost of Goods Sold", 
+                "Tax", "Office Supplies"
+            ]));
+
+            select.appendChild(createColoredOptgroup("DISCRETIONARY / AVOIDABLE EXPENSES", "#ef4444", [
+                "Marketing", "Travel & Entertainment", "Professional Fees (if not critical)"
+            ]));
+
+            select.appendChild(createColoredOptgroup("LIABILITIES & TRANSFERS", "#3b82f6", [
+                "Accounts Payable", "Loans Payable"
+            ]));
+        };
+
+        businessSelect(d);
+        businessSelect(c);
+    }
+
+    document.getElementById('tx-modal').classList.remove('hidden');
+    updateLiveHud();
+}
+
+
+async function commitTransaction() {
+    const amt = parseFloat(document.getElementById('tx-amount').value);
+    const debitAcc = document.getElementById('tx-debit').value;
+    const creditAcc = document.getElementById('tx-credit').value;
+    const description = document.getElementById('tx-desc').value || "Market Exchange";
+
+    if(debitAcc === creditAcc || isNaN(amt) || amt <= 0) {
+        return showCustomAlert("Strategy Error:<br><br> A transaction must move value between two different accounts.");
+    }
+
+    const tx = { 
+        id: Date.now(), 
+        debit: debitAcc, 
+        credit: creditAcc, 
+        amount: amt, 
+        desc: description 
+    };
+
+    state.transactions.unshift(tx);
+       await saveData("tx", tx);
+    
+           travisNotif.markTodayRecorded();  // ← ADD THIS LINE
+
+    if (typeof saveBackup === "function") {
+        await saveBackup();
+
+        if (!backupDirHandle) {
+            await setupBackupFolder();
+        }
+    }
+
+    closeTxModal();
+    nav('dash');
+}
+
+function addObligationRow(label = "", val = "") {
+    const div = document.createElement('div');
+    div.className = "flex gap-2";
+    div.innerHTML = `<input type="text" placeholder="Rent" value="${label}" class="flex-1 p-2 text-sm"><input type="number" placeholder="KSh" value="${val}" class="w-24 p-2 text-sm"><button onclick="this.parentElement.remove()" class="text-red-500 font-bold">×</button>`;
+    document.getElementById('obligation-list').appendChild(div);
+}
+
+function setUserType(t) {
+    state.tempType = t;
+    document.getElementById('btn-p').style.borderColor = t==='personal'?'#4ade80':'#334155';
+    document.getElementById('btn-b').style.borderColor = t==='business'?'#4ade80':'#334155';
+}
+
+async function finalizeSetup() {
+    const name = document.getElementById('user-name').value;
+    const obs = Array.from(document.querySelectorAll('#obligation-list > div')).map(row => ({
+        label: row.querySelectorAll('input')[0].value,
+        amount: parseFloat(row.querySelectorAll('input')[1].value) || 0
+    })).filter(o => o.label);
+    if(!name || !state.tempType) return showCustomAlert("System requires ID.");
+    state.user = { name, type: state.tempType };
+    state.obligations = obs;
+    await saveData("meta", { id: "config", user: state.user, obligations: state.obligations });
+    
+    if (typeof saveBackup === "function") {
+        await saveBackup();
+    }
+    
+    location.reload();
+}
+
+async function factoryReset() {
+    if(confirm("Confirm system purge? All financial history will be deleted.")) {
+        indexedDB.deleteDatabase("TravisGuardian_v1.0");
+        location.reload();
+    }
+}
+
+async function boot() {
+
+    startFingerprintBackgroundProbe();
+
+    await initDB();
+    const meta = await getData("meta", "config");
+    if(meta) {
+        state.user = meta.user;
+        state.obligations = meta.obligations;
+        state.transactions = (await getAllData("tx")).sort((a,b) => b.id - a.id);
+        document.getElementById('display-name').innerText = state.user.name;
+        document.getElementById('display-mode').innerText = state.user.type + " STRATEGY ENGINE";
+        nav('dash');
+    } else {
+        document.getElementById('setup-overlay').classList.remove('hidden');
+    }
+}
+
+async function saveData(s, d) { const t = db.transaction(s, "readwrite"); t.objectStore(s).put(d); return new Promise(res => t.oncomplete = res); }
+async function getData(s, k) { const t = db.transaction(s, "readonly"); const r = t.objectStore(s).get(k); return new Promise(res => r.onsuccess = () => res(r.result)); }
+async function getAllData(s) { const t = db.transaction(s, "readonly"); const r = t.objectStore(s).getAll(); return new Promise(res => r.onsuccess = () => res(r.result)); }
+function closeTxModal() { document.getElementById('tx-modal').classList.add('hidden'); document.getElementById('tx-amount').value = ""; }
+
+window.onload = boot;
+
+
+async function boot() {
+  await initDB();
+  let meta = await getData("meta", "config") || { activated: false };
+
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                       navigator.standalone === true;
+
+  await new Promise(r => setTimeout(r, 800));
+
+  if (!meta.activated) {
+    if (isStandalone) {
+      document.getElementById('activation-overlay').classList.remove('hidden');
+      document.getElementById('install-overlay').classList.add('hidden');
+      document.getElementById('app').classList.add('hidden');
+    } else {
+      document.getElementById('install-overlay').classList.remove('hidden');
+      document.getElementById('activation-overlay').classList.add('hidden');
+      document.getElementById('app').classList.add('hidden');
+    }
+  } else if (!meta.user) {
+    document.getElementById('setup-overlay').classList.remove('hidden');
+    document.getElementById('install-overlay').classList.add('hidden');
+    document.getElementById('app').classList.add('hidden');
+  } else {
+    state.user = meta.user;
+    state.obligations = meta.obligations;
+    state.transactions = (await getAllData("tx")).sort((a,b) => b.id - a.id);
+    document.getElementById('display-name').innerText = state.user.name;
+    document.getElementById('display-mode').innerText = state.user.type + " STRATEGY ENGINE";
+    document.getElementById('app').classList.remove('hidden');
+    document.getElementById('install-overlay').classList.add('hidden');
+    document.getElementById('setup-overlay').classList.add('hidden');
+    nav('dash');
+    travisNotif.init();  // ← ADD THIS LINE
+
+  }
+}
+
+document.getElementById('install-btn')?.addEventListener('click', triggerInstall);
+
+
+window.onload = boot;
+</script>
+<script src="/travis-notif.js"></script>
+
+</body>
+</html>

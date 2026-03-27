@@ -1,0 +1,24 @@
+{
+  "name": "Travis Guardian v5.8",
+  "short_name": "Travis Guard",
+  "description": "Production-Ready Intelligence Machine",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#4ade80",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "travis_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "travis_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
