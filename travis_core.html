@@ -3,10 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travis Guardian v5.8 | Full Production Machine</title>
+    <title>Travis Guardian v1.0|| Full Production Machine</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="tailwind-app.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
         body { font-family: 'Space+Grotesk', sans-serif; background-color: #020617; color: #f8fafc; margin: 0; }
         .glass { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(74, 222, 128, 0.2); }
         .neon-border { border: 2px solid #4ade80; box-shadow: 0 0 15px rgba(74, 222, 128, 0.3); }
@@ -23,8 +27,8 @@
         .risk-heatmap { background: linear-gradient(90deg, #4ade80 0%, #eab308 50%, #ef4444 100%); height: 4px; border-radius: 2px; }
 
 * {
-    -ms-overflow-style: none;     
-    scrollbar-width: none;       
+    -ms-overflow-style: none;      
+    scrollbar-width: none;         
 }
 
 *::-webkit-scrollbar {
@@ -47,22 +51,79 @@ body::-webkit-scrollbar,
 #obligation-list::-webkit-scrollbar {
     display: none !important;
 }
+
+#custom-alert {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.custom-alert-box {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 380px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    text-align: center;
+    animation: alertPop 0.3s ease;
+}
+
+@keyframes alertPop {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+#custom-alert-message {
+    padding: 28px 24px 20px;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: #1e3a8a;
+}
+
+#custom-alert-ok {
+    width: 100%;
+    padding: 16px;
+    background: #1e40af;
+    color: white;
+    border: none;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#custom-alert-ok:hover {
+    background: #1e3a8a;
+}
+
     </style>
 </head>
 <body class="p-4 md:p-8">
 
+ <div id="page-loader" style="position: fixed; inset: 0; background: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center;">
+  <div class="spinner">Loading Content...</div>
+ </div>
+
 <div id="install-overlay" class="fixed inset-0 bg-[#020617] z-[9999] flex items-center justify-center p-4">
     <div class="max-w-md w-full glass p-10 border-4 border-[#4ade80] text-center">
-        <h1 class="text-5xl font-black mb-2 italic text-[#4ade80]">TRAVIS <span class="text-white">v5.8</span></h1>
+        <h1 class="text-5xl font-black mb-2 italic text-[#4ade80]">TRAVIS <span class="text-white">v1.0</span></h1>
         <p class="text-3xl font-black mb-6 text-white">INSTALL REQUIRED</p>
         <p class="text-xl mb-8 text-slate-400">This application runs only as a secure standalone app.<br>Browser tabs are blocked for security reasons.</p>
         <div class="bg-red-950/30 border border-red-500/50 p-4 rounded mb-8">
             <p class="text-red-400 text-sm font-bold">Device fingerprint will be sent to server on install.</p>
             <p class="text-[10px] text-slate-400 mt-1">Admin will provide your activation code after.</p>
         </div>
-        <button id="install-btn" class="w-full bg-[#4ade80] text-black py-6 text-3xl font-black btn-elite">
-            INSTALL APP NOW
-        </button>
+        
+      <button id="install-btn" onclick="triggerInstall()" class="w-full bg-[#4ade80] text-black py-6 text-3xl font-black btn-elite" disabled>
+          INSTALL APP NOW
+      </button>
+
         <p id="install-status" class="text-sm mt-6 text-slate-300">Preparing install…</p>
         <p class="text-[10px] mt-8 opacity-50">Must install to continue. No bypass.</p>
     </div>
@@ -70,12 +131,12 @@ body::-webkit-scrollbar,
 
 <div id="activation-overlay" class="fixed inset-0 bg-[#020617] z-[100] flex items-center justify-center p-4 hidden">
     <div class="max-w-md w-full glass p-10 border-4 border-[#4ade80] text-center">
-        <h1 class="text-5xl font-black mb-2 italic text-[#4ade80]">TRAVIS <span class="text-white">v5.8</span></h1>
+        <h1 class="text-5xl font-black mb-2 italic text-[#4ade80]">TRAVIS <span class="text-white">v1.0</span></h1>
         <p class="text-3xl font-black mb-6 text-white">DEVICE ACTIVATION</p>
         <p class="text-slate-400 mb-8">Device fingerprinted.<br>Enter code provided by admin.</p>
         <div class="bg-slate-900 p-6 rounded-xl mb-8">
             <label class="block text-[#4ade80] text-sm font-bold mb-3">ACTIVATION CODE</label>
-            <input id="act-code" type="text" placeholder="TRV-KE-XXXXXXXX-5634" 
+            <input id="act-code" type="text" placeholder="TRV-KE-XXXXXXXX-XXXX" 
                    class="w-full p-5 text-2xl font-mono text-center tracking-widest bg-[#0f172a] border-2 border-[#4ade80]/50 rounded-xl focus:border-[#4ade80]">
         </div>
         <button onclick="attemptActivation()" class="w-full bg-[#4ade80] text-black py-6 text-3xl font-black btn-elite">ACTIVATE</button>
@@ -87,7 +148,7 @@ body::-webkit-scrollbar,
 
 <div id="setup-overlay" class="fixed inset-0 bg-[#020617] z-[100] flex items-center justify-center p-4 hidden">
     <div class="max-w-4xl w-full glass p-10 border-4 border-[#4ade80] max-h-[90vh] overflow-y-auto">
-        <h1 class="text-5xl font-black mb-2 italic text-[#4ade80]">TRAVIS <span class="text-white">v5.8</span></h1>
+        <h1 class="text-5xl font-black mb-2 italic text-[#4ade80]">TRAVIS <span class="text-white">v1.0</span></h1>
         <p class="text-xl mb-8 text-slate-400">Production-Ready Intelligence</p>
         <div class="grid grid-cols-2 gap-4 mb-8">
             <button id="btn-p" onclick="setUserType('personal')" class="p-6 border-2 border-slate-700 font-bold">PERSONAL</button>
@@ -124,6 +185,10 @@ body::-webkit-scrollbar,
         <button onclick="nav('obs')" class="bg-yellow-600 text-white px-6 py-2 font-bold hover:bg-yellow-500 uppercase">Obligations</button>
         <button onclick="showTxModal()" class="bg-[#4ade80] text-black px-6 py-2 font-bold uppercase">New Entry</button>
         <button onclick="nav('book')" class="btn-elite px-6 py-2 font-bold uppercase">Ledger</button>
+        <button onclick="showHelpModal()" 
+            class="btn-elite px-6 py-2 font-bold uppercase flex items-center gap-2 hover:bg-slate-700">
+            ❔ Help
+        </button>
     </nav>
 
     <main id="view-port" class="min-h-[500px]"></main>
@@ -157,7 +222,132 @@ body::-webkit-scrollbar,
 
 </div>
 
+
+<div id="recovery-overlay" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[99999]">
+  <div class="text-center text-white max-w-xs">
+    <div class="animate-spin w-16 h-16 border-4 border-white border-t-transparent rounded-full mx-auto mb-6"></div>
+    <p class="text-2xl font-semibold mb-2">You recently cleared browser data</p>
+    <p class="text-sm opacity-80">Please wait while we restore your financial records from device backup...</p>
+    <p id="recovery-status" class="text-xs mt-6 opacity-60">Initializing recovery...</p>
+  </div>
+</div>
+
+<div id="custom-alert" class="hidden">
+    <div class="custom-alert-box">
+        <div id="custom-alert-message"></div>
+        <button id="custom-alert-ok">OK</button>
+    </div>
+</div>
+
+<div id="help-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[9999] p-4">
+    <div class="glass max-w-5xl w-full max-h-[92vh] rounded-2xl overflow-hidden border border-slate-700 flex flex-col">
+        
+        <div class="flex items-center justify-between p-6 border-b border-slate-700 bg-slate-900">
+            <div>
+                <h2 class="text-2xl font-black uppercase tracking-widest text-white">Double-Entry Guide</h2>
+                <p class="text-sm text-slate-400 mt-1">How to correctly record every transaction</p>
+            </div>
+            <button onclick="closeHelpModal()" 
+                    class="text-4xl leading-none text-slate-400 hover:text-white transition-colors">×</button>
+        </div>
+
+        <div class="flex-1 overflow-auto p-6 text-sm space-y-10">
+            
+            <div>
+                <h3 class="font-bold text-lg mb-4 text-emerald-400 flex items-center gap-2">
+                    <span></span> ASSETS (What you own)
+                </h3>
+                <table class="w-full border-collapse text-left text-slate-300">
+                    <thead class="bg-slate-800">
+                        <tr>
+                            <th class="p-3 border border-slate-700">Account</th>
+                            <th class="p-3 border border-slate-700">Increases (Debit this)</th>
+                            <th class="p-3 border border-slate-700">Decreases (Credit this)</th>
+                            <th class="p-3 border border-slate-700">Usually paired with</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="p-3 border border-slate-700">Cash, M-Pesa, Bank Account, Bank / M-Pesa, Savings, Petty Cash</td><td class="p-3 border border-slate-700">Money received or topped up</td><td class="p-3 border border-slate-700">Payments or transfers out</td><td class="p-3 border border-slate-700">Sales / Expense</td></tr>
+                        <tr><td class="p-3 border border-slate-700">Accounts Receivable (Debtors)</td><td class="p-3 border border-slate-700">Sell on credit (customer now owes you)</td><td class="p-3 border border-slate-700">Customer pays you</td><td class="p-3 border border-slate-700">Sales Revenue</td></tr>
+                        <tr><td class="p-3 border border-slate-700">Inventory</td><td class="p-3 border border-slate-700">Buy stock / goods</td><td class="p-3 border border-slate-700">Sell goods</td><td class="p-3 border border-slate-700">Bank / M-Pesa or Cost of Goods Sold</td></tr>
+                        <tr><td class="p-3 border border-slate-700">Fixed Assets</td><td class="p-3 border border-slate-700">Buy equipment, furniture, etc.</td><td class="p-3 border border-slate-700">Sell or dispose asset</td><td class="p-3 border border-slate-700">Bank / M-Pesa</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div>
+                <h3 class="font-bold text-lg mb-4 text-emerald-400 flex items-center gap-2">
+                    <span></span> INCOME / REVENUE
+                </h3>
+                <table class="w-full border-collapse text-left text-slate-300">
+                    <thead class="bg-slate-800">
+                        <tr>
+                            <th class="p-3 border border-slate-700">Account</th>
+                            <th class="p-3 border border-slate-700">Increases (Credit this)</th>
+                            <th class="p-3 border border-slate-700">Usually paired with (Debit)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="p-3 border border-slate-700">Salary, Side Hustle, Allowance, Dividends, Other Income, Sales Revenue, Service Revenue, Other Revenue</td><td class="p-3 border border-slate-700">Receive money or make a sale</td><td class="p-3 border border-slate-700">Cash / Bank / M-Pesa / Accounts Receivable</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div>
+                <h3 class="font-bold text-lg mb-4 text-amber-400 flex items-center gap-2">
+                    <span></span> EXPENSES
+                </h3>
+                <table class="w-full border-collapse text-left text-slate-300">
+                    <thead class="bg-slate-800">
+                        <tr>
+                            <th class="p-3 border border-slate-700">Account</th>
+                            <th class="p-3 border border-slate-700">Increases (Debit this)</th>
+                            <th class="p-3 border border-slate-700">Usually paired with (Credit)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="p-3 border border-slate-700">Food & Groceries, Rent, Bills, Transport, Medical, School, Payroll, Utilities, Cost of Goods Sold, Tax, Office Supplies, Entertainment, Marketing, Professional Fees, etc.</td><td class="p-3 border border-slate-700">Pay for expense</td><td class="p-3 border border-slate-700">Cash / M-Pesa / Bank / Petty Cash</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div>
+                <h3 class="font-bold text-lg mb-4 text-blue-400 flex items-center gap-2">
+                    <span></span> LIABILITIES & TRANSFERS
+                </h3>
+                <table class="w-full border-collapse text-left text-slate-300">
+                    <thead class="bg-slate-800">
+                        <tr>
+                            <th class="p-3 border border-slate-700">Account</th>
+                            <th class="p-3 border border-slate-700">Increases (Credit this)</th>
+                            <th class="p-3 border border-slate-700">Decreases (Debit this)</th>
+                            <th class="p-3 border border-slate-700">Usually paired with</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="p-3 border border-slate-700">Loan Repayment, Loans Payable, Accounts Payable, Credit</td><td class="p-3 border border-slate-700">Borrow money or owe someone</td><td class="p-3 border border-slate-700">Repay loan or pay supplier</td><td class="p-3 border border-slate-700">Cash / Bank Account</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="p-5 bg-slate-900 border border-slate-700 rounded-2xl text-xs leading-relaxed">
+                <strong class="text-emerald-400">Golden Rule:</strong> Debit the account that receives value. Credit the account that gives value.<br>
+                Always choose two different accounts. Use this guide whenever you're unsure (especially for Accounts Receivable and Inventory).
+            </div>
+        </div>
+
+        <div class="p-5 border-t border-slate-700 bg-slate-900 text-center">
+            <button onclick="closeHelpModal()" 
+                    class="px-10 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl font-bold uppercase transition-colors">
+                Close Guide
+            </button>
+        </div>
+    </div>
+</div>
+
+
 <script src="script.js"></script>
+<script src="travis-notif.js"></script>
+
 </body>
 </html>
-
