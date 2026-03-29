@@ -6,7 +6,6 @@
 <title>TRAVIS — Your Financial Intelligence System</title>
 <link href="https://fonts.googleapis.com/css2?family=Tahoma:wght@400;700&family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-/* ===================== WINDOWS XP DESIGN SYSTEM ===================== */
 :root {
   --xp-blue: #0A246A;
   --xp-blue-mid: #3C6FC4;
@@ -43,7 +42,6 @@ body {
   user-select: none;
 }
 
-/* ===================== DESKTOP WALLPAPER ===================== */
 .desktop {
   min-height: 100vh;
   padding-bottom: 48px;
@@ -63,7 +61,6 @@ body {
   z-index: 0;
 }
 
-/* ===================== TASKBAR ===================== */
 .taskbar {
   position: fixed;
   bottom: 0;
@@ -140,7 +137,6 @@ body {
   min-width: 80px;
 }
 
-/* ===================== DESKTOP ICONS ===================== */
 .desktop-icons {
   position: fixed;
   top: 20px;
@@ -185,7 +181,6 @@ body {
   line-height: 1.2;
 }
 
-/* ===================== WINDOWS ===================== */
 .window {
   position: relative;
   border-radius: 8px 8px 4px 4px;
@@ -247,7 +242,6 @@ body {
   border-color: #FFFFFF #808080 #808080 #FFFFFF;
 }
 
-/* ===================== MENUBAR ===================== */
 .menubar {
   background: var(--xp-window-bg);
   border-bottom: 1px solid #ACA899;
@@ -266,7 +260,6 @@ body {
 }
 .menu-item:hover { background: var(--xp-blue-mid); color: white; }
 
-/* ===================== XP BUTTONS ===================== */
 .xp-btn {
   display: inline-flex;
   align-items: center;
@@ -320,7 +313,6 @@ body {
   border-radius: 6px;
 }
 
-/* ===================== XP PANELS / GROUPBOX ===================== */
 .xp-panel {
   background: var(--xp-window-bg);
   border: 2px solid;
@@ -350,7 +342,6 @@ body {
   color: var(--xp-text);
 }
 
-/* ===================== STATUS BAR ===================== */
 .statusbar {
   background: var(--xp-window-bg);
   border-top: 2px solid;
@@ -371,13 +362,11 @@ body {
   font-size: 11px;
 }
 
-/* ===================== SCROLLBAR XP STYLE ===================== */
 ::-webkit-scrollbar { width: 16px; }
 ::-webkit-scrollbar-track { background: #C0C0C0; border: 1px solid; border-color: #808080 #FFFFFF #FFFFFF #808080; }
 ::-webkit-scrollbar-thumb { background: linear-gradient(90deg, #D4D0C8 0%, #F0EDE5 30%, #D4D0C8 70%, #A0A0A0 100%); border: 1px solid; border-color: #FFFFFF #808080 #808080 #FFFFFF; }
 ::-webkit-scrollbar-button { background: #D4D0C8; border: 1px solid; border-color: #FFFFFF #808080 #808080 #FFFFFF; height: 16px; }
 
-/* ===================== PROGRESS BAR ===================== */
 .xp-progress {
   background: #FFFFFF;
   border: 2px solid;
@@ -393,7 +382,6 @@ body {
   transition: width 1s ease;
 }
 
-/* ===================== TOOLTIP ===================== */
 .xp-tooltip {
   background: #FFFFE1;
   border: 1px solid #808080;
@@ -409,7 +397,6 @@ body {
   z-index: 1000;
 }
 
-/* ===================== TABLE STYLE ===================== */
 .xp-table {
   width: 100%;
   border-collapse: collapse;
@@ -433,7 +420,6 @@ body {
 .xp-table tr:nth-child(even) td { background: #F0EDE5; }
 .xp-table tr:hover td { background: #C2D8FF; }
 
-/* ===================== HERO / MAIN WINDOW ===================== */
 .main-container {
   position: relative;
   z-index: 10;
@@ -442,7 +428,6 @@ body {
   margin: 0 auto;
 }
 
-/* ===================== HERO WINDOW ===================== */
 .hero-window {
   width: 100%;
   max-width: 900px;
@@ -565,7 +550,6 @@ body {
   pointer-events: none;
 }
 
-/* ===================== INFO WINDOWS GRID ===================== */
 .windows-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -626,7 +610,6 @@ body {
   flex-shrink: 0;
 }
 
-/* ===================== FEATURE TABS ===================== */
 .xp-tabs {
   display: flex;
   gap: 0;
@@ -664,7 +647,6 @@ body {
 }
 .xp-tab-content.active { display: block; }
 
-/* ===================== COMPARISON TABLE WINDOW ===================== */
 .comparison-badge {
   display: inline-block;
   padding: 2px 8px;
@@ -676,7 +658,6 @@ body {
 .badge-no  { background: #F0C0C0; color: #8B0000; border: 1px solid #D08080; }
 .badge-na  { background: #E8E8C0; color: #707020; border: 1px solid #C8C880; }
 
-/* ===================== PRICING WINDOW ===================== */
 .pricing-highlight {
   background: linear-gradient(135deg, #0A246A 0%, #1E4FAA 100%);
   border: 3px solid;
@@ -734,7 +715,6 @@ body {
 
 .fomo-box strong { font-size: 14px; display: block; margin-bottom: 4px; }
 
-/* ===================== MODULES WINDOW ===================== */
 .module-card {
   padding: 16px;
   border: 2px solid;
@@ -770,7 +750,6 @@ body {
   line-height: 1.5;
 }
 
-/* ===================== OFFLINE BADGE ===================== */
 .offline-badge {
   display: flex;
   align-items: center;
@@ -797,7 +776,6 @@ body {
   50%      { box-shadow: 0 0 14px #00FF88, 0 0 28px rgba(0,255,136,0.4); }
 }
 
-/* ===================== STATS ===================== */
 .stats-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -827,7 +805,6 @@ body {
   font-family: var(--font-main);
 }
 
-/* ===================== TESTIMONIALS ===================== */
 .testimonial-card {
   background: white;
   border: 2px solid;
@@ -853,7 +830,6 @@ body {
 
 .stars { color: #F5A623; font-size: 13px; }
 
-/* ===================== NOTIFICATIONS ===================== */
 .xp-notification {
   position: fixed;
   bottom: 56px;
@@ -914,7 +890,6 @@ body {
 
 .notif-icon { font-size: 24px; flex-shrink: 0; }
 
-/* ===================== LOADING SCREEN ===================== */
 #loading-screen {
   position: fixed;
   inset: 0;
@@ -975,10 +950,8 @@ body {
   font-size: 12px;
 }
 
-/* ===================== SECTION SPACER ===================== */
 .section-gap { height: 20px; }
 
-/* ===================== FOOTER WINDOW ===================== */
 .footer-content {
   padding: 16px;
   text-align: center;
@@ -990,7 +963,6 @@ body {
   font-family: var(--font-main);
 }
 
-/* ===================== SCROLLING TICKER ===================== */
 .ticker-wrap {
   background: #000;
   border-top: 1px solid #00FF88;
@@ -1018,7 +990,6 @@ body {
   100% { transform: translateX(-50%); }
 }
 
-/* ===================== RESPONSIVE ===================== */
 @media (max-width: 900px) {
   .windows-grid { grid-template-columns: 1fr; }
   .windows-grid-3 { grid-template-columns: 1fr 1fr; }
@@ -1041,18 +1012,15 @@ body {
   .stats-row { grid-template-columns: 1fr 1fr; }
 }
 
-/* ===================== HOVER LIFT ===================== */
 .window:hover {
   box-shadow: 3px 3px 2px rgba(0,0,0,0.3), 6px 6px 16px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(255,255,255,0.4);
   transition: box-shadow 0.2s;
 }
 
-/* ===================== ACTIVE WINDOW EFFECT ===================== */
 .window.active .window-titlebar {
   background: var(--xp-title-grad-active);
 }
 
-/* ===================== BLINKING ALERT ===================== */
 .alert-blink {
   animation: alertBlink 1.2s infinite;
 }
@@ -1061,13 +1029,11 @@ body {
   50%      { opacity: 0.4; }
 }
 
-/* ===================== DRAG INDICATOR ===================== */
 .window-titlebar { cursor: move; }
 </style>
 </head>
 <body>
 
-<!-- ===================== LOADING SCREEN ===================== -->
 <div id="loading-screen">
   <div class="loading-logo">TRAVIS</div>
   <div class="loading-sub">Financial Intelligence System v1.0 — Kenya</div>
@@ -1077,10 +1043,8 @@ body {
   <div class="loading-dots" id="loading-dots">Loading core modules...</div>
 </div>
 
-<!-- ===================== DESKTOP ===================== -->
 <div class="desktop" id="desktop">
 
-  <!-- Desktop Icons -->
   <div class="desktop-icons">
     <div class="desktop-icon" onclick="window.location='travis_core.html'">
       <div class="ico">💹</div>
@@ -1100,10 +1064,8 @@ body {
     </div>
   </div>
 
-  <!-- Main Content -->
   <div class="main-container">
 
-    <!-- ======== TICKER ======== -->
     <div class="ticker-wrap">
       <div class="ticker">
         <span>🟢 KES SAVINGS PROTECTED &nbsp;|&nbsp;</span>
@@ -1127,7 +1089,6 @@ body {
 
     <div class="section-gap"></div>
 
-    <!-- ======== HERO WINDOW ======== -->
     <div class="window hero-window active" id="hero-win">
       <div class="window-titlebar">
         <span class="window-icon">💹</span>
@@ -1218,7 +1179,6 @@ body {
 
     <div class="section-gap" id="about"></div>
 
-    <!-- ======== WHAT IS TRAVIS ======== -->
     <div class="windows-grid">
       <div class="window info-window">
         <div class="window-titlebar">
@@ -1286,7 +1246,6 @@ body {
       </div>
     </div>
 
-    <!-- ======== WHAT TRAVIS DOES ======== -->
     <div class="window" id="features-win">
       <div class="window-titlebar">
         <span class="window-icon">⚙️</span>
@@ -1456,7 +1415,6 @@ body {
 
     <div class="section-gap" id="modules"></div>
 
-    <!-- ======== MODULES ======== -->
     <div class="window">
       <div class="window-titlebar">
         <span class="window-icon">🗂️</span>
@@ -1514,7 +1472,6 @@ body {
 
     <div class="section-gap" id="gain"></div>
 
-    <!-- ======== WHAT USERS GAIN ======== -->
     <div class="window">
       <div class="window-titlebar">
         <span class="window-icon">🏆</span>
@@ -1568,7 +1525,6 @@ body {
 
     <div class="section-gap" id="why-us"></div>
 
-    <!-- ======== WHY TRAVIS vs OTHERS ======== -->
     <div class="window">
       <div class="window-titlebar">
         <span class="window-icon">📊</span>
@@ -1672,7 +1628,6 @@ body {
 
     <div class="section-gap" id="pricing"></div>
 
-    <!-- ======== PRICING ======== -->
     <div class="windows-grid">
       <div class="window">
         <div class="window-titlebar">
@@ -1776,7 +1731,6 @@ body {
 
     <div class="section-gap"></div>
 
-    <!-- ======== TESTIMONIALS ======== -->
     <div class="window">
       <div class="window-titlebar">
         <span class="window-icon">💬</span>
@@ -1840,7 +1794,6 @@ body {
 
     <div class="section-gap"></div>
 
-    <!-- ======== FINAL CTA WINDOW ======== -->
     <div class="window">
       <div class="window-titlebar">
         <span class="window-icon">🚀</span>
@@ -1896,7 +1849,6 @@ body {
   </div>
 </div>
 
-<!-- ======== TASKBAR ======== -->
 <div class="taskbar">
   <button class="start-btn" onclick="scrollToTop()">
     <div class="start-orb"></div>
@@ -1913,7 +1865,6 @@ body {
   </div>
 </div>
 
-<!-- ======== XP NOTIFICATION ======== -->
 <div class="xp-notification" id="xp-notif">
   <div class="notif-titlebar">
     <span class="notif-icon" style="font-size:14px">💹</span>
@@ -1931,126 +1882,7 @@ body {
   </div>
 </div>
 
-<script>
-// ===================== LOADING SCREEN =====================
-const loadingMsgs = [
-  "Loading core modules...",
-  "Initializing financial engine...",
-  "Connecting AI advisor...",
-  "Calibrating prediction model...",
-  "Securing local storage...",
-  "Launching TRAVIS..."
-];
-let msgIdx = 0;
-const msgEl = document.getElementById('loading-dots');
-const msgInterval = setInterval(() => {
-  msgIdx = (msgIdx + 1) % loadingMsgs.length;
-  msgEl.textContent = loadingMsgs[msgIdx];
-}, 400);
-
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    clearInterval(msgInterval);
-    document.getElementById('loading-screen').classList.add('fade-out');
-    setTimeout(() => {
-      document.getElementById('loading-screen').style.display = 'none';
-      // Show notification after 3 seconds
-      setTimeout(showNotif, 3000);
-    }, 700);
-  }, 2800);
-});
-
-// ===================== CLOCK =====================
-function updateClock() {
-  const now = new Date();
-  let h = now.getHours(), m = now.getMinutes();
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  h = h % 12 || 12;
-  document.getElementById('clock-time').textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')} ${ampm}`;
-  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  document.getElementById('clock-date').textContent = `${days[now.getDay()]} ${now.getMonth()+1}/${now.getDate()}`;
-}
-updateClock();
-setInterval(updateClock, 10000);
-
-// ===================== TABS =====================
-function switchTab(id) {
-  document.querySelectorAll('.xp-tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.xp-tab').forEach(el => el.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
-  event.currentTarget.classList.add('active');
-}
-
-// ===================== SCROLL =====================
-function scrollToSection(id) {
-  const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// ===================== NOTIFICATION =====================
-function showNotif() {
-  document.getElementById('xp-notif').classList.add('show');
-  setTimeout(closeNotif, 10000);
-}
-function closeNotif() {
-  document.getElementById('xp-notif').classList.remove('show');
-}
-
-// ===================== WINDOW CLICK ACTIVATE =====================
-document.querySelectorAll('.window').forEach(win => {
-  win.addEventListener('mousedown', () => {
-    document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
-    win.classList.add('active');
-  });
-});
-
-// ===================== TITLE HOVER TOOLTIP =====================
-document.querySelectorAll('.win-btn.min, .win-btn.max').forEach(btn => {
-  btn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    const win = this.closest('.window');
-    const body = win.querySelector('.window-body, .hero-content, .info-window-body');
-    if (body) {
-      body.style.display = body.style.display === 'none' ? '' : 'none';
-    }
-  });
-});
-
-// ===================== DYNAMIC PRICE COUNTER =====================
-let priceAnimated = false;
-const priceEl = document.getElementById('price-display');
-function animatePrice() {
-  if (priceAnimated) return;
-  priceAnimated = true;
-  let val = 9999, target = 2999;
-  const step = Math.ceil((val - target) / 40);
-  const iv = setInterval(() => {
-    val -= step;
-    if (val <= target) { val = target; clearInterval(iv); }
-    priceEl.textContent = val.toLocaleString();
-  }, 40);
-}
-
-const priceObserver = new IntersectionObserver(entries => {
-  if (entries[0].isIntersecting) animatePrice();
-}, { threshold: 0.3 });
-const pricingSection = document.getElementById('pricing');
-if (pricingSection) priceObserver.observe(pricingSection);
-
-// ===================== PROGRESS BARS =====================
-document.querySelectorAll('.xp-progress-fill').forEach(bar => {
-  const observer = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting) {
-      bar.style.width = bar.dataset.pct || '80%';
-      observer.disconnect();
-    }
-  });
-  observer.observe(bar);
-});
-</script>
+<script src="landing.js"></script>
 
 </body>
 </html>
