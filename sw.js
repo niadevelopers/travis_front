@@ -4,24 +4,21 @@ const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/travis_core.html',
+  '/Admin.html',
   '/input-app.css',
   '/input-landing.css',
   '/script.js',
+  '/subAdmin.js',
   '/tailwind-app.css',
   '/tailwind-landing.css',
   '/manifest.json'
 ];
 
-// ============================================================
-//  TRAVIS — Daily Ledger Reminder
-//  Change these two times to suit your users.
-//  Hour is 24-hour format. Both fire only if user hasn't
-//  recorded a transaction that day.
-// ============================================================
+
 
 const REMINDERS = [
-  { hour: 19, minute: 0  },   // 7:00 PM  — primary reminder
-  { hour: 21, minute: 30 },   // 9:30 PM  — fallback if still unrecorded
+  { hour: 19, minute: 0  },  
+  { hour: 21, minute: 30 },   
 ];
 
 const REMINDER_MESSAGES = [
@@ -47,9 +44,6 @@ const REMINDER_MESSAGES = [
   },
 ];
 
-// ============================================================
-//  INSTALL — cache static assets (your original logic, unchanged)
-// ============================================================
 
 self.addEventListener('install', event => {
   self.skipWaiting();
@@ -58,10 +52,6 @@ self.addEventListener('install', event => {
       .then(cache => cache.addAll(STATIC_ASSETS))
   );
 });
-
-// ============================================================
-//  ACTIVATE — clear old caches + start notification scheduler
-// ============================================================
 
 self.addEventListener('activate', event => {
   event.waitUntil(
@@ -73,14 +63,10 @@ self.addEventListener('activate', event => {
       )
       .then(() => {
         self.clients.claim();
-        scheduleNextReminder(); // ← notification engine starts here
+        scheduleNextReminder(); 
       })
   );
 });
-
-// ============================================================
-//  FETCH — your original strategy, unchanged
-// ============================================================
 
 self.addEventListener('fetch', event => {
   const req = event.request;
@@ -118,17 +104,12 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// ============================================================
-//  NOTIFICATION CLICK — tap opens app to ledger
-// ============================================================
-
 self.addEventListener('notificationclick', event => {
   event.notification.close();
 
   // 'Later' action — just dismiss, next reminder still fires tonight
   if (event.action === 'dismiss') return;
 
-  // Tap on body or 'Record now' — open or focus the app
   const targetUrl = (event.notification.data && event.notification.data.url) || '/travis_core.html';
 
   event.waitUntil(
@@ -150,23 +131,11 @@ self.addEventListener('notificationclick', event => {
   scheduleNextReminder();
 });
 
-// ============================================================
-//  MESSAGE FROM APP
-//  App sends RESCHEDULE after user saves a transaction —
-//  this suppresses the 9:30 PM fallback if 7 PM already fired.
-// ============================================================
-
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'RESCHEDULE') {
     scheduleNextReminder();
   }
 });
-
-// ============================================================
-//  SCHEDULER — finds the nearest upcoming reminder time
-//  and sets a setTimeout chain. Re-arms itself every cycle
-//  so it keeps running day after day.
-// ============================================================
 
 function scheduleNextReminder() {
   const now     = new Date();
@@ -191,14 +160,9 @@ function scheduleNextReminder() {
 
   setTimeout(async () => {
     await maybeFireReminder();
-    scheduleNextReminder(); // chain — keeps going every day
+    scheduleNextReminder(); 
   }, minDiff);
 }
-
-// ============================================================
-//  FIRE LOGIC — checks if user already recorded today
-//  before showing the notification. Silent if they did.
-// ============================================================
 
 async function maybeFireReminder() {
   const alreadyRecorded = await getTodayFlag();
@@ -208,14 +172,14 @@ async function maybeFireReminder() {
 
   await self.registration.showNotification(msg.title, {
     body:             msg.body,
-    icon:             '/icons/icon-192x192.png',  // update to your actual icon path
-    badge:            '/icons/badge-72x72.png',   // small monochrome icon for Android status bar
-    tag:              'travis-ledger-reminder',   // replaces previous unread reminder
+    icon:             '/travis_192.png',  
+    badge:            '/travis_192.png',   
+    tag:              'travis-ledger-reminder', 
     renotify:         false,
     requireInteraction: false,
     silent:           false,
     data: {
-      url: '/travis_core.html',                   // deep-links into your main app
+      url: '/travis_core.html',           
     },
     actions: [
       { action: 'open',    title: 'Record now' },
@@ -223,12 +187,6 @@ async function maybeFireReminder() {
     ],
   });
 }
-
-// ============================================================
-//  IDB BRIDGE
-//  Reads the "today recorded" flag that travis-notif.js writes
-//  when the user saves a transaction.
-// ============================================================
 
 function getTodayFlag() {
   return new Promise(resolve => {
