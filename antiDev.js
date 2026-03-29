@@ -27,7 +27,7 @@ function showProfessionalOverlay() {
     overlay.innerHTML = `
         <div style="max-width: 640px; padding: 40px 30px;">
             <h1 style="color: #ff4d4d; font-size: 2.3rem; margin-bottom: 24px;">
-                ⚠️ ${CONFIG.title}
+                ${CONFIG.title}
             </h1>
             <p style="font-size: 1.22rem; line-height: 1.75; margin-bottom: 35px;">
                 ${CONFIG.body}
