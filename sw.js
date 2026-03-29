@@ -9,6 +9,8 @@ const STATIC_ASSETS = [
   '/input-landing.css',
   '/script.js',
   '/subAdmin.js',
+  '/landing.js',
+  '/antiDev.js',
   '/tailwind-app.css',
   '/tailwind-landing.css',
   '/manifest.json'
