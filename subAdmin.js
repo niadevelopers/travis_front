@@ -319,6 +319,7 @@ async function loadDashboard() {
   }
 }
 
+
 async function loadMyQueries() {
   if (!currentToken) return;
 
@@ -339,6 +340,14 @@ async function loadMyQueries() {
     }
 
     let html = `
+      <div class="mb-4">
+        <input 
+          type="text" 
+          id="query-search" 
+          placeholder="Search target number (e.g. 0722222 or 072222222XXX)" 
+          class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-2xl text-white focus:outline-none focus:border-emerald-500"
+        >
+      </div>
       <table class="w-full">
         <thead>
           <tr class="border-b border-gray-700">
@@ -354,7 +363,7 @@ async function loadMyQueries() {
     logs.forEach(log => {
       html += `
         <tr class="border-t border-gray-800 hover:bg-gray-800">
-          <td class="p-4">${log.targetPhone}</td>
+          <td class="p-4">${log.maskedPhone}</td>
           <td class="p-4 font-mono text-emerald-400 text-lg">${log.formattedFP}</td>
           <td class="p-4">${log.receipt || '-'}</td>
           <td class="p-4 text-sm">${new Date(log.queriedAt).toLocaleString()}</td>
@@ -365,9 +374,23 @@ async function loadMyQueries() {
     html += `</tbody></table>`;
     container.innerHTML = html;
 
+    // Live search functionality
+    const searchInput = document.getElementById('query-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        const term = searchInput.value.toLowerCase().trim();
+        const rows = container.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+          const phoneCell = row.cells[0].textContent.toLowerCase();
+          row.style.display = phoneCell.includes(term) ? '' : 'none';
+        });
+      });
+    }
+
   } catch (err) {
     console.error("Failed to load queries:", err);
-    document.getElementById('queries-list').innerHTML = 
+    document.getElementById('queries-list').innerHTML =
       `<p class="text-center text-red-400 py-8">Failed to load revealed fingerprints.</p>`;
   }
 }
