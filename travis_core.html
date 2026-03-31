@@ -342,30 +342,117 @@
         #help-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 6000; padding: 20px; }
         .help-dialog { background: rgba(243,243,243,0.97); border: 1px solid rgba(255,255,255,0.8); border-radius: var(--win-radius-xl); box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        @media (max-width: 768px) {
-            #nav-sidebar { width: 100%; min-width: unset; display: none; border-right: none; border-bottom: 1px solid var(--win-border); }
-            #nav-sidebar.mobile-open { display: flex; position: absolute; top: 36px; left: 0; right: 0; z-index: 100; background: rgba(243,243,243,0.98); max-height: 70vh; overflow-y: auto; border-radius: 0 0 12px 12px; box-shadow: var(--win-shadow-lg); }
-            #mobile-menu-btn { display: flex !important; }
-            #main-app { border-radius: 0; }
-            .metric-value { font-size: 18px; }
-            #content-inner { padding: 12px; }
-        }
-        @media (max-width: 480px) {
-            #taskbar { gap: 1px; }
-            .taskbar-btn { width: 34px; height: 34px; font-size: 15px; }
-            #taskbar-clock .tb-time { font-size: 10px; }
-            .os-dialog { max-width: calc(100vw - 24px); }
-            .boot-card { max-width: calc(100vw - 24px); }
-        }
-        @media (min-width: 1400px) {
-            #nav-sidebar { width: 260px; min-width: 260px; }
-            .metric-value { font-size: 26px; }
-        }
-        @media (min-width: 1920px) {
-            #content-inner { padding: 28px 32px; }
-            .win-card-title { font-size: 14px; }
-        }
+     
+ @media (max-width: 768px) {
+    #nav-sidebar { 
+        width: 100%; 
+        min-width: unset; 
+        display: none; 
+        border-right: none; 
+        border-bottom: 1px solid var(--win-border); 
+    }
+    #nav-sidebar.mobile-open { 
+        display: flex; 
+        position: absolute; 
+        top: 36px; 
+        left: 0; 
+        right: 0; 
+        z-index: 100; 
+        background: rgba(243,243,243,0.98); 
+        max-height: 70vh; 
+        overflow-y: auto; 
+        border-radius: 0 0 12px 12px; 
+        box-shadow: var(--win-shadow-lg); 
+    }
+    #mobile-menu-btn { display: flex !important; }
+    #main-app { border-radius: 0; }
+    .metric-value { font-size: 18px; }
+    #content-inner { padding: 12px; }
+}
 
+@media (max-width: 480px) {
+    .os-dialog { 
+        max-width: calc(100vw - 24px); 
+    }
+    .boot-card { 
+        max-width: calc(100vw - 24px); 
+    }
+}
+
+@media (max-width: 768px) {
+    #taskbar {
+        justify-content: flex-start;     
+        padding: 0 82px 0 6px;          
+        gap: 3px;
+    }
+
+    .taskbar-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 17px;
+        flex-shrink: 0;                
+        margin: 0;
+    }
+
+    #taskbar-clock {
+        right: 8px;
+    }
+
+    #taskbar-clock .tb-time {
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    #taskbar-clock .tb-date {
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 480px) {
+    #taskbar {
+        padding: 0 74px 0 4px;          
+        gap: 2px;
+    }
+
+    .taskbar-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 15.5px;
+    }
+}
+
+@media (max-width: 380px) {
+    #taskbar {
+        padding-right: 68px;
+    }
+
+    .taskbar-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 14.5px;
+    }
+}
+
+@media (min-width: 1400px) {
+    #nav-sidebar { 
+        width: 260px; 
+        min-width: 260px; 
+    }
+    .metric-value { 
+        font-size: 26px; 
+    }
+}
+
+@media (min-width: 1920px) {
+    #content-inner { 
+        padding: 28px 32px; 
+    }
+    .win-card-title { 
+        font-size: 14px; 
+    }
+}
+      
+      
         #header-verdict-badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; }
 
         .leak-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--win-border); }
