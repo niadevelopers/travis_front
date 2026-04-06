@@ -9,6 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@v5.1.0/dist/tesseract.min.js"></script>
+    
     <style>
         :root {
             --win-bg: #f3f3f3;
@@ -476,6 +479,18 @@
         .seg-btn.active { background: white; color: var(--win-text); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
         .hidden { display: none !important; }
+
+      @keyframes successPop {
+          0%   { transform: scale(0.3); opacity: 0; }
+          50%  { transform: scale(1.15); }
+          100% { transform: scale(1); opacity: 1; }
+      }
+
+      @keyframes spin {
+         from { transform: rotate(0deg); }
+         to   { transform: rotate(360deg); }
+     }
+        
     </style>
 </head>
 <body>
@@ -783,6 +798,7 @@
 </div>
 
 <script src="antiDev.js"></script>
+<script src="scanner.js"></script>
 <script src="script.js"></script>
 <script src="travis-notif.js"></script>
 <script src="travis-audit.js"></script>
