@@ -1,1403 +1,1136 @@
-const _0xad7134 = _0x9f28;
-(function(_0x94d187, _0x3d9f3d) {
-    const _0xbeef9d = _0x9f28,
-        _0x51e79e = _0x94d187();
-    while (!![]) {
-        try {
-            const _0x22980a = parseInt(_0xbeef9d(0x27d)) / 0x1 + -parseInt(_0xbeef9d(0x208)) / 0x2 * (parseInt(_0xbeef9d(0x2b3)) / 0x3) + parseInt(_0xbeef9d(0x39d)) / 0x4 * (parseInt(_0xbeef9d(0x260)) / 0x5) + -parseInt(_0xbeef9d(0x3d1)) / 0x6 * (-parseInt(_0xbeef9d(0x355)) / 0x7) + -parseInt(_0xbeef9d(0x2ef)) / 0x8 + parseInt(_0xbeef9d(0x20f)) / 0x9 * (parseInt(_0xbeef9d(0x2b4)) / 0xa) + -parseInt(_0xbeef9d(0x3d3)) / 0xb * (parseInt(_0xbeef9d(0x25e)) / 0xc);
-            if (_0x22980a === _0x3d9f3d) break;
-            else _0x51e79e['push'](_0x51e79e['shift']());
-        } catch (_0x5adb38) {
-            _0x51e79e['push'](_0x51e79e['shift']());
-        }
-    }
-}(_0x5a88, 0x7332f), function injectStyles() {
-    const _0x49b79b = _0x9f28;
-    if (document[_0x49b79b(0x3e3)]('travis-ripple-styles')) return;
-    const _0x24d2b2 = document['createElement'](_0x49b79b(0x3c4));
-    _0x24d2b2['id'] = _0x49b79b(0x309), _0x24d2b2[_0x49b79b(0x378)] = _0x49b79b(0x3c3), document[_0x49b79b(0x3ee)][_0x49b79b(0x2fb)](_0x24d2b2);
-}());
-const BACKEND_URL = 'https://travis-j1w9.onrender.com',
-    WEALTH_TIERS = {
-        'DESTITUTE': {
-            'minDailyCap': 0x0,
-            'maxDailyCap': 0x64,
-            'label': _0xad7134(0x402),
-            'displayName': 'Emergency',
-            'color': _0xad7134(0x229),
-            'adviceStyle': _0xad7134(0x239),
-            'humanDescription': _0xad7134(0x3b5),
-            'priority': _0xad7134(0x1ee),
-            'dailyCapHuman': _0x4f5635 => _0xad7134(0x1e8) + Math[_0xad7134(0x437)](_0x4f5635) + _0xad7134(0x40e),
-            'bufferHuman': (_0x17dd65, _0x54a499) => _0xad7134(0x245) + _0x17dd65 + _0xad7134(0x3da) + _0x54a499 + _0xad7134(0x445)
-        },
-        'SURVIVAL': {
-            'minDailyCap': 0x65,
-            'maxDailyCap': 0x12c,
-            'label': _0xad7134(0x1fd),
-            'displayName': _0xad7134(0x3b1),
-            'color': _0xad7134(0x226),
-            'adviceStyle': _0xad7134(0x239),
-            'humanDescription': _0xad7134(0x26a),
-            'priority': _0xad7134(0x2ff),
-            'dailyCapHuman': _0x406947 => _0xad7134(0x1e8) + Math[_0xad7134(0x437)](_0x406947) + '\x20shillings\x20per\x20day.\x20Enough\x20for\x20basic\x20food\x20but\x20nothing\x20more.',
-            'bufferHuman': (_0x49c68f, _0x492041) => _0xad7134(0x245) + _0x49c68f + _0xad7134(0x34b) + _0x492041 + _0xad7134(0x213)
-        },
-        'STRUGGLING': {
-            'minDailyCap': 0x12d,
-            'maxDailyCap': 0x320,
-            'label': _0xad7134(0x3f3),
-            'displayName': 'Leveling',
-            'color': '#F39C12',
-            'adviceStyle': _0xad7134(0x220),
-            'humanDescription': _0xad7134(0x363),
-            'priority': _0xad7134(0x3d0),
-            'dailyCapHuman': _0x3e4a99 => 'You\x20have\x20about\x20' + Math[_0xad7134(0x437)](_0x3e4a99) + _0xad7134(0x449),
-            'bufferHuman': (_0x431482, _0xaa6676) => _0xad7134(0x245) + _0x431482 + _0xad7134(0x424) + _0xaa6676 + '\x20days.\x20You\x27re\x20getting\x20by\x20but\x20not\x20thriving.'
-        },
-        'STABLE': {
-            'minDailyCap': 0x321,
-            'maxDailyCap': 0xbb8,
-            'label': _0xad7134(0x43f),
-            'displayName': _0xad7134(0x22e),
-            'color': _0xad7134(0x20c),
-            'adviceStyle': 'balanced',
-            'humanDescription': _0xad7134(0x3fc),
-            'priority': _0xad7134(0x1de),
-            'dailyCapHuman': _0x2522a7 => _0xad7134(0x1e8) + Math[_0xad7134(0x437)](_0x2522a7) + _0xad7134(0x2c6),
-            'bufferHuman': (_0x5b37ac, _0x1cd41d) => _0xad7134(0x245) + _0x5b37ac + _0xad7134(0x433) + _0x1cd41d + _0xad7134(0x374)
-        },
-        'AFFLUENT': {
-            'minDailyCap': 0xbb9,
-            'maxDailyCap': 0x3a98,
-            'label': 'AFFLUENT',
-            'displayName': _0xad7134(0x2b8),
-            'color': _0xad7134(0x40a),
-            'adviceStyle': _0xad7134(0x24a),
-            'humanDescription': 'You\x20have\x20significant\x20disposable\x20income.',
-            'priority': 'Grow\x20wealth,\x20invest,\x20diversify.',
-            'dailyCapHuman': _0x1c9ac1 => _0xad7134(0x1e8) + Math[_0xad7134(0x437)](_0x1c9ac1) + _0xad7134(0x446),
-            'bufferHuman': (_0x381de4, _0x2ae36b) => _0xad7134(0x245) + _0x381de4 + _0xad7134(0x295)
-        },
-        'WEALTHY': {
-            'minDailyCap': 0x3a99,
-            'maxDailyCap': 0xc350,
-            'label': _0xad7134(0x26c),
-            'displayName': _0xad7134(0x42e),
-            'color': _0xad7134(0x2c8),
-            'adviceStyle': 'preservation',
-            'humanDescription': 'You\x20have\x20substantial\x20wealth.',
-            'priority': _0xad7134(0x1d6),
-            'dailyCapHuman': _0x41510e => _0xad7134(0x245) + Math[_0xad7134(0x437)](_0x41510e) + _0xad7134(0x41d),
-            'bufferHuman': (_0x25ec1e, _0x48dd75) => _0xad7134(0x245) + _0x25ec1e + _0xad7134(0x2c3)
-        },
-        'ELITE': {
-            'minDailyCap': 0xc351,
-            'maxDailyCap': Infinity,
-            'label': _0xad7134(0x1f0),
-            'displayName': _0xad7134(0x3dc),
-            'color': _0xad7134(0x311),
-            'adviceStyle': _0xad7134(0x33b),
-            'humanDescription': _0xad7134(0x247),
-            'priority': _0xad7134(0x2e1),
-            'dailyCapHuman': _0x21e3be => 'Your\x20daily\x20spending\x20capacity\x20exceeds\x20' + Math[_0xad7134(0x437)](_0x21e3be)['toLocaleString']() + _0xad7134(0x27f),
-            'bufferHuman': (_0x52dc36, _0x24381d) => _0xad7134(0x216) + _0x52dc36[_0xad7134(0x44a)]() + '\x20shillings.\x20Elite\x20level.'
-        }
+(function injectStyles() {
+    if (document.getElementById("travis-ripple-styles")) return;
+    const style = document.createElement("style");
+    style.id = "travis-ripple-styles";
+    style.textContent = `
+        .travis-ripple { display: flex; gap: 6px; align-items: center; padding: 8px 0; }
+        .ripple-ball { width: 8px; height: 8px; border-radius: 50%; animation: travis-ripple 1.4s infinite ease-in-out; }
+        .ball-r { background: #ff4d4d; animation-delay: -0.32s; }
+        .ball-g { background: #2ecc71; animation-delay: -0.16s; }
+        .ball-b { background: #3498db; }
+        @keyframes travis-ripple { 0%, 80%, 100% { transform: scale(0); opacity: 0.3; } 40% { transform: scale(1); opacity: 1; } }
+    `;
+    document.head.appendChild(style);
+})();
+
+const BACKEND_URL = 'https://travis-j1w9.onrender.com';
+
+const WEALTH_TIERS = {
+    DESTITUTE: {
+        minDailyCap: 0,
+        maxDailyCap: 100,
+        label: "DESTITUTE",
+        displayName: "Emergency",
+        color: "#C42B1C",
+        adviceStyle: "survival",
+        humanDescription: "You are in a financial emergency. Every shilling counts.",
+        priority: "Food, water, shelter only. Nothing else.",
+        dailyCapHuman: (cap) => `You have about ${Math.floor(cap)} shillings per day. That's less than a loaf of bread.`,
+        bufferHuman: (buf, days) => `You have ${buf} shillings to last ${days} days. That's very little.`
     },
-    KNBS_BENCHMARKS = {
-        'minimumWage': {
-            'urban': 0x3ef2,
-            'rural': 0x34bc,
-            'agricultural': 0x2ee0,
-            'domestic': 0x2710
-        },
-        'povertyLine': {
-            'foodPoor': 0xc4c,
-            'overallPoor': 0x1557,
-            'extremePoor': 0x929
-        },
-        'livingWage': {
-            'urbanSingle': 0x61a8,
-            'urbanFamily': 0xafc8,
-            'ruralSingle': 0x4650,
-            'ruralFamily': 0x7d00
-        },
-        'foodBasket': {
-            'dailyMinimum': 0x96,
-            'monthlyMinimum': 0x1194,
-            'description': 'Basic\x20food\x20basket\x20(unga,\x20sukuma,\x20onions,\x20tomatoes)'
-        }
-    };
-let conversationState = {
-    'pendingClarification': null,
-    'lastResponse': null,
-    'conversationHistory': [],
-    'currentTopic': null
+    SURVIVAL: {
+        minDailyCap: 101,
+        maxDailyCap: 300,
+        label: "SURVIVAL",
+        displayName: "Survival",
+        color: "#E67E22",
+        adviceStyle: "survival",
+        humanDescription: "You can barely meet your basic needs each day.",
+        priority: "Food, rent, transport to work. Nothing extra.",
+        dailyCapHuman: (cap) => `You have about ${Math.floor(cap)} shillings per day. Enough for basic food but nothing more.`,
+        bufferHuman: (buf, days) => `You have ${buf} shillings to stretch over ${days} days. Be very careful.`
+    },
+    STRUGGLING: {
+        minDailyCap: 301,
+        maxDailyCap: 800,
+        label: "STRUGGLING",
+        displayName: "Leveling",
+        color: "#F39C12",
+        adviceStyle: "conservative",
+        humanDescription: "You can meet basic needs but have little left over.",
+        priority: "Essentials first. Small treats occasionally.",
+        dailyCapHuman: (cap) => `You have about ${Math.floor(cap)} shillings per day. You can cover essentials and maybe a small treat.`,
+        bufferHuman: (buf, days) => `You have ${buf} shillings for ${days} days. You're getting by but not thriving.`
+    },
+    STABLE: {
+        minDailyCap: 801,
+        maxDailyCap: 3000,
+        label: "STABLE",
+        displayName: "Stable",
+        color: "#27AE60",
+        adviceStyle: "balanced",
+        humanDescription: "You can meet your needs and save a little each month.",
+        priority: "Budget, save, invest small amounts.",
+        dailyCapHuman: (cap) => `You have about ${Math.floor(cap)} shillings per day. You're comfortable.`,
+        bufferHuman: (buf, days) => `You have ${buf} shillings saved up for the next ${days} days. Good position.`
+    },
+    AFFLUENT: {
+        minDailyCap: 3001,
+        maxDailyCap: 15000,
+        label: "AFFLUENT",
+        displayName: "💰 Affluent",
+        color: "#2ECC71",
+        adviceStyle: "growth",
+        humanDescription: "You have significant disposable income.",
+        priority: "Grow wealth, invest, diversify.",
+        dailyCapHuman: (cap) => `You have about ${Math.floor(cap)} shillings per day to spend or invest.`,
+        bufferHuman: (buf, days) => `You have ${buf} shillings in reserve. Strong financial position.`
+    },
+    WEALTHY: {
+        minDailyCap: 15001,
+        maxDailyCap: 50000,
+        label: "WEALTHY",
+        displayName: "💎 Wealthy",
+        color: "#1ABC9C",
+        adviceStyle: "preservation",
+        humanDescription: "You have substantial wealth.",
+        priority: "Preserve capital, optimize taxes, plan legacy.",
+        dailyCapHuman: (cap) => `You have ${Math.floor(cap)} shillings per day of spending power.`,
+        bufferHuman: (buf, days) => `You have ${buf} shillings in liquid assets. Wealth is preserved.`
+    },
+    ELITE: {
+        minDailyCap: 50001,
+        maxDailyCap: Infinity,
+        label: "ELITE",
+        displayName: "👑 Elite",
+        color: "#9B59B6",
+        adviceStyle: "optimization",
+        humanDescription: "You are in the top tier of wealth in Kenya.",
+        priority: "Asset allocation, wealth transfer, impact investing.",
+        dailyCapHuman: (cap) => `Your daily spending capacity exceeds ${Math.floor(cap).toLocaleString()} shillings.`,
+        bufferHuman: (buf, days) => `Your liquid reserves are ${buf.toLocaleString()} shillings. Elite level.`
+    }
 };
 
-function setPendingClarification(_0x517645, _0x53c7f5, _0x330127) {
-    const _0x25dfb8 = _0xad7134;
-    conversationState[_0x25dfb8(0x3fb)] = {
-        'originalIntent': _0x517645,
-        'originalQuestion': _0x53c7f5,
-        'expectedType': _0x330127,
-        'timestamp': Date[_0x25dfb8(0x250)]()
+const KNBS_BENCHMARKS = {
+    minimumWage: {
+        urban: 16114,
+        rural: 13500,
+        agricultural: 12000,
+        domestic: 10000
+    },
+    povertyLine: {
+        foodPoor: 3148,
+        overallPoor: 5463,
+        extremePoor: 2345
+    },
+    livingWage: {
+        urbanSingle: 25000,
+        urbanFamily: 45000,
+        ruralSingle: 18000,
+        ruralFamily: 32000
+    },
+    foodBasket: {
+        dailyMinimum: 150,
+        monthlyMinimum: 4500,
+        description: "Basic food basket (unga, sukuma, onions, tomatoes)"
+    }
+};
+
+let conversationState = {
+    pendingClarification: null, 
+    lastResponse: null,
+    conversationHistory: [],
+    currentTopic: null
+};
+
+function setPendingClarification(intent, originalQuestion, expectedType) {
+    conversationState.pendingClarification = {
+        originalIntent: intent,
+        originalQuestion: originalQuestion,
+        expectedType: expectedType,
+        timestamp: Date.now()
     };
 }
 
 function clearPendingClarification() {
-    const _0x122001 = _0xad7134;
-    conversationState[_0x122001(0x3fb)] = null;
+    conversationState.pendingClarification = null;
 }
 
 function hasPendingClarification() {
-    return conversationState['pendingClarification'] !== null;
+    return conversationState.pendingClarification !== null;
 }
 
-function getUserWealthTier(_0x5191a4, _0x3bea0b) {
-    const _0x336d03 = _0xad7134;
-    if (_0x3bea0b < 0x0) return {
-        'name': _0x336d03(0x402),
-        ...WEALTH_TIERS[_0x336d03(0x402)],
-        'displayName': _0x336d03(0x1fa),
-        'humanDescription': _0x336d03(0x3b9) + Math[_0x336d03(0x35f)](_0x3bea0b)[_0x336d03(0x44a)]() + _0x336d03(0x3e8)
-    };
-    for (const [_0x164d06, _0x5a2097] of Object['entries'](WEALTH_TIERS)) {
-        if (_0x5191a4 >= _0x5a2097['minDailyCap'] && _0x5191a4 <= _0x5a2097['maxDailyCap']) return {
-            'name': _0x164d06,
-            ..._0x5a2097
+function getUserWealthTier(dailyCap, buffer) {
+    if (buffer < 0) {
+        return { 
+            name: "DESTITUTE", 
+            ...WEALTH_TIERS.DESTITUTE,
+            displayName: " IN DEBT",
+            humanDescription: `You owe ${Math.abs(buffer).toLocaleString()} shillings. No spending until debt is cleared.`
         };
     }
-    return {
-        'name': _0x336d03(0x3f3),
-        ...WEALTH_TIERS['STRUGGLING']
-    };
+    
+    for (const [tierName, tier] of Object.entries(WEALTH_TIERS)) {
+        if (dailyCap >= tier.minDailyCap && dailyCap <= tier.maxDailyCap) {
+            return { name: tierName, ...tier };
+        }
+    }
+    return { name: "STRUGGLING", ...WEALTH_TIERS.STRUGGLING };
 }
 
-function humanReadableStatus(_0x2d6cb9, _0x28a79b, _0x5e8be2, _0x379417) {
-    const _0x285e8d = _0xad7134;
-    if (_0x379417[_0x285e8d(0x379)] === _0x285e8d(0x239)) {
-        if (_0x28a79b < 0x64) return 'EMERGENCY:\x20You\x20have\x20only\x20' + _0x2d6cb9 + _0x285e8d(0x1d9) + _0x5e8be2 + _0x285e8d(0x257) + Math['floor'](_0x28a79b) + _0x285e8d(0x333);
-        else return _0x28a79b < 0x12c ? _0x285e8d(0x2b7) + _0x2d6cb9 + '\x20shillings\x20must\x20last\x20' + _0x5e8be2 + _0x285e8d(0x299) + Math[_0x285e8d(0x437)](_0x28a79b) + '\x20shillings\x20per\x20day.\x20Enough\x20for\x20unga\x20and\x20sukuma,\x20but\x20nothing\x20extra.' : _0x285e8d(0x418) + _0x2d6cb9 + _0x285e8d(0x424) + _0x5e8be2 + _0x285e8d(0x246) + Math[_0x285e8d(0x437)](_0x28a79b) + _0x285e8d(0x430);
+
+function humanReadableStatus(buffer, dailyCap, daysLeft, wealthTier) {
+    if (wealthTier.adviceStyle === 'survival') {
+        if (dailyCap < 100) {
+            return `EMERGENCY: You have only ${buffer} shillings left for ${daysLeft} days. That's about ${Math.floor(dailyCap)} shillings per day. You cannot afford anything beyond basic food.`;
+        } else if (dailyCap < 300) {
+            return `VERY TIGHT: ${buffer} shillings must last ${daysLeft} days. That's ${Math.floor(dailyCap)} shillings per day. Enough for unga and sukuma, but nothing extra.`;
+        } else {
+            return `TIGHT BUT POSSIBLE: ${buffer} shillings for ${daysLeft} days. About ${Math.floor(dailyCap)} shillings per day. You can eat basic meals but watch every shilling.`;
+        }
+    } else if (wealthTier.adviceStyle === 'conservative') {
+        return ` You have ${buffer} shillings to last ${daysLeft} days. That's about ${Math.floor(dailyCap)} shillings per day. You're getting by but not thriving.`;
+    } else if (wealthTier.adviceStyle === 'balanced') {
+        return `You have ${buffer} shillings for ${daysLeft} days. About ${Math.floor(dailyCap)} shillings per day. You're in a stable position.`;
     } else {
-        if (_0x379417['adviceStyle'] === _0x285e8d(0x220)) return _0x285e8d(0x436) + _0x2d6cb9 + _0x285e8d(0x3da) + _0x5e8be2 + '\x20days.\x20That\x27s\x20about\x20' + Math[_0x285e8d(0x437)](_0x28a79b) + _0x285e8d(0x265);
-        else return _0x379417[_0x285e8d(0x379)] === 'balanced' ? 'You\x20have\x20' + _0x2d6cb9 + '\x20shillings\x20for\x20' + _0x5e8be2 + '\x20days.\x20About\x20' + Math['floor'](_0x28a79b) + _0x285e8d(0x24b) : '💎\x20You\x20have\x20' + _0x2d6cb9[_0x285e8d(0x44a)]() + _0x285e8d(0x1da) + Math[_0x285e8d(0x437)](_0x28a79b)[_0x285e8d(0x44a)]() + _0x285e8d(0x1d5);
+        return `💎 You have ${buffer.toLocaleString()} shillings in reserve. Your daily spending capacity is about ${Math.floor(dailyCap).toLocaleString()} shillings. Strong financial position.`;
     }
 }
 
-function humanReadableAdvice(_0x542b5b, _0x6e8832, _0x1a954c, _0x94236e, _0x1e65a0, _0x56e04c) {
-    const _0x17f790 = _0xad7134,
-        _0x1333d7 = _0x542b5b[_0x17f790(0x379)];
-    if (_0x6e8832 === _0x17f790(0x398)) {
-        if (_0x1333d7 === _0x17f790(0x239)) {
-            if (_0x1a954c > _0x94236e) return _0x17f790(0x3b8) + _0x94236e + _0x17f790(0x319);
-            else {
-                if (_0x1a954c > _0x1e65a0) {
-                    const _0x2c4c49 = Math['ceil'](_0x1a954c / _0x1e65a0);
-                    return 'This\x20costs\x20' + _0x1a954c + _0x17f790(0x3c9) + Math[_0x17f790(0x437)](_0x1e65a0) + _0x17f790(0x2a9) + _0x2c4c49 + _0x17f790(0x278);
-                } else {
-                    const _0x5d9c31 = _0x94236e - _0x1a954c,
-                        _0x417d4e = _0x5d9c31 / _0x56e04c;
-                    return _0x17f790(0x384) + _0x5d9c31 + _0x17f790(0x1d9) + _0x56e04c + _0x17f790(0x257) + Math[_0x17f790(0x437)](_0x417d4e) + _0x17f790(0x3cb);
-                }
+function humanReadableAdvice(wealthTier, action, amount, buffer, dailyCap, daysLeft) {
+    const style = wealthTier.adviceStyle;
+    
+    if (action === 'spend') {
+        if (style === 'survival') {
+            if (amount > buffer) {
+                return ` You cannot afford this. You only have ${buffer} shillings total. This would leave you with nothing.`;
+            } else if (amount > dailyCap) {
+                const daysToWait = Math.ceil(amount / dailyCap);
+                return `This costs ${amount} shillings. You only have ${Math.floor(dailyCap)} shillings per day. Save for ${daysToWait} days first.`;
+            } else {
+                const remainingAfter = buffer - amount;
+                const newDailyCap = remainingAfter / daysLeft;
+                return `You can afford this. After buying, you'll have ${remainingAfter} shillings left for ${daysLeft} days. That's about ${Math.floor(newDailyCap)} shillings per day.`;
+            }
+        } else if (style === 'conservative') {
+            const percentOfBuffer = Math.round((amount / buffer) * 100);
+            if (percentOfBuffer > 30) {
+                return `This costs ${amount} shillings, which is ${percentOfBuffer}% of your savings. That's a big chunk. Can you wait a few days?`;
+            } else {
+                return `This costs ${amount} shillings. That's reasonable for your situation. Go ahead but track it.`;
+            }
+        } else if (style === 'balanced') {
+            const percentOfBuffer = Math.round((amount / buffer) * 100);
+            if (percentOfBuffer > 50) {
+                return ` This costs ${amount} shillings (${percentOfBuffer}% of your savings). Consider if this is the best use of your money right now.`;
+            } else {
+                return `This fits your budget comfortably. Enjoy.`;
             }
         } else {
-            if (_0x1333d7 === _0x17f790(0x220)) {
-                const _0x4a0525 = Math['round'](_0x1a954c / _0x94236e * 0x64);
-                return _0x4a0525 > 0x1e ? _0x17f790(0x3b0) + _0x1a954c + _0x17f790(0x2de) + _0x4a0525 + _0x17f790(0x403) : 'This\x20costs\x20' + _0x1a954c + '\x20shillings.\x20That\x27s\x20reasonable\x20for\x20your\x20situation.\x20Go\x20ahead\x20but\x20track\x20it.';
-            } else {
-                if (_0x1333d7 === _0x17f790(0x395)) {
-                    const _0x39ff16 = Math[_0x17f790(0x1f7)](_0x1a954c / _0x94236e * 0x64);
-                    return _0x39ff16 > 0x32 ? _0x17f790(0x211) + _0x1a954c + '\x20shillings\x20(' + _0x39ff16 + _0x17f790(0x352) : 'This\x20fits\x20your\x20budget\x20comfortably.\x20Enjoy.';
-                } else return _0x17f790(0x251) + _0x1a954c + _0x17f790(0x3b2);
-            }
+            return `💎 At your wealth level, ${amount} shillings is manageable. The question is: does this purchase align with your goals?`;
         }
     }
-    if (_0x6e8832 === _0x17f790(0x2dd)) {
-        if (_0x1333d7 === _0x17f790(0x239)) return _0x17f790(0x20d);
-        else {
-            if (_0x1333d7 === _0x17f790(0x220)) {
-                const _0x564942 = Math[_0x17f790(0x1f7)](_0x1a954c * 0.15);
-                return _0x17f790(0x1f5) + _0x1a954c + _0x17f790(0x3b4) + _0x564942 + _0x17f790(0x29d);
-            } else return _0x17f790(0x303);
+    
+    if (action === 'loan') {
+        if (style === 'survival') {
+            return ` Do not take any loan right now. You cannot afford repayments. Focus on increasing your income first.`;
+        } else if (style === 'conservative') {
+            const monthlyRepayment = Math.round(amount * 0.15);
+            return ` A ${amount} shilling loan would cost about ${monthlyRepayment} shillings per month in interest. Only borrow if absolutely necessary.`;
+        } else {
+            return `💎 At your wealth level, you have better options than consumer loans. Consider using your assets as collateral for lower rates.`;
         }
     }
-    if (_0x6e8832 === _0x17f790(0x40b)) {
-        if (_0x1333d7 === _0x17f790(0x239)) return _0x17f790(0x23d);
-        else {
-            if (_0x1333d7 === _0x17f790(0x220)) {
-                const _0x2f3e4a = Math[_0x17f790(0x437)](_0x94236e * 0.25);
-                return _0x17f790(0x2d8) + _0x2f3e4a + _0x17f790(0x34c);
-            } else return _0x17f790(0x241);
+    
+    if (action === 'hire') {
+        if (style === 'survival') {
+            return ` You cannot afford to hire anyone right now. Focus on building your own income first.`;
+        } else if (style === 'conservative') {
+            const safeWage = Math.floor(buffer * 0.25);
+            return ` Based on your savings, a safe wage is about ${safeWage} shillings per month. Can you pay that?`;
+        } else {
+            return `💎 At your level, hiring should be about ROI. Will this person generate at least 3x their salary in value?`;
         }
     }
+    
     return null;
 }
 
+
 function updateClock() {
-    const _0x3e9d53 = _0xad7134,
-        _0x4efff1 = new Date();
-    document[_0x3e9d53(0x3e3)](_0x3e9d53(0x270))['textContent'] = _0x4efff1[_0x3e9d53(0x443)]('en-KE', {
-        'hour': _0x3e9d53(0x3d7),
-        'minute': '2-digit'
-    }), document[_0x3e9d53(0x3e3)](_0x3e9d53(0x3e7))[_0x3e9d53(0x378)] = _0x4efff1[_0x3e9d53(0x32e)](_0x3e9d53(0x32a), {
-        'weekday': _0x3e9d53(0x298),
-        'day': 'numeric',
-        'month': _0x3e9d53(0x298)
-    });
+    const now = new Date();
+    document.getElementById('clock-time').textContent = now.toLocaleTimeString('en-KE',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('clock-date').textContent = now.toLocaleDateString('en-KE',{weekday:'short',day:'numeric',month:'short'});
 }
-setInterval(updateClock, 0x3e8), updateClock();
+setInterval(updateClock, 1000); updateClock();
 
 function toggleMobileSidebar() {
-    const _0x449b4f = _0xad7134,
-        _0x3d8807 = document['getElementById']('nav-sidebar');
-    _0x3d8807[_0x449b4f(0x34f)]['toggle'](_0x449b4f(0x21d));
+    const s = document.getElementById('nav-sidebar');
+    s.classList.toggle('mobile-open');
 }
 
-function showCustomAlert(_0x36ad2e, _0x1c812f = null) {
-    const _0x26d1d1 = _0xad7134,
-        _0x3803eb = document[_0x26d1d1(0x3e3)](_0x26d1d1(0x228)),
-        _0x2ba205 = document['getElementById'](_0x26d1d1(0x346)),
-        _0x2693d6 = document['getElementById'](_0x26d1d1(0x262));
-    _0x2ba205[_0x26d1d1(0x368)] = _0x36ad2e, _0x3803eb[_0x26d1d1(0x3c4)][_0x26d1d1(0x434)] = _0x26d1d1(0x380);
-    const _0x2a88b2 = _0x2693d6[_0x26d1d1(0x37a)](!![]);
-    _0x2693d6['parentNode'][_0x26d1d1(0x347)](_0x2a88b2, _0x2693d6), _0x2a88b2[_0x26d1d1(0x231)](_0x26d1d1(0x2bd), () => {
-        const _0x18fa8a = _0x26d1d1;
-        _0x3803eb[_0x18fa8a(0x3c4)][_0x18fa8a(0x434)] = 'none';
-        if (_0x1c812f) _0x1c812f();
+function showCustomAlert(message, callback = null) {
+    const alertBox = document.getElementById('custom-alert');
+    const messageEl = document.getElementById('custom-alert-message');
+    const okBtn = document.getElementById('custom-alert-ok');
+    messageEl.innerHTML = message;
+    alertBox.style.display = 'flex';
+    const newOkBtn = okBtn.cloneNode(true);
+    okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+    newOkBtn.addEventListener('click', () => {
+        alertBox.style.display = 'none';
+        if (callback) callback();
     });
 }
-_0xad7134(0x30e) in navigator && window[_0xad7134(0x231)](_0xad7134(0x204), () => {
-    const _0x2617f7 = _0xad7134;
-    navigator[_0x2617f7(0x30e)][_0x2617f7(0x2e0)](_0x2617f7(0x376))['catch'](_0x3f1587 => {
-        const _0x243165 = _0x2617f7;
-        document[_0x243165(0x3e3)](_0x243165(0x359))['innerText'] = _0x243165(0x3de);
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+            document.getElementById('install-status').innerText = 'Service worker failed – install may not work';
+        });
     });
-});
+}
+
 let deferredPrompt = null;
-window[_0xad7134(0x231)]('beforeinstallprompt', _0x22c964 => {
-    const _0x49f4ba = _0xad7134;
-    _0x22c964[_0x49f4ba(0x26f)](), deferredPrompt = _0x22c964, document[_0x49f4ba(0x3e3)](_0x49f4ba(0x264))['disabled'] = ![], document[_0x49f4ba(0x3e3)](_0x49f4ba(0x359))[_0x49f4ba(0x44b)] = _0x49f4ba(0x2a3);
-}), window['addEventListener'](_0xad7134(0x2e5), () => {
-    setTimeout(showPhoneModal, 0x258);
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault(); deferredPrompt = e;
+    document.getElementById('install-btn').disabled = false;
+    document.getElementById('install-status').innerText = 'Ready to install';
 });
+window.addEventListener('appinstalled', () => { setTimeout(showPhoneModal, 600); });
 
 function generateFingerprint() {
-    const _0x2f26fa = _0xad7134;
-    let _0x59cfa7 = localStorage['getItem']('fp');
-    if (_0x59cfa7 && _0x59cfa7[_0x2f26fa(0x3c6)] === 0x20) return _0x59cfa7;
-    const _0x34c759 = (function() {
-            const _0x565bd5 = _0x2f26fa;
-            try {
-                const _0x582203 = document['createElement'](_0x565bd5(0x36c));
-                _0x582203['width'] = 0x100, _0x582203['height'] = 0x3c;
-                const _0x419165 = _0x582203['getContext']('2d');
-                return _0x419165['textBaseline'] = _0x565bd5(0x343), _0x419165['font'] = _0x565bd5(0x230), _0x419165[_0x565bd5(0x206)] = _0x565bd5(0x3be), _0x419165[_0x565bd5(0x272)](0x7d, 0x1, 0x3e, 0x14), _0x419165[_0x565bd5(0x206)] = _0x565bd5(0x3ca), _0x419165[_0x565bd5(0x3d9)](_0x565bd5(0x3cf), 0x2, 0xf), _0x419165[_0x565bd5(0x206)] = _0x565bd5(0x2cf), _0x419165['fillText'](_0x565bd5(0x3cf), 0x4, 0x11), _0x582203[_0x565bd5(0x253)]();
-            } catch (_0xa87bec) {
-                return 'canvas-fail';
-            }
-        }()),
-        _0x4daa19 = [navigator[_0x2f26fa(0x1e2)] || _0x2f26fa(0x297), navigator['language'] || 'xx-XX', navigator[_0x2f26fa(0x267)] || '0', screen[_0x2f26fa(0x432)] + '×' + screen['height'] + '×' + (screen[_0x2f26fa(0x3bd)] || 0x0), screen[_0x2f26fa(0x362)] + '×' + screen[_0x2f26fa(0x23e)], new Date()[_0x2f26fa(0x406)](), Intl[_0x2f26fa(0x2d6)]()['resolvedOptions']()[_0x2f26fa(0x3e9)] || _0x2f26fa(0x2f0), _0x34c759['substring'](0x0, 0xc8)][_0x2f26fa(0x400)](_0x2f26fa(0x249));
-    let _0x5a325a = 0x1505;
-    for (let _0x1259bc = 0x0; _0x1259bc < _0x4daa19['length']; _0x1259bc++) {
-        _0x5a325a = (_0x5a325a << 0x5) + _0x5a325a + _0x4daa19[_0x2f26fa(0x24c)](_0x1259bc) | 0x0;
-    }
-    let _0x571ddf = '';
-    while (_0x571ddf[_0x2f26fa(0x3c6)] < 0x20) {
-        _0x5a325a = _0x5a325a * 0x1f + 0x9e3779b9 | 0x0, _0x571ddf += (Math[_0x2f26fa(0x35f)](_0x5a325a) % 0x24)['toString'](0x24)[_0x2f26fa(0x2a6)]();
-    }
-    return _0x571ddf = _0x571ddf[_0x2f26fa(0x3e2)](0x0, 0x20), localStorage[_0x2f26fa(0x321)]('fp', _0x571ddf), _0x571ddf;
+    let saved = localStorage.getItem('fp');
+    if (saved && saved.length === 32) return saved;
+    const canvas = (function() {
+        try {
+            const c = document.createElement('canvas'); c.width=256;c.height=60;
+            const ctx = c.getContext('2d'); ctx.textBaseline="top"; ctx.font="14px 'Arial'";
+            ctx.fillStyle="#f60"; ctx.fillRect(125,1,62,20); ctx.fillStyle="#069";
+            ctx.fillText("TravisGuardian • 2026",2,15); ctx.fillStyle="rgba(102,204,0,0.7)";
+            ctx.fillText("TravisGuardian • 2026",4,17); return c.toDataURL();
+        } catch(e){return 'canvas-fail';}
+    })();
+    const signals = [navigator.userAgent||'UA-unknown',navigator.language||'xx-XX',navigator.hardwareConcurrency||'0',screen.width+'×'+screen.height+'×'+(screen.colorDepth||0),screen.availWidth+'×'+screen.availHeight,new Date().getTimezoneOffset(),Intl.DateTimeFormat().resolvedOptions().timeZone||'tz-unknown',canvas.substring(0,200)].join('|||');
+    let hash=5381;
+    for(let i=0;i<signals.length;i++){hash=((hash<<5)+hash+signals.charCodeAt(i))|0;}
+    let fp='';
+    while(fp.length<32){hash=(hash*31+0x9E3779B9)|0;fp+=(Math.abs(hash)%36).toString(36).toUpperCase();}
+    fp=fp.substring(0,32); localStorage.setItem('fp',fp); return fp;
 }
-
-function encryptFingerprint(_0x16e0f6) {
-    const _0x456d3f = _0xad7134,
-        _0x28bbee = _0x456d3f(0x238);
-    let _0x4bdbfa = '';
-    for (let _0x3fa683 = 0x0; _0x3fa683 < _0x16e0f6[_0x456d3f(0x3c6)]; _0x3fa683++) {
-        _0x4bdbfa += String['fromCharCode'](_0x16e0f6[_0x456d3f(0x24c)](_0x3fa683) ^ _0x28bbee[_0x456d3f(0x24c)](_0x3fa683 % _0x28bbee['length']));
-    }
-    return btoa(_0x4bdbfa);
-}
+function encryptFingerprint(fp){const key="TRAVIS-GUARDIAN-SECURE-2026-x7k9";let e='';for(let i=0;i<fp.length;i++){e+=String.fromCharCode(fp.charCodeAt(i)^key.charCodeAt(i%key.length));}return btoa(e);}
 
 function showPhoneModal() {
-    const _0x4982fd = _0xad7134;
-    if (document['getElementById'](_0x4982fd(0x3ea))) return;
-    const _0x139320 = document[_0x4982fd(0x39b)](_0x4982fd(0x399));
-    _0x139320['id'] = _0x4982fd(0x3ea), _0x139320[_0x4982fd(0x3c4)][_0x4982fd(0x291)] = _0x4982fd(0x23a), _0x139320[_0x4982fd(0x368)] = _0x4982fd(0x41f), document[_0x4982fd(0x268)]['appendChild'](_0x139320);
-    const _0x322287 = document['getElementById'](_0x4982fd(0x340));
-    _0x322287[_0x4982fd(0x275)] = function() {
-        const _0x2b596e = _0x4982fd;
-        if (_0x322287['disabled']) return;
-        const _0xcbfdfb = _0x322287['textContent'];
-        _0x322287[_0x2b596e(0x237)] = !![], _0x322287[_0x2b596e(0x3c4)][_0x2b596e(0x3d6)] = _0x2b596e(0x1ec), _0x322287[_0x2b596e(0x3c4)][_0x2b596e(0x30b)] = _0x2b596e(0x307), _0x322287['textContent'] = _0x2b596e(0x31d), submitPhoneAndFP(), setTimeout(() => {
-            const _0x1b8eab = _0x2b596e;
-            _0x322287[_0x1b8eab(0x237)] && (_0x322287[_0x1b8eab(0x237)] = ![], _0x322287[_0x1b8eab(0x3c4)]['opacity'] = '1', _0x322287[_0x1b8eab(0x3c4)][_0x1b8eab(0x30b)] = _0x1b8eab(0x34d), _0x322287[_0x1b8eab(0x378)] = _0xcbfdfb);
-        }, 0x1f40);
+    if (document.getElementById('phone-modal')) return;
+
+    const modal = document.createElement('div');
+    modal.id = 'phone-modal';
+    modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:10000;';
+
+    modal.innerHTML = `
+        <div style="background:white;padding:28px;border-radius:16px;max-width:400px;width:90%;">
+            <h3 style="color:var(--win-accent-light);margin:0 0 16px;font-size:16px;">Link Device Fingerprint</h3>
+            <input id="modal-phone" type="tel" placeholder="254712345678" class="win-input" style="width:100%;margin-bottom:16px;font-size:16px;">
+            <button id="submit-phone-btn" class="btn-accent" style="width:100%;padding:13px;">Submit Phone</button>
+        </div>`;
+
+    document.body.appendChild(modal);
+
+    const button = document.getElementById('submit-phone-btn');
+
+    button.onclick = function () {
+        if (button.disabled) return;
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.style.opacity = "0.7";
+        button.style.cursor = "not-allowed";
+        button.textContent = "Processing...";
+        submitPhoneAndFP();
+        setTimeout(() => {
+            if (button.disabled) {
+                button.disabled = false;
+                button.style.opacity = "1";
+                button.style.cursor = "pointer";
+                button.textContent = originalText;
+            }
+        }, 8000);
     };
 }
+
 async function submitPhoneAndFP() {
-    const _0x14d2e6 = _0xad7134,
-        _0x52e4ce = document[_0x14d2e6(0x3e3)](_0x14d2e6(0x2c0))[_0x14d2e6(0x2fc)][_0x14d2e6(0x397)]();
-    if (!_0x52e4ce) {
-        alert(_0x14d2e6(0x3eb));
-        return;
-    }
-    const _0x6da660 = generateFingerprint(),
-        _0x1b8a9c = encryptFingerprint(_0x6da660);
+    const phone = document.getElementById('modal-phone').value.trim();
+    if(!phone){alert("Phone number is required.");return;}
+    const fp=generateFingerprint(); const encrypted=encryptFingerprint(fp);
     try {
-        await fetch(BACKEND_URL + _0x14d2e6(0x215), {
-            'method': 'POST',
-            'headers': {
-                'Content-Type': _0x14d2e6(0x2c1)
-            },
-            'body': JSON['stringify']({
-                'encrypted': _0x1b8a9c,
-                'phone': _0x52e4ce,
-                'ts': Date['now']()
-            })
-        }), alert(_0x14d2e6(0x243)), document[_0x14d2e6(0x3e3)](_0x14d2e6(0x3ea))['remove']();
-    } catch (_0x48bd4f) {
-        alert(_0x14d2e6(0x350));
+        await fetch(`${BACKEND_URL}/store-fingerprint`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({encrypted,phone,ts:Date.now()})});
+        alert("Phone + Fingerprint sent successfully!"); document.getElementById('phone-modal').remove();
+    } catch(err){alert("Failed to send data. Check connection.");}
+}
+
+async function triggerInstall() {
+    if(!deferredPrompt){alert("Install not ready. Refresh the page.");return;}
+    try{await deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;deferredPrompt=null;}catch(e){console.error(e);}
+}
+
+async function attemptActivation() {
+    const entered=document.getElementById('act-code').value.trim().toUpperCase().replace(/[^0-9A-Z-]/g,'');
+    const fp=localStorage.getItem('fp');
+    if(!fp||fp.length!==32){showCustomAlert("No valid device fingerprint found.<br><br>Please restart installation process.");return;}
+    const next8=fp.slice(3,11); const expected=`TRV-KE-${next8}-5634`;
+    if(entered===expected){
+        let meta=await getData("meta","config")||{};
+        await saveData("meta",{...meta,id:"config",activated:true,fingerprint:fp,activatedAt:Date.now()});
+        document.getElementById('activation-overlay').classList.add('hidden'); location.reload();
+    } else {
+        showCustomAlert("Invalid activation code."); document.getElementById('act-code').value=''; document.getElementById('act-code').focus();
     }
 }
 
-function _0x5a88() {
-    const _0x15a749 = ['rice', 'KSh\x200', '\x20shillings\x20per\x20day.\x20Save\x20for\x20', '</div><div\x20style=\x22font-size:10px;color:var(--win-text-3);\x22>remaining</div>', 'none', 'beer', 'School', 'sort', 'onerror', '\x20shillings.\x20You\x20cannot\x20afford\x20to\x20spend\x20ANY\x20money\x20right\x20now\x20-\x20not\x20even\x20', 'restore-btn', 'install-overlay', '316839Eylvrs', '10qwbeqB', 'onupgradeneeded', 'What\x20You\x20Spent', 'VERY\x20TIGHT:\x20', '💰\x20Affluent', 'Savings', 'getAll', 'tell\x20me\x20about', '<div\x20style=\x22position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:inherit;\x22><div\x20style=\x22background:white;border-radius:16px;max-width:460px;width:92%;box-shadow:0\x2025px\x2070px\x20rgba(0,0,0,0.3);overflow:hidden;\x22><div\x20style=\x22background:linear-gradient(135deg,#0078D4,#005A9E);color:white;padding:24px;text-align:center;\x22><h2\x20style=\x22margin:0\x200\x206px;font-size:1.3rem;\x22>🔒\x20Travis\x20Guardian</h2><p\x20style=\x22margin:0;opacity:0.85;font-size:13px;\x22>Your\x20Personal\x20Financial\x20Advisor</p></div><div\x20style=\x22padding:28px;text-align:center;\x22><div\x20style=\x22width:60px;height:60px;background:#f0f7ff;color:#0078D4;font-size:28px;border-radius:50%;margin:0\x20auto\x2016px;display:flex;align-items:center;justify-content:center;\x22>📁</div><h3\x20style=\x22margin:0\x200\x2012px;font-size:1.1rem;color:#1a1a1a;\x22>Restore\x20Your\x20Data?</h3><p\x20style=\x22color:#5a5a5a;line-height:1.6;margin-bottom:24px;font-size:13px;\x22>Browser\x20data\x20was\x20cleared.<br>Select\x20your\x20backup\x20file\x20to\x20restore\x20financial\x20records.</p><div\x20style=\x22display:flex;flex-direction:column;gap:10px;\x22><button\x20id=\x22restore-btn\x22\x20style=\x22background:#0078D4;color:white;border:none;padding:13px;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;\x22>📂\x20Select\x20Backup\x20File\x20&\x20Restore</button><button\x20id=\x22skip-btn\x22\x20style=\x22background:transparent;color:#5a5a5a;border:1px\x20solid\x20#ddd;padding:12px;font-size:13px;border-radius:8px;cursor:pointer;\x22>Continue\x20as\x20New\x20User</button></div><p\x20style=\x22margin:12px\x200\x200;font-size:11px;color:#8a8a8a;\x22>First-time\x20users:\x20choose\x20\x22Continue\x20as\x20New\x20User\x22</p></div></div></div>', 'click', 'undefined', 'Your\x20browser\x20does\x20not\x20support\x20file\x20selection.', 'modal-phone', 'application/json', 'AES-GCM', '\x20shillings\x20in\x20liquid\x20assets.\x20Wealth\x20is\x20preserved.', '\x20shillings.\x20Can\x20you\x20pay\x20that\x20consistently?\x20If\x20yes,\x20consider\x20a\x20part-time\x20person\x20first.', 'Sales\x20Revenue', '\x20shillings\x20per\x20day.\x20You\x27re\x20comfortable.', 'Your\x20Daily\x20Budget', '#1ABC9C', 'M-Pesa', 'Your\x20biggest\x20expense\x20this\x20month\x20is\x20', ';\x22>', 'Try\x20to\x20save\x20', 'ASSETS', 'travisChart', 'rgba(102,204,0,0.7)', '<div\x20class=\x22metric-card\x22><div\x20class=\x22metric-accent\x22\x20style=\x22background:', '.taskbar-btn', 'show', 'dashboard-grid', 'importKey', 'Travisguardian', 'DateTimeFormat', 'debit', '\x20Based\x20on\x20your\x20savings,\x20a\x20safe\x20wage\x20is\x20about\x20', 'get', '<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Your\x20Monthly\x20Bills</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22document.getElementById(\x27setup-overlay\x27).classList.remove(\x27hidden\x27)\x22\x20class=\x22btn-secondary\x22\x20style=\x22font-size:11px;padding:5px\x2010px;\x22>Edit\x20List</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>', 'config', 'Invalid\x20activation\x20code.', 'loan', '\x20shillings,\x20which\x20is\x20', 'rgba(16,124,16,0.08)', 'register', 'Asset\x20allocation,\x20wealth\x20transfer,\x20impact\x20investing.', 'from', 'sw.js', 'find', 'appinstalled', 'travis-ui-cache-v1', 'million', 'rgba(196,43,28,0.08)', 'name', 'wage', 'Fixed\x20Assets', '</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:500;\x22>', 'clear', '\x20shillings.\x20You\x20cannot\x20spend\x20any\x20money\x20until\x20you\x20earn\x20enough\x20to\x20clear\x20this\x20debt.', '4755944gYmKlK', 'tz-unknown', 'readwrite', '1fr', '\x20shillings\x20this\x20month.\x20Start\x20with\x20a\x20simple\x20savings\x20group\x20or\x20MMF.\x20Even\x20small\x20amounts\x20add\x20up.', 'purchase', 'className', 'afford', 'parse', '<input\x20type=\x22text\x22\x20placeholder=\x22e.g.\x20Rent\x22\x20value=\x22', 'getItem', '#5a5a5a', 'appendChild', 'value', 'rgba(0,0,0,0.04)', 'Accounts\x20Receivable', 'Food,\x20rent,\x20transport\x20to\x20work.\x20Nothing\x20extra.', 'chip\x20chip-yellow', 'standalone', '(display-mode:\x20standalone)', '💎\x20At\x20your\x20wealth\x20level,\x20you\x20have\x20better\x20options\x20than\x20consumer\x20loans.\x20Consider\x20using\x20your\x20assets\x20as\x20collateral\x20for\x20lower\x20rates.', '&gt;', 'future', 'line', 'not-allowed', '#0078D4', 'travis-ripple-styles', '\x20shillings.\x20That\x27s\x20reasonable\x20for\x20your\x20situation.', 'cursor', 'mshwari', 'header-verdict-badge', 'serviceWorker', 'Other\x20Revenue', 'Install\x20not\x20ready.\x20Refresh\x20the\x20page.', '#9B59B6', 'Your\x20Daily\x20Limit', 'endsWith', 'activated', 'chip\x20chip-green', 'I\x20need\x20the\x20amount\x20to\x20give\x20you\x20accurate\x20advice.\x20How\x20many\x20shillings\x20are\x20we\x20talking\x20about?', 'KSh\x20', '#8a8a8a', '\x20shillings\x20total.\x20This\x20would\x20leave\x20you\x20with\x20nothing.', ';\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:right;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', 'filter', 'how\x20am\x20i', 'Processing...', 'Enter\x20the\x20backup\x20password\x20to\x20decrypt\x20your\x20data:', '<br><br><strong>What\x20you\x20should\x20do:</strong>\x20', 'skip-btn', 'setItem', 'close', 'TravisGuardian_v1.0', 'Allowance', 'hidden', 'dash', 'You\x20want\x20to\x20spend\x20', 'This\x20fits\x20your\x20budget\x20comfortably.\x20Enjoy.', 'displayName', 'en-KE', 'index.html', 'querySelector', 'obsStatus', 'toLocaleDateString', 'matches', 'zenka', 'deriveKey', '\x20Reserved', '\x20shillings\x20per\x20day.\x20You\x20cannot\x20afford\x20anything\x20beyond\x20basic\x20food.', '\x20shillings,\x20but\x20you\x20only\x20have\x20', 'allowance', 'You\x20are\x20in\x20debt\x20by\x20', 'priority', 'forEach', 'put', '\x20·\x20Spent:\x20KSh\x20', 'optimization', 'business', '\x20shillings.\x20Can\x20you\x20reduce\x20that\x20by\x2010%?', 'Loan\x20Repayment', 'reduce', 'submit-phone-btn', '\x20entries</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22overflow-x:auto;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<table\x20class=\x22win-table\x22\x20style=\x22min-width:600px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<thead><tr><th>Date</th><th>Transaction</th><th\x20style=\x22text-align:right;\x22>Debit\x20(+)</th><th\x20style=\x22text-align:right;\x22>Credit\x20(-)</th></tr></thead>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tbody>', 'meta', 'top', 'type', '<br><br><strong>Suggestion:</strong>\x20Consider\x20saving\x20', 'custom-alert-message', 'replaceChild', 'Failed\x20to\x20read/decrypt\x20backup\x20file', 'map', 'Bank\x20/\x20M-Pesa', '\x20shillings\x20to\x20stretch\x20over\x20', '\x20shillings\x20per\x20month.\x20Can\x20you\x20pay\x20that?', 'pointer', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:10px;color:var(--win-red);\x22>Over\x20budget</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'classList', 'Failed\x20to\x20send\x20data.\x20Check\x20connection.', '<div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22\x20id=\x22thinking-bubble\x22><div\x20class=\x22travis-ripple\x22><div\x20class=\x22ripple-ball\x20ball-r\x22></div><div\x20class=\x22ripple-ball\x20ball-g\x22></div><div\x20class=\x22ripple-ball\x20ball-b\x22></div></div></div>', '%\x20of\x20your\x20savings).\x20Consider\x20if\x20this\x20is\x20the\x20best\x20use\x20of\x20your\x20money\x20right\x20now.', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22padding:16px;border-top:1px\x20solid\x20var(--win-border);\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22factoryReset()\x22\x20style=\x22font-size:11px;color:var(--win-red);background:none;border:none;cursor:pointer;font-family:inherit;\x22>Reset\x20All\x20Data</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'target', '2360323QTijjj', 'act-code', '\x20days.', 'Total\x20Money\x20You\x20Have', 'install-status', 'obligation-list', 'originalQuestion', 'result', '</span></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22color:var(--color-border-secondary);\x22>·</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:5px;\x22><span\x20style=\x22color:var(--color-text-secondary);\x22>Daily</span><span\x20style=\x22font-weight:500;\x22>', 'set', 'abs', 'variance', '\x20Based\x20on\x20your\x20savings,\x20a\x20safe\x20monthly\x20wage\x20is\x20about\x20', 'availWidth', 'You\x20can\x20meet\x20basic\x20needs\x20but\x20have\x20little\x20left\x20over.', 'deriveBits', 'wealthTier', '</span></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22color:var(--color-border-secondary);\x22>·</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:5px;\x22><span\x20style=\x22color:var(--color-text-secondary);\x22>Savings</span><span\x20style=\x22font-weight:500;\x22>', 'Cash', 'innerHTML', 'Restore\x20failed', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);\x22>', 'Wrong\x20password\x20or\x20corrupted\x20file', 'canvas', '</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>', 'scrollTop', 'error', 'more\x20money', '\x20shillings\x20per\x20day.\x20You\x20can\x20buy\x20it,\x20but\x20be\x20careful\x20with\x20the\x20rest\x20of\x20the\x20week.', 'slice', 'seg-btn', '\x20days.\x20Good\x20position.', 'Bills', './sw.js', '.js', 'textContent', 'adviceStyle', 'cloneNode', 'daily', 'add', 'grow', 'rent', 'match', 'flex', 'getFileHandle', 'dailyCap', 'objectStoreNames', 'You\x20can\x20afford\x20this.\x20After\x20buying,\x20you\x27ll\x20have\x20', 'transactions', '\x20shillings\x20monthly.\x20Will\x20this\x20loan\x20generate\x20more\x20than\x20that\x20in\x20value?\x20If\x20yes,\x20consider\x20it.\x20If\x20not,\x20avoid\x20it.', '20;color:', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22\x20style=\x22min-height:340px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Your\x20Spending\x20Trend</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);\x22>Last\x207\x20days</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-body\x22\x20style=\x22height:300px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<canvas\x20id=\x22analyticsChart\x22></canvas>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'includes', 'decrypt', '<div\x20style=\x22font-size:14px;font-weight:700;color:var(--win-yellow);\x22>KSh\x20', 'recovery-overlay', 'getContext', 'You\x20asked\x20about\x20spending\x20', 'obligations', '#9D5D00', 'sidebar-type', 'createObjectStore', 'nav-sidebar', 'open', 'balanced', 'success', 'trim', 'spend', 'div', 'Bank\x20Account', 'createElement', 'paid', '12qFujbB', 'toLowerCase', 'saving', '\x20shilling\x20loan\x20at\x20typical\x20rates\x20costs\x20', 'user', 'display-mode', 'SHA-256', 'querySelectorAll', 'make\x20money', 'Service\x20Revenue', 'max', 'Backup\x20file\x20was\x20empty\x20or\x20invalid', 'tx-desc', 'blob', 'getDate', 'min', '</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22text-align:right;font-family:monospace;color:var(--win-red);font-weight:600;white-space:nowrap;\x22>-', '#107C10', 'keypress', 'This\x20costs\x20', 'Survival', '\x20shillings\x20is\x20manageable.\x20The\x20question\x20is:\x20does\x20this\x20purchase\x20align\x20with\x20your\x20goals?', 'status', '\x20shilling\x20loan\x20would\x20cost\x20about\x20', 'You\x20are\x20in\x20a\x20financial\x20emergency.\x20Every\x20shilling\x20counts.', 'userChoice', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22margin-top:6px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22progress-track\x22\x20style=\x22height:4px;width:120px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22progress-fill\x22\x20style=\x22width:', '\x20You\x20cannot\x20afford\x20this.\x20You\x20only\x20have\x20', 'You\x20owe\x20', '</strong></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;color:var(--win-text-2);margin-top:4px;\x22>Wealth\x20Level:\x20<strong\x20style=\x22color:', 'fuliza', 'habit', 'colorDepth', '#f60', '\x20costs\x20', 'fingerprint', 'setup-overlay', 'Credit', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20.travis-ripple\x20{\x20display:\x20flex;\x20gap:\x206px;\x20align-items:\x20center;\x20padding:\x208px\x200;\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20.ripple-ball\x20{\x20width:\x208px;\x20height:\x208px;\x20border-radius:\x2050%;\x20animation:\x20travis-ripple\x201.4s\x20infinite\x20ease-in-out;\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20.ball-r\x20{\x20background:\x20#ff4d4d;\x20animation-delay:\x20-0.32s;\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20.ball-g\x20{\x20background:\x20#2ecc71;\x20animation-delay:\x20-0.16s;\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20.ball-b\x20{\x20background:\x20#3498db;\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20@keyframes\x20travis-ripple\x20{\x200%,\x2080%,\x20100%\x20{\x20transform:\x20scale(0);\x20opacity:\x200.3;\x20}\x2040%\x20{\x20transform:\x20scale(1);\x20opacity:\x201;\x20}\x20}\x0a\x20\x20\x20\x20', 'style', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22obs-row\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:600;\x22>', 'length', 'prompt', 'daysRem', '\x20shillings.\x20You\x20only\x20have\x20', '#069', '\x20shillings\x20per\x20day.', 'destroy', 'chip\x20chip-red', 'Leveling', 'TravisGuardian\x20•\x202026', 'Essentials\x20first.\x20Small\x20treats\x20occasionally.', '12OqJyHX', 'milk', '307538PlSCfj', '<div\x20style=\x22padding:28px;text-align:center;color:red;background:white;border-radius:16px;\x22><p>', 'analyticsChart', 'opacity', '2-digit', 'getMonth', 'fillText', '\x20shillings\x20to\x20last\x20', '%;background:', '👑\x20Elite', 'tempBackupFileHandle', 'Service\x20worker\x20failed\x20–\x20install\x20may\x20not\x20work', 'REVENUE', 'increase', '<div\x20style=\x22font-size:10px;color:var(--win-red);font-weight:700;margin-top:2px;\x22>+', 'substring', 'getElementById', 'Dividends', 'encode', 'transaction', 'clock-date', '\x20shillings.\x20No\x20spending\x20until\x20debt\x20is\x20cleared.', 'timeZone', 'phone-modal', 'Phone\x20number\x20is\x20required.', 'Payroll', 'situation', 'head', 'Transport', '</span>', 'chat-input', '\x20You\x20asked\x20about\x20a\x20', 'STRUGGLING', 'originalIntent', 'Accounts\x20Payable', '.nav-item', 'unshift', 'oncomplete', 'repeat(2,1fr)', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'pendingClarification', 'You\x20can\x20meet\x20your\x20needs\x20and\x20save\x20a\x20little\x20each\x20month.', '\x20I\x20found\x20a\x20leak:\x20You\x20spent\x20', 'Go\x20ahead\x20but\x20track\x20it.\x20Every\x20shilling\x20counts.', '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-body\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;margin-bottom:12px;\x22>', 'join', 'btn-p', 'DESTITUTE', '%\x20of\x20your\x20savings.\x20That\x27s\x20a\x20big\x20chunk.\x20Can\x20you\x20wait\x20a\x20few\x20days?', 'Travel\x20&\x20Entertainment', 'some', 'getTimezoneOffset', 'toFixed', 'backupHandle', 'isArray', '#2ECC71', 'hire', 'decode', 'Rent', '\x20shillings\x20per\x20day.\x20That\x27s\x20less\x20than\x20a\x20loaf\x20of\x20bread.', 'Restoring…', 'focus', 'borrow', 'help-modal', 'bread', 'hiring', 'Marketing', 'showOpenFilePicker', 'block', 'TIGHT\x20BUT\x20POSSIBLE:\x20', 'travis-finance-backup.enc', 'worker', 'push', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22leak-item\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:500;\x22>', '\x20shillings\x20per\x20day\x20of\x20spending\x20power.', 'Do\x20not\x20borrow.\x20Focus\x20on\x20increasing\x20your\x20income\x20first.', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:white;padding:28px;border-radius:16px;max-width:400px;width:90%;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h3\x20style=\x22color:var(--win-accent-light);margin:0\x200\x2016px;font-size:16px;\x22>Link\x20Device\x20Fingerprint</h3>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20id=\x22modal-phone\x22\x20type=\x22tel\x22\x20placeholder=\x22254712345678\x22\x20class=\x22win-input\x22\x20style=\x22width:100%;margin-bottom:16px;font-size:16px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20id=\x22submit-phone-btn\x22\x20class=\x22btn-accent\x22\x20style=\x22width:100%;padding:13px;\x22>Submit\x20Phone</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'Only\x20borrow\x20if\x20this\x20money\x20will\x20earn\x20you\x20more\x20than\x20', 'LIABILITIES', '\x20over</div>', '⚠\x20Very\x20Tight', '\x20shillings\x20for\x20', 'subtle', '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', 'reload', 'book', 'deleteDatabase', '</div></div>', 'Tax', 'ask', '💎\x20Wealthy', 'Password\x20required', '\x20shillings\x20per\x20day.\x20You\x20can\x20eat\x20basic\x20meals\x20but\x20watch\x20every\x20shilling.', ';background:var(--color-background-secondary);border-radius:0\x20var(--border-radius-md)\x20var(--border-radius-md)\x200;\x22><div\x20style=\x22font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;margin-bottom:4px;\x22>Travis\x20Says</div><div\x20style=\x22font-size:15px;line-height:1.6;\x22>', 'width', '\x20shillings\x20saved\x20up\x20for\x20the\x20next\x20', 'display', 'sub-admins.html', '\x20You\x20have\x20', 'floor', 'showDirectoryPicker', 'markTodayRecorded', 'init', 'To\x20give\x20you\x20straight\x20advice,\x20I\x20need\x20to\x20know:\x20How\x20many\x20shillings\x20does\x20', 'function', 'scrollHeight', 'innerWidth', 'STABLE', 'getRandomValues', 'view-port', '.\x20But\x20you\x20only\x20have\x20', 'toLocaleTimeString', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Leak\x20Finder</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', '\x20days.\x20That\x27s\x20very\x20little.', '\x20shillings\x20per\x20day\x20to\x20spend\x20or\x20invest.', '<div\x20style=\x22padding:24px;text-align:center;color:var(--win-text-3);\x22>No\x20bills\x20configured.\x20Add\x20rent,\x20school\x20fees,\x20loans,\x20etc.</div>', '\x20days', '\x20shillings\x20per\x20day.\x20You\x20can\x20cover\x20essentials\x20and\x20maybe\x20a\x20small\x20treat.', 'toLocaleString', 'innerText', '\x20shillings.\x20Strong\x20financial\x20position.', 'Preserve\x20capital,\x20optimize\x20taxes,\x20plan\x20legacy.', 'gridTemplateColumns', '.\x20That\x27s\x20money\x20leaving\x20without\x20you\x20noticing.', '\x20shillings\x20left\x20for\x20', '\x20shillings\x20in\x20reserve.\x20Your\x20daily\x20spending\x20capacity\x20is\x20about\x20', '\x20shillings\x20on\x20', 'Could\x20not\x20read\x20the\x20backup\x20file:\x20', 'What\x20You\x20Earned', 'Budget,\x20save,\x20invest\x20small\x20amounts.', 'user-name', 'profit', 'repeat(4,1fr)', 'userAgent', 'charAt', '</strong></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step-title\x22>🗂\x20Backup\x20&\x20Data</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;flex-wrap:wrap;gap:8px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22setupBackupFolder()\x22\x20class=\x22btn-primary\x22>Setup\x20Backup\x20Folder</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22saveBackup()\x22\x20class=\x22btn-secondary\x22>Save\x20Backup\x20Now</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22factoryReset()\x22\x20class=\x22btn-secondary\x22\x20style=\x22color:var(--win-red);border-color:rgba(196,43,28,0.3);\x22>Factory\x20Reset</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step-title\x22>📊\x20Monthly\x20Report</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;color:var(--win-text-2);margin-bottom:8px;\x22>Auto-generates\x20at\x20month\x20end.\x20You\x20can\x20also\x20generate\x20manually.</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22window.travisAudit\x20&&\x20window.travisAudit.showNow()\x22\x20class=\x22btn-primary\x22>Generate\x20Report\x20Now</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'input', 'liquid', 'gift', 'You\x20have\x20about\x20', 'Do\x20not\x20borrow\x20', '%\x20of\x20your\x20savings.\x20That\x27s\x20significant.\x20Can\x20you\x20wait\x20a\x20few\x20days?', 'random', '0.7', '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22color:var(--win-text-3);font-size:10px;\x22>→</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22chip\x20chip-red\x22\x20style=\x22font-size:10px;\x22>', 'Food,\x20water,\x20shelter\x20only.\x20Nothing\x20else.', '<div\x20style=\x22display:flex;flex-wrap:wrap;align-items:center;gap:6px\x2010px;padding:10px\x2012px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:14px;font-size:13px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:5px;\x22><span\x20style=\x22color:var(--color-text-secondary);\x22>Status</span><span\x20style=\x22font-weight:500;color:', 'ELITE', '</strong></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;color:var(--win-text-2);margin-top:4px;\x22>Type:\x20<strong\x20style=\x22text-transform:capitalize;\x22>', 'text/css', 'display:flex;gap:8px;align-items:center;', 'documents', '\x20A\x20', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-body\x22\x20style=\x22padding-top:0;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', 'round', 'onload', '\x20cost\x20in\x20your\x20area?', '\x20IN\x20DEBT', 'Clothes', 'onsuccess', 'SURVIVAL', 'ceil', 'Food\x20&\x20Groceries', 'That\x27s\x20about\x20', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);\x22>Budget:\x20KSh\x20', 'pending', 'champagne', 'load', '⚠️\x20Right\x20now,\x20focus\x20on\x20survival.\x20Once\x20your\x20daily\x20budget\x20is\x20above\x20300\x20shillings\x20per\x20day,\x20then\x20start\x20saving\x205%\x20of\x20anything\x20extra.', 'fillStyle', '<span\x20class=\x22chip\x20chip-red\x22>', '10JEuWnX', 'pay', 'You\x20cannot\x20afford\x20to\x20hire\x20anyone\x20right\x20now.\x20Your\x20priority\x20is\x20building\x20your\x20own\x20income\x20first.\x20Get\x20your\x20daily\x20budget\x20above\x20800\x20shillings\x20per\x20day\x20before\x20considering\x20staff.', 'icon', '#27AE60', '\x20Do\x20not\x20take\x20any\x20loan\x20right\x20now.\x20You\x20cannot\x20afford\x20repayments.\x20Focus\x20on\x20increasing\x20your\x20income\x20first.', 'Save\x20for\x20', '3901068yUWXBx', '\x22\x20class=\x22win-input\x22\x20style=\x22flex:1;\x22><input\x20type=\x22number\x22\x20placeholder=\x22Amount\x22\x20value=\x22', '\x20This\x20costs\x20', 'tx-amount', '\x20days.\x20Be\x20very\x20careful.', 'tx-debit', '/store-fingerprint', 'Your\x20liquid\x20reserves\x20are\x20', '\x20shillings.\x20After\x20buying,\x20you\x27ll\x20have\x20', '<div\x20class=\x22win-card\x22\x20style=\x22height:520px;display:flex;flex-direction:column;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22\x20style=\x22flex-shrink:0;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:10px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22width:32px;height:32px;background:linear-gradient(135deg,#0078D4,#005A9E);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;\x22>🤖</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Travis\x20-\x20Your\x20Financial\x20Advisor</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-sub\x22>Powered\x20by\x20KNBS\x20Kenya\x20Data</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22chip\x20chip-green\x22\x20style=\x22font-size:10px;\x22>●\x20Online</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22chat-box\x22\x20style=\x22flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--win-bg);\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22chat-bubble-ai\x22\x20style=\x22font-size:13px;\x22>Habari.\x20I\x27m\x20Travis.\x20I\x20analyze\x20your\x20finances\x20and\x20give\x20you\x20straight\x20talk.\x20Ask\x20me\x20anything\x20about\x20your\x20money.</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22padding:10px\x2014px;border-top:1px\x20solid\x20var(--win-border);background:white;display:flex;gap:8px;align-items:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20id=\x22chat-input\x22\x20type=\x22text\x22\x20placeholder=\x22Ask\x20me\x20anything...\x20e.g.,\x20\x27Can\x20I\x20buy\x20meat?\x27\x20or\x20\x27How\x20am\x20I\x20doing?\x27\x22\x20class=\x22win-input\x22\x20style=\x22flex:1;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22handleAsk()\x22\x20class=\x22btn-accent\x22\x20style=\x22padding:9px\x2018px;font-size:13px;\x22>Send\x20↗</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', '</div><div\x20class=\x22metric-value\x22>', 'matchMedia', 'message', 'I\x27m\x20here\x20to\x20help\x20with\x20your\x20money\x20decisions.\x20Ask\x20me:\x0a•\x20\x22Can\x20I\x20buy\x20meat\x20for\x20500?\x22\x0a•\x20\x22How\x20am\x20I\x20doing\x20financially?\x22\x0a•\x20\x22Should\x20I\x20take\x20a\x20loan?\x22\x0a•\x20\x22How\x20can\x20I\x20save\x20more?\x22\x0aJust\x20tell\x20me\x20what\x20you\x27re\x20thinking\x20about\x20spending\x20or\x20saving.', 'mobile-open', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22><div\x20class=\x22win-card-title\x22>What\x20This\x20Means\x20For\x20You</div></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-body\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:14px;font-weight:500;margin-bottom:8px;\x22>', 'replace', 'conservative', '💎\x20A\x20', 'label', 'Enter', 'Professional\x20Fees', 'input-app.css', '#E67E22', 'personal', 'custom-alert', '#C42B1C', '</tbody>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</table>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'calculating...', 'hud-warning', '\x20shillings\x20TOTAL\x20for\x20the\x20next\x20', 'Stable', 'soda', '14px\x20\x27Arial\x27', 'addEventListener', 'text/javascript', 'meat', '<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22><div\x20class=\x22win-card-title\x22>Settings</div></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-body\x22\x20style=\x22display:grid;gap:12px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step-title\x22>👤\x20Your\x20Profile</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;color:var(--win-text-2);\x22>Name:\x20<strong>', '<div\x20style=\x22padding:8px\x200;text-align:center;color:var(--win-text-3);font-size:13px;\x22>No\x20budget\x20variances\x20detected.\x20Good\x20job!</div>', 'write', 'disabled', 'TRAVIS-GUARDIAN-SECURE-2026-x7k9', 'survival', 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:10000;', '\x20active', 'Cost\x20of\x20Goods\x20Sold', '\x20You\x20cannot\x20afford\x20to\x20hire\x20anyone\x20right\x20now.\x20Focus\x20on\x20building\x20your\x20own\x20income\x20first.', 'availHeight', 'something', '⚠️\x20This\x20costs\x20', '💎\x20At\x20your\x20level,\x20hiring\x20should\x20be\x20about\x20ROI.\x20Will\x20this\x20person\x20generate\x20at\x20least\x203x\x20their\x20salary\x20in\x20value?', 'soap', 'Phone\x20+\x20Fingerprint\x20sent\x20successfully!', 'getFullYear', 'You\x20have\x20', '\x20days.\x20About\x20', 'You\x20are\x20in\x20the\x20top\x20tier\x20of\x20wealth\x20in\x20Kenya.', 'humanDescription', '|||', 'growth', '\x20shillings\x20per\x20day.\x20You\x27re\x20in\x20a\x20stable\x20position.', 'charCodeAt', 'arrayBuffer', 'days\x20time', '<div\x20style=\x22text-align:right;\x22><div\x20class=\x22chat-bubble-user\x22>', 'now', '💎\x20At\x20your\x20wealth\x20level,\x20', 'credit', 'toDataURL', 'PBKDF2', 'DISCRETIONARY\x20EXPENSES', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;line-height:1.6;\x22>', '\x20days.\x20That\x27s\x20about\x20', 'objectStore', 'createWritable', 'Travis\x20Finance\x20Backup', '💎\x20At\x20your\x20wealth\x20level,\x20hiring\x20decisions\x20should\x20be\x20about\x20ROI.\x20A\x20good\x20hire\x20should\x20generate\x20at\x20least\x203x\x20their\x20salary\x20in\x20value.\x20What\x20role\x20are\x20you\x20considering?', '.css', 'safeCash', '372ZpERJD', 'toDateString', '1272865ZVnBpb', 'readonly', 'custom-alert-ok', 'Petty\x20Cash', 'install-btn', '\x20shillings\x20per\x20day.\x20You\x27re\x20getting\x20by\x20but\x20not\x20thriving.', 'Days\x20Until\x20Month\x20End', 'hardwareConcurrency', 'body', '\x20shillings\x20per\x20month\x20in\x20interest.', 'You\x20can\x20barely\x20meet\x20your\x20basic\x20needs\x20each\x20day.', 'Travel', 'WEALTHY', '⚠️\x20A\x20', '\x20day', 'preventDefault', 'clock-time', 'desc', 'fillRect', 'User\x20cancelled\x20or\x20error\x20occurred', '\x20shillings\x20(', 'onclick', 'employee', 'sidebar-avatar', '\x20days\x20first.', '&lt;', 'chocolate', 'Segoe\x20UI', '<span\x20style=\x22color:var(--color-border-secondary);\x22>·</span><div\x20style=\x22display:flex;align-items:center;gap:5px;\x22><span\x20style=\x22color:var(--color-text-secondary);\x22>Days\x20left</span><span\x20style=\x22font-weight:500;\x22>', '589562KNpDXB', 'color', '\x20shillings.', 'activation-overlay', 'script.js', 'overview', 'DISCRETIONARY', 'tala', 'Salary', '<br><br><strong>My\x20advice:</strong>\x20', 'EMERGENCY:\x20You\x20are\x20in\x20debt\x20by\x20', '\x20at\x20', '\x20shillings\x20per\x20day.\x20Be\x20careful.', 'NECESSARY\x20EXPENSES', 'Office\x20Supplies', 'salary', '\x20shillings.\x20You\x20only\x20have\x20about\x20', '⚠️\x20', 'hud-cap', 'contains', 'cssText', 'That\x27s\x20a\x20big\x20chunk.\x20Can\x20you\x20wait\x20a\x20few\x20days\x20or\x20find\x20a\x20cheaper\x20option?', '\x20shillings\x20per\x20month.', '\x20ADVISOR', '\x20shillings\x20in\x20reserve.\x20Strong\x20financial\x20position.', 'chat-box', 'UA-unknown', 'short', '\x20days.\x20That\x27s\x20', 'where\x20does\x20my\x20money\x20go', 'how\x20is', '-5634', '\x20shillings\x20per\x20month\x20in\x20interest.\x20Only\x20borrow\x20if\x20absolutely\x20necessary.', 'Utilities', 'remove', 'amount', '</span></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', 'obs', 'Ready\x20to\x20install', 'sugar', 'Emergency', 'toUpperCase'];
-    _0x5a88 = function() {
-        return _0x15a749;
-    };
-    return _0x5a88();
-}
-async function triggerInstall() {
-    const _0x563f1f = _0xad7134;
-    if (!deferredPrompt) {
-        alert(_0x563f1f(0x310));
-        return;
-    }
-    try {
-        await deferredPrompt[_0x563f1f(0x3c7)]();
-        const {
-            outcome: _0x14ce7f
-        } = await deferredPrompt[_0x563f1f(0x3b6)];
-        deferredPrompt = null;
-    } catch (_0x589045) {
-        console[_0x563f1f(0x36f)](_0x589045);
-    }
-}
-async function attemptActivation() {
-    const _0x5b6601 = _0xad7134,
-        _0x18e120 = document[_0x5b6601(0x3e3)](_0x5b6601(0x356))[_0x5b6601(0x2fc)][_0x5b6601(0x397)]()[_0x5b6601(0x2a6)]()[_0x5b6601(0x21f)](/[^0-9A-Z-]/g, ''),
-        _0x4c9e92 = localStorage[_0x5b6601(0x2f9)]('fp');
-    if (!_0x4c9e92 || _0x4c9e92[_0x5b6601(0x3c6)] !== 0x20) {
-        showCustomAlert('No\x20valid\x20device\x20fingerprint\x20found.<br><br>Please\x20restart\x20installation\x20process.');
-        return;
-    }
-    const _0x2371b3 = _0x4c9e92[_0x5b6601(0x372)](0x3, 0xb),
-        _0x16aee4 = 'TRV-KE-' + _0x2371b3 + _0x5b6601(0x29c);
-    if (_0x18e120 === _0x16aee4) {
-        let _0x350015 = await getData(_0x5b6601(0x342), _0x5b6601(0x2db)) || {};
-        await saveData('meta', {
-            ..._0x350015,
-            'id': _0x5b6601(0x2db),
-            'activated': !![],
-            'fingerprint': _0x4c9e92,
-            'activatedAt': Date[_0x5b6601(0x250)]()
-        }), document[_0x5b6601(0x3e3)](_0x5b6601(0x280))[_0x5b6601(0x34f)]['add'](_0x5b6601(0x325)), location[_0x5b6601(0x428)]();
-    } else showCustomAlert(_0x5b6601(0x2dc)), document['getElementById'](_0x5b6601(0x356))['value'] = '', document['getElementById'](_0x5b6601(0x356))[_0x5b6601(0x410)]();
-}
-let db, backupDirHandle = null,
-    state = {
-        'user': null,
-        'transactions': [],
-        'obligations': []
-    };
-const BACKUP_FILE = _0xad7134(0x419);
-async function deriveKey(_0x46777d, _0x4aa060) {
-    const _0x3d3eb3 = _0xad7134,
-        _0x2f3474 = new TextEncoder(),
-        _0x1664a6 = await crypto[_0x3d3eb3(0x425)][_0x3d3eb3(0x2d4)]('raw', _0x2f3474['encode'](_0x46777d), _0x3d3eb3(0x254), ![], [_0x3d3eb3(0x364), _0x3d3eb3(0x331)]);
-    return crypto[_0x3d3eb3(0x425)]['deriveKey']({
-        'name': _0x3d3eb3(0x254),
-        'salt': _0x4aa060,
-        'iterations': 0x927c0,
-        'hash': _0x3d3eb3(0x3a3)
-    }, _0x1664a6, {
-        'name': 'AES-GCM',
-        'length': 0x100
-    }, ![], ['encrypt', _0x3d3eb3(0x38a)]);
-}
-async function encryptData(_0x47c4ad, _0x3e215f) {
-    const _0x596bf1 = _0xad7134,
-        _0x48618a = new TextEncoder(),
-        _0x2aebfc = JSON['stringify'](_0x47c4ad),
-        _0x41b2b1 = crypto[_0x596bf1(0x440)](new Uint8Array(0xc)),
-        _0x317064 = crypto[_0x596bf1(0x440)](new Uint8Array(0x10)),
-        _0x5d0ed4 = await deriveKey(_0x3e215f, _0x317064),
-        _0x5cd574 = await crypto[_0x596bf1(0x425)]['encrypt']({
-            'name': _0x596bf1(0x2c2),
-            'iv': _0x41b2b1
-        }, _0x5d0ed4, _0x48618a[_0x596bf1(0x3e5)](_0x2aebfc)),
-        _0x2dbcdc = new Uint8Array(_0x317064[_0x596bf1(0x3c6)] + _0x41b2b1[_0x596bf1(0x3c6)] + _0x5cd574['byteLength']);
-    return _0x2dbcdc[_0x596bf1(0x35e)](_0x317064, 0x0), _0x2dbcdc[_0x596bf1(0x35e)](_0x41b2b1, _0x317064[_0x596bf1(0x3c6)]), _0x2dbcdc[_0x596bf1(0x35e)](new Uint8Array(_0x5cd574), _0x317064['length'] + _0x41b2b1[_0x596bf1(0x3c6)]), _0x2dbcdc;
-}
-async function decryptData(_0x533798, _0x4c70be) {
-    const _0x533132 = _0xad7134,
-        _0x3fa27d = _0x533798[_0x533132(0x372)](0x0, 0x10),
-        _0x496537 = _0x533798['slice'](0x10, 0x1c),
-        _0x4f8517 = _0x533798[_0x533132(0x372)](0x1c),
-        _0x4d61f4 = await deriveKey(_0x4c70be, _0x3fa27d),
-        _0x38021a = await crypto[_0x533132(0x425)]['decrypt']({
-            'name': _0x533132(0x2c2),
-            'iv': _0x496537
-        }, _0x4d61f4, _0x4f8517);
-    return JSON[_0x533132(0x2f7)](new TextDecoder()[_0x533132(0x40c)](_0x38021a));
-}
-async function getData(_0x1ad959, _0x251e26) {
-    const _0x2fa380 = _0xad7134;
-    if (!db) return null;
-    try {
-        const _0x5866c7 = db[_0x2fa380(0x3e6)](_0x1ad959, _0x2fa380(0x261)),
-            _0x43cdf2 = _0x5866c7[_0x2fa380(0x258)](_0x1ad959);
-        return new Promise(_0x66c52c => {
-            const _0x486ebf = _0x2fa380,
-                _0x1e3073 = _0x43cdf2[_0x486ebf(0x2d9)](_0x251e26);
-            _0x1e3073[_0x486ebf(0x1fc)] = () => _0x66c52c(_0x1e3073[_0x486ebf(0x35c)]), _0x1e3073[_0x486ebf(0x2af)] = () => _0x66c52c(null);
-        });
-    } catch (_0x1acfa7) {
-        return null;
-    }
-}
-async function getAllData(_0x3d5d4e) {
-    const _0x10d4c7 = _0xad7134;
-    if (!db) return [];
-    try {
-        const _0x2115b6 = db[_0x10d4c7(0x3e6)](_0x3d5d4e, _0x10d4c7(0x261)),
-            _0x579ba9 = _0x2115b6['objectStore'](_0x3d5d4e);
-        return new Promise(_0x4e0385 => {
-            const _0x40fe56 = _0x10d4c7,
-                _0x4f6fd8 = _0x579ba9[_0x40fe56(0x2ba)]();
-            _0x4f6fd8[_0x40fe56(0x1fc)] = () => _0x4e0385(_0x4f6fd8[_0x40fe56(0x35c)]), _0x4f6fd8[_0x40fe56(0x2af)] = () => _0x4e0385([]);
-        });
-    } catch (_0x418db0) {
-        return [];
-    }
-}
-async function saveData(_0x229bac, _0x13a2a8) {
-    const _0x4c6f7e = _0xad7134,
-        _0x301df3 = db[_0x4c6f7e(0x3e6)](_0x229bac, 'readwrite');
-    return _0x301df3[_0x4c6f7e(0x258)](_0x229bac)[_0x4c6f7e(0x339)](_0x13a2a8), new Promise(_0x1ba333 => _0x301df3[_0x4c6f7e(0x3f8)] = _0x1ba333);
-}
-async function backupUIAssets() {
-    const _0x5ca2de = _0xad7134;
-    if (!backupDirHandle) return;
-    const _0x47995c = [{
-        'name': _0x5ca2de(0x32b)
-    }, {
-        'name': 'tailwind-app.css'
-    }, {
-        'name': 'script.js'
-    }, {
-        'name': _0x5ca2de(0x2e3)
-    }, {
-        'name': _0x5ca2de(0x225)
-    }, {
-        'name': _0x5ca2de(0x435)
-    }];
-    for (const _0x4a2c64 of _0x47995c) {
-        try {
-            const _0x412cb8 = await fetch(_0x4a2c64[_0x5ca2de(0x2e9)]);
-            if (!_0x412cb8['ok']) continue;
-            const _0x3397f6 = await _0x412cb8[_0x5ca2de(0x3aa)](),
-                _0xf382d = await backupDirHandle['getFileHandle'](_0x4a2c64[_0x5ca2de(0x2e9)], {
-                    'create': !![]
-                }),
-                _0x54691c = await _0xf382d[_0x5ca2de(0x259)]();
-            await _0x54691c['write'](_0x3397f6), await _0x54691c[_0x5ca2de(0x322)]();
-        } catch (_0x1e9567) {}
-    }
-}
-async function rebuildUIFromDevice() {
-    const _0xaaac1a = _0xad7134;
-    if (!backupDirHandle) return ![];
-    try {
-        const _0x933bcd = [_0xaaac1a(0x32b), 'tailwind-app.css', _0xaaac1a(0x281), _0xaaac1a(0x2e3), 'input-app.css'],
-            _0x14e131 = await caches[_0xaaac1a(0x394)](_0xaaac1a(0x2e6));
-        for (const _0x5b0889 of _0x933bcd) {
-            const _0x500768 = await backupDirHandle[_0xaaac1a(0x381)](_0x5b0889),
-                _0x4beb65 = await _0x500768['getFile'](),
-                _0x1ed01f = await _0x4beb65[_0xaaac1a(0x24d)]();
-            await _0x14e131['put']('/' + _0x5b0889, new Response(_0x1ed01f, {
-                'headers': {
-                    'Content-Type': _0x5b0889[_0xaaac1a(0x313)](_0xaaac1a(0x25c)) ? _0xaaac1a(0x1f2) : _0x5b0889[_0xaaac1a(0x313)](_0xaaac1a(0x377)) ? _0xaaac1a(0x232) : 'text/html'
-                }
-            }));
-        }
-        return !![];
-    } catch (_0x4ce653) {
-        return ![];
-    }
-}
-async function saveBackup() {
-    const _0x9f77c5 = _0xad7134;
-    if (!backupDirHandle || !db) return;
-    try {
-        const _0x3de4ce = {};
-        for (const _0x101f70 of [_0x9f77c5(0x342), 'tx']) {
-            const _0x576091 = db[_0x9f77c5(0x3e6)](_0x101f70, _0x9f77c5(0x261)),
-                _0x37f2eb = _0x576091['objectStore'](_0x101f70);
-            _0x3de4ce[_0x101f70] = await new Promise(_0x447385 => {
-                const _0x123e40 = _0x9f77c5,
-                    _0x17e0ed = _0x37f2eb['getAll']();
-                _0x17e0ed[_0x123e40(0x1fc)] = () => _0x447385(_0x17e0ed['result']), _0x17e0ed[_0x123e40(0x2af)] = () => _0x447385([]);
-            });
-        }
-        const _0x5ac160 = _0x9f77c5(0x2d5),
-            _0x3527af = await encryptData(_0x3de4ce, _0x5ac160),
-            _0x15008d = await backupDirHandle[_0x9f77c5(0x381)](BACKUP_FILE, {
-                'create': !![]
-            }),
-            _0x2c01de = await _0x15008d[_0x9f77c5(0x259)]();
-        await _0x2c01de[_0x9f77c5(0x236)](_0x3527af), await _0x2c01de[_0x9f77c5(0x322)]();
-    } catch (_0x330959) {}
-}
-async function readBackupContent() {
-    const _0x242934 = _0xad7134;
-    try {
-        if (!window[_0x242934(0x3dd)]) return {
-            'data': null,
-            'error': 'No\x20file\x20handle'
-        };
-        const _0x5cad1a = await window[_0x242934(0x3dd)]['getFile'](),
-            _0x454701 = await _0x5cad1a[_0x242934(0x24d)](),
-            _0x301b6d = new Uint8Array(_0x454701),
-            _0xeb1654 = prompt(_0x242934(0x31e));
-        if (!_0xeb1654) return {
-            'data': null,
-            'error': _0x242934(0x42f)
-        };
-        const _0xb533f9 = await decryptData(_0x301b6d, _0xeb1654);
-        return {
-            'data': _0xb533f9,
-            'error': null
-        };
-    } catch (_0x2f436e) {
-        return {
-            'data': null,
-            'error': _0x2f436e[_0x242934(0x2e9)] === 'OperationError' ? _0x242934(0x36b) : _0x242934(0x348)
-        };
-    }
-}
-async function restoreFromBackup() {
-    const _0x3fba1b = _0xad7134,
-        {
-            data: _0x4cb7e7,
-            error: _0xf019d0
-        } = await readBackupContent();
-    if (_0xf019d0) return {
-        'success': ![],
-        'error': _0x3fba1b(0x1dc) + _0xf019d0
-    };
-    if (!_0x4cb7e7) return {
-        'success': ![],
-        'error': _0x3fba1b(0x3a8)
-    };
-    try {
-        for (const _0x30fc11 of ['meta', 'tx']) {
-            if (!_0x4cb7e7[_0x30fc11] || !Array[_0x3fba1b(0x409)](_0x4cb7e7[_0x30fc11])) continue;
-            const _0x2ae013 = db['transaction'](_0x30fc11, _0x3fba1b(0x2f1)),
-                _0x34e8f0 = _0x2ae013[_0x3fba1b(0x258)](_0x30fc11);
-            await new Promise((_0x596aea, _0x342e53) => {
-                const _0x2c6043 = _0x3fba1b,
-                    _0xb80075 = _0x34e8f0[_0x2c6043(0x2ed)]();
-                _0xb80075[_0x2c6043(0x1fc)] = _0x596aea, _0xb80075[_0x2c6043(0x2af)] = () => _0x342e53(_0xb80075[_0x2c6043(0x36f)]);
-            });
-            for (const _0x526e57 of _0x4cb7e7[_0x30fc11]) {
-                await new Promise((_0x3a37e7, _0x689e7e) => {
-                    const _0x32e29c = _0x3fba1b,
-                        _0x4f9ae0 = _0x34e8f0['put'](_0x526e57);
-                    _0x4f9ae0[_0x32e29c(0x1fc)] = _0x3a37e7, _0x4f9ae0[_0x32e29c(0x2af)] = () => _0x689e7e(_0x4f9ae0[_0x32e29c(0x36f)]);
-                });
-            }
-            await new Promise(_0x339639 => {
-                _0x2ae013['oncomplete'] = _0x339639;
-            });
-        }
-        let _0x2e222a = null;
-        const _0x2f96e = await getData(_0x3fba1b(0x342), _0x3fba1b(0x2db));
-        if (_0x2f96e?.[_0x3fba1b(0x3c0)]) _0x2e222a = _0x2f96e[_0x3fba1b(0x3c0)];
-        else {
-            if (_0x4cb7e7[_0x3fba1b(0x342)]) {
-                const _0x4ff028 = _0x4cb7e7[_0x3fba1b(0x342)][_0x3fba1b(0x2e4)](_0x5df353 => _0x5df353 && _0x5df353['id'] === _0x3fba1b(0x2db));
-                _0x2e222a = _0x4ff028?.[_0x3fba1b(0x3c0)] || null;
-            }
-        }
-        if (_0x2e222a) localStorage[_0x3fba1b(0x321)]('fp', _0x2e222a);
-        return {
-            'success': !![],
-            'error': null
-        };
-    } catch (_0x308351) {
-        return {
-            'success': ![],
-            'error': 'Failed\x20to\x20write\x20data\x20to\x20database:\x20' + (_0x308351[_0x3fba1b(0x21b)] || String(_0x308351))
-        };
-    }
-}
-async function setupBackupFolder() {
-    const _0x5e9be9 = _0xad7134;
-    if ('showDirectoryPicker' in window) try {
-        backupDirHandle = await window[_0x5e9be9(0x438)]({
-            'mode': _0x5e9be9(0x2f1),
-            'startIn': _0x5e9be9(0x1f4)
-        });
-        const _0x1831cd = db[_0x5e9be9(0x3e6)](_0x5e9be9(0x342), 'readwrite');
-        return await _0x1831cd['objectStore'](_0x5e9be9(0x342))[_0x5e9be9(0x339)]({
-            'id': 'backupHandle',
-            'value': backupDirHandle
-        }), await _0x1831cd['done'], await backupUIAssets(), !![];
-    } catch (_0x40c68b) {
-        return ![];
-    }
-    return ![];
-}
-async function manualRestoreFlow() {
-    const _0x211a54 = _0xad7134;
-    try {
-        let _0x4a7ff3;
-        if (_0x211a54(0x416) in window) {
-            const [_0x12930f] = await window['showOpenFilePicker']({
-                'types': [{
-                    'description': _0x211a54(0x25a),
-                    'accept': {
-                        'application/octet-stream': ['.enc']
-                    }
-                }],
-                'multiple': ![]
-            });
-            _0x4a7ff3 = _0x12930f;
-        } else return alert(_0x211a54(0x2bf)), {
-            'success': ![],
-            'error': 'File\x20picker\x20not\x20supported'
-        };
-        window[_0x211a54(0x3dd)] = _0x4a7ff3;
-        const _0x499fd6 = await restoreFromBackup();
-        delete window[_0x211a54(0x3dd)];
-        if (_0x499fd6['success']) return await rebuildUIFromDevice(), await backupUIAssets(), {
-            'success': !![]
-        };
-        return {
-            'success': ![],
-            'error': 'Restore\x20failed'
-        };
-    } catch (_0x491458) {
-        return {
-            'success': ![],
-            'error': _0x211a54(0x273)
-        };
-    }
-}
-async function runRecoveryOnStart() {
-    const _0x4df643 = _0xad7134,
-        _0x303c60 = document[_0x4df643(0x3e3)](_0x4df643(0x38c));
-    if (!_0x303c60) return;
-    _0x303c60[_0x4df643(0x3c4)]['display'] = 'none';
-    try {
-        const _0x450dbc = await getData('meta', _0x4df643(0x408));
-        if (_0x450dbc?.[_0x4df643(0x2fc)]) backupDirHandle = _0x450dbc[_0x4df643(0x2fc)];
-    } catch (_0x59150f) {}
-    const _0x27ba6e = !!await getData(_0x4df643(0x342), 'config'),
-        _0x321272 = !!localStorage[_0x4df643(0x2f9)]('fp');
-    if (_0x27ba6e && _0x321272) return;
-    if (backupDirHandle) await rebuildUIFromDevice();
-    _0x303c60[_0x4df643(0x3c4)][_0x4df643(0x434)] = 'flex', _0x303c60[_0x4df643(0x368)] = _0x4df643(0x2bc), document[_0x4df643(0x3e3)](_0x4df643(0x2b1))[_0x4df643(0x275)] = async () => {
-        const _0x38575b = _0x4df643,
-            _0x3d35f3 = document['getElementById'](_0x38575b(0x2b1));
-        _0x3d35f3['disabled'] = !![], _0x3d35f3[_0x38575b(0x378)] = _0x38575b(0x40f);
-        const _0x353fe3 = await manualRestoreFlow();
-        _0x353fe3[_0x38575b(0x396)] ? (_0x303c60[_0x38575b(0x368)] = '<div\x20style=\x22padding:40px;text-align:center;background:white;border-radius:16px;max-width:360px;\x22><p\x20style=\x22color:green;font-size:16px;\x22>\x20Everything\x20restored!\x20Reloading…</p></div>', setTimeout(() => location[_0x38575b(0x428)](), 0x4b0)) : _0x303c60[_0x38575b(0x368)] = _0x38575b(0x3d4) + (_0x353fe3['error'] || _0x38575b(0x369)) + '</p><button\x20onclick=\x22location.reload()\x22\x20style=\x22margin-top:12px;padding:10px\x2020px;border-radius:8px;border:none;background:#0078D4;color:white;cursor:pointer;\x22>Try\x20Again</button></div>';
-    }, document[_0x4df643(0x3e3)](_0x4df643(0x320))['onclick'] = () => _0x303c60[_0x4df643(0x3c4)][_0x4df643(0x434)] = _0x4df643(0x2ab);
-}
-async function startFingerprintBackgroundProbe() {
-    const _0x8ba2f5 = async () => {
-        const _0x192497 = _0x9f28;
-        if (localStorage[_0x192497(0x2f9)]('fp')) return !![];
-        const _0x1b3863 = await getData(_0x192497(0x342), _0x192497(0x2db));
-        if (_0x1b3863?.['fingerprint']) return localStorage[_0x192497(0x321)]('fp', _0x1b3863['fingerprint']), !![];
-        return ![];
-    };
-    setTimeout(() => _0x8ba2f5(), 0x50);
-    let _0x27eb1b = 0x0;
-    const _0x4c903a = setInterval(async () => {
-        _0x27eb1b++;
-        if (await _0x8ba2f5() || _0x27eb1b > 0xc) clearInterval(_0x4c903a);
-    }, 0x1388);
-}
-async function initDB() {
-    return new Promise(_0x417398 => {
-        const _0x1acaa1 = _0x9f28,
-            _0x2c96c6 = indexedDB['open'](_0x1acaa1(0x323), 0x1);
-        _0x2c96c6[_0x1acaa1(0x2b5)] = _0x439bae => {
-            const _0x23192b = _0x1acaa1,
-                _0x2c237c = _0x439bae[_0x23192b(0x354)][_0x23192b(0x35c)];
-            if (!_0x2c237c[_0x23192b(0x383)][_0x23192b(0x290)](_0x23192b(0x342))) _0x2c237c[_0x23192b(0x392)](_0x23192b(0x342), {
-                'keyPath': 'id'
-            });
-            if (!_0x2c237c[_0x23192b(0x383)][_0x23192b(0x290)]('tx')) _0x2c237c[_0x23192b(0x392)]('tx', {
-                'keyPath': 'id'
-            });
-        }, _0x2c96c6[_0x1acaa1(0x1fc)] = async _0x5f3a56 => {
-            const _0x5d3fce = _0x1acaa1;
-            db = _0x5f3a56[_0x5d3fce(0x354)][_0x5d3fce(0x35c)], startFingerprintBackgroundProbe(), await runRecoveryOnStart(), _0x417398();
-        }, _0x2c96c6[_0x1acaa1(0x2af)] = () => _0x417398();
-    });
-}
+let db;
+let backupDirHandle=null;
+let state={user:null,transactions:[],obligations:[]};
+const BACKUP_FILE="travis-finance-backup.enc";
+
+async function deriveKey(password,salt){const enc=new TextEncoder();const km=await crypto.subtle.importKey("raw",enc.encode(password),"PBKDF2",false,["deriveBits","deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:600000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);}
+async function encryptData(data,password){const enc=new TextEncoder();const js=JSON.stringify(data);const iv=crypto.getRandomValues(new Uint8Array(12));const salt=crypto.getRandomValues(new Uint8Array(16));const key=await deriveKey(password,salt);const encrypted=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(js));const result=new Uint8Array(salt.length+iv.length+encrypted.byteLength);result.set(salt,0);result.set(iv,salt.length);result.set(new Uint8Array(encrypted),salt.length+iv.length);return result;}
+async function decryptData(encryptedBytes,password){const salt=encryptedBytes.slice(0,16);const iv=encryptedBytes.slice(16,28);const ciphertext=encryptedBytes.slice(28);const key=await deriveKey(password,salt);const decrypted=await crypto.subtle.decrypt({name:"AES-GCM",iv},key,ciphertext);return JSON.parse(new TextDecoder().decode(decrypted));}
+
+async function getData(storeName,id){if(!db)return null;try{const tx=db.transaction(storeName,"readonly");const store=tx.objectStore(storeName);return new Promise(res=>{const r=store.get(id);r.onsuccess=()=>res(r.result);r.onerror=()=>res(null);});}catch(e){return null;}}
+async function getAllData(storeName){if(!db)return[];try{const tx=db.transaction(storeName,"readonly");const store=tx.objectStore(storeName);return new Promise(res=>{const r=store.getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>res([]);});}catch(e){return[];}}
+async function saveData(s,d){const t=db.transaction(s,"readwrite");t.objectStore(s).put(d);return new Promise(res=>t.oncomplete=res);}
+
+async function backupUIAssets(){if(!backupDirHandle)return;const criticalFiles=[{name:"index.html"}];for(const file of criticalFiles){try{const response=await fetch(file.name);if(!response.ok)continue;const blob=await response.blob();const fileHandle=await backupDirHandle.getFileHandle(file.name,{create:true});const writable=await fileHandle.createWritable();await writable.write(blob);await writable.close();}catch(e){}}}
+async function rebuildUIFromDevice(){if(!backupDirHandle)return false;try{const uiFiles=["index.html"];const cache=await caches.open("travis-ui-cache-v1");for(const filename of uiFiles){const fileHandle=await backupDirHandle.getFileHandle(filename);const file=await fileHandle.getFile();const buffer=await file.arrayBuffer();await cache.put(`/${filename}`,new Response(buffer,{headers:{"Content-Type":filename.endsWith(".css")?"text/css":filename.endsWith(".js")?"text/javascript":"text/html"}}));}return true;}catch(e){return false;}}
+async function saveBackup(){if(!backupDirHandle||!db)return;try{const backupData={};for(const storeName of["meta","tx"]){const t=db.transaction(storeName,"readonly");const store=t.objectStore(storeName);backupData[storeName]=await new Promise(res=>{const r=store.getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>res([]);});}const PASSWORD="Travisguardian";const encryptedBytes=await encryptData(backupData,PASSWORD);const fileHandle=await backupDirHandle.getFileHandle(BACKUP_FILE,{create:true});const writable=await fileHandle.createWritable();await writable.write(encryptedBytes);await writable.close();}catch(e){}}
+async function readBackupContent(){try{if(!window.tempBackupFileHandle)return{data:null,error:"No file handle"};const file=await window.tempBackupFileHandle.getFile();const arrayBuffer=await file.arrayBuffer();const encryptedBytes=new Uint8Array(arrayBuffer);const password=prompt("Enter the backup password to decrypt your data:");if(!password)return{data:null,error:"Password required"};const data=await decryptData(encryptedBytes,password);return{data,error:null};}catch(e){return{data:null,error:e.name==="OperationError"?"Wrong password or corrupted file":"Failed to read/decrypt backup file"};}}
+async function restoreFromBackup(){const{data:backup,error:readError}=await readBackupContent();if(readError)return{success:false,error:`Could not read the backup file: ${readError}`};if(!backup)return{success:false,error:"Backup file was empty or invalid"};try{for(const storeName of["meta","tx"]){if(!backup[storeName]||!Array.isArray(backup[storeName]))continue;const tx=db.transaction(storeName,"readwrite");const store=tx.objectStore(storeName);await new Promise((res,rej)=>{const clearReq=store.clear();clearReq.onsuccess=res;clearReq.onerror=()=>rej(clearReq.error);});for(const item of backup[storeName]){await new Promise((res,rej)=>{const putReq=store.put(item);putReq.onsuccess=res;putReq.onerror=()=>rej(putReq.error);});}await new Promise(res=>{tx.oncomplete=res;});}let fp=null;const config=await getData("meta","config");if(config?.fingerprint){fp=config.fingerprint;}else if(backup.meta){const cfgItem=backup.meta.find(item=>item&&item.id==="config");fp=cfgItem?.fingerprint||null;}if(fp)localStorage.setItem("fp",fp);return{success:true,error:null};}catch(e){return{success:false,error:`Failed to write data to database: ${e.message||String(e)}`};}}
+async function setupBackupFolder(){if('showDirectoryPicker' in window){try{backupDirHandle=await window.showDirectoryPicker({mode:"readwrite",startIn:"documents"});const tx=db.transaction("meta","readwrite");await tx.objectStore("meta").put({id:"backupHandle",value:backupDirHandle});await tx.done;await backupUIAssets();return true;}catch(err){return false;}}return false;}
+async function manualRestoreFlow(){try{let fileHandle;if('showOpenFilePicker' in window){const[handle]=await window.showOpenFilePicker({types:[{description:"Travis Finance Backup",accept:{"application/octet-stream":[".enc"]}}],multiple:false});fileHandle=handle;}else{alert("Your browser does not support file selection.");return{success:false,error:"File picker not supported"};}window.tempBackupFileHandle=fileHandle;const result=await restoreFromBackup();delete window.tempBackupFileHandle;if(result.success){await rebuildUIFromDevice();await backupUIAssets();return{success:true};}return{success:false,error:"Restore failed"};}catch(err){return{success:false,error:"User cancelled or error occurred"};}}
+
+async function runRecoveryOnStart(){const overlay=document.getElementById("recovery-overlay");if(!overlay)return;overlay.style.display='none';
+try{const result=await getData("meta","backupHandle");if(result?.value)backupDirHandle=result.value;}catch(e){}
+const hasConfig=!!(await getData("meta","config")); const hasFp=!!localStorage.getItem("fp");
+if(hasConfig&&hasFp)return;
+if(backupDirHandle)await rebuildUIFromDevice();
+overlay.style.display='flex';
+overlay.innerHTML=`<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:inherit;"><div style="background:white;border-radius:16px;max-width:460px;width:92%;box-shadow:0 25px 70px rgba(0,0,0,0.3);overflow:hidden;"><div style="background:linear-gradient(135deg,#0078D4,#005A9E);color:white;padding:24px;text-align:center;"><h2 style="margin:0 0 6px;font-size:1.3rem;">🔒 Travis Guardian</h2><p style="margin:0;opacity:0.85;font-size:13px;">Your Personal Financial Advisor</p></div><div style="padding:28px;text-align:center;"><div style="width:60px;height:60px;background:#f0f7ff;color:#0078D4;font-size:28px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">📁</div><h3 style="margin:0 0 12px;font-size:1.1rem;color:#1a1a1a;">Restore Your Data?</h3><p style="color:#5a5a5a;line-height:1.6;margin-bottom:24px;font-size:13px;">Browser data was cleared.<br>Select your backup file to restore financial records.</p><div style="display:flex;flex-direction:column;gap:10px;"><button id="restore-btn" style="background:#0078D4;color:white;border:none;padding:13px;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;">📂 Select Backup File & Restore</button><button id="skip-btn" style="background:transparent;color:#5a5a5a;border:1px solid #ddd;padding:12px;font-size:13px;border-radius:8px;cursor:pointer;">Continue as New User</button></div><p style="margin:12px 0 0;font-size:11px;color:#8a8a8a;">First-time users: choose "Continue as New User"</p></div></div></div>`;
+document.getElementById("restore-btn").onclick=async()=>{const btn=document.getElementById("restore-btn");btn.disabled=true;btn.textContent="Restoring…";const result=await manualRestoreFlow();if(result.success){overlay.innerHTML=`<div style="padding:40px;text-align:center;background:white;border-radius:16px;max-width:360px;"><p style="color:green;font-size:16px;"> Everything restored! Reloading…</p></div>`;setTimeout(()=>location.reload(),1200);}else{overlay.innerHTML=`<div style="padding:28px;text-align:center;color:red;background:white;border-radius:16px;"><p>${result.error||"Restore failed"}</p><button onclick="location.reload()" style="margin-top:12px;padding:10px 20px;border-radius:8px;border:none;background:#0078D4;color:white;cursor:pointer;">Try Again</button></div>`;}};
+document.getElementById("skip-btn").onclick=()=>overlay.style.display='none';}
+
+async function startFingerprintBackgroundProbe(){const tryRestoreFP=async()=>{if(localStorage.getItem("fp"))return true;const config=await getData("meta","config");if(config?.fingerprint){localStorage.setItem("fp",config.fingerprint);return true;}return false;};setTimeout(()=>tryRestoreFP(),80);let attempts=0;const interval=setInterval(async()=>{attempts++;if(await tryRestoreFP()||attempts>12)clearInterval(interval);},5000);}
+
+async function initDB(){return new Promise(resolve=>{const req=indexedDB.open("TravisGuardian_v1.0",1);req.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains("meta"))d.createObjectStore("meta",{keyPath:"id"});if(!d.objectStoreNames.contains("tx"))d.createObjectStore("tx",{keyPath:"id"});};req.onsuccess=async e=>{db=e.target.result;startFingerprintBackgroundProbe();await runRecoveryOnStart();resolve();};req.onerror=()=>resolve();});}
+
+
 let travisMemory = {
-    'conversationCount': 0x0,
-    'lastQuestion': '',
-    'lastPurpose': '',
-    'lastVerdict': '',
-    'chatContext': {
-        'pendingClarification': null,
-        'lastTopic': null,
-        'providedData': {}
-    }
+    conversationCount: 0,
+    lastQuestion: "",
+    lastPurpose: "",
+    lastVerdict: "",
+    chatContext: { pendingClarification: null, lastTopic: null, providedData: {} }
 };
 
-function isObligation(_0xef5134) {
-    const _0x2f730c = _0xad7134;
-    if (!state[_0x2f730c(0x38f)] || state[_0x2f730c(0x38f)][_0x2f730c(0x3c6)] === 0x0) return ![];
-    return state['obligations'][_0x2f730c(0x405)](_0x571bc0 => _0xef5134[_0x2f730c(0x39e)]()[_0x2f730c(0x389)](_0x571bc0[_0x2f730c(0x222)][_0x2f730c(0x39e)]()));
+function isObligation(spendDesc) {
+    if (!state.obligations || state.obligations.length === 0) return false;
+    return state.obligations.some(o => spendDesc.toLowerCase().includes(o.label.toLowerCase()));
 }
 
 function getStatusSummary() {
-    const _0x454510 = _0xad7134,
-        _0x66ceba = getFin(),
-        _0x33500a = getUserWealthTier(_0x66ceba['daily'], _0x66ceba['safeCash']);
-    let _0x20038a = _0x33500a;
-    return _0x66ceba[_0x454510(0x25d)] < 0x0 && (_0x20038a = {
-        ..._0x33500a,
-        'displayName': 'IN\x20DEBT',
-        'color': _0x454510(0x229),
-        'adviceStyle': _0x454510(0x239),
-        'humanDescription': _0x454510(0x336) + Math[_0x454510(0x35f)](_0x66ceba[_0x454510(0x25d)])[_0x454510(0x44a)]() + _0x454510(0x27f)
-    }), {
-        'cash': Math[_0x454510(0x1f7)](_0x66ceba[_0x454510(0x25d)]),
-        'dailyCap': Math[_0x454510(0x437)](_0x66ceba[_0x454510(0x37b)]),
-        'daysRem': _0x66ceba[_0x454510(0x3c8)],
-        'wealthTier': _0x20038a,
-        'humanStatus': _0x66ceba[_0x454510(0x25d)] < 0x0 ? _0x454510(0x287) + Math[_0x454510(0x35f)](_0x66ceba[_0x454510(0x25d)])['toLocaleString']() + _0x454510(0x2ee) : humanReadableStatus(_0x66ceba['safeCash'], _0x66ceba[_0x454510(0x37b)], _0x66ceba['daysRem'], _0x33500a)
+    const fin = getFin();
+    const wealthTier = getUserWealthTier(fin.daily, fin.safeCash);
+    
+    let displayTier = wealthTier;
+    if (fin.safeCash < 0) {
+        displayTier = {
+            ...wealthTier,
+            displayName: "IN DEBT",
+            color: "#C42B1C",
+            adviceStyle: "survival",
+            humanDescription: `You are in debt by ${Math.abs(fin.safeCash).toLocaleString()} shillings.`
+        };
+    }
+    
+    return {
+        cash: Math.round(fin.safeCash),
+        dailyCap: Math.floor(fin.daily),
+        daysRem: fin.daysRem,
+        wealthTier: displayTier,
+        humanStatus: fin.safeCash < 0 
+            ? `EMERGENCY: You are in debt by ${Math.abs(fin.safeCash).toLocaleString()} shillings. You cannot spend any money until you earn enough to clear this debt.`
+            : humanReadableStatus(fin.safeCash, fin.daily, fin.daysRem, wealthTier)
     };
 }
 
 function updateLiveHud() {
-    const _0xe8cf47 = _0xad7134,
-        _0x487929 = parseFloat(document[_0xe8cf47(0x3e3)]('tx-amount')['value']) || 0x0,
-        _0x1936af = document['getElementById']('tx-credit')[_0xe8cf47(0x2fc)],
-        _0x1adfbc = getFin(),
-        _0xf65597 = isLiquid(_0x1936af) ? _0x1adfbc[_0xe8cf47(0x25d)] - _0x487929 : _0x1adfbc[_0xe8cf47(0x25d)],
-        _0x20ae87 = _0xf65597 / _0x1adfbc[_0xe8cf47(0x3c8)];
-    document['getElementById'](_0xe8cf47(0x28f))[_0xe8cf47(0x44b)] = _0xe8cf47(0x317) + _0x20ae87[_0xe8cf47(0x407)](0x0), document[_0xe8cf47(0x3e3)]('hud-cover')[_0xe8cf47(0x44b)] = _0xe8cf47(0x317) + _0x1adfbc[_0xe8cf47(0x202)][_0xe8cf47(0x44a)]() + _0xe8cf47(0x332);
-    const _0x3635b0 = document['getElementById'](_0xe8cf47(0x22c));
-    isLiquid(_0x1936af) && _0x487929 > _0x1adfbc[_0xe8cf47(0x37b)] ? _0x3635b0[_0xe8cf47(0x3c4)][_0xe8cf47(0x434)] = _0xe8cf47(0x417) : _0x3635b0[_0xe8cf47(0x3c4)][_0xe8cf47(0x434)] = _0xe8cf47(0x2ab);
+    const amount = parseFloat(document.getElementById('tx-amount').value) || 0;
+    const credit = document.getElementById('tx-credit').value;
+    const fin = getFin();
+    const projectedSafe = isLiquid(credit) ? fin.safeCash - amount : fin.safeCash;
+    const newCap = projectedSafe / fin.daysRem;
+    document.getElementById('hud-cap').innerText = `KSh ${newCap.toFixed(0)}`;
+    document.getElementById('hud-cover').innerText = `KSh ${fin.pending.toLocaleString()} Reserved`;
+    const warn = document.getElementById('hud-warning');
+    if (isLiquid(credit) && amount > fin.daily) { warn.style.display = 'block'; } else { warn.style.display = 'none'; }
 }
 
 function getFin() {
-    const _0xf5b374 = _0xad7134,
-        _0x555635 = new Date(),
-        _0x2626ae = Math[_0xf5b374(0x3a7)](0x1, new Date(_0x555635[_0xf5b374(0x244)](), _0x555635[_0xf5b374(0x3d8)]() + 0x1, 0x0)[_0xf5b374(0x3ab)]() - _0x555635['getDate']());
-    let _0x31d7c8 = 0x0;
-    const _0x2cd12e = ['Cash', _0xf5b374(0x2c9), _0xf5b374(0x39a), 'Savings', _0xf5b374(0x34a), _0xf5b374(0x263), _0xf5b374(0x2fe)];
-    _0x2cd12e[_0xf5b374(0x338)](_0x327384 => {
-        _0x31d7c8 += getBalance(_0x327384);
+    const now = new Date();
+    const daysRem = Math.max(1, new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate());
+    let liquid = 0;
+    const liquidAssets = ["Cash", "M-Pesa", "Bank Account", "Savings", "Bank / M-Pesa", "Petty Cash", "Accounts Receivable"];
+    liquidAssets.forEach(acc => { liquid += getBalance(acc); });
+    const obsStatus = state.obligations.map(o => {
+        let paid = 0;
+        state.transactions.forEach(t => {
+            const tDate = new Date(t.id);
+            if (tDate.getMonth() === now.getMonth() && (t.desc.toLowerCase().includes(o.label.toLowerCase()) || t.credit === o.label)) {
+                paid += t.amount;
+            }
+        });
+        return { ...o, paid, pending: Math.max(0, o.amount - paid), variance: paid - o.amount };
     });
-    const _0x4e8fe1 = state[_0xf5b374(0x38f)][_0xf5b374(0x349)](_0x3907bb => {
-            const _0xcc0577 = _0xf5b374;
-            let _0xb9cad1 = 0x0;
-            return state[_0xcc0577(0x385)][_0xcc0577(0x338)](_0x5dfa2a => {
-                const _0x199555 = _0xcc0577,
-                    _0x4c949f = new Date(_0x5dfa2a['id']);
-                _0x4c949f['getMonth']() === _0x555635[_0x199555(0x3d8)]() && (_0x5dfa2a['desc']['toLowerCase']()[_0x199555(0x389)](_0x3907bb[_0x199555(0x222)][_0x199555(0x39e)]()) || _0x5dfa2a[_0x199555(0x252)] === _0x3907bb[_0x199555(0x222)]) && (_0xb9cad1 += _0x5dfa2a['amount']);
-            }), {
-                ..._0x3907bb,
-                'paid': _0xb9cad1,
-                'pending': Math[_0xcc0577(0x3a7)](0x0, _0x3907bb[_0xcc0577(0x2a0)] - _0xb9cad1),
-                'variance': _0xb9cad1 - _0x3907bb[_0xcc0577(0x2a0)]
-            };
-        }),
-        _0x1202e0 = _0x4e8fe1[_0xf5b374(0x33f)]((_0x40d01f, _0x36c20a) => _0x40d01f + _0x36c20a[_0xf5b374(0x202)], 0x0),
-        _0x3c858c = _0x31d7c8 - _0x1202e0;
-    return {
-        'liquid': _0x31d7c8,
-        'pending': _0x1202e0,
-        'safeCash': _0x3c858c,
-        'daysRem': _0x2626ae,
-        'obsStatus': _0x4e8fe1,
-        'daily': _0x3c858c / _0x2626ae
-    };
+    const pending = obsStatus.reduce((a, b) => a + b.pending, 0);
+    const safeCash = liquid - pending;
+    return { liquid, pending, safeCash, daysRem, obsStatus, daily: safeCash / daysRem };
 }
 
-function isLiquid(_0x243c16) {
-    const _0x43ad85 = _0xad7134;
-    if (!_0x243c16) return ![];
-    const _0x3a70bf = [_0x43ad85(0x367), _0x43ad85(0x2c9), _0x43ad85(0x39a), _0x43ad85(0x2b9), _0x43ad85(0x34a), _0x43ad85(0x263), 'Accounts\x20Receivable'];
-    return _0x3a70bf[_0x43ad85(0x389)](_0x243c16);
+function isLiquid(acc) {
+    if (!acc) return false;
+    const liquidAssetNames = ["Cash", "M-Pesa", "Bank Account", "Savings", "Bank / M-Pesa", "Petty Cash", "Accounts Receivable"];
+    return liquidAssetNames.includes(acc);
 }
 
-function getBalance(_0x1df037) {
-    const _0x44c57e = _0xad7134;
-    let _0x3ca4dd = 0x0;
-    state[_0x44c57e(0x385)][_0x44c57e(0x338)](_0x3e2b5c => {
-        const _0x41d9bc = _0x44c57e;
-        if (_0x3e2b5c[_0x41d9bc(0x2d7)] === _0x1df037) _0x3ca4dd += _0x3e2b5c[_0x41d9bc(0x2a0)];
-        if (_0x3e2b5c[_0x41d9bc(0x252)] === _0x1df037) _0x3ca4dd -= _0x3e2b5c[_0x41d9bc(0x2a0)];
+function getBalance(acc) {
+    let balance = 0;
+    state.transactions.forEach(t => {
+        if (t.debit === acc) balance += t.amount;
+        if (t.credit === acc) balance -= t.amount;
     });
-    const _0x1c201a = [_0x44c57e(0x367), _0x44c57e(0x2c9), _0x44c57e(0x39a), _0x44c57e(0x2b9), 'Bank\x20/\x20M-Pesa', _0x44c57e(0x263), _0x44c57e(0x2fe), 'Inventory', _0x44c57e(0x2eb)];
-    return _0x1c201a[_0x44c57e(0x389)](_0x1df037) ? _0x3ca4dd : -_0x3ca4dd;
+    const assetTypes = ["Cash", "M-Pesa", "Bank Account", "Savings", "Bank / M-Pesa", "Petty Cash", "Accounts Receivable", "Inventory", "Fixed Assets"];
+    return assetTypes.includes(acc) ? balance : -balance;
 }
 
-function navClick(_0x50b203) {
-    const _0x1a1cfd = _0xad7134;
-    document[_0x1a1cfd(0x3a4)](_0x1a1cfd(0x3f6))[_0x1a1cfd(0x338)](_0x5121f2 => _0x5121f2[_0x1a1cfd(0x34f)][_0x1a1cfd(0x29f)]('active'));
-    const _0x46f8bd = document[_0x1a1cfd(0x3e3)]('nav-' + _0x50b203);
-    if (_0x46f8bd) _0x46f8bd['classList']['add']('active');
-    document['querySelectorAll'](_0x1a1cfd(0x2d1))[_0x1a1cfd(0x338)](_0x1be439 => _0x1be439[_0x1a1cfd(0x34f)][_0x1a1cfd(0x29f)]('active')), document[_0x1a1cfd(0x3e3)](_0x1a1cfd(0x393))[_0x1a1cfd(0x34f)][_0x1a1cfd(0x29f)]('mobile-open'), nav(_0x50b203);
+function navClick(view) {
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    const el = document.getElementById('nav-' + view);
+    if (el) el.classList.add('active');
+    document.querySelectorAll('.taskbar-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('nav-sidebar').classList.remove('mobile-open');
+    nav(view);
 }
 
-function nav(_0x4edb4f) {
-    const _0x384b15 = _0xad7134,
-        _0x63796f = document[_0x384b15(0x3e3)](_0x384b15(0x441)),
-        _0x1a2ab5 = getFin();
-    updateHeader(_0x1a2ab5);
-    if (_0x4edb4f === _0x384b15(0x326)) {
-        const _0x3ddac9 = getUserWealthTier(_0x1a2ab5[_0x384b15(0x37b)], _0x1a2ab5[_0x384b15(0x25d)]),
-            _0x3c5efb = _0x1a2ab5[_0x384b15(0x32d)][_0x384b15(0x31b)](_0x49c9a2 => _0x49c9a2['variance'] > 0x0);
-        _0x63796f[_0x384b15(0x368)] = '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:grid;grid-template-columns:300px\x201fr;gap:16px;align-items:start;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;flex-direction:column;gap:12px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Your\x20Financial\x20Health</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22chip\x22\x20style=\x22background:' + _0x3ddac9[_0x384b15(0x27e)] + _0x384b15(0x387) + _0x3ddac9[_0x384b15(0x27e)] + ';\x22>' + _0x3ddac9[_0x384b15(0x329)] + _0x384b15(0x3ff) + _0x3ddac9[_0x384b15(0x248)] + _0x384b15(0x36a) + _0x3ddac9[_0x384b15(0x337)] + _0x384b15(0x444) + (_0x3c5efb[_0x384b15(0x3c6)] > 0x0 ? _0x384b15(0x207) + _0x3c5efb[_0x384b15(0x3c6)] + '\x20leak' + (_0x3c5efb[_0x384b15(0x3c6)] > 0x1 ? 's' : '') + _0x384b15(0x3f0) : '<span\x20class=\x22chip\x20chip-green\x22>Clean</span>') + _0x384b15(0x1f6) + (_0x3c5efb[_0x384b15(0x3c6)] > 0x0 ? _0x3c5efb['map'](_0x3cfe1b => _0x384b15(0x41c) + _0x3cfe1b[_0x384b15(0x222)] + _0x384b15(0x201) + _0x3cfe1b[_0x384b15(0x2a0)][_0x384b15(0x44a)]() + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:right;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:var(--win-red);font-size:13px;font-weight:700;\x22>+KSh\x20' + _0x3cfe1b[_0x384b15(0x360)][_0x384b15(0x44a)]() + _0x384b15(0x34e))[_0x384b15(0x400)]('') : _0x384b15(0x235)) + _0x384b15(0x21e) + _0x3ddac9[_0x384b15(0x329)] + _0x384b15(0x256) + humanReadableStatus(_0x1a2ab5[_0x384b15(0x25d)], _0x1a2ab5['daily'], _0x1a2ab5[_0x384b15(0x3c8)], _0x3ddac9) + _0x384b15(0x388), window[_0x384b15(0x43e)] < 0x384 && (_0x63796f[_0x384b15(0x32c)](_0x384b15(0x399))[_0x384b15(0x3c4)]['gridTemplateColumns'] = '1fr'), setTimeout(() => renderChart(), 0x64);
+function nav(view) {
+    const port = document.getElementById('view-port');
+    const fin = getFin();
+    updateHeader(fin);
+
+    if (view === 'dash') {
+        const wealthTier = getUserWealthTier(fin.daily, fin.safeCash);
+        const leaks = fin.obsStatus.filter(o => o.variance > 0);
+        
+        port.innerHTML = `
+        <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start;">
+            <div style="display:flex;flex-direction:column;gap:12px;">
+                <div class="win-card">
+                    <div class="win-card-header">
+                        <div class="win-card-title">Your Financial Health</div>
+                        <span class="chip" style="background:${wealthTier.color}20;color:${wealthTier.color};">${wealthTier.displayName}</span>
+                    </div>
+                    <div class="win-card-body">
+                        <div style="font-size:13px;margin-bottom:12px;">${wealthTier.humanDescription}</div>
+                        <div style="font-size:11px;color:var(--win-text-3);">${wealthTier.priority}</div>
+                    </div>
+                </div>
+                <div class="win-card">
+                    <div class="win-card-header">
+                        <div class="win-card-title">Leak Finder</div>
+                        ${leaks.length > 0 ? `<span class="chip chip-red">${leaks.length} leak${leaks.length > 1 ? 's' : ''}</span>` : '<span class="chip chip-green">Clean</span>'}
+                    </div>
+                    <div class="win-card-body" style="padding-top:0;">
+                        ${leaks.length > 0 ? leaks.map(l => `
+                            <div class="leak-item">
+                                <div>
+                                    <div style="font-size:13px;font-weight:500;">${l.label}</div>
+                                    <div style="font-size:11px;color:var(--win-text-3);">Budget: KSh ${l.amount.toLocaleString()}</div>
+                                </div>
+                                <div style="text-align:right;">
+                                    <div style="color:var(--win-red);font-size:13px;font-weight:700;">+KSh ${l.variance.toLocaleString()}</div>
+                                    <div style="font-size:10px;color:var(--win-red);">Over budget</div>
+                                </div>
+                            </div>`).join('') : `<div style="padding:8px 0;text-align:center;color:var(--win-text-3);font-size:13px;">No budget variances detected. Good job!</div>`}
+                    </div>
+                </div>
+                <div class="win-card">
+                    <div class="win-card-header"><div class="win-card-title">What This Means For You</div></div>
+                    <div class="win-card-body">
+                        <div style="font-size:14px;font-weight:500;margin-bottom:8px;">${wealthTier.displayName}</div>
+                        <div style="font-size:13px;line-height:1.6;">${humanReadableStatus(fin.safeCash, fin.daily, fin.daysRem, wealthTier)}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="win-card" style="min-height:340px;">
+                <div class="win-card-header">
+                    <div class="win-card-title">Your Spending Trend</div>
+                    <div style="font-size:11px;color:var(--win-text-3);">Last 7 days</div>
+                </div>
+                <div class="win-card-body" style="height:300px;">
+                    <canvas id="analyticsChart"></canvas>
+                </div>
+            </div>
+        </div>`;
+        if (window.innerWidth < 900) { port.querySelector('div').style.gridTemplateColumns = '1fr'; }
+        setTimeout(() => renderChart(), 100);
     }
-    if (_0x4edb4f === _0x384b15(0x2a2)) {
-        let _0x24dc0c = _0x1a2ab5[_0x384b15(0x32d)]['map'](_0x34c8a7 => _0x384b15(0x3c5) + _0x34c8a7['label'] + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);\x22>Budget:\x20KSh\x20' + _0x34c8a7[_0x384b15(0x2a0)][_0x384b15(0x44a)]() + _0x384b15(0x33a) + _0x34c8a7[_0x384b15(0x39c)][_0x384b15(0x44a)]() + _0x384b15(0x3b7) + Math[_0x384b15(0x3ac)](0x64, _0x34c8a7[_0x384b15(0x39c)] / _0x34c8a7[_0x384b15(0x2a0)] * 0x64) + _0x384b15(0x3db) + (_0x34c8a7[_0x384b15(0x202)] <= 0x0 ? _0x384b15(0x3ae) : _0x384b15(0x308)) + _0x384b15(0x31a) + (_0x34c8a7['pending'] <= 0x0 ? '<span\x20class=\x22chip\x20chip-green\x22>✓\x20Settled</span>' : _0x384b15(0x38b) + _0x34c8a7[_0x384b15(0x202)][_0x384b15(0x44a)]() + _0x384b15(0x2aa)) + _0x384b15(0x427) + (_0x34c8a7[_0x384b15(0x360)] > 0x0 ? _0x384b15(0x3e1) + _0x34c8a7[_0x384b15(0x360)][_0x384b15(0x44a)]() + _0x384b15(0x422) : '') + '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>')[_0x384b15(0x400)]('');
-        _0x63796f[_0x384b15(0x368)] = _0x384b15(0x2da) + (_0x24dc0c || _0x384b15(0x447)) + _0x384b15(0x353);
+
+    if (view === 'obs') {
+        let rows = fin.obsStatus.map(o => `
+            <div class="obs-row">
+                <div>
+                    <div style="font-size:13px;font-weight:600;">${o.label}</div>
+                    <div style="font-size:11px;color:var(--win-text-3);">Budget: KSh ${o.amount.toLocaleString()} · Spent: KSh ${o.paid.toLocaleString()}</div>
+                    <div style="margin-top:6px;">
+                        <div class="progress-track" style="height:4px;width:120px;">
+                            <div class="progress-fill" style="width:${Math.min(100, (o.paid / o.amount) * 100)}%;background:${o.pending <= 0 ? '#107C10' : '#0078D4'};"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align:right;">
+                    ${o.pending <= 0 ? `<span class="chip chip-green">✓ Settled</span>` : `<div style="font-size:14px;font-weight:700;color:var(--win-yellow);">KSh ${o.pending.toLocaleString()}</div><div style="font-size:10px;color:var(--win-text-3);">remaining</div>`}
+                    ${o.variance > 0 ? `<div style="font-size:10px;color:var(--win-red);font-weight:700;margin-top:2px;">+${o.variance.toLocaleString()} over</div>` : ''}
+                </div>
+            </div>`).join('');
+        port.innerHTML = `<div class="win-card">
+            <div class="win-card-header">
+                <div class="win-card-title">Your Monthly Bills</div>
+                <button onclick="document.getElementById('setup-overlay').classList.remove('hidden')" class="btn-secondary" style="font-size:11px;padding:5px 10px;">Edit List</button>
+            </div>
+            <div>${rows || '<div style="padding:24px;text-align:center;color:var(--win-text-3);">No bills configured. Add rent, school fees, loans, etc.</div>'}</div>
+            <div style="padding:16px;border-top:1px solid var(--win-border);">
+                <button onclick="factoryReset()" style="font-size:11px;color:var(--win-red);background:none;border:none;cursor:pointer;font-family:inherit;">Reset All Data</button>
+            </div>
+        </div>`;
     }
-    _0x4edb4f === _0x384b15(0x42d) && (_0x63796f[_0x384b15(0x368)] = _0x384b15(0x218), document[_0x384b15(0x3e3)](_0x384b15(0x3f1))[_0x384b15(0x231)](_0x384b15(0x3af), _0x54540f => {
-        const _0xf088b4 = _0x384b15;
-        if (_0x54540f['key'] === _0xf088b4(0x223)) handleAsk();
-    }));
-    if (_0x4edb4f === _0x384b15(0x429)) {
-        let _0x3a5321 = state[_0x384b15(0x385)][_0x384b15(0x349)](_0x34e109 => '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22font-family:monospace;font-size:11px;color:var(--win-text-3);white-space:nowrap;\x22>' + new Date(_0x34e109['id'])[_0x384b15(0x32e)](_0x384b15(0x32a)) + _0x384b15(0x2ec) + _0x34e109[_0x384b15(0x271)] + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;gap:6px;margin-top:4px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22chip\x20chip-green\x22\x20style=\x22font-size:10px;\x22>' + _0x34e109[_0x384b15(0x2d7)] + _0x384b15(0x1ed) + _0x34e109['credit'] + '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22text-align:right;font-family:monospace;color:var(--win-green);font-weight:600;white-space:nowrap;\x22>+' + _0x34e109[_0x384b15(0x2a0)][_0x384b15(0x44a)]() + _0x384b15(0x3ad) + _0x34e109[_0x384b15(0x2a0)][_0x384b15(0x44a)]() + _0x384b15(0x36d))[_0x384b15(0x400)]('');
-        _0x63796f[_0x384b15(0x368)] = '<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>General\x20Ledger</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);\x22>' + state[_0x384b15(0x385)][_0x384b15(0x3c6)] + _0x384b15(0x341) + (_0x3a5321 || '<tr><td\x20colspan=\x224\x22\x20style=\x22padding:32px;text-align:center;color:var(--win-text-3);\x22>No\x20transactions\x20recorded\x20yet.</td></tr>') + _0x384b15(0x22a);
+
+    if (view === 'ask') {
+        port.innerHTML = `<div class="win-card" style="height:520px;display:flex;flex-direction:column;">
+            <div class="win-card-header" style="flex-shrink:0;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:32px;height:32px;background:linear-gradient(135deg,#0078D4,#005A9E);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🤖</div>
+                    <div>
+                        <div class="win-card-title">Travis - Your Financial Advisor</div>
+                        <div class="win-card-sub">Powered by KNBS Kenya Data</div>
+                    </div>
+                </div>
+                <span class="chip chip-green" style="font-size:10px;">● Online</span>
+            </div>
+            <div id="chat-box" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--win-bg);">
+                <div class="travis-label"><span>🤖</span> Travis</div>
+                <div class="chat-bubble-ai" style="font-size:13px;">Habari. I'm Travis. I analyze your finances and give you straight talk. Ask me anything about your money.</div>
+            </div>
+            <div style="padding:10px 14px;border-top:1px solid var(--win-border);background:white;display:flex;gap:8px;align-items:center;">
+                <input id="chat-input" type="text" placeholder="Ask me anything... e.g., 'Can I buy meat?' or 'How am I doing?'" class="win-input" style="flex:1;">
+                <button onclick="handleAsk()" class="btn-accent" style="padding:9px 18px;font-size:13px;">Send ↗</button>
+            </div>
+        </div>`;
+        document.getElementById('chat-input').addEventListener('keypress', e => { if (e.key === 'Enter') handleAsk(); });
     }
-    if (_0x4edb4f === 'settings') {
-        const _0x4d3d37 = getUserWealthTier(_0x1a2ab5[_0x384b15(0x37b)], _0x1a2ab5[_0x384b15(0x25d)]);
-        _0x63796f['innerHTML'] = _0x384b15(0x234) + (state[_0x384b15(0x3a1)]?.[_0x384b15(0x2e9)] || '—') + _0x384b15(0x1f1) + (state[_0x384b15(0x3a1)]?.[_0x384b15(0x344)] || '—') + _0x384b15(0x3ba) + _0x4d3d37[_0x384b15(0x27e)] + ';\x22>' + _0x4d3d37['displayName'] + _0x384b15(0x1e4);
+
+     if(view==='book'){
+        let rows=state.transactions.map(t=>`
+            <tr>
+                <td style="font-family:monospace;font-size:11px;color:var(--win-text-3);white-space:nowrap;">${new Date(t.id).toLocaleDateString('en-KE')}</td>
+                <td>
+                    <div style="font-size:13px;font-weight:500;">${t.desc}</div>
+                    <div style="display:flex;gap:6px;margin-top:4px;">
+                        <span class="chip chip-green" style="font-size:10px;">${t.debit}</span>
+                        <span style="color:var(--win-text-3);font-size:10px;">→</span>
+                        <span class="chip chip-red" style="font-size:10px;">${t.credit}</span>
+                    </div>
+                </td>
+                <td style="text-align:right;font-family:monospace;color:var(--win-green);font-weight:600;white-space:nowrap;">+${t.amount.toLocaleString()}</td>
+                <td style="text-align:right;font-family:monospace;color:var(--win-red);font-weight:600;white-space:nowrap;">-${t.amount.toLocaleString()}</td>
+            </tr>`).join('');
+
+        port.innerHTML=`<div class="win-card">
+            <div class="win-card-header">
+                <div class="win-card-title">General Ledger</div>
+                <div style="font-size:11px;color:var(--win-text-3);">${state.transactions.length} entries</div>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="win-table" style="min-width:600px;">
+                    <thead><tr><th>Date</th><th>Transaction</th><th style="text-align:right;">Debit (+)</th><th style="text-align:right;">Credit (-)</th></tr></thead>
+                    <tbody>${rows||'<tr><td colspan="4" style="padding:32px;text-align:center;color:var(--win-text-3);">No transactions recorded yet.</td></tr>'}</tbody>
+                </table>
+            </div>
+        </div>`;
+    }
+
+
+    if (view === 'settings') {
+        const wealthTier = getUserWealthTier(fin.daily, fin.safeCash);
+        port.innerHTML = `<div class="win-card">
+            <div class="win-card-header"><div class="win-card-title">Settings</div></div>
+            <div class="win-card-body" style="display:grid;gap:12px;">
+                <div class="setup-step">
+                    <div class="setup-step-title">👤 Your Profile</div>
+                    <div style="font-size:13px;color:var(--win-text-2);">Name: <strong>${state.user?.name || '—'}</strong></div>
+                    <div style="font-size:13px;color:var(--win-text-2);margin-top:4px;">Type: <strong style="text-transform:capitalize;">${state.user?.type || '—'}</strong></div>
+                    <div style="font-size:13px;color:var(--win-text-2);margin-top:4px;">Wealth Level: <strong style="color:${wealthTier.color};">${wealthTier.displayName}</strong></div>
+                </div>
+                <div class="setup-step">
+                    <div class="setup-step-title">🗂 Backup & Data</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                        <button onclick="setupBackupFolder()" class="btn-primary">Setup Backup Folder</button>
+                        <button onclick="saveBackup()" class="btn-secondary">Save Backup Now</button>
+                        <button onclick="factoryReset()" class="btn-secondary" style="color:var(--win-red);border-color:rgba(196,43,28,0.3);">Factory Reset</button>
+                    </div>
+                </div>
+                <div class="setup-step">
+                    <div class="setup-step-title">📊 Monthly Report</div>
+                    <div style="font-size:13px;color:var(--win-text-2);margin-bottom:8px;">Auto-generates at month end. You can also generate manually.</div>
+                    <button onclick="window.travisAudit && window.travisAudit.showNow()" class="btn-primary">Generate Report Now</button>
+                </div>
+            </div>
+        </div>`;
     }
 }
 
 function renderChart() {
-    const _0x3e52c0 = _0xad7134,
-        _0x9bedac = document['getElementById'](_0x3e52c0(0x3d5))?.[_0x3e52c0(0x38d)]('2d');
-    if (!_0x9bedac) return;
-    const _0x208b84 = getFin(),
-        _0x366604 = new Date();
-    let _0x29e501 = [],
-        _0x4a510a = [],
-        _0x7da24c = [],
-        _0x59c6a7 = [];
-    for (let _0x4c3d31 = 0x6; _0x4c3d31 >= 0x0; _0x4c3d31--) {
-        const _0x1efd2d = new Date();
-        _0x1efd2d['setDate'](_0x366604[_0x3e52c0(0x3ab)]() - _0x4c3d31), _0x29e501[_0x3e52c0(0x41b)](_0x1efd2d['toLocaleDateString'](_0x3e52c0(0x32a), {
-            'weekday': 'short'
-        }));
-        let _0x29d404 = 0x0,
-            _0x2f3d8a = 0x0;
-        state[_0x3e52c0(0x385)][_0x3e52c0(0x338)](_0xd8a7a => {
-            const _0x4f3d69 = _0x3e52c0;
-            if (new Date(_0xd8a7a['id'])['toDateString']() === _0x1efd2d[_0x4f3d69(0x25f)]()) {
-                if (isLiquid(_0xd8a7a[_0x4f3d69(0x252)])) _0x29d404 += _0xd8a7a[_0x4f3d69(0x2a0)];
-                if (isLiquid(_0xd8a7a['debit'])) _0x2f3d8a += _0xd8a7a[_0x4f3d69(0x2a0)];
+    const ctx = document.getElementById('analyticsChart')?.getContext('2d');
+    if (!ctx) return;
+    const fin = getFin();
+    const now = new Date();
+    let labels = [], spendData = [], revData = [], capData = [];
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(now.getDate() - i);
+        labels.push(d.toLocaleDateString('en-KE', { weekday: 'short' }));
+        let ds = 0, dr = 0;
+        state.transactions.forEach(t => {
+            if (new Date(t.id).toDateString() === d.toDateString()) {
+                if (isLiquid(t.credit)) ds += t.amount;
+                if (isLiquid(t.debit)) dr += t.amount;
             }
-        }), _0x4a510a[_0x3e52c0(0x41b)](_0x29d404), _0x7da24c[_0x3e52c0(0x41b)](_0x2f3d8a), _0x59c6a7[_0x3e52c0(0x41b)](_0x208b84[_0x3e52c0(0x37b)]);
+        });
+        spendData.push(ds);
+        revData.push(dr);
+        capData.push(fin.daily);
     }
-    if (window[_0x3e52c0(0x2ce)]) window['travisChart'][_0x3e52c0(0x3cc)]();
-    window[_0x3e52c0(0x2ce)] = new Chart(_0x9bedac, {
-        'type': _0x3e52c0(0x306),
-        'data': {
-            'labels': _0x29e501,
-            'datasets': [{
-                'label': _0x3e52c0(0x312),
-                'data': _0x59c6a7,
-                'borderColor': _0x3e52c0(0x308),
-                'borderDash': [0x6, 0x3],
-                'pointRadius': 0x0,
-                'fill': ![],
-                'borderWidth': 0x2
-            }, {
-                'label': _0x3e52c0(0x2b6),
-                'data': _0x4a510a,
-                'borderColor': _0x3e52c0(0x229),
-                'backgroundColor': _0x3e52c0(0x2e8),
-                'fill': !![],
-                'tension': 0.4,
-                'borderWidth': 0x2,
-                'pointBackgroundColor': _0x3e52c0(0x229),
-                'pointRadius': 0x3
-            }, {
-                'label': _0x3e52c0(0x1dd),
-                'data': _0x7da24c,
-                'borderColor': _0x3e52c0(0x3ae),
-                'backgroundColor': _0x3e52c0(0x2df),
-                'fill': !![],
-                'tension': 0.4,
-                'borderWidth': 0x2,
-                'pointBackgroundColor': _0x3e52c0(0x3ae),
-                'pointRadius': 0x3
-            }]
-        },
-        'options': {
-            'responsive': !![],
-            'maintainAspectRatio': ![],
-            'plugins': {
-                'legend': {
-                    'labels': {
-                        'color': _0x3e52c0(0x2fa),
-                        'font': {
-                            'size': 0xb,
-                            'family': _0x3e52c0(0x27b)
-                        },
-                        'boxWidth': 0x14
-                    }
-                }
-            },
-            'scales': {
-                'x': {
-                    'grid': {
-                        'color': _0x3e52c0(0x2fd)
-                    },
-                    'ticks': {
-                        'color': _0x3e52c0(0x318),
-                        'font': {
-                            'size': 0xa
-                        }
-                    }
-                },
-                'y': {
-                    'grid': {
-                        'color': _0x3e52c0(0x2fd)
-                    },
-                    'ticks': {
-                        'color': _0x3e52c0(0x318),
-                        'font': {
-                            'size': 0xa
-                        }
-                    },
-                    'beginAtZero': !![]
-                }
-            }
-        }
+    if (window.travisChart) window.travisChart.destroy();
+    window.travisChart = new Chart(ctx, {
+        type: 'line', data: { labels, datasets: [
+            { label: 'Your Daily Limit', data: capData, borderColor: '#0078D4', borderDash: [6, 3], pointRadius: 0, fill: false, borderWidth: 2 },
+            { label: 'What You Spent', data: spendData, borderColor: '#C42B1C', backgroundColor: 'rgba(196,43,28,0.08)', fill: true, tension: 0.4, borderWidth: 2, pointBackgroundColor: '#C42B1C', pointRadius: 3 },
+            { label: 'What You Earned', data: revData, borderColor: '#107C10', backgroundColor: 'rgba(16,124,16,0.08)', fill: true, tension: 0.4, borderWidth: 2, pointBackgroundColor: '#107C10', pointRadius: 3 }
+        ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#5a5a5a', font: { size: 11, family: 'Segoe UI' }, boxWidth: 20 } } }, scales: { x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#8a8a8a', font: { size: 10 } } }, y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#8a8a8a', font: { size: 10 } }, beginAtZero: true } } }
     });
 }
 
-function updateHeader(_0x43069) {
-    const _0x17d099 = _0xad7134,
-        _0x2d6488 = document[_0x17d099(0x3e3)](_0x17d099(0x2d3)),
-        _0x55ddda = getUserWealthTier(_0x43069[_0x17d099(0x37b)], _0x43069[_0x17d099(0x25d)]),
-        _0x3e4af5 = [{
-            'label': _0x17d099(0x358),
-            'value': 'KSh\x20' + _0x43069[_0x17d099(0x1e6)][_0x17d099(0x44a)](),
-            'color': '#0078D4',
-            'icon': '💰'
-        }, {
-            'label': 'Bills\x20You\x20Must\x20Pay',
-            'value': 'KSh\x20' + _0x43069[_0x17d099(0x202)][_0x17d099(0x44a)](),
-            'color': '#C42B1C',
-            'icon': '📋'
-        }, {
-            'label': _0x17d099(0x266),
-            'value': _0x43069[_0x17d099(0x3c8)] + _0x17d099(0x448),
-            'color': _0x17d099(0x3ae),
-            'icon': '📅'
-        }, {
-            'label': _0x17d099(0x2c7),
-            'value': _0x17d099(0x317) + Math[_0x17d099(0x3a7)](0x0, _0x43069[_0x17d099(0x37b)])['toFixed'](0x0),
-            'color': _0x55ddda[_0x17d099(0x27e)],
-            'icon': '📊'
-        }];
-    _0x2d6488[_0x17d099(0x3c4)][_0x17d099(0x1d7)] = 'repeat(4,1fr)';
-    window[_0x17d099(0x43e)] < 0x258 && (_0x2d6488[_0x17d099(0x3c4)][_0x17d099(0x1d7)] = _0x17d099(0x3f9));
-    window[_0x17d099(0x43e)] < 0x190 && (_0x2d6488[_0x17d099(0x3c4)]['gridTemplateColumns'] = _0x17d099(0x2f2));
-    _0x2d6488['innerHTML'] = _0x3e4af5[_0x17d099(0x349)](_0x346f68 => _0x17d099(0x2d0) + _0x346f68[_0x17d099(0x27e)] + ';\x22></div><div\x20class=\x22metric-label\x22>' + _0x346f68[_0x17d099(0x20b)] + '\x20' + _0x346f68['label'] + _0x17d099(0x219) + _0x346f68[_0x17d099(0x2fc)] + '</div></div>')[_0x17d099(0x400)]('');
-    const _0x2f0e06 = document[_0x17d099(0x3e3)](_0x17d099(0x30d));
-    if (_0x43069[_0x17d099(0x25d)] < 0x0) _0x2f0e06[_0x17d099(0x2f5)] = _0x17d099(0x3cd), _0x2f0e06[_0x17d099(0x378)] = '⚠\x20You\x20are\x20in\x20debt';
-    else {
-        if (_0x43069[_0x17d099(0x37b)] < 0x64) _0x2f0e06[_0x17d099(0x2f5)] = _0x17d099(0x3cd), _0x2f0e06[_0x17d099(0x378)] = _0x17d099(0x2a5);
-        else {
-            if (_0x43069['daily'] < 0x12c) _0x2f0e06[_0x17d099(0x2f5)] = 'chip\x20chip-red', _0x2f0e06[_0x17d099(0x378)] = _0x17d099(0x423);
-            else _0x43069[_0x17d099(0x37b)] < 0x320 ? (_0x2f0e06[_0x17d099(0x2f5)] = _0x17d099(0x300), _0x2f0e06['textContent'] = _0x17d099(0x3ce)) : (_0x2f0e06['className'] = _0x17d099(0x315), _0x2f0e06[_0x17d099(0x378)] = _0x17d099(0x22e));
-        }
-    }
+function updateHeader(fin) {
+    const grid = document.getElementById('dashboard-grid');
+    const wealthTier = getUserWealthTier(fin.daily, fin.safeCash);
+    const metrics = [
+        { label: 'Total Money You Have', value: 'KSh ' + fin.liquid.toLocaleString(), color: '#0078D4', icon: '💰' },
+        { label: 'Bills You Must Pay', value: 'KSh ' + fin.pending.toLocaleString(), color: '#C42B1C', icon: '📋' },
+        { label: 'Days Until Month End', value: fin.daysRem + ' days', color: '#107C10', icon: '📅' },
+        { label: 'Your Daily Budget', value: 'KSh ' + Math.max(0, fin.daily).toFixed(0), color: wealthTier.color, icon: '📊' },
+    ];
+    grid.style.gridTemplateColumns = 'repeat(4,1fr)';
+    if (window.innerWidth < 600) { grid.style.gridTemplateColumns = 'repeat(2,1fr)'; }
+    if (window.innerWidth < 400) { grid.style.gridTemplateColumns = '1fr'; }
+    grid.innerHTML = metrics.map(m => `<div class="metric-card"><div class="metric-accent" style="background:${m.color};"></div><div class="metric-label">${m.icon} ${m.label}</div><div class="metric-value">${m.value}</div></div>`).join('');
+    const badge = document.getElementById('header-verdict-badge');
+    if (fin.safeCash < 0) { badge.className = 'chip chip-red'; badge.textContent = '⚠ You are in debt'; }
+    else if (fin.daily < 100) { badge.className = 'chip chip-red'; badge.textContent = 'Emergency'; }
+    else if (fin.daily < 300) { badge.className = 'chip chip-red'; badge.textContent = '⚠ Very Tight'; }
+    else if (fin.daily < 800) { badge.className = 'chip chip-yellow'; badge.textContent = 'Leveling'; }
+    else { badge.className = 'chip chip-green'; badge.textContent = 'Stable'; }
 }
 
 function showTxModal() {
-    const _0x2e5aa2 = _0xad7134,
-        _0x2e2a47 = document[_0x2e5aa2(0x3e3)](_0x2e5aa2(0x214)),
-        _0x4c7929 = document[_0x2e5aa2(0x3e3)]('tx-credit');
-    _0x2e2a47[_0x2e5aa2(0x368)] = _0x4c7929['innerHTML'] = '';
-    const _0x56dcd6 = state[_0x2e5aa2(0x3a1)][_0x2e5aa2(0x344)] === _0x2e5aa2(0x227),
-        _0x26be84 = (_0x5d13cf, _0x2bf3fa, _0x6f3f7f) => {
-            const _0x408931 = _0x2e5aa2,
-                _0x15e513 = document[_0x408931(0x39b)]('optgroup');
-            return _0x15e513[_0x408931(0x222)] = '●\x20' + _0x5d13cf, _0x15e513[_0x408931(0x3c4)][_0x408931(0x27e)] = _0x2bf3fa, _0x6f3f7f['forEach'](_0x3486a1 => {
-                _0x15e513['appendChild'](new Option(_0x3486a1, _0x3486a1));
-            }), _0x15e513;
-        };
-    if (_0x56dcd6) {
-        const _0x6697e9 = _0xa131b1 => {
-            const _0x309b33 = _0x2e5aa2;
-            _0xa131b1['appendChild'](_0x26be84(_0x309b33(0x2cd), _0x309b33(0x3ae), [_0x309b33(0x367), _0x309b33(0x2c9), _0x309b33(0x39a), _0x309b33(0x2b9)])), _0xa131b1[_0x309b33(0x2fb)](_0x26be84('INCOME', '#107C10', [_0x309b33(0x285), 'Side\x20Hustle', _0x309b33(0x324), _0x309b33(0x3e4), 'Other\x20Income'])), _0xa131b1[_0x309b33(0x2fb)](_0x26be84(_0x309b33(0x28a), _0x309b33(0x390), [_0x309b33(0x1ff), _0x309b33(0x40d), _0x309b33(0x375), _0x309b33(0x3ef), 'Medical', _0x309b33(0x2ad)])), _0xa131b1[_0x309b33(0x2fb)](_0x26be84(_0x309b33(0x283), _0x309b33(0x229), ['Entertainment', _0x309b33(0x1fb), _0x309b33(0x26b), 'Other\x20Fun\x20Spending'])), _0xa131b1[_0x309b33(0x2fb)](_0x26be84(_0x309b33(0x421), _0x309b33(0x308), [_0x309b33(0x33e), _0x309b33(0x3c2)]));
-        };
-        _0x6697e9(_0x2e2a47), _0x6697e9(_0x4c7929);
+    const d = document.getElementById('tx-debit'); const c = document.getElementById('tx-credit');
+    d.innerHTML = c.innerHTML = "";
+    const isPersonal = state.user.type === 'personal';
+    const createColoredOptgroup = (label, color, accounts) => { const og = document.createElement('optgroup'); og.label = '● ' + label; og.style.color = color; accounts.forEach(acc => { og.appendChild(new Option(acc, acc)); }); return og; };
+    if (isPersonal) {
+        const ps = (select) => { select.appendChild(createColoredOptgroup("ASSETS", "#107C10", ["Cash", "M-Pesa", "Bank Account", "Savings"])); select.appendChild(createColoredOptgroup("INCOME", "#107C10", ["Salary", "Side Hustle", "Allowance", "Dividends", "Other Income"])); select.appendChild(createColoredOptgroup("NECESSARY EXPENSES", "#9D5D00", ["Food & Groceries", "Rent", "Bills", "Transport", "Medical", "School"])); select.appendChild(createColoredOptgroup("DISCRETIONARY", "#C42B1C", ["Entertainment", "Clothes", "Travel", "Other Fun Spending"])); select.appendChild(createColoredOptgroup("LIABILITIES", "#0078D4", ["Loan Repayment", "Credit"])); };
+        ps(d); ps(c);
     } else {
-        const _0x53f87d = _0x4872c6 => {
-            const _0x4df0ee = _0x2e5aa2;
-            _0x4872c6['appendChild'](_0x26be84(_0x4df0ee(0x2cd), _0x4df0ee(0x3ae), ['Bank\x20/\x20M-Pesa', _0x4df0ee(0x263), 'Accounts\x20Receivable', 'Inventory', _0x4df0ee(0x2eb)])), _0x4872c6[_0x4df0ee(0x2fb)](_0x26be84(_0x4df0ee(0x3df), _0x4df0ee(0x3ae), [_0x4df0ee(0x2c5), _0x4df0ee(0x3a6), _0x4df0ee(0x30f)])), _0x4872c6['appendChild'](_0x26be84('OPERATING\x20EXPENSES', _0x4df0ee(0x390), [_0x4df0ee(0x40d), _0x4df0ee(0x3ec), _0x4df0ee(0x29e), _0x4df0ee(0x23c), _0x4df0ee(0x42c), _0x4df0ee(0x28b)])), _0x4872c6[_0x4df0ee(0x2fb)](_0x26be84(_0x4df0ee(0x255), _0x4df0ee(0x229), [_0x4df0ee(0x415), _0x4df0ee(0x404), _0x4df0ee(0x224)])), _0x4872c6[_0x4df0ee(0x2fb)](_0x26be84(_0x4df0ee(0x421), '#0078D4', [_0x4df0ee(0x3f5), 'Loans\x20Payable']));
-        };
-        _0x53f87d(_0x2e2a47), _0x53f87d(_0x4c7929);
+        const bs = (select) => { select.appendChild(createColoredOptgroup("ASSETS", "#107C10", ["Bank / M-Pesa", "Petty Cash", "Accounts Receivable", "Inventory", "Fixed Assets"])); select.appendChild(createColoredOptgroup("REVENUE", "#107C10", ["Sales Revenue", "Service Revenue", "Other Revenue"])); select.appendChild(createColoredOptgroup("OPERATING EXPENSES", "#9D5D00", ["Rent", "Payroll", "Utilities", "Cost of Goods Sold", "Tax", "Office Supplies"])); select.appendChild(createColoredOptgroup("DISCRETIONARY EXPENSES", "#C42B1C", ["Marketing", "Travel & Entertainment", "Professional Fees"])); select.appendChild(createColoredOptgroup("LIABILITIES", "#0078D4", ["Accounts Payable", "Loans Payable"])); };
+        bs(d); bs(c);
     }
-    document[_0x2e5aa2(0x3e3)]('tx-modal')[_0x2e5aa2(0x34f)][_0x2e5aa2(0x37c)]('show'), updateLiveHud();
+    document.getElementById('tx-modal').classList.add('show');
+    updateLiveHud();
 }
+
 async function commitTransaction() {
-    const _0xb878ae = _0xad7134,
-        _0x520369 = parseFloat(document[_0xb878ae(0x3e3)](_0xb878ae(0x212))[_0xb878ae(0x2fc)]),
-        _0xc737aa = document['getElementById'](_0xb878ae(0x214))[_0xb878ae(0x2fc)],
-        _0x5bcf24 = document['getElementById']('tx-credit')[_0xb878ae(0x2fc)],
-        _0x4b237b = document[_0xb878ae(0x3e3)](_0xb878ae(0x3a9))[_0xb878ae(0x2fc)] || 'Market\x20Exchange';
-    if (_0xc737aa === _0x5bcf24 || isNaN(_0x520369) || _0x520369 <= 0x0) return showCustomAlert('Error:\x20Transaction\x20must\x20move\x20money\x20between\x20two\x20different\x20accounts.');
-    const _0x45a1c6 = {
-        'id': Date[_0xb878ae(0x250)](),
-        'debit': _0xc737aa,
-        'credit': _0x5bcf24,
-        'amount': _0x520369,
-        'desc': _0x4b237b
-    };
-    state[_0xb878ae(0x385)][_0xb878ae(0x3f7)](_0x45a1c6), await saveData('tx', _0x45a1c6);
-    if (typeof travisNotif !== _0xb878ae(0x2be)) travisNotif[_0xb878ae(0x439)]();
-    if (typeof saveBackup === _0xb878ae(0x43c)) {
-        await saveBackup();
-        if (!backupDirHandle) await setupBackupFolder();
-    }
-    closeTxModal(), nav(_0xb878ae(0x326));
+    const amt = parseFloat(document.getElementById('tx-amount').value);
+    const debitAcc = document.getElementById('tx-debit').value;
+    const creditAcc = document.getElementById('tx-credit').value;
+    const description = document.getElementById('tx-desc').value || "Market Exchange";
+    if (debitAcc === creditAcc || isNaN(amt) || amt <= 0) { return showCustomAlert("Error: Transaction must move money between two different accounts."); }
+    const tx = { id: Date.now(), debit: debitAcc, credit: creditAcc, amount: amt, desc: description };
+    state.transactions.unshift(tx); await saveData("tx", tx);
+    if (typeof travisNotif !== 'undefined') travisNotif.markTodayRecorded();
+    if (typeof saveBackup === "function") { await saveBackup(); if (!backupDirHandle) await setupBackupFolder(); }
+    closeTxModal(); nav('dash');
 }
 
-function closeTxModal() {
-    const _0x2862f2 = _0xad7134;
-    document['getElementById']('tx-modal')['classList'][_0x2862f2(0x29f)](_0x2862f2(0x2d2)), document[_0x2862f2(0x3e3)]('tx-amount')[_0x2862f2(0x2fc)] = '';
+function closeTxModal() { document.getElementById('tx-modal').classList.remove('show'); document.getElementById('tx-amount').value = ""; }
+
+function addObligationRow(label = "", val = "") {
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;gap:8px;align-items:center;';
+    div.innerHTML = `<input type="text" placeholder="e.g. Rent" value="${label}" class="win-input" style="flex:1;"><input type="number" placeholder="Amount" value="${val}" class="win-input" style="width:110px;"><button onclick="this.parentElement.remove()" style="width:28px;height:28px;border-radius:50%;border:1px solid rgba(196,43,28,0.3);background:rgba(196,43,28,0.05);color:var(--win-red);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">×</button>`;
+    document.getElementById('obligation-list').appendChild(div);
 }
 
-function _0x9f28(_0x517144, _0x19bb16) {
-    _0x517144 = _0x517144 - 0x1d5;
-    const _0x5a8858 = _0x5a88();
-    let _0x9f28f5 = _0x5a8858[_0x517144];
-    return _0x9f28f5;
+function setUserType(t) {
+    state.tempType = t;
+    document.getElementById('btn-p').className = 'seg-btn' + (t === 'personal' ? ' active' : '');
+    document.getElementById('btn-b').className = 'seg-btn' + (t === 'business' ? ' active' : '');
 }
 
-function addObligationRow(_0x81d0dc = '', _0x1d0b91 = '') {
-    const _0x312ac3 = _0xad7134,
-        _0x20ffc2 = document[_0x312ac3(0x39b)](_0x312ac3(0x399));
-    _0x20ffc2[_0x312ac3(0x3c4)][_0x312ac3(0x291)] = _0x312ac3(0x1f3), _0x20ffc2[_0x312ac3(0x368)] = _0x312ac3(0x2f8) + _0x81d0dc + _0x312ac3(0x210) + _0x1d0b91 + '\x22\x20class=\x22win-input\x22\x20style=\x22width:110px;\x22><button\x20onclick=\x22this.parentElement.remove()\x22\x20style=\x22width:28px;height:28px;border-radius:50%;border:1px\x20solid\x20rgba(196,43,28,0.3);background:rgba(196,43,28,0.05);color:var(--win-red);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;\x22>×</button>', document[_0x312ac3(0x3e3)](_0x312ac3(0x35a))[_0x312ac3(0x2fb)](_0x20ffc2);
-}
-
-function setUserType(_0x10e149) {
-    const _0x14e669 = _0xad7134;
-    state['tempType'] = _0x10e149, document[_0x14e669(0x3e3)](_0x14e669(0x401))['className'] = _0x14e669(0x373) + (_0x10e149 === _0x14e669(0x227) ? _0x14e669(0x23b) : ''), document['getElementById']('btn-b')[_0x14e669(0x2f5)] = 'seg-btn' + (_0x10e149 === 'business' ? _0x14e669(0x23b) : '');
-}
 async function finalizeSetup() {
-    const _0x5a788b = _0xad7134,
-        _0x52e1fc = document[_0x5a788b(0x3e3)](_0x5a788b(0x1df))[_0x5a788b(0x2fc)],
-        _0x16e43d = Array[_0x5a788b(0x2e2)](document[_0x5a788b(0x3a4)]('#obligation-list\x20>\x20div'))[_0x5a788b(0x349)](_0x98cd25 => ({
-            'label': _0x98cd25['querySelectorAll']('input')[0x0][_0x5a788b(0x2fc)],
-            'amount': parseFloat(_0x98cd25[_0x5a788b(0x3a4)](_0x5a788b(0x1e5))[0x1]['value']) || 0x0
-        }))[_0x5a788b(0x31b)](_0x5741a4 => _0x5741a4[_0x5a788b(0x222)]);
-    if (!_0x52e1fc || !state['tempType']) return showCustomAlert('Please\x20enter\x20your\x20name\x20and\x20select\x20profile\x20type.');
-    state['user'] = {
-        'name': _0x52e1fc,
-        'type': state['tempType']
-    }, state['obligations'] = _0x16e43d, await saveData(_0x5a788b(0x342), {
-        'id': _0x5a788b(0x2db),
-        'user': state['user'],
-        'obligations': state[_0x5a788b(0x38f)]
-    });
-    if (typeof saveBackup === 'function') await saveBackup();
-    location[_0x5a788b(0x428)]();
-}
-async function factoryReset() {
-    const _0x17380f = _0xad7134;
-    confirm('WARNING:\x20This\x20will\x20delete\x20ALL\x20your\x20financial\x20data.\x20Cannot\x20undo.\x20Continue?') && (indexedDB[_0x17380f(0x42a)](_0x17380f(0x323)), location[_0x17380f(0x428)]());
+    const name = document.getElementById('user-name').value;
+    const obs = Array.from(document.querySelectorAll('#obligation-list > div')).map(row => ({ label: row.querySelectorAll('input')[0].value, amount: parseFloat(row.querySelectorAll('input')[1].value) || 0 })).filter(o => o.label);
+    if (!name || !state.tempType) return showCustomAlert("Please enter your name and select profile type.");
+    state.user = { name, type: state.tempType }; state.obligations = obs;
+    await saveData("meta", { id: "config", user: state.user, obligations: state.obligations });
+    if (typeof saveBackup === "function") await saveBackup();
+    location.reload();
 }
 
-function showHelpModal() {
-    const _0x34c5c0 = _0xad7134,
-        _0x191635 = document[_0x34c5c0(0x3e3)](_0x34c5c0(0x412));
-    _0x191635[_0x34c5c0(0x3c4)][_0x34c5c0(0x434)] = _0x34c5c0(0x380);
-}
+async function factoryReset() { if (confirm("WARNING: This will delete ALL your financial data. Cannot undo. Continue?")) { indexedDB.deleteDatabase("TravisGuardian_v1.0"); location.reload(); } }
 
-function closeHelpModal() {
-    const _0x52fb18 = _0xad7134,
-        _0x1c67eb = document[_0x52fb18(0x3e3)]('help-modal');
-    _0x1c67eb[_0x52fb18(0x3c4)]['display'] = _0x52fb18(0x2ab);
-}
+function showHelpModal() { const m = document.getElementById('help-modal'); m.style.display = 'flex'; }
+function closeHelpModal() { const m = document.getElementById('help-modal'); m.style.display = 'none'; }
+
+
 async function handleAsk() {
-    const _0x6ced3e = _0xad7134,
-        _0x2aef52 = document[_0x6ced3e(0x3e3)](_0x6ced3e(0x3f1)),
-        _0x17e80f = document[_0x6ced3e(0x3e3)](_0x6ced3e(0x296)),
-        _0x4dd8bc = _0x2aef52['value']['trim']();
-    if (!_0x4dd8bc) return;
-    _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x24f) + escapeHtml(_0x4dd8bc) + _0x6ced3e(0x42b), _0x2aef52[_0x6ced3e(0x2fc)] = '', _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f[_0x6ced3e(0x43d)];
-    const _0x3b871b = document['createElement']('div');
-    _0x3b871b['innerHTML'] = _0x6ced3e(0x351), _0x17e80f[_0x6ced3e(0x2fb)](_0x3b871b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f['scrollHeight'], await new Promise(_0xc60a32 => setTimeout(_0xc60a32, 0x258 + Math[_0x6ced3e(0x1eb)]() * 0x1f4)), _0x3b871b[_0x6ced3e(0x29f)]();
-    if (hasPendingClarification()) {
-        const _0x5ece32 = conversationState[_0x6ced3e(0x3fb)],
-            _0x26cb1a = _0x4dd8bc[_0x6ced3e(0x37f)](/(\d+(?:,\d+)?(?:\s*k|\s*thousand|\s*million)?)/i);
-        let _0x2a09ae = 0x0;
-        if (_0x26cb1a) {
-            let _0x17050a = _0x26cb1a[0x1][_0x6ced3e(0x21f)](/,/g, '');
-            if (_0x17050a['toLowerCase']()[_0x6ced3e(0x389)]('k')) _0x17050a = parseFloat(_0x17050a) * 0x3e8;
-            else {
-                if (_0x17050a['toLowerCase']()[_0x6ced3e(0x389)](_0x6ced3e(0x2e7))) _0x17050a = parseFloat(_0x17050a) * 0xf4240;
-            }
-            _0x2a09ae = parseFloat(_0x17050a);
-        }
-        if (!isNaN(_0x2a09ae) && _0x2a09ae > 0x0) {
-            const _0x46714a = getFin(),
-                _0x5051fa = getStatusSummary(),
-                _0x2890b2 = _0x5051fa[_0x6ced3e(0x365)],
-                _0x37fd9f = _0x5051fa['cash'],
-                _0x50576d = _0x5051fa[_0x6ced3e(0x382)],
-                _0x1bbd82 = _0x5051fa[_0x6ced3e(0x3c8)];
-            let _0x20e768 = '',
-                _0xff6e44 = '';
-            if (_0x5ece32[_0x6ced3e(0x3f4)] === _0x6ced3e(0x398)) {
-                if (_0x2890b2['adviceStyle'] === 'survival') {
-                    if (_0x2a09ae > _0x37fd9f) _0x20e768 = _0x6ced3e(0x38e) + _0x2a09ae + _0x6ced3e(0x1db) + _0x5ece32[_0x6ced3e(0x35b)] + _0x6ced3e(0x442) + _0x37fd9f + '\x20shillings\x20TOTAL\x20for\x20the\x20next\x20' + _0x1bbd82 + '\x20days.\x20You\x20cannot\x20afford\x20this.', _0xff6e44 = 'Do\x20not\x20buy\x20this.\x20Focus\x20only\x20on\x20food\x20and\x20rent.';
-                    else {
-                        if (_0x2a09ae > _0x50576d) {
-                            const _0x387734 = Math[_0x6ced3e(0x1fe)](_0x2a09ae / _0x50576d);
-                            _0x20e768 = _0x5ece32['originalQuestion'] + '\x20costs\x20' + _0x2a09ae + _0x6ced3e(0x3c9) + Math[_0x6ced3e(0x437)](_0x50576d) + _0x6ced3e(0x3cb), _0xff6e44 = _0x6ced3e(0x20e) + _0x387734 + _0x6ced3e(0x26e) + (_0x387734 > 0x1 ? 's' : '') + '\x20first.\x20Don\x27t\x20buy\x20today.';
-                        } else {
-                            const _0x3d5ba9 = _0x37fd9f - _0x2a09ae,
-                                _0x46cbf0 = _0x3d5ba9 / _0x1bbd82;
-                            _0x20e768 = '\x20' + _0x5ece32[_0x6ced3e(0x35b)] + _0x6ced3e(0x3bf) + _0x2a09ae + _0x6ced3e(0x217) + _0x3d5ba9 + _0x6ced3e(0x1d9) + _0x1bbd82 + _0x6ced3e(0x357), _0xff6e44 = _0x6ced3e(0x200) + Math[_0x6ced3e(0x437)](_0x46cbf0) + _0x6ced3e(0x371);
-                        }
-                    }
-                } else {
-                    if (_0x2890b2[_0x6ced3e(0x379)] === 'conservative') {
-                        const _0x58c73f = Math['round'](_0x2a09ae / _0x37fd9f * 0x64);
-                        _0x58c73f > 0x1e ? (_0x20e768 = _0x6ced3e(0x28e) + _0x5ece32[_0x6ced3e(0x35b)] + '\x20costs\x20' + _0x2a09ae + _0x6ced3e(0x2de) + _0x58c73f + '%\x20of\x20your\x20savings.', _0xff6e44 = _0x6ced3e(0x292)) : (_0x20e768 = '\x20' + _0x5ece32[_0x6ced3e(0x35b)] + '\x20costs\x20' + _0x2a09ae + _0x6ced3e(0x30a), _0xff6e44 = _0x6ced3e(0x3fe));
-                    } else _0x20e768 = '💎\x20' + _0x5ece32['originalQuestion'] + _0x6ced3e(0x3bf) + _0x2a09ae + '\x20shillings.\x20At\x20your\x20wealth\x20level,\x20affordability\x20isn\x27t\x20the\x20question.', _0xff6e44 = 'Does\x20this\x20purchase\x20align\x20with\x20your\x20goals\x20and\x20bring\x20you\x20value?\x20If\x20yes,\x20enjoy.';
-                }
-            } else {
-                if (_0x5ece32[_0x6ced3e(0x3f4)] === _0x6ced3e(0x2dd)) {
-                    if (_0x2890b2[_0x6ced3e(0x379)] === _0x6ced3e(0x239)) _0x20e768 = _0x6ced3e(0x3f2) + _0x2a09ae + '\x20shilling\x20loan.\x20With\x20your\x20current\x20situation,\x20any\x20loan\x20is\x20dangerous.', _0xff6e44 = _0x6ced3e(0x41e);
-                    else {
-                        const _0x4c0c10 = Math[_0x6ced3e(0x1f7)](_0x2a09ae * 0.15);
-                        _0x20e768 = _0x6ced3e(0x1f5) + _0x2a09ae + _0x6ced3e(0x3b4) + _0x4c0c10 + _0x6ced3e(0x269), _0xff6e44 = _0x6ced3e(0x420) + _0x4c0c10 + _0x6ced3e(0x293);
-                    }
-                }
-            }
-            const _0x3a9d0f = _0x20e768 + _0x6ced3e(0x286) + _0xff6e44,
-                _0x93db10 = _0x573fbb(_0x3a9d0f, _0x2890b2, _0x50576d, _0x37fd9f, _0x1bbd82);
-            _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x93db10 + _0x6ced3e(0x42b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f[_0x6ced3e(0x43d)], clearPendingClarification();
-            return;
-        } else {
-            const _0x2fae4a = _0x6ced3e(0x316),
-                _0x153d3a = _0x573fbb(_0x2fae4a, getStatusSummary()[_0x6ced3e(0x365)], 0x0, 0x0, 0x0);
-            _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x153d3a + _0x6ced3e(0x42b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f[_0x6ced3e(0x43d)];
-            return;
-        }
-    }
-    const _0x3cc9b0 = _0x4dd8bc[_0x6ced3e(0x39e)]()[_0x6ced3e(0x397)](),
-        _0x384191 = getFin(),
-        _0x49eb76 = getStatusSummary(),
-        _0x4188b7 = state[_0x6ced3e(0x3a1)]?.[_0x6ced3e(0x344)] === _0x6ced3e(0x33c),
-        _0x13d8d9 = _0x49eb76[_0x6ced3e(0x365)],
-        _0x3f630a = _0x49eb76['cash'],
-        _0x3c490f = _0x49eb76[_0x6ced3e(0x382)],
-        _0x12c2f2 = _0x49eb76['daysRem'];
-    let _0x5818c3 = 0x0;
-    const _0x4be3f8 = _0x3cc9b0['replace'](/,/g, ''),
-        _0x58bb4a = _0x4be3f8[_0x6ced3e(0x37f)](/(\d+(?:\.\d+)?)\s*(k|thousand|ksh|shillings|bob|million)?/i);
-    if (_0x58bb4a) {
-        _0x5818c3 = parseFloat(_0x58bb4a[0x1]);
-        if (_0x58bb4a[0x2] && /k|thousand/i ['test'](_0x58bb4a[0x2])) _0x5818c3 *= 0x3e8;
-        if (_0x58bb4a[0x2] && /million/i ['test'](_0x58bb4a[0x2])) _0x5818c3 *= 0xf4240;
-    }
-    const _0x3a0ffe = (..._0x3381e7) => _0x3381e7[_0x6ced3e(0x405)](_0x42d67e => _0x3cc9b0['includes'](_0x42d67e)),
-        _0x49845e = {
-            'spend': _0x3a0ffe('buy', 'spend', _0x6ced3e(0x37e), _0x6ced3e(0x2f6), _0x6ced3e(0x2d9), _0x6ced3e(0x2f4), _0x6ced3e(0x233), 'unga', 'eggs', _0x6ced3e(0x2a4), _0x6ced3e(0x2a7), _0x6ced3e(0x413), _0x6ced3e(0x3d2), _0x6ced3e(0x242), _0x6ced3e(0x27a), _0x6ced3e(0x22f), _0x6ced3e(0x2ac), _0x6ced3e(0x203)),
-            'loan': _0x3a0ffe(_0x6ced3e(0x2dd), _0x6ced3e(0x411), _0x6ced3e(0x330), _0x6ced3e(0x3bb), _0x6ced3e(0x30c), _0x6ced3e(0x252), _0x6ced3e(0x284), 'branch'),
-            'status': _0x3a0ffe(_0x6ced3e(0x31c), _0x6ced3e(0x3b3), _0x6ced3e(0x24e), _0x6ced3e(0x3ed), 'doing', _0x6ced3e(0x29b), _0x6ced3e(0x2bb), 'summary', _0x6ced3e(0x282)),
-            'hiring': _0x3a0ffe(_0x6ced3e(0x40b), _0x6ced3e(0x276), 'staff', _0x6ced3e(0x41a), _0x6ced3e(0x209), _0x6ced3e(0x28c), _0x6ced3e(0x2ea)),
-            'saving': _0x3a0ffe('save', 'saving', 'emergency', _0x6ced3e(0x305), 'set\x20aside'),
-            'profit': _0x3a0ffe('profit', _0x6ced3e(0x3a5), _0x6ced3e(0x3e0), _0x6ced3e(0x335), _0x6ced3e(0x1e7), _0x6ced3e(0x37d), _0x6ced3e(0x370)),
-            'habit': _0x3a0ffe(_0x6ced3e(0x3bc), 'spending\x20habit', _0x6ced3e(0x29a))
-        };
+    const input = document.getElementById('chat-input');
+    const box = document.getElementById('chat-box');
+    const rawQ = input.value.trim();
+    if (!rawQ) return;
 
-    function _0x573fbb(_0x324040, _0x4beb7e, _0x4463d7, _0x17adcd, _0x2fbc34) {
-        const _0x323c38 = _0x6ced3e,
-            _0xb60d56 = _0x4beb7e[_0x323c38(0x27e)],
-            _0x3ae2bf = _0x4beb7e[_0x323c38(0x329)],
-            _0x111238 = _0x4463d7 > 0x0 ? _0x323c38(0x317) + Math[_0x323c38(0x437)](_0x4463d7)[_0x323c38(0x44a)]() : _0x323c38(0x22b),
-            _0x3d53c3 = _0x17adcd > 0x0 ? 'KSh\x20' + _0x17adcd[_0x323c38(0x44a)]() : _0x323c38(0x2a8),
-            _0x44223e = _0x323c38(0x1ef) + _0xb60d56 + _0x323c38(0x2cb) + _0x3ae2bf + _0x323c38(0x35d) + _0x111238 + _0x323c38(0x366) + _0x3d53c3 + _0x323c38(0x2a1) + (_0x2fbc34 > 0x0 ? _0x323c38(0x27c) + _0x2fbc34 + '</span></div>' : '') + _0x323c38(0x3fa),
-            _0x13aa28 = '<div\x20style=\x22margin-top:16px;padding:12px\x2014px;border-left:3px\x20solid\x20' + _0xb60d56 + _0x323c38(0x431) + _0x324040 + _0x323c38(0x42b);
-        return '' + _0x44223e + _0x13aa28;
-    }
-    let _0xb1306d = '';
-    if (_0x49845e[_0x6ced3e(0x3b3)]) {
-        _0xb1306d = humanReadableStatus(_0x3f630a, _0x3c490f, _0x12c2f2, _0x13d8d9);
-        if (_0x13d8d9[_0x6ced3e(0x379)] === 'survival') _0xb1306d += _0x6ced3e(0x31f) + _0x13d8d9['priority'];
-        else _0x13d8d9['adviceStyle'] === _0x6ced3e(0x220) ? _0xb1306d += '<br><br><strong>Next\x20step:</strong>\x20Look\x20at\x20your\x20biggest\x20expense\x20this\x20week.\x20Can\x20you\x20reduce\x20it\x20by\x2010%?' : _0xb1306d += _0x6ced3e(0x345) + Math[_0x6ced3e(0x437)](_0x3f630a * 0.1)['toLocaleString']() + '\x20shillings\x20this\x20month\x20for\x20emergencies.';
-        const _0x2d0145 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
-        _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x2d0145 + '</div></div>', _0x17e80f['scrollTop'] = _0x17e80f[_0x6ced3e(0x43d)];
-        return;
-    }
-    if (_0x49845e[_0x6ced3e(0x398)]) {
-        if (_0x5818c3 === 0x0) {
-            const _0x4ee439 = _0x3cc9b0[_0x6ced3e(0x37f)](/(?:buy|get|spend on|purchase)\s+([a-z\s]+)/i),
-                _0x8c38a3 = _0x4ee439 ? _0x4ee439[0x1][_0x6ced3e(0x397)]() : 'this\x20item';
-            setPendingClarification(_0x6ced3e(0x398), _0x8c38a3, _0x6ced3e(0x2a0)), _0xb1306d = _0x6ced3e(0x43b) + _0x8c38a3 + _0x6ced3e(0x1f9);
-            const _0x49da76 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
-            _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x49da76 + _0x6ced3e(0x42b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f['scrollHeight'];
-            return;
+    box.innerHTML += `<div style="text-align:right;"><div class="chat-bubble-user">${escapeHtml(rawQ)}</div></div>`;
+    input.value = '';
+    box.scrollTop = box.scrollHeight;
+
+    const thinkingBubble = document.createElement('div');
+    thinkingBubble.innerHTML = `<div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai" id="thinking-bubble"><div class="travis-ripple"><div class="ripple-ball ball-r"></div><div class="ripple-ball ball-g"></div><div class="ripple-ball ball-b"></div></div></div>`;
+    box.appendChild(thinkingBubble);
+    box.scrollTop = box.scrollHeight;
+
+    await new Promise(r => setTimeout(r, 600 + Math.random() * 500));
+    thinkingBubble.remove();
+    
+    if (hasPendingClarification()) {
+        const pending = conversationState.pendingClarification;
+        const amountMatch = rawQ.match(/(\d+(?:,\d+)?(?:\s*k|\s*thousand|\s*million)?)/i);
+        let amount = 0;
+        if (amountMatch) {
+            let rawAmount = amountMatch[1].replace(/,/g, '');
+            if (rawAmount.toLowerCase().includes('k')) rawAmount = parseFloat(rawAmount) * 1000;
+            else if (rawAmount.toLowerCase().includes('million')) rawAmount = parseFloat(rawAmount) * 1000000;
+            amount = parseFloat(rawAmount);
         }
-        if (_0x3f630a < 0x0) {
-            _0xb1306d = 'You\x20are\x20already\x20in\x20debt\x20by\x20' + Math[_0x6ced3e(0x35f)](_0x3f630a)[_0x6ced3e(0x44a)]() + _0x6ced3e(0x2b0) + _0x5818c3 + '\x20shillings.\x20Your\x20only\x20priority\x20is\x20to\x20earn\x20money\x20to\x20get\x20out\x20of\x20debt.';
-            const _0x8c34b = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
-            _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x8c34b + '</div></div>', _0x17e80f['scrollTop'] = _0x17e80f[_0x6ced3e(0x43d)];
-            return;
-        }
-        if (_0x13d8d9['adviceStyle'] === _0x6ced3e(0x239)) {
-            if (_0x5818c3 > _0x3f630a) _0xb1306d = _0x6ced3e(0x327) + _0x5818c3 + _0x6ced3e(0x334) + _0x3f630a + _0x6ced3e(0x22d) + _0x12c2f2 + '\x20days.\x20You\x20cannot\x20afford\x20this.';
-            else {
-                if (_0x5818c3 > _0x3c490f) {
-                    const _0x5a0b60 = Math[_0x6ced3e(0x1fe)](_0x5818c3 / _0x3c490f);
-                    _0xb1306d = _0x6ced3e(0x240) + _0x5818c3 + _0x6ced3e(0x28d) + Math['floor'](_0x3c490f) + '\x20shillings\x20per\x20day.\x20Save\x20for\x20' + _0x5a0b60 + '\x20day' + (_0x5a0b60 > 0x1 ? 's' : '') + '\x20first.';
+        
+        if (!isNaN(amount) && amount > 0) {
+            const fin = getFin();
+            const status = getStatusSummary();
+            const wealthTier = status.wealthTier;
+            const buffer = status.cash;
+            const dailyCap = status.dailyCap;
+            const daysLeft = status.daysRem;
+            
+            let adviceText = '';
+            let verdictText = '';
+            
+            if (pending.originalIntent === 'spend') {
+                if (wealthTier.adviceStyle === 'survival') {
+                    if (amount > buffer) {
+                        adviceText = `You asked about spending ${amount} shillings on ${pending.originalQuestion}. But you only have ${buffer} shillings TOTAL for the next ${daysLeft} days. You cannot afford this.`;
+                        verdictText = `Do not buy this. Focus only on food and rent.`;
+                    } else if (amount > dailyCap) {
+                        const daysToWait = Math.ceil(amount / dailyCap);
+                        adviceText = `${pending.originalQuestion} costs ${amount} shillings. You only have ${Math.floor(dailyCap)} shillings per day.`;
+                        verdictText = `Save for ${daysToWait} day${daysToWait > 1 ? 's' : ''} first. Don't buy today.`;
+                    } else {
+                        const remaining = buffer - amount;
+                        const newDaily = remaining / daysLeft;
+                        adviceText = ` ${pending.originalQuestion} costs ${amount} shillings. After buying, you'll have ${remaining} shillings left for ${daysLeft} days.`;
+                        verdictText = `That's about ${Math.floor(newDaily)} shillings per day. You can buy it, but be careful with the rest of the week.`;
+                    }
+                } else if (wealthTier.adviceStyle === 'conservative') {
+                    const percentOfBuffer = Math.round((amount / buffer) * 100);
+                    if (percentOfBuffer > 30) {
+                        adviceText = `⚠️ ${pending.originalQuestion} costs ${amount} shillings, which is ${percentOfBuffer}% of your savings.`;
+                        verdictText = `That's a big chunk. Can you wait a few days or find a cheaper option?`;
+                    } else {
+                        adviceText = ` ${pending.originalQuestion} costs ${amount} shillings. That's reasonable for your situation.`;
+                        verdictText = `Go ahead but track it. Every shilling counts.`;
+                    }
                 } else {
-                    const _0x235757 = _0x3f630a - _0x5818c3,
-                        _0x35d751 = _0x235757 / _0x12c2f2;
-                    _0xb1306d = _0x6ced3e(0x384) + _0x235757 + _0x6ced3e(0x1d9) + _0x12c2f2 + '\x20days.\x20That\x27s\x20about\x20' + Math[_0x6ced3e(0x437)](_0x35d751) + _0x6ced3e(0x289);
+                    adviceText = `💎 ${pending.originalQuestion} costs ${amount} shillings. At your wealth level, affordability isn't the question.`;
+                    verdictText = `Does this purchase align with your goals and bring you value? If yes, enjoy.`;
+                }
+            } else if (pending.originalIntent === 'loan') {
+                if (wealthTier.adviceStyle === 'survival') {
+                    adviceText = ` You asked about a ${amount} shilling loan. With your current situation, any loan is dangerous.`;
+                    verdictText = `Do not borrow. Focus on increasing your income first.`;
+                } else {
+                    const monthlyRepayment = Math.round(amount * 0.15);
+                    adviceText = ` A ${amount} shilling loan would cost about ${monthlyRepayment} shillings per month in interest.`;
+                    verdictText = `Only borrow if this money will earn you more than ${monthlyRepayment} shillings per month.`;
                 }
             }
+            
+            const finalResponse = `${adviceText}<br><br><strong>My advice:</strong> ${verdictText}`;
+            const html = buildSimpleResponse(finalResponse, wealthTier, dailyCap, buffer, daysLeft);
+            box.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${html}</div></div>`;
+            box.scrollTop = box.scrollHeight;
+            clearPendingClarification();
+            return;
         } else {
-            if (_0x13d8d9['adviceStyle'] === _0x6ced3e(0x220)) {
-                const _0x239c5c = Math[_0x6ced3e(0x1f7)](_0x5818c3 / _0x3f630a * 0x64);
-                _0x239c5c > 0x1e ? _0xb1306d = _0x6ced3e(0x240) + _0x5818c3 + _0x6ced3e(0x2de) + _0x239c5c + _0x6ced3e(0x1ea) : _0xb1306d = '\x20' + _0x5818c3 + '\x20shillings\x20is\x20reasonable\x20for\x20your\x20situation.\x20Go\x20ahead\x20but\x20track\x20it.';
-            } else {
-                if (_0x13d8d9[_0x6ced3e(0x379)] === _0x6ced3e(0x395)) {
-                    const _0x4dfc2e = Math[_0x6ced3e(0x1f7)](_0x5818c3 / _0x3f630a * 0x64);
-                    _0x4dfc2e > 0x32 ? _0xb1306d = _0x6ced3e(0x3b0) + _0x5818c3 + _0x6ced3e(0x274) + _0x4dfc2e + _0x6ced3e(0x352) : _0xb1306d = _0x6ced3e(0x328);
-                } else _0xb1306d = '💎\x20At\x20your\x20wealth\x20level,\x20' + _0x5818c3 + '\x20shillings\x20is\x20manageable.\x20The\x20real\x20question:\x20does\x20this\x20purchase\x20align\x20with\x20your\x20goals\x20and\x20bring\x20you\x20value?';
-            }
-        }
-        const _0x282d37 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
-        _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x282d37 + _0x6ced3e(0x42b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f[_0x6ced3e(0x43d)];
-        return;
-    }
-    if (_0x49845e[_0x6ced3e(0x2dd)]) {
-        if (_0x5818c3 === 0x0) {
-            setPendingClarification(_0x6ced3e(0x2dd), _0x6ced3e(0x2dd), _0x6ced3e(0x2a0)), _0xb1306d = 'How\x20many\x20shillings\x20are\x20you\x20thinking\x20of\x20borrowing?';
-            const _0xfc2100 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
-            _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0xfc2100 + _0x6ced3e(0x42b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f[_0x6ced3e(0x43d)];
+            const response = `I need the amount to give you accurate advice. How many shillings are we talking about?`;
+            const html = buildSimpleResponse(response, getStatusSummary().wealthTier, 0, 0, 0);
+            box.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${html}</div></div>`;
+            box.scrollTop = box.scrollHeight;
             return;
         }
-        if (_0x13d8d9['adviceStyle'] === _0x6ced3e(0x239)) _0xb1306d = _0x6ced3e(0x1e9) + _0x5818c3 + '\x20shillings.\x20You\x20cannot\x20afford\x20loan\x20repayments\x20right\x20now.\x20Focus\x20on\x20increasing\x20your\x20income\x20first.';
-        else {
-            if (_0x13d8d9['adviceStyle'] === _0x6ced3e(0x220)) {
-                const _0x53e593 = Math[_0x6ced3e(0x1f7)](_0x5818c3 * 0.15);
-                _0xb1306d = _0x6ced3e(0x26d) + _0x5818c3 + _0x6ced3e(0x3b4) + _0x53e593 + '\x20shillings\x20per\x20month\x20in\x20interest.\x20Only\x20borrow\x20if\x20absolutely\x20necessary.';
-            } else {
-                const _0x4702ee = Math['round'](_0x5818c3 * 0.12);
-                _0xb1306d = _0x6ced3e(0x221) + _0x5818c3 + _0x6ced3e(0x3a0) + _0x4702ee + _0x6ced3e(0x386);
-            }
+    }
+    
+    const q = rawQ.toLowerCase().trim();
+    const fin = getFin();
+    const status = getStatusSummary();
+    const isBiz = state.user?.type === 'business';
+    const wealthTier = status.wealthTier;
+    const buffer = status.cash;
+    const dailyCap = status.dailyCap;
+    const daysLeft = status.daysRem;
+    
+    let amount = 0;
+    const cleaned = q.replace(/,/g, '');
+    const numMatch = cleaned.match(/(\d+(?:\.\d+)?)\s*(k|thousand|ksh|shillings|bob|million)?/i);
+    if (numMatch) {
+        amount = parseFloat(numMatch[1]);
+        if (numMatch[2] && /k|thousand/i.test(numMatch[2])) amount *= 1000;
+        if (numMatch[2] && /million/i.test(numMatch[2])) amount *= 1000000;
+    }
+    
+    const has = (...words) => words.some(w => q.includes(w));
+    const intent = {
+        spend: has('buy', 'spend', 'rent','afford', 'get', 'purchase', 'meat', 'unga', 'eggs', 'sugar', 'rice', 'bread', 'milk', 'soap', 'chocolate', 'soda', 'beer', 'champagne'),
+        loan: has('loan', 'borrow', 'zenka', 'fuliza', 'mshwari', 'credit', 'tala', 'branch'),
+        status: has('how am i', 'status', 'days time', 'situation', 'doing', 'how is', 'tell me about', 'summary', 'overview'),
+        hiring: has('hire', 'employee', 'staff', 'worker', 'pay', 'salary', 'wage'),
+        saving: has('save', 'saving', 'emergency', 'future', 'set aside'),
+        profit: has('profit', 'make money', 'increase', 'allowance', 'gift', 'grow', 'more money'),
+        habit: has('habit', 'spending habit', 'where does my money go')
+    };
+    
+    function buildSimpleResponse(text, tier, cap, buf, days) {
+        const riskColor = tier.color;
+        const riskLabel = tier.displayName;
+        const capDisplay = cap > 0 ? `KSh ${Math.floor(cap).toLocaleString()}` : 'calculating...';
+        const bufDisplay = buf > 0 ? `KSh ${buf.toLocaleString()}` : 'KSh 0';
+        const riskBar = `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:14px;font-size:13px;">
+            <div style="display:flex;align-items:center;gap:5px;"><span style="color:var(--color-text-secondary);">Status</span><span style="font-weight:500;color:${riskColor};">${riskLabel}</span></div>
+            <span style="color:var(--color-border-secondary);">·</span>
+            <div style="display:flex;align-items:center;gap:5px;"><span style="color:var(--color-text-secondary);">Daily</span><span style="font-weight:500;">${capDisplay}</span></div>
+            <span style="color:var(--color-border-secondary);">·</span>
+            <div style="display:flex;align-items:center;gap:5px;"><span style="color:var(--color-text-secondary);">Savings</span><span style="font-weight:500;">${bufDisplay}</span></div>
+            ${days > 0 ? `<span style="color:var(--color-border-secondary);">·</span><div style="display:flex;align-items:center;gap:5px;"><span style="color:var(--color-text-secondary);">Days left</span><span style="font-weight:500;">${days}</span></div>` : ''}
+        </div>`;
+        const conclusionBlock = `<div style="margin-top:16px;padding:12px 14px;border-left:3px solid ${riskColor};background:var(--color-background-secondary);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;"><div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;margin-bottom:4px;">Travis Says</div><div style="font-size:15px;line-height:1.6;">${text}</div></div>`;
+        return `${riskBar}${conclusionBlock}`;
+    }
+    
+    let responseText = '';
+    
+    if (intent.status) {
+        responseText = humanReadableStatus(buffer, dailyCap, daysLeft, wealthTier);
+        if (wealthTier.adviceStyle === 'survival') {
+            responseText += `<br><br><strong>What you should do:</strong> ${wealthTier.priority}`;
+        } else if (wealthTier.adviceStyle === 'conservative') {
+            responseText += `<br><br><strong>Next step:</strong> Look at your biggest expense this week. Can you reduce it by 10%?`;
+        } else {
+            responseText += `<br><br><strong>Suggestion:</strong> Consider saving ${Math.floor(buffer * 0.1).toLocaleString()} shillings this month for emergencies.`;
         }
-        const _0x22432c = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
-        _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x22432c + _0x6ced3e(0x42b), _0x17e80f['scrollTop'] = _0x17e80f[_0x6ced3e(0x43d)];
+        const html = buildSimpleResponse(responseText, wealthTier, dailyCap, buffer, daysLeft);
+        box.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${html}</div></div>`;
+        box.scrollTop = box.scrollHeight;
         return;
     }
-    if (_0x49845e[_0x6ced3e(0x414)]) {
-        if (_0x13d8d9[_0x6ced3e(0x379)] === _0x6ced3e(0x239)) _0xb1306d = _0x6ced3e(0x20a);
-        else {
-            if (_0x13d8d9[_0x6ced3e(0x379)] === 'conservative') {
-                const _0x3fe43b = Math[_0x6ced3e(0x437)](_0x3f630a * 0.25);
-                _0xb1306d = _0x6ced3e(0x361) + _0x3fe43b[_0x6ced3e(0x44a)]() + _0x6ced3e(0x2c4);
-            } else _0xb1306d = _0x6ced3e(0x25b);
+    
+if (intent.spend) {
+    if (amount === 0) {
+        const itemMatch = q.match(/(?:buy|get|spend on|purchase)\s+([a-z\s]+)/i);
+        const item = itemMatch ? itemMatch[1].trim() : 'this item';
+        setPendingClarification('spend', item, 'amount');
+        responseText = `To give you straight advice, I need to know: How many shillings does ${item} cost in your area?`;
+        const html = buildSimpleResponse(responseText, wealthTier, dailyCap, buffer, daysLeft);
+        box.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${html}</div></div>`;
+        box.scrollTop = box.scrollHeight;
+        return;
+    }
+    
+    if (buffer < 0) {
+        responseText = `You are already in debt by ${Math.abs(buffer).toLocaleString()} shillings. You cannot afford to spend ANY money right now - not even ${amount} shillings. Your only priority is to earn money to get out of debt.`;
+        const html = buildSimpleResponse(responseText, wealthTier, dailyCap, buffer, daysLeft);
+        box.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${html}</div></div>`;
+        box.scrollTop = box.scrollHeight;
+        return;
+    }
+    
+    if (wealthTier.adviceStyle === 'survival') {
+        if (amount > buffer) {
+            responseText = `You want to spend ${amount} shillings, but you only have ${buffer} shillings TOTAL for the next ${daysLeft} days. You cannot afford this.`;
+        } else if (amount > dailyCap) {
+            const daysToWait = Math.ceil(amount / dailyCap);
+            responseText = `⚠️ This costs ${amount} shillings. You only have about ${Math.floor(dailyCap)} shillings per day. Save for ${daysToWait} day${daysToWait > 1 ? 's' : ''} first.`;
+        } else {
+            const remaining = buffer - amount;
+            const newDaily = remaining / daysLeft;
+            responseText = `You can afford this. After buying, you'll have ${remaining} shillings left for ${daysLeft} days. That's about ${Math.floor(newDaily)} shillings per day. Be careful.`;
         }
-        const _0x95d345 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
-        _0x17e80f['innerHTML'] += _0x6ced3e(0x426) + _0x95d345 + _0x6ced3e(0x42b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f[_0x6ced3e(0x43d)];
-        return;
-    }
-    if (_0x49845e[_0x6ced3e(0x39f)]) {
-        if (_0x13d8d9[_0x6ced3e(0x379)] === _0x6ced3e(0x239)) _0xb1306d = _0x6ced3e(0x205);
-        else {
-            if (_0x13d8d9['adviceStyle'] === _0x6ced3e(0x220)) {
-                const _0x24ecf6 = Math[_0x6ced3e(0x437)](_0x3f630a * 0.07);
-                _0xb1306d = _0x6ced3e(0x2cc) + _0x24ecf6[_0x6ced3e(0x44a)]() + _0x6ced3e(0x2f3);
-            } else {
-                const _0xb8c9e8 = Math[_0x6ced3e(0x437)](_0x3f630a * 0.15);
-                _0xb1306d = '💎\x20At\x20your\x20level,\x20aim\x20to\x20save\x20' + _0xb8c9e8[_0x6ced3e(0x44a)]() + '\x20shillings\x20monthly.\x20Diversify:\x20SACCO,\x20MMF,\x20and\x20maybe\x20stocks.\x20Build\x20a\x206-month\x20emergency\x20fund\x20first.';
-            }
+    } else if (wealthTier.adviceStyle === 'conservative') {
+        const percentOfBuffer = Math.round((amount / buffer) * 100);
+        if (percentOfBuffer > 30) {
+            responseText = `⚠️ This costs ${amount} shillings, which is ${percentOfBuffer}% of your savings. That's significant. Can you wait a few days?`;
+        } else {
+            responseText = ` ${amount} shillings is reasonable for your situation. Go ahead but track it.`;
         }
-        const _0x58d921 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
-        _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x58d921 + _0x6ced3e(0x42b), _0x17e80f['scrollTop'] = _0x17e80f[_0x6ced3e(0x43d)];
+    } else if (wealthTier.adviceStyle === 'balanced') {
+        const percentOfBuffer = Math.round((amount / buffer) * 100);
+        if (percentOfBuffer > 50) {
+            responseText = `This costs ${amount} shillings (${percentOfBuffer}% of your savings). Consider if this is the best use of your money right now.`;
+        } else {
+            responseText = `This fits your budget comfortably. Enjoy.`;
+        }
+    } else {
+        responseText = `💎 At your wealth level, ${amount} shillings is manageable. The real question: does this purchase align with your goals and bring you value?`;
+    }
+    
+    const html = buildSimpleResponse(responseText, wealthTier, dailyCap, buffer, daysLeft);
+    box.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${html}</div></div>`;
+    box.scrollTop = box.scrollHeight;
+    return;
+}
+    
+    if (intent.loan) {
+        if (amount === 0) {
+            setPendingClarification('loan', 'loan', 'amount');
+            responseText = `How many shillings are you thinking of borrowing?`;
+            const html = buildSimpleResponse(responseText, wealthTier, dailyCap, buffer, daysLeft);
+            box.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${html}</div></div>`;
+            box.scrollTop = box.scrollHeight;
+            return;
+        }
+        
+        if (wealthTier.adviceStyle === 'survival') {
+            responseText = `Do not borrow ${amount} shillings. You cannot afford loan repayments right now. Focus on increasing your income first.`;
+        } else if (wealthTier.adviceStyle === 'conservative') {
+            const monthlyRepayment = Math.round(amount * 0.15);
+            responseText = `⚠️ A ${amount} shilling loan would cost about ${monthlyRepayment} shillings per month in interest. Only borrow if absolutely necessary.`;
+        } else {
+            const monthlyRepayment = Math.round(amount * 0.12);
+            responseText = `💎 A ${amount} shilling loan at typical rates costs ${monthlyRepayment} shillings monthly. Will this loan generate more than that in value? If yes, consider it. If not, avoid it.`;
+        }
+        const html = buildSimpleResponse(responseText, wealthTier, dailyCap, buffer, daysLeft);
+        box.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${html}</div></div>`;
+        box.scrollTop = box.scrollHeight;
         return;
     }
-    if (_0x49845e[_0x6ced3e(0x1e0)] || _0x49845e['habit']) {
-        const _0x414630 = _0x384191[_0x6ced3e(0x32d)]['filter'](_0x472c61 => _0x472c61[_0x6ced3e(0x360)] > 0x0);
-        if (_0x414630[_0x6ced3e(0x3c6)] > 0x0) {
-            const _0x267ddf = _0x414630[0x0];
-            _0xb1306d = _0x6ced3e(0x3fd) + _0x267ddf[_0x6ced3e(0x360)]['toLocaleString']() + '\x20shillings\x20more\x20than\x20your\x20budget\x20on\x20' + _0x267ddf[_0x6ced3e(0x222)] + _0x6ced3e(0x1d8);
-        } else _0xb1306d = _0x6ced3e(0x2ca) + (_0x384191[_0x6ced3e(0x32d)][_0x6ced3e(0x2ae)]((_0x128bcc, _0x487a79) => _0x487a79[_0x6ced3e(0x39c)] - _0x128bcc[_0x6ced3e(0x39c)])[0x0]?.[_0x6ced3e(0x222)] || _0x6ced3e(0x23f)) + _0x6ced3e(0x288) + Math[_0x6ced3e(0x3a7)](..._0x384191[_0x6ced3e(0x32d)]['map'](_0x1a2092 => _0x1a2092[_0x6ced3e(0x39c)]))[_0x6ced3e(0x44a)]() + _0x6ced3e(0x33d);
-        const _0x54ef70 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
-        _0x17e80f[_0x6ced3e(0x368)] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x54ef70 + '</div></div>', _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f[_0x6ced3e(0x43d)];
+    
+    if (intent.hiring) {
+        if (wealthTier.adviceStyle === 'survival') {
+            responseText = `You cannot afford to hire anyone right now. Your priority is building your own income first. Get your daily budget above 800 shillings per day before considering staff.`;
+        } else if (wealthTier.adviceStyle === 'conservative') {
+            const safeWage = Math.floor(buffer * 0.25);
+            responseText = ` Based on your savings, a safe monthly wage is about ${safeWage.toLocaleString()} shillings. Can you pay that consistently? If yes, consider a part-time person first.`;
+        } else {
+            responseText = `💎 At your wealth level, hiring decisions should be about ROI. A good hire should generate at least 3x their salary in value. What role are you considering?`;
+        }
+        const html = buildSimpleResponse(responseText, wealthTier, dailyCap, buffer, daysLeft);
+        box.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${html}</div></div>`;
+        box.scrollTop = box.scrollHeight;
         return;
     }
-    _0xb1306d = _0x6ced3e(0x21c);
-    const _0x17c8d1 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
-    _0x17e80f['innerHTML'] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x17c8d1 + _0x6ced3e(0x42b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f['scrollHeight'];
+    
+    if (intent.saving) {
+        if (wealthTier.adviceStyle === 'survival') {
+            responseText = `⚠️ Right now, focus on survival. Once your daily budget is above 300 shillings per day, then start saving 5% of anything extra.`;
+        } else if (wealthTier.adviceStyle === 'conservative') {
+            const recommendedSave = Math.floor(buffer * 0.07);
+            responseText = `Try to save ${recommendedSave.toLocaleString()} shillings this month. Start with a simple savings group or MMF. Even small amounts add up.`;
+        } else {
+            const recommendedSave = Math.floor(buffer * 0.15);
+            responseText = `💎 At your level, aim to save ${recommendedSave.toLocaleString()} shillings monthly. Diversify: SACCO, MMF, and maybe stocks. Build a 6-month emergency fund first.`;
+        }
+        const html = buildSimpleResponse(responseText, wealthTier, dailyCap, buffer, daysLeft);
+        box.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${html}</div></div>`;
+        box.scrollTop = box.scrollHeight;
+        return;
+    }
+    
+    if (intent.profit || intent.habit) {
+        const leaks = fin.obsStatus.filter(o => o.variance > 0);
+        if (leaks.length > 0) {
+            const topLeak = leaks[0];
+            responseText = ` I found a leak: You spent ${topLeak.variance.toLocaleString()} shillings more than your budget on ${topLeak.label}. That's money leaving without you noticing.`;
+        } else {
+            responseText = `Your biggest expense this month is ${fin.obsStatus.sort((a,b) => b.paid - a.paid)[0]?.label || 'something'} at ${Math.max(...fin.obsStatus.map(o => o.paid)).toLocaleString()} shillings. Can you reduce that by 10%?`;
+        }
+        const html = buildSimpleResponse(responseText, wealthTier, dailyCap, buffer, daysLeft);
+        box.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${html}</div></div>`;
+        box.scrollTop = box.scrollHeight;
+        return;
+    }
+    
+    responseText = `I'm here to help with your money decisions. Ask me:
+• "Can I buy meat for 500?"
+• "How am I doing financially?"
+• "Should I take a loan?"
+• "How can I save more?"
+Just tell me what you're thinking about spending or saving.`;
+    const html = buildSimpleResponse(responseText, wealthTier, dailyCap, buffer, daysLeft);
+    box.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${html}</div></div>`;
+    box.scrollTop = box.scrollHeight;
 }
 
-function escapeHtml(_0x23a955) {
-    const _0x3a857d = _0xad7134;
-    if (!_0x23a955) return '';
-    return _0x23a955[_0x3a857d(0x21f)](/[&<>]/g, function(_0x15d491) {
-        const _0x16cdd7 = _0x3a857d;
-        if (_0x15d491 === '&') return '&amp;';
-        if (_0x15d491 === '<') return _0x16cdd7(0x279);
-        if (_0x15d491 === '>') return _0x16cdd7(0x304);
-        return _0x15d491;
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
     });
 }
-window[_0xad7134(0x231)]('resize', () => {
-    const _0x48b3fa = _0xad7134,
-        _0x20747c = document[_0x48b3fa(0x3e3)](_0x48b3fa(0x2d3));
-    if (!_0x20747c) return;
-    if (window[_0x48b3fa(0x43e)] < 0x258) _0x20747c[_0x48b3fa(0x3c4)][_0x48b3fa(0x1d7)] = 'repeat(2,1fr)';
-    else window[_0x48b3fa(0x43e)] < 0x384 ? _0x20747c[_0x48b3fa(0x3c4)][_0x48b3fa(0x1d7)] = _0x48b3fa(0x3f9) : _0x20747c[_0x48b3fa(0x3c4)]['gridTemplateColumns'] = _0x48b3fa(0x1e1);
+
+window.addEventListener('resize', () => {
+    const grid = document.getElementById('dashboard-grid');
+    if (!grid) return;
+    if (window.innerWidth < 600) { grid.style.gridTemplateColumns = 'repeat(2,1fr)'; }
+    else if (window.innerWidth < 900) { grid.style.gridTemplateColumns = 'repeat(2,1fr)'; }
+    else { grid.style.gridTemplateColumns = 'repeat(4,1fr)'; }
 });
+
 async function boot() {
-    const _0xae128d = _0xad7134;
     await initDB();
-    let _0x59a57e = await getData('meta', 'config') || {
-        'activated': ![]
-    };
-    const _0x2e9ab7 = window[_0xae128d(0x21a)](_0xae128d(0x302))[_0xae128d(0x32f)] || navigator[_0xae128d(0x301)] === !![];
-    await new Promise(_0x1c1ecc => setTimeout(_0x1c1ecc, 0x190));
-    if (!_0x59a57e[_0xae128d(0x314)]) {
-        _0x2e9ab7 ? (document[_0xae128d(0x3e3)](_0xae128d(0x280))[_0xae128d(0x34f)][_0xae128d(0x29f)](_0xae128d(0x325)), document[_0xae128d(0x3e3)](_0xae128d(0x2b2))[_0xae128d(0x3c4)][_0xae128d(0x434)] = 'none') : document['getElementById'](_0xae128d(0x2b2))[_0xae128d(0x3c4)][_0xae128d(0x434)] = _0xae128d(0x380);
+    let meta = await getData("meta", "config") || { activated: false };
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+    await new Promise(r => setTimeout(r, 400));
+    if (!meta.activated) {
+        if (isStandalone) { document.getElementById('activation-overlay').classList.remove('hidden'); document.getElementById('install-overlay').style.display = 'none'; }
+        else { document.getElementById('install-overlay').style.display = 'flex'; }
         return;
     }
-    if (!_0x59a57e[_0xae128d(0x3a1)]) {
-        document[_0xae128d(0x3e3)](_0xae128d(0x3c1))['classList'][_0xae128d(0x29f)]('hidden'), document[_0xae128d(0x3e3)](_0xae128d(0x2b2))[_0xae128d(0x3c4)]['display'] = 'none';
-        return;
-    }
-    state[_0xae128d(0x3a1)] = _0x59a57e[_0xae128d(0x3a1)], state[_0xae128d(0x38f)] = _0x59a57e['obligations'] || [], state[_0xae128d(0x385)] = (await getAllData('tx'))['sort']((_0x270b97, _0x58326b) => _0x58326b['id'] - _0x270b97['id']), document[_0xae128d(0x3e3)]('display-name')['innerText'] = state[_0xae128d(0x3a1)][_0xae128d(0x2e9)], document[_0xae128d(0x3e3)](_0xae128d(0x3a2))[_0xae128d(0x44b)] = state[_0xae128d(0x3a1)]['type'][_0xae128d(0x2a6)]() + _0xae128d(0x294), document[_0xae128d(0x3e3)]('sidebar-name')['innerText'] = state['user'][_0xae128d(0x2e9)], document['getElementById'](_0xae128d(0x391))[_0xae128d(0x44b)] = state[_0xae128d(0x3a1)]['type']['charAt'](0x0)[_0xae128d(0x2a6)]() + state['user'][_0xae128d(0x344)][_0xae128d(0x372)](0x1), document[_0xae128d(0x3e3)](_0xae128d(0x277))[_0xae128d(0x44b)] = state['user'][_0xae128d(0x2e9)][_0xae128d(0x1e3)](0x0)[_0xae128d(0x2a6)](), document[_0xae128d(0x3e3)](_0xae128d(0x2b2))[_0xae128d(0x3c4)][_0xae128d(0x434)] = _0xae128d(0x2ab), nav('dash');
-    if (typeof travisNotif !== _0xae128d(0x2be)) travisNotif[_0xae128d(0x43a)]();
+    if (!meta.user) { document.getElementById('setup-overlay').classList.remove('hidden'); document.getElementById('install-overlay').style.display = 'none'; return; }
+    state.user = meta.user; state.obligations = meta.obligations || [];
+    state.transactions = (await getAllData("tx")).sort((a, b) => b.id - a.id);
+    document.getElementById('display-name').innerText = state.user.name;
+    document.getElementById('display-mode').innerText = state.user.type.toUpperCase() + ' ADVISOR';
+    document.getElementById('sidebar-name').innerText = state.user.name;
+    document.getElementById('sidebar-type').innerText = state.user.type.charAt(0).toUpperCase() + state.user.type.slice(1);
+    document.getElementById('sidebar-avatar').innerText = state.user.name.charAt(0).toUpperCase();
+    document.getElementById('install-overlay').style.display = 'none';
+    nav('dash');
+    if (typeof travisNotif !== 'undefined') travisNotif.init();
 }
-document[_0xad7134(0x3e3)](_0xad7134(0x264))?.['addEventListener'](_0xad7134(0x2bd), triggerInstall), window[_0xad7134(0x1f8)] = boot;
+
+document.getElementById('install-btn')?.addEventListener('click', triggerInstall);
+window.onload = boot;
