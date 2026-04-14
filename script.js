@@ -17,7 +17,7 @@ const _0xad7134 = _0x9f28;
     const _0x24d2b2 = document['createElement'](_0x49b79b(0x3c4));
     _0x24d2b2['id'] = _0x49b79b(0x309), _0x24d2b2[_0x49b79b(0x378)] = _0x49b79b(0x3c3), document[_0x49b79b(0x3ee)][_0x49b79b(0x2fb)](_0x24d2b2);
 }());
-const BACKEND_URL = 'https://travis-three.vercel.app',
+const BACKEND_URL = 'https://travis-j1w9.onrender.com',
     WEALTH_TIERS = {
         'DESTITUTE': {
             'minDailyCap': 0x0,
