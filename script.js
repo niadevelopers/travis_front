@@ -1,179 +1,409 @@
-const _0x4c3582 = _0x469b;
-(function(_0x333080, _0x54b1a4) {
-    const _0x2d17b8 = _0x469b,
-        _0x2a7e71 = _0x333080();
+const _0xad7134 = _0x9f28;
+(function(_0x94d187, _0x3d9f3d) {
+    const _0xbeef9d = _0x9f28,
+        _0x51e79e = _0x94d187();
     while (!![]) {
         try {
-            const _0x4e3413 = -parseInt(_0x2d17b8(0x2e4)) / 0x1 * (parseInt(_0x2d17b8(0x19b)) / 0x2) + parseInt(_0x2d17b8(0x25a)) / 0x3 * (parseInt(_0x2d17b8(0x2d0)) / 0x4) + parseInt(_0x2d17b8(0x2aa)) / 0x5 * (-parseInt(_0x2d17b8(0x1d6)) / 0x6) + -parseInt(_0x2d17b8(0x1ef)) / 0x7 * (parseInt(_0x2d17b8(0x1c1)) / 0x8) + -parseInt(_0x2d17b8(0x3ad)) / 0x9 + parseInt(_0x2d17b8(0x282)) / 0xa + parseInt(_0x2d17b8(0x2b0)) / 0xb;
-            if (_0x4e3413 === _0x54b1a4) break;
-            else _0x2a7e71['push'](_0x2a7e71['shift']());
-        } catch (_0x178fa5) {
-            _0x2a7e71['push'](_0x2a7e71['shift']());
+            const _0x22980a = parseInt(_0xbeef9d(0x27d)) / 0x1 + -parseInt(_0xbeef9d(0x208)) / 0x2 * (parseInt(_0xbeef9d(0x2b3)) / 0x3) + parseInt(_0xbeef9d(0x39d)) / 0x4 * (parseInt(_0xbeef9d(0x260)) / 0x5) + -parseInt(_0xbeef9d(0x3d1)) / 0x6 * (-parseInt(_0xbeef9d(0x355)) / 0x7) + -parseInt(_0xbeef9d(0x2ef)) / 0x8 + parseInt(_0xbeef9d(0x20f)) / 0x9 * (parseInt(_0xbeef9d(0x2b4)) / 0xa) + -parseInt(_0xbeef9d(0x3d3)) / 0xb * (parseInt(_0xbeef9d(0x25e)) / 0xc);
+            if (_0x22980a === _0x3d9f3d) break;
+            else _0x51e79e['push'](_0x51e79e['shift']());
+        } catch (_0x5adb38) {
+            _0x51e79e['push'](_0x51e79e['shift']());
         }
     }
-}(_0x4d40, 0xae290));
-const BACKEND_URL = _0x4c3582(0x215);
+}(_0x5a88, 0x7332f), function injectStyles() {
+    const _0x49b79b = _0x9f28;
+    if (document[_0x49b79b(0x3e3)]('travis-ripple-styles')) return;
+    const _0x24d2b2 = document['createElement'](_0x49b79b(0x3c4));
+    _0x24d2b2['id'] = _0x49b79b(0x309), _0x24d2b2[_0x49b79b(0x378)] = _0x49b79b(0x3c3), document[_0x49b79b(0x3ee)][_0x49b79b(0x2fb)](_0x24d2b2);
+}());
+const BACKEND_URL = 'https://travis-three.vercel.app',
+    WEALTH_TIERS = {
+        'DESTITUTE': {
+            'minDailyCap': 0x0,
+            'maxDailyCap': 0x64,
+            'label': _0xad7134(0x402),
+            'displayName': 'Emergency',
+            'color': _0xad7134(0x229),
+            'adviceStyle': _0xad7134(0x239),
+            'humanDescription': _0xad7134(0x3b5),
+            'priority': _0xad7134(0x1ee),
+            'dailyCapHuman': _0x4f5635 => _0xad7134(0x1e8) + Math[_0xad7134(0x437)](_0x4f5635) + _0xad7134(0x40e),
+            'bufferHuman': (_0x17dd65, _0x54a499) => _0xad7134(0x245) + _0x17dd65 + _0xad7134(0x3da) + _0x54a499 + _0xad7134(0x445)
+        },
+        'SURVIVAL': {
+            'minDailyCap': 0x65,
+            'maxDailyCap': 0x12c,
+            'label': _0xad7134(0x1fd),
+            'displayName': _0xad7134(0x3b1),
+            'color': _0xad7134(0x226),
+            'adviceStyle': _0xad7134(0x239),
+            'humanDescription': _0xad7134(0x26a),
+            'priority': _0xad7134(0x2ff),
+            'dailyCapHuman': _0x406947 => _0xad7134(0x1e8) + Math[_0xad7134(0x437)](_0x406947) + '\x20shillings\x20per\x20day.\x20Enough\x20for\x20basic\x20food\x20but\x20nothing\x20more.',
+            'bufferHuman': (_0x49c68f, _0x492041) => _0xad7134(0x245) + _0x49c68f + _0xad7134(0x34b) + _0x492041 + _0xad7134(0x213)
+        },
+        'STRUGGLING': {
+            'minDailyCap': 0x12d,
+            'maxDailyCap': 0x320,
+            'label': _0xad7134(0x3f3),
+            'displayName': 'Leveling',
+            'color': '#F39C12',
+            'adviceStyle': _0xad7134(0x220),
+            'humanDescription': _0xad7134(0x363),
+            'priority': _0xad7134(0x3d0),
+            'dailyCapHuman': _0x3e4a99 => 'You\x20have\x20about\x20' + Math[_0xad7134(0x437)](_0x3e4a99) + _0xad7134(0x449),
+            'bufferHuman': (_0x431482, _0xaa6676) => _0xad7134(0x245) + _0x431482 + _0xad7134(0x424) + _0xaa6676 + '\x20days.\x20You\x27re\x20getting\x20by\x20but\x20not\x20thriving.'
+        },
+        'STABLE': {
+            'minDailyCap': 0x321,
+            'maxDailyCap': 0xbb8,
+            'label': _0xad7134(0x43f),
+            'displayName': _0xad7134(0x22e),
+            'color': _0xad7134(0x20c),
+            'adviceStyle': 'balanced',
+            'humanDescription': _0xad7134(0x3fc),
+            'priority': _0xad7134(0x1de),
+            'dailyCapHuman': _0x2522a7 => _0xad7134(0x1e8) + Math[_0xad7134(0x437)](_0x2522a7) + _0xad7134(0x2c6),
+            'bufferHuman': (_0x5b37ac, _0x1cd41d) => _0xad7134(0x245) + _0x5b37ac + _0xad7134(0x433) + _0x1cd41d + _0xad7134(0x374)
+        },
+        'AFFLUENT': {
+            'minDailyCap': 0xbb9,
+            'maxDailyCap': 0x3a98,
+            'label': 'AFFLUENT',
+            'displayName': _0xad7134(0x2b8),
+            'color': _0xad7134(0x40a),
+            'adviceStyle': _0xad7134(0x24a),
+            'humanDescription': 'You\x20have\x20significant\x20disposable\x20income.',
+            'priority': 'Grow\x20wealth,\x20invest,\x20diversify.',
+            'dailyCapHuman': _0x1c9ac1 => _0xad7134(0x1e8) + Math[_0xad7134(0x437)](_0x1c9ac1) + _0xad7134(0x446),
+            'bufferHuman': (_0x381de4, _0x2ae36b) => _0xad7134(0x245) + _0x381de4 + _0xad7134(0x295)
+        },
+        'WEALTHY': {
+            'minDailyCap': 0x3a99,
+            'maxDailyCap': 0xc350,
+            'label': _0xad7134(0x26c),
+            'displayName': _0xad7134(0x42e),
+            'color': _0xad7134(0x2c8),
+            'adviceStyle': 'preservation',
+            'humanDescription': 'You\x20have\x20substantial\x20wealth.',
+            'priority': _0xad7134(0x1d6),
+            'dailyCapHuman': _0x41510e => _0xad7134(0x245) + Math[_0xad7134(0x437)](_0x41510e) + _0xad7134(0x41d),
+            'bufferHuman': (_0x25ec1e, _0x48dd75) => _0xad7134(0x245) + _0x25ec1e + _0xad7134(0x2c3)
+        },
+        'ELITE': {
+            'minDailyCap': 0xc351,
+            'maxDailyCap': Infinity,
+            'label': _0xad7134(0x1f0),
+            'displayName': _0xad7134(0x3dc),
+            'color': _0xad7134(0x311),
+            'adviceStyle': _0xad7134(0x33b),
+            'humanDescription': _0xad7134(0x247),
+            'priority': _0xad7134(0x2e1),
+            'dailyCapHuman': _0x21e3be => 'Your\x20daily\x20spending\x20capacity\x20exceeds\x20' + Math[_0xad7134(0x437)](_0x21e3be)['toLocaleString']() + _0xad7134(0x27f),
+            'bufferHuman': (_0x52dc36, _0x24381d) => _0xad7134(0x216) + _0x52dc36[_0xad7134(0x44a)]() + '\x20shillings.\x20Elite\x20level.'
+        }
+    },
+    KNBS_BENCHMARKS = {
+        'minimumWage': {
+            'urban': 0x3ef2,
+            'rural': 0x34bc,
+            'agricultural': 0x2ee0,
+            'domestic': 0x2710
+        },
+        'povertyLine': {
+            'foodPoor': 0xc4c,
+            'overallPoor': 0x1557,
+            'extremePoor': 0x929
+        },
+        'livingWage': {
+            'urbanSingle': 0x61a8,
+            'urbanFamily': 0xafc8,
+            'ruralSingle': 0x4650,
+            'ruralFamily': 0x7d00
+        },
+        'foodBasket': {
+            'dailyMinimum': 0x96,
+            'monthlyMinimum': 0x1194,
+            'description': 'Basic\x20food\x20basket\x20(unga,\x20sukuma,\x20onions,\x20tomatoes)'
+        }
+    };
+let conversationState = {
+    'pendingClarification': null,
+    'lastResponse': null,
+    'conversationHistory': [],
+    'currentTopic': null
+};
+
+function setPendingClarification(_0x517645, _0x53c7f5, _0x330127) {
+    const _0x25dfb8 = _0xad7134;
+    conversationState[_0x25dfb8(0x3fb)] = {
+        'originalIntent': _0x517645,
+        'originalQuestion': _0x53c7f5,
+        'expectedType': _0x330127,
+        'timestamp': Date[_0x25dfb8(0x250)]()
+    };
+}
+
+function clearPendingClarification() {
+    const _0x122001 = _0xad7134;
+    conversationState[_0x122001(0x3fb)] = null;
+}
+
+function hasPendingClarification() {
+    return conversationState['pendingClarification'] !== null;
+}
+
+function getUserWealthTier(_0x5191a4, _0x3bea0b) {
+    const _0x336d03 = _0xad7134;
+    if (_0x3bea0b < 0x0) return {
+        'name': _0x336d03(0x402),
+        ...WEALTH_TIERS[_0x336d03(0x402)],
+        'displayName': _0x336d03(0x1fa),
+        'humanDescription': _0x336d03(0x3b9) + Math[_0x336d03(0x35f)](_0x3bea0b)[_0x336d03(0x44a)]() + _0x336d03(0x3e8)
+    };
+    for (const [_0x164d06, _0x5a2097] of Object['entries'](WEALTH_TIERS)) {
+        if (_0x5191a4 >= _0x5a2097['minDailyCap'] && _0x5191a4 <= _0x5a2097['maxDailyCap']) return {
+            'name': _0x164d06,
+            ..._0x5a2097
+        };
+    }
+    return {
+        'name': _0x336d03(0x3f3),
+        ...WEALTH_TIERS['STRUGGLING']
+    };
+}
+
+function humanReadableStatus(_0x2d6cb9, _0x28a79b, _0x5e8be2, _0x379417) {
+    const _0x285e8d = _0xad7134;
+    if (_0x379417[_0x285e8d(0x379)] === _0x285e8d(0x239)) {
+        if (_0x28a79b < 0x64) return 'EMERGENCY:\x20You\x20have\x20only\x20' + _0x2d6cb9 + _0x285e8d(0x1d9) + _0x5e8be2 + _0x285e8d(0x257) + Math['floor'](_0x28a79b) + _0x285e8d(0x333);
+        else return _0x28a79b < 0x12c ? _0x285e8d(0x2b7) + _0x2d6cb9 + '\x20shillings\x20must\x20last\x20' + _0x5e8be2 + _0x285e8d(0x299) + Math[_0x285e8d(0x437)](_0x28a79b) + '\x20shillings\x20per\x20day.\x20Enough\x20for\x20unga\x20and\x20sukuma,\x20but\x20nothing\x20extra.' : _0x285e8d(0x418) + _0x2d6cb9 + _0x285e8d(0x424) + _0x5e8be2 + _0x285e8d(0x246) + Math[_0x285e8d(0x437)](_0x28a79b) + _0x285e8d(0x430);
+    } else {
+        if (_0x379417['adviceStyle'] === _0x285e8d(0x220)) return _0x285e8d(0x436) + _0x2d6cb9 + _0x285e8d(0x3da) + _0x5e8be2 + '\x20days.\x20That\x27s\x20about\x20' + Math[_0x285e8d(0x437)](_0x28a79b) + _0x285e8d(0x265);
+        else return _0x379417[_0x285e8d(0x379)] === 'balanced' ? 'You\x20have\x20' + _0x2d6cb9 + '\x20shillings\x20for\x20' + _0x5e8be2 + '\x20days.\x20About\x20' + Math['floor'](_0x28a79b) + _0x285e8d(0x24b) : '💎\x20You\x20have\x20' + _0x2d6cb9[_0x285e8d(0x44a)]() + _0x285e8d(0x1da) + Math[_0x285e8d(0x437)](_0x28a79b)[_0x285e8d(0x44a)]() + _0x285e8d(0x1d5);
+    }
+}
+
+function humanReadableAdvice(_0x542b5b, _0x6e8832, _0x1a954c, _0x94236e, _0x1e65a0, _0x56e04c) {
+    const _0x17f790 = _0xad7134,
+        _0x1333d7 = _0x542b5b[_0x17f790(0x379)];
+    if (_0x6e8832 === _0x17f790(0x398)) {
+        if (_0x1333d7 === _0x17f790(0x239)) {
+            if (_0x1a954c > _0x94236e) return _0x17f790(0x3b8) + _0x94236e + _0x17f790(0x319);
+            else {
+                if (_0x1a954c > _0x1e65a0) {
+                    const _0x2c4c49 = Math['ceil'](_0x1a954c / _0x1e65a0);
+                    return 'This\x20costs\x20' + _0x1a954c + _0x17f790(0x3c9) + Math[_0x17f790(0x437)](_0x1e65a0) + _0x17f790(0x2a9) + _0x2c4c49 + _0x17f790(0x278);
+                } else {
+                    const _0x5d9c31 = _0x94236e - _0x1a954c,
+                        _0x417d4e = _0x5d9c31 / _0x56e04c;
+                    return _0x17f790(0x384) + _0x5d9c31 + _0x17f790(0x1d9) + _0x56e04c + _0x17f790(0x257) + Math[_0x17f790(0x437)](_0x417d4e) + _0x17f790(0x3cb);
+                }
+            }
+        } else {
+            if (_0x1333d7 === _0x17f790(0x220)) {
+                const _0x4a0525 = Math['round'](_0x1a954c / _0x94236e * 0x64);
+                return _0x4a0525 > 0x1e ? _0x17f790(0x3b0) + _0x1a954c + _0x17f790(0x2de) + _0x4a0525 + _0x17f790(0x403) : 'This\x20costs\x20' + _0x1a954c + '\x20shillings.\x20That\x27s\x20reasonable\x20for\x20your\x20situation.\x20Go\x20ahead\x20but\x20track\x20it.';
+            } else {
+                if (_0x1333d7 === _0x17f790(0x395)) {
+                    const _0x39ff16 = Math[_0x17f790(0x1f7)](_0x1a954c / _0x94236e * 0x64);
+                    return _0x39ff16 > 0x32 ? _0x17f790(0x211) + _0x1a954c + '\x20shillings\x20(' + _0x39ff16 + _0x17f790(0x352) : 'This\x20fits\x20your\x20budget\x20comfortably.\x20Enjoy.';
+                } else return _0x17f790(0x251) + _0x1a954c + _0x17f790(0x3b2);
+            }
+        }
+    }
+    if (_0x6e8832 === _0x17f790(0x2dd)) {
+        if (_0x1333d7 === _0x17f790(0x239)) return _0x17f790(0x20d);
+        else {
+            if (_0x1333d7 === _0x17f790(0x220)) {
+                const _0x564942 = Math[_0x17f790(0x1f7)](_0x1a954c * 0.15);
+                return _0x17f790(0x1f5) + _0x1a954c + _0x17f790(0x3b4) + _0x564942 + _0x17f790(0x29d);
+            } else return _0x17f790(0x303);
+        }
+    }
+    if (_0x6e8832 === _0x17f790(0x40b)) {
+        if (_0x1333d7 === _0x17f790(0x239)) return _0x17f790(0x23d);
+        else {
+            if (_0x1333d7 === _0x17f790(0x220)) {
+                const _0x2f3e4a = Math[_0x17f790(0x437)](_0x94236e * 0.25);
+                return _0x17f790(0x2d8) + _0x2f3e4a + _0x17f790(0x34c);
+            } else return _0x17f790(0x241);
+        }
+    }
+    return null;
+}
 
 function updateClock() {
-    const _0x1c7921 = _0x4c3582,
-        _0x3f2a5c = new Date();
-    document[_0x1c7921(0x373)](_0x1c7921(0x234))[_0x1c7921(0x191)] = _0x3f2a5c[_0x1c7921(0x211)](_0x1c7921(0x2e1), {
-        'hour': _0x1c7921(0x20f),
-        'minute': _0x1c7921(0x20f)
-    }), document[_0x1c7921(0x373)](_0x1c7921(0x35e))['textContent'] = _0x3f2a5c[_0x1c7921(0x196)](_0x1c7921(0x2e1), {
-        'weekday': 'short',
-        'day': _0x1c7921(0x355),
-        'month': 'short'
+    const _0x3e9d53 = _0xad7134,
+        _0x4efff1 = new Date();
+    document[_0x3e9d53(0x3e3)](_0x3e9d53(0x270))['textContent'] = _0x4efff1[_0x3e9d53(0x443)]('en-KE', {
+        'hour': _0x3e9d53(0x3d7),
+        'minute': '2-digit'
+    }), document[_0x3e9d53(0x3e3)](_0x3e9d53(0x3e7))[_0x3e9d53(0x378)] = _0x4efff1[_0x3e9d53(0x32e)](_0x3e9d53(0x32a), {
+        'weekday': _0x3e9d53(0x298),
+        'day': 'numeric',
+        'month': _0x3e9d53(0x298)
     });
 }
 setInterval(updateClock, 0x3e8), updateClock();
 
-function _0x4d40() {
-    const _0x493775 = ['5jfAJrE', 'rgba(196,43,28,0.08)', 'cashflow', 'TRAVIS-GUARDIAN-SECURE-2026-x7k9', 'rgba(102,204,0,0.7)', 'Cost\x20of\x20Goods\x20Sold', '29213360iaLZqH', 'clear', 'unit\x20trust', 'charCodeAt', 'abs', 'chip-yellow', 'grow', 'salary\x20for', ',\x20and\x20you\x20have\x20', 'doing', 'text/html', '</p><button\x20onclick=\x22location.reload()\x22\x20style=\x22margin-top:12px;padding:10px\x2020px;border-radius:8px;border:none;background:#0078D4;color:white;cursor:pointer;\x22>Try\x20Again</button></div>', 'reload', 'This\x20is\x20fine.\x20Go\x20ahead,\x20log\x20it,\x20and\x20you\x27re\x20still\x20on\x20track.', 'itax', 'set', ',\x20and\x20a\x20safe\x20guideline\x20is\x20that\x20total\x20wages\x20shouldn\x27t\x20exceed\x2025–30%\x20of\x20that\x20buffer\x20per\x20month\x20—\x20so\x20you\x20have\x20room\x20for\x20wages\x20of\x20up\x20to\x20KSh\x20', '\x20comes\x20from\x20two\x20directions\x20—\x20more\x20money\x20coming\x20in,\x20or\x20less\x20going\x20out.\x20Most\x20small\x20businesses\x20in\x20Kenya\x20don\x27t\x20fail\x20because\x20of\x20low\x20sales\x20—\x20they\x20fail\x20because\x20their\x20costs\x20grow\x20as\x20fast\x20as\x20their\x20revenue.', 'config', 'display-mode', '<div\x20style=\x22margin-top:16px;padding:12px\x2014px;border-left:3px\x20solid\x20', 'No\x20file\x20handle', '\x20of\x20safe\x20daily\x20spend', 'display-name', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:right;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:var(--win-red);font-size:13px;font-weight:700;\x22>+KSh\x20', '\x20to\x20protect\x20liquidity.', 'personal', 'short', 'querySelector', 'var(--win-text)', 'length', 'now', '3979756ZKjhbj', 'tx-debit', 'tell\x20me\x20about', 'userChoice', '\x20for\x20restocking\x20sits\x20at\x20a\x20healthy\x20', 'tailwind-app.css', 'Cash', 'open', 'seg-btn', '<div\x20style=\x22padding:40px;text-align:center;background:white;border-radius:16px;max-width:360px;\x22><p\x20style=\x22color:green;font-size:16px;\x22>\x20Everything\x20restored!\x20Reloading…</p></div>', 'where\x20do\x20i', 'substring', 'done', 'register', 'treatment', 'chat-box', 'vat', 'en-KE', 'name', 'resolvedOptions', '23BcEpSA', 'getRandomValues', 'projection', '\x20from\x20your\x20account', 'endsWith', 'transactions', 'replaceChild', 'disabled', 'raw', 'custom-alert', 'kra', 'LOW', '\x20sits\x20within\x20your\x20daily\x20cap,\x20so\x20it\x27s\x20fine\x20from\x20a\x20budget\x20standpoint.', 'staff', 'POST', 'clinic', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:10px;color:var(--win-red);\x22>Over\x20budget</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'you\x20have\x20KSh\x20', 'classList', 'toDateString', 'restore-btn', 'header-verdict-badge', 'crypto', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22metric-value\x22>', 'Daily\x20Ceiling', 'Financially\x20this\x20works.\x20Before\x20hiring,\x20define\x20exactly\x20what\x20this\x20person\x20will\x20do\x20to\x20move\x20money\x20—\x20more\x20sales,\x20faster\x20service,\x20more\x20hours\x20covered.', 'rgba(0,0,0,0.04)', 'label', 'You\x27re\x20thinking\x20about\x20spending\x20KSh\x20', 'width', 'Password\x20required', 'activated', 'daily', '\x20for\x20an\x20obligation\x20is\x20a\x20legitimate\x20expense,\x20and\x20your\x20buffer\x20can\x20absorb\x20it.\x20After\x20paying\x20this,\x20you\x27ll\x20still\x20have\x20KSh\x20', 'Payroll', 'flex', 'Service\x20worker\x20failed\x20–\x20install\x20may\x20not\x20work', 'meta', 'pay\x20for', '#5a5a5a', 'add', 'How\x20am\x20I\x20doing\x20this\x20month', '</div>', '(display-mode:\x20standalone)', 'harambee', 'deriveBits', '\x20days\x20would\x20still\x20be\x20workable\x20at\x20KSh\x20', 'chip-green', 'overview', '.css', 'spend', 'shares', 'Loan\x20Repayment', 'dash', 'value', 'landlord', 'margin', '\x20per\x20month,\x20this\x20hire\x20sits\x20within\x20your\x20safe\x20wage\x20budget\x20of\x20KSh\x20', 'Restore\x20failed', 'onsuccess', 'click', 'showOpenFilePicker', 'chama', 'make\x20money', 'Food\x20&\x20Groceries', 'how\x20much\x20to\x20sell', 'pending', 'nav-sidebar', 'toLowerCase', 'I\x27d\x20reduce\x20it\x20to\x20around\x20KSh\x20', 'getContext', '\x20owed.', '</div></div>', 'obligations', '.js', 'How\x20much\x20tax\x20should\x20I\x20set\x20aside', 'MODERATE', 'setDate', 'user-name', 'business', 'actions', 'Give\x20me\x20a\x20full\x20status\x20summary', 'AES-GCM', '\x20and\x20risk\x20at\x20', 'toFixed', 'CRITICAL', 'family', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);\x22>Budget:\x20KSh\x20', 'At\x20', 'what\x20should\x20i\x20charge', 'div', 'error', 'importKey', 'branch', '#069', 'relative', 'forEach', 'Revenue', 'onclick', 'You\x27re\x20thinking\x20about\x20bringing\x20someone\x20on\x20at\x20KSh\x20', 'Fixed\x20Assets', 'reorder', 'How\x20much\x20can\x20I\x20spend\x20today', 'toggle', 'How\x20to\x20make\x20more\x20profit', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:grid;grid-template-columns:300px\x201fr;gap:16px;align-items:start;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20Left\x20Column\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;flex-direction:column;gap:12px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20Risk\x20Card\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Insolvency\x20Risk</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22chip\x20', 'invest', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);margin-top:4px;\x22>Available\x20after\x20all\x20obligations</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20Right\x20Column:\x20Chart\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22\x20style=\x22min-height:340px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Performance\x20Analytics</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);\x22>Last\x207\x20days</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-body\x22\x20style=\x22height:300px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<canvas\x20id=\x22analyticsChart\x22></canvas>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', '\x20free\x20cash.', 'paid', 'load', 'encode', 'Calculate\x20markup\x20for\x20an\x20item', 'numeric', 'Failed\x20to\x20send\x20data.\x20Check\x20connection.', 'btn-b', 'cash', 'var(--color-text-success)', 'Accounts\x20Payable', 'what\x20can\x20i\x20spend', 'Travisguardian', 'how\x20much\x20should\x20i', 'clock-date', '\x20—\x20that\x27s\x2050%\x20of\x20your\x20buffer.\x20Keep\x20the\x20other\x20half\x20liquid.\x20Turning\x20over\x20smaller\x20stock\x20faster\x20is\x20safer\x20than\x20betting\x20everything\x20on\x20one\x20big\x20order.', '<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>General\x20Ledger</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);\x22>', 'travis-finance-backup.enc', 'DateTimeFormat', 'Market\x20Exchange', 'What\x20should\x20I\x20do\x20today', 'matches', 'borrow', 'doctor', '\x20to\x20work\x20with\x20instead\x20of\x20', '\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22width:6px;height:6px;border-radius:50%;background:', 'getFile', 'floor', 'debit', 'Go\x20ahead\x20if\x20the\x20purpose\x20is\x20productive.\x20Make\x20sure\x20the\x20repayment\x20fits\x20inside\x20your\x20daily\x20cap\x20without\x20pushing\x20you\x20into\x20moderate\x20risk.', 'slice', 'boost', 'Accounts\x20Receivable', 'How\x20to\x20increase\x20income', 'destroy', 'getElementById', 'includes', 'What\x20should\x20I\x20cut', 'documents', 'readwrite', '\x20—\x20that\x27s\x20the\x20money\x20available\x20after\x20all\x20your\x20obligations.\x20Hiring\x20someone\x20means\x20committing\x20to\x20a\x20wage\x20every\x20single\x20month.', 'Tax', 'tz-unknown', 'xx-XX', 'is\x20manageable\x20but\x20leaves\x20zero\x20room\x20for\x20surprises', '\x20or\x20delay\x20to\x20a\x20day\x20when\x20you\x27ve\x20had\x20good\x20income.', '%\x20of\x20your\x20free\x20cash.\x20The\x20problem\x20with\x20tying\x20up\x20that\x20much\x20in\x20stock\x20is\x20that\x20it\x20assumes\x20your\x20sales\x20velocity\x20is\x20high\x20enough\x20to\x20convert\x20those\x20goods\x20to\x20cash\x20before\x20your\x20next\x20major\x20obligation\x20falls\x20due.', '<div\x20style=\x22display:flex;flex-wrap:wrap;align-items:center;gap:6px\x2010px;padding:10px\x2012px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:14px;font-size:13px;\x22><div\x20style=\x22display:flex;align-items:center;gap:5px;white-space:nowrap;\x22><span\x20style=\x22color:var(--color-text-secondary);font-size:12px;\x22>Risk</span><span\x20style=\x22font-weight:500;color:', 'availHeight', '⚠\x20INSOLVENT', 'Hold\x20off\x20on\x20this.\x20It\x27s\x20not\x20about\x20the\x20amount\x20being\x20huge\x20—\x20it\x27s\x20about\x20what\x20month\x20end\x20looks\x20like\x20if\x20you\x20keep\x20going.\x20Protect\x20the\x20buffer\x20first.', 'some', '#C42B1C', 'increase', ';\x22>', 'keypress', '<span\x20class=\x22chip\x20chip-green\x22>Clean</span>', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22metric-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22metric-accent\x22\x20style=\x22background:', '</div></div><div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>', '#0078D4', '</tbody>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</table>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', '</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:500;\x22>', 'machine', 'appendChild', 'I\x20hear\x20you\x20on\x20the\x20loan\x20—\x20when\x20things\x20are\x20tight,\x20borrowing\x20feels\x20like\x20the\x20fastest\x20fix.\x20But\x20your\x20account\x20is\x20already\x20in\x20critical\x20risk\x20territory\x20with\x20a\x20buffer\x20of\x20KSh\x20', 'map', 'inventory', 'serviceWorker', '\x20and\x20represents\x20just\x20', '\x20in\x20free\x20cash.\x20That\x27s\x20responsible\x20purchasing\x20—\x20you\x27re\x20not\x20over-leveraging\x20your\x20cash\x20into\x20goods.', 'getItem', 'dailyCap', '\x27;handleAsk();\x22\x20style=\x22font-size:12px;padding:5px\x2012px;border-radius:var(--border-radius-md);border:0.5px\x20solid\x20var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;\x22>', 'decrypt', 'toDataURL', 'You\x27re\x20in\x20good\x20shape.\x20Keep\x20your\x20daily\x20spend\x20under\x20KSh\x20', 'charge', 'display:flex;gap:8px;align-items:center;', '\x20left', '<span\x20class=\x22chip\x20chip-red\x22>', '\x20before\x20month\x20end', 'OPERATING\x20EXPENSES', 'height', '<div\x20style=\x22display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;\x22>', 'Wrong\x20password\x20or\x20corrupted\x20file', 'innerWidth', 'tx-desc', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22margin-top:6px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22progress-track\x22\x20style=\x22height:4px;width:120px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22progress-fill\x22\x20style=\x22width:', 'Petty\x20Cash', 'medical', '#107C10', 'You\x20need\x20to\x20actively\x20cut\x20at\x20least\x20one\x20category\x20of\x20non-essential\x20spending\x20this\x20week\x20and\x20look\x20for\x20one\x20way\x20to\x20bring\x20in\x20extra\x20cash.', 'gridTemplateColumns', '7855479QGsQXB', 'Just\x20calculate\x20the\x20daily\x20repayment\x20cost\x20against\x20your\x20current\x20daily\x20cap\x20before\x20committing.', 'hardwareConcurrency', 'color', '|||', 'savings', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'getFileHandle', 'cousin', 'Treat\x20KSh\x20', 'install-btn', 'fromCharCode', 'desc', 'getMonth', 'Transport', 'end\x20the\x20month\x20with\x20roughly\x20KSh\x20', '<div\x20style=\x22position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:inherit;\x22><div\x20style=\x22background:white;border-radius:16px;max-width:460px;width:92%;box-shadow:0\x2025px\x2070px\x20rgba(0,0,0,0.3);overflow:hidden;\x22><div\x20style=\x22background:linear-gradient(135deg,#0078D4,#005A9E);color:white;padding:24px;text-align:center;\x22><h2\x20style=\x22margin:0\x200\x206px;font-size:1.3rem;\x22>🔒\x20Travis\x20Guardian</h2><p\x20style=\x22margin:0;opacity:0.85;font-size:13px;\x22>Your\x20Personal\x20Financial\x20Advisor</p></div><div\x20style=\x22padding:28px;text-align:center;\x22><div\x20style=\x22width:60px;height:60px;background:#f0f7ff;color:#0078D4;font-size:28px;border-radius:50%;margin:0\x20auto\x2016px;display:flex;align-items:center;justify-content:center;\x22>📁</div><h3\x20style=\x22margin:0\x200\x2012px;font-size:1.1rem;color:#1a1a1a;\x22>Restore\x20Your\x20Data?</h3><p\x20style=\x22color:#5a5a5a;line-height:1.6;margin-bottom:24px;font-size:13px;\x22>Browser\x20data\x20was\x20cleared.<br>Select\x20your\x20backup\x20file\x20to\x20restore\x20financial\x20records.</p><div\x20style=\x22display:flex;flex-direction:column;gap:10px;\x22><button\x20id=\x22restore-btn\x22\x20style=\x22background:#0078D4;color:white;border:none;padding:13px;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;\x22>📂\x20Select\x20Backup\x20File\x20&\x20Restore</button><button\x20id=\x22skip-btn\x22\x20style=\x22background:transparent;color:#5a5a5a;border:1px\x20solid\x20#ddd;padding:12px;font-size:13px;border-radius:8px;cursor:pointer;\x22>Continue\x20as\x20New\x20User</button></div><p\x20style=\x22margin:12px\x200\x200;font-size:11px;color:#8a8a8a;\x22>First-time\x20users:\x20choose\x20\x22Continue\x20as\x20New\x20User\x22</p></div></div></div>', '\x20—\x20that\x27s\x20what\x20you\x20can\x20spend\x20per\x20day\x20without\x20endangering\x20your\x20ability\x20to\x20pay\x20obligations\x20by\x20end\x20of\x20month.\x20Over\x20a\x20week,\x20that\x27s\x20KSh\x20', 'This\x20is\x20a\x20real\x20obligation\x20—\x20rent,\x20fees,\x20medical,\x20those\x20don\x27t\x20move.\x20The\x20issue\x20is\x20that\x20KSh\x20', '\x20per\x20month.', '%;background:', '.\x20If\x20you\x20continue\x20at\x20your\x20current\x20spending\x20pace,\x20you\x27ll\x20', 'className', 'Segoe\x20UI', 'score', 'var(--color-text-secondary)', 'min', 'Your\x20current\x20financial\x20position:\x20buffer\x20is\x20KSh\x20', 'sub-admins.html', '10,000', 'line', 'filing', 'setItem', 'Office\x20Supplies', 'User\x20cancelled\x20or\x20error\x20occurred', '\x20·\x20Spent:\x20KSh\x20', 'max', '\x20Cash\x20has\x20a\x20way\x20of\x20disappearing\x20faster\x20than\x20mobile\x20money.', 'sort', 'test', 'availWidth', '<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22><div\x20class=\x22win-card-title\x22>Settings\x20&\x20Profile</div></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-body\x22\x20style=\x22display:grid;gap:12px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step-title\x22>👤\x20Profile\x20Information</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;color:var(--win-text-2);\x22>Name:\x20<strong>', 'university', 'What\x20expenses\x20should\x20I\x20cut\x20right\x20now?', 'parse', 'result', 'How\x20can\x20I\x20increase\x20my\x20income\x20without\x20a\x20loan?', '\x20right\x20now.', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;gap:6px;margin-top:4px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22chip\x20chip-green\x22\x20style=\x22font-size:10px;\x22>', 'toUpperCase', 'filter', 'put', 'getAll', 'afford', ',\x20and\x20adding\x20a\x20loan\x20repayment\x20on\x20top\x20of\x20that\x20is\x20like\x20patching\x20a\x20leaking\x20roof\x20while\x20standing\x20in\x20a\x20flood.', 'input', '\x20over</div>', 'SHA-256', 'Look\x20at\x20your\x20biggest\x20monthly\x20outflow\x20and\x20ask\x20whether\x20you\x20can\x20reduce\x20it\x20by\x2010–15%.', 'objectStore', 'lease', 'markTodayRecorded', 'timeZone', 'repeat(4,1fr)', '\x20but\x20your\x20entire\x20free\x20cash\x20buffer\x20is\x20only\x20KSh\x20', 'vehicle', 'get', 'fillStyle', 'treat', 'sidebar-type', 'bodaboda', 'Don\x27t\x20save\x20right\x20now.\x20Fix\x20the\x20cash\x20flow\x20first\x20—\x20get\x20risk\x20down\x20to\x20moderate,\x20then\x20start\x20putting\x205–10%\x20aside.', 'custom-alert-message', 'rent', 'createWritable', '#6B46C1', '<div\x20style=\x22padding:8px\x200;text-align:center;color:var(--win-text-3);font-size:13px;\x22>No\x20budget\x20variances\x20detected</div>', 'Failed\x20to\x20write\x20data\x20to\x20database:\x20', '<tr><td\x20colspan=\x224\x22\x20style=\x22padding:32px;text-align:center;color:var(--win-text-3);\x22>No\x20transactions\x20recorded\x20yet.</td></tr>', 'cloneNode', 'createElement', 'A\x20loan\x20is\x20possible\x20from\x20a\x20cashflow\x20standpoint,\x20but\x20only\x20if\x20it\x27s\x20going\x20to\x20earn\x20more\x20than\x20it\x20costs.\x20Mobile\x20loans\x20at\x2015%\x20monthly\x20mean\x20KSh\x20', 'getDate', 'Dividends', 'hud-cover', 'application/json', ',\x20which\x20means\x20you\x27re\x20already\x20spending\x20money\x20you\x20don\x27t\x20have.\x20Paying\x20this\x20now\x20would\x20deepen\x20the\x20hole.\x20That\x20doesn\x27t\x20mean\x20ignore\x20it\x20—\x20it\x20means\x20you\x20need\x20to\x20either\x20bring\x20in\x20money\x20fast\x20(collect\x20debts,\x20push\x20sales,\x20call\x20a\x20trusted\x20person)\x20or\x20negotiate\x20a\x20short\x20delay\x20on\x20this\x20specific\x20payment.', 'add\x20person', 'scrollTop', '\x20on\x20what\x20sounds\x20like\x20a\x20real\x20obligation\x20—\x20and\x20I\x27m\x20not\x20going\x20to\x20pretend\x20that\x27s\x20easy\x20to\x20hear\x20—\x20but\x20right\x20now\x20your\x20free\x20cash\x20is\x20already\x20negative\x20at\x20KSh\x20', 'summarize', '\x20back\x20within\x2030\x20days.', 'how\x20am\x20i', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22leak-item\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:500;\x22>', 'tx-modal', 'matchMedia', 'Marketing', 'You\x27re\x20asking\x20about\x20spending\x20KSh\x20', 'arrayBuffer', 'chip\x20chip-red', 'File\x20on\x20time,\x20every\x20time,\x20even\x20if\x20you\x20can\x27t\x20pay\x20everything\x20immediately.\x20A\x20filed-but-unpaid\x20return\x20is\x20better\x20than\x20an\x20unfiled\x20one.', '#f60', 'M-Pesa', '.taskbar-btn', 'money\x20in', 'canvas-fail', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22obs-row\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:600;\x22>', 'sibling', 'selling\x20price', 'Failed\x20to\x20read/decrypt\x20backup\x20file', 'This\x20is\x20a\x20real\x20emergency\x20position.\x20Stop\x20all\x20non-essential\x20spending\x20today,\x20call\x20in\x20any\x20debts\x20owed\x20to\x20you.', 'Service\x20Revenue', 'setup-overlay', '.\x20If\x20your\x20goods\x20are\x20slow-moving,\x20cut\x20the\x20order\x20to\x20KSh\x20', '%\x20of\x20your\x20buffer,\x20leaving\x20you\x20KSh\x20', 'toLocaleString', 'Bills', '\x20or\x20less,\x20or\x20look\x20for\x20a\x20commission-based\x20arrangement\x20where\x20you\x20only\x20pay\x20when\x20they\x20generate\x20sales.', 'hud-cap', 'worker', 'var(--color-text-warning)', 'onload', 'optgroup', 'transaction', '\x22\x20class=\x22win-input\x22\x20style=\x22width:110px;\x22><button\x20onclick=\x22this.parentElement.remove()\x22\x20style=\x22width:28px;height:28px;border-radius:50%;border:1px\x20solid\x20rgba(196,43,28,0.3);background:rgba(196,43,28,0.05);color:var(--win-red);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;\x22>×</button>', 'encrypt', 'Salary', 'TravisGuardian_v1.0', 'hire', '<div\x20style=\x22background:white;padding:28px;border-radius:16px;max-width:400px;width:90%;\x22><h3\x20style=\x22color:var(--win-accent-light);margin:0\x200\x2016px;font-size:16px;\x22>Link\x20Device\x20Fingerprint</h3><input\x20id=\x22modal-phone\x22\x20type=\x22tel\x22\x20placeholder=\x22254712345678\x22\x20class=\x22win-input\x22\x20style=\x22width:100%;margin-bottom:16px;font-size:16px;\x22><button\x20onclick=\x22submitPhoneAndFP()\x22\x20class=\x22btn-accent\x22\x20style=\x22width:100%;padding:13px;\x22>Submit\x20Phone</button></div>', 'laptop', '</strong></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step-title\x22>🗂\x20Data\x20Management</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;flex-wrap:wrap;gap:8px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22setupBackupFolder()\x22\x20class=\x22btn-primary\x22>Setup\x20Backup\x20Folder</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22saveBackup()\x22\x20class=\x22btn-secondary\x22>Save\x20Backup\x20Now</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22factoryReset()\x22\x20class=\x22btn-secondary\x22\x20style=\x22color:var(--win-red);border-color:rgba(196,43,28,0.3);\x22>Factory\x20Reset</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step-title\x22>📊\x20Monthly\x20Audit\x20Report</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;color:var(--win-text-2);margin-bottom:8px;\x22>Auto-generates\x20on\x20the\x20last\x20day\x20of\x20each\x20month\x20at\x201:30\x20PM.\x20You\x20can\x20also\x20trigger\x20it\x20manually\x20at\x20any\x20time\x20below.</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;flex-wrap:wrap;gap:8px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22window.travisAudit&&window.travisAudit.showNow()\x22\x20class=\x22btn-primary\x22>📄\x20Generate\x20Audit\x20Report\x20Now</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', './sw.js', '#8a8a8a', 'textContent', 'chip\x20chip-green', 'liquid', 'This\x20is\x20the\x20wrong\x20time\x20for\x20a\x20capital\x20purchase.\x20Your\x20operating\x20position\x20is\x20critical\x20—\x20protect\x20cash\x20liquidity\x20first.', '\x20—\x20which\x20is\x2025%\x20of\x20your\x20free\x20cash.', 'toLocaleDateString', 'new\x20person', 'mpesa', '<input\x20type=\x22text\x22\x20placeholder=\x22e.g.\x20Rent\x22\x20value=\x22', 'oncomplete', '100270nzcNCL', 'riskLabel', 'chat-input', '\x20free,\x20and\x20your\x20daily\x20cap\x20adjusts\x20to\x20about\x20KSh\x20', 'Set\x20a\x20fixed\x20monthly\x20family\x20contribution\x20ceiling\x20—\x20something\x20you\x20can\x20always\x20honour\x20without\x20compromising\x20your\x20obligations.\x20\x22I\x27ve\x20set\x20aside\x20KSh\x20X\x20for\x20family\x20this\x20month\x22\x20is\x20a\x20complete\x20sentence.', 'body', 'How\x20can\x20I\x20bring\x20in\x20more\x20money\x20this\x20week?', 'pin', 'script.js', 'At\x20KSh\x20', 'repeat(2,1fr)', 'Other\x20Income', 'LIABILITIES', '\x20is\x20possible\x20from\x20a\x20cash\x20standpoint\x20since\x20your\x20buffer\x20covers\x20it,\x20but\x20it\x20would\x20consume\x20', 'innerHTML', 'Build\x20the\x20emergency\x20fund\x20first.\x20Once\x20you\x20have\x203\x20months\x20of\x20obligations\x20saved,\x20then\x20talk\x20about\x20investing.', 'upcountry', 'safeCash', 'Only\x20withdraw\x20what\x20you\x20have\x20a\x20specific,\x20immediate\x20purpose\x20for.', 'standalone', ',\x20you\x27d\x20be\x20repaying\x20roughly\x20KSh\x20', 'parentNode', 'backupHandle', 'stock', 'How\x20to\x20boost\x20income\x20instead', 'byteLength', '</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22text-align:right;font-family:monospace;color:var(--win-red);font-weight:600;white-space:nowrap;\x22>-', 'Your\x20browser\x20does\x20not\x20support\x20file\x20selection.', 'buy\x20equipment', 'obsStatus', 'help-modal', 'var(--win-red)', 'Clothes', 'preventDefault', 'show', 'KSh\x20', 'user', 'can\x20i\x20buy', '42648rCqfrR', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'tuition', 'function', 'success', 'Loans\x20Payable', 'money\x20out', '</span></div><span\x20style=\x22color:var(--color-border-secondary);font-size:11px;\x22>·</span><div\x20style=\x22display:flex;align-items:center;gap:5px;white-space:nowrap;\x22><span\x20style=\x22color:var(--color-text-secondary);font-size:12px;\x22>Daily\x20cap</span><span\x20style=\x22font-weight:500;color:var(--color-text-primary);\x22>KSh\x20', 'reduce', 'target', 'querySelectorAll', 'Utilities', 'push', 'Can\x20I\x20use\x20a\x20loan\x20for\x20this', 'You\x20can\x20stretch\x20it\x20this\x20once,\x20but\x20log\x20it\x20and\x20don\x27t\x20do\x20this\x20two\x20days\x20in\x20a\x20row.', 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:10000;', 'display', 'You\x20want\x20to\x20restock\x20for\x20KSh\x20', 'Strategy\x20Error:<br><br>A\x20transaction\x20must\x20move\x20value\x20between\x20two\x20different\x20accounts.', '\x20each.', 'stringify', '4247214gqcqLA', 'tempType', 'focus', 'returns', 'should\x20i', 'situation', 'top', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-body\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);margin-bottom:8px;\x22>Based\x20on\x207-day\x20velocity\x20vs\x20projected\x20ceiling</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22progress-track\x22\x20style=\x22height:6px;margin-bottom:8px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22progress-fill\x22\x20style=\x22width:', '\x20right\x20now,\x20but\x20I\x20have\x20to\x20be\x20straight\x20with\x20you\x20—\x20your\x20financial\x20position\x20is\x20critical.\x20Your\x20buffer\x20is\x20KSh\x20', 'conversationCount', 'generator', 'loan', 'set\x20aside', 'act-code', 'Start\x20with\x20a\x20margin\x20audit:\x20check\x20your\x20top\x205\x20products\x20and\x20identify\x20which\x20ones\x20actually\x20make\x20money\x20after\x20cost.', 'tx-credit', 'Family\x20obligations\x20—\x20harambees,\x20upcountry\x20contributions,\x20chama\x20—\x20are\x20a\x20real\x20part\x20of\x20life\x20in\x20Kenya\x20and\x20ignoring\x20them\x20has\x20social\x20consequences\x20that\x20go\x20beyond\x20money.\x20Your\x20buffer\x20is\x20KSh\x20', '\x20and\x20risk\x20is\x20', 'daysRem', 'merchandise', 'REVENUE', 'withdraw', 'DISCRETIONARY\x20EXPENSES', 'pricing', 'readonly', '644qAIpMH', 'travisChart', 'Your\x20safe\x20daily\x20spending\x20limit\x20is\x20KSh\x20', '#obligation-list\x20>\x20div', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22padding:16px;border-top:1px\x20solid\x20var(--win-border);\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22factoryReset()\x22\x20style=\x22font-size:11px;color:var(--win-red);background:none;border:none;cursor:pointer;font-family:inherit;\x22>Full\x20System\x20Wipe</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'showDirectoryPicker', 'install-overlay', 'match', 'block', 'more\x20money', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20Disposable\x20Buffer\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22><div\x20class=\x22win-card-title\x22>Disposable\x20Buffer</div></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-body\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:28px;font-weight:700;color:', 'investment', 'Restoring…', 'goods', 'when\x20will', 'Go\x20ahead\x20and\x20pay\x20it.\x20Log\x20it\x20immediately\x20and\x20recalculate\x20your\x20budget\x20for\x20the\x20remaining\x20', 'style', 'objectStoreNames', 'how\x20is', 'none', 'wage', 'onerror', 'pay\x20rent', 'Allowance', '<div\x20style=\x22padding:24px;text-align:center;color:var(--win-text-3);\x22>No\x20obligations\x20configured.</div>', 'parents', 'asset', 'close', 'No\x20valid\x20device\x20fingerprint\x20found.<br><br>Please\x20restart\x20installation\x20process.', 'ask', 'Could\x20not\x20read\x20the\x20backup\x20file:\x20', 'Show\x20me\x20my\x207-day\x20cash\x20forecast', '2-digit', 'Go\x20ahead.\x20Just\x20make\x20sure\x20you\x20track\x20what\x20you\x20bought,\x20at\x20what\x20price,\x20and\x20set\x20a\x20target\x20selling\x20price\x20before\x20the\x20goods\x20hit\x20the\x20shelf.', 'toLocaleTimeString', 'daily\x20limit', '\x20entries</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22overflow-x:auto;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<table\x20class=\x22win-table\x22\x20style=\x22min-width:600px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<thead><tr><th>Date</th><th>Transaction</th><th\x20style=\x22text-align:right;\x22>Debit\x20(+)</th><th\x20style=\x22text-align:right;\x22>Credit\x20(-)</th></tr></thead>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tbody>', 'Avoid\x20the\x20loan\x20right\x20now.\x20Instead,\x20identify\x20one\x20income\x20you\x20can\x20accelerate\x20this\x20week\x20—\x20collect\x20a\x20debt\x20someone\x20owes\x20you,\x20push\x20a\x20sale,\x20reduce\x20what\x20you\x20spend\x20—\x20before\x20adding\x20any\x20new\x20repayment\x20obligation.', 'https://travis-j1w9.onrender.com', 'What\x20loan\x20repayment\x20can\x20I\x20afford\x20per\x20month?', 'recovery-overlay', 'coming\x20week', 'Other\x20Fun\x20Spending', 'medicine', 'how\x20are\x20things', 'stocks', 'fillText', 'replace', 'revenue\x20this', 'price', '</strong></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;color:var(--win-text-2);margin-top:4px;\x22>Type:\x20<strong\x20style=\x22text-transform:capitalize;\x22>', 'round', 'conclusion', 'Travis\x20Finance\x20Backup', 'tx-amount', 'freezer', 'settings', 'Can\x20I\x20hire\x20someone\x20at\x20KSh\x208000\x20per\x20month?', '</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>', '\x20remaining\x20after\x20purchase.', ';\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:right;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', 'undefined', 'Medical', 'How\x20much\x20can\x20I\x20safely\x20spend\x20today?', 'pattern', 'status', 'till', 'var(--color-text-danger)', 'reserve', 'clock-time', 'trim', 'save', 'variance', 'travis-ui-cache-v1', 'active', 'profit', '#9D5D00', 'Buying\x20equipment\x20for\x20KSh\x20', '\x20days\x20until\x20month\x20end.', 'skip-btn', '.enc', 'How\x20can\x20I\x20increase\x20my\x20profit\x20this\x20month?', 'cssText', 'subtle', '%\x20of\x20your\x20buffer\x20and\x20leave\x20you\x20with\x20only\x20KSh\x20', 'restock', 'remove', '\x20days.', 'decode', '</div><div\x20style=\x22font-size:10px;color:var(--win-text-3);\x22>remaining</div>', 'Savings', 'Backup\x20file\x20was\x20empty\x20or\x20invalid', 'colorDepth', '\x20borrowed\x20becomes\x20KSh\x20', 'tax', 'icon', 'habit', 'amount', 'Calculate\x20for\x20a\x20specific\x20wage', 'TravisGuardian\x20•\x202026', 'addEventListener', '/store-fingerprint', 'your\x20daily\x20budget\x20is\x20very\x20tight\x20at\x20KSh\x20', 'contains', 'send\x20money', '\x20STRATEGY\x20ENGINE', 'tala', '3Dhdlab', 'equipment', 'Restocking\x20KSh\x20', '\x20per\x20day\x20added\x20to\x20your\x20obligations.', 'Don\x27t\x20pay\x20this\x20today\x20unless\x20someone\x20will\x20cut\x20you\x20off\x20or\x20lock\x20you\x20out.\x20Negotiate\x203–5\x20days,\x20use\x20that\x20window\x20to\x20raise\x20cash\x20first.', 'Investing\x20is\x20smart\x20—\x20but\x20the\x20sequence\x20matters.\x20Before\x20putting\x20money\x20into\x20shares,\x20SACCOs,\x20or\x20crypto,\x20your\x20operating\x20cash\x20needs\x20to\x20be\x20healthy.\x20Your\x20buffer\x20right\x20now\x20is\x20KSh\x20', 'resize', 'School', 'credit', ';display:inline-block;\x22></span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22text-align:right;font-family:monospace;color:var(--win-green);font-weight:600;white-space:nowrap;\x22>+', 'activation-overlay', 'fall\x20short\x20by\x20KSh\x20', 'Spend', 'obligation-list', 'input-app.css', '.\x20That\x27s\x20not\x20automatically\x20a\x20disaster\x20—\x20but\x20it\x20does\x20mean\x20you\x27re\x20borrowing\x20from\x20tomorrow\x27s\x20budget\x20today.\x20After\x20this\x20spend,\x20your\x20remaining\x20', '\x20days\x20left\x20this\x20month,\x20and\x20', 'hidden', 'Pricing\x20is\x20where\x20most\x20small\x20businesses\x20lose\x20quietly\x20—\x20not\x20through\x20big\x20mistakes,\x20but\x20through\x20margins\x20that\x20are\x20too\x20thin.\x20The\x20minimum\x20healthy\x20markup\x20for\x20a\x20retail\x20duka\x20or\x20small\x20business\x20in\x20Kenya\x20is\x2025–30%\x20above\x20cost\x20price.', 'createObjectStore', 'mobile-open', 'Ready\x20to\x20install', 'Profit\x20growth\x20in\x20a\x20small\x20', 'textBaseline', '\x20Days', 'tempBackupFileHandle', 'Inventory', 'UNDETERMINED', 'Before\x20deciding,\x20calculate\x20exactly\x20what\x20you\x27ll\x20use\x20the\x20loan\x20for\x20and\x20whether\x20it\x20pays\x20back\x20more\x20than\x20115%\x20of\x20what\x20you\x20borrow.', 'btn-p', '1fr', 'fillRect', 'type', '\x20is\x20above\x20your\x20safe\x20daily\x20cap\x20of\x20KSh\x20', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-body\x22\x20style=\x22padding-top:0;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', 'font', 'Bank\x20Account', 'purchase', 'Withdrawing\x20KSh\x20', '2869180iAxygd', 'index.html', 'emergency', 'innerText', 'Confirm\x20system\x20purge?\x20All\x20financial\x20history\x20will\x20be\x20permanently\x20deleted.', 'dashboard-grid', 'blob', 'init', 'appinstalled', 'phone-modal', '.nav-item', '\x20Reserved', 'find', 'take\x20out', 'UA-unknown', 'userAgent', '</span></div></div>', 'write', '11,500', 'Bank\x20/\x20M-Pesa', 'Side\x20Hustle', 'NECESSARY\x20EXPENSES', 'scrollHeight', 'take', 'join', '<div\x20style=\x22font-size:14px;font-weight:700;color:var(--win-yellow);\x22>KSh\x20', ',\x20you\x20have\x20room\x20to\x20start\x20saving.\x20A\x20realistic\x20savings\x20rate\x20at\x20your\x20current\x20position\x20is\x20around\x20', 'hud-warning', '<div\x20style=\x22font-size:10px;color:var(--win-red);font-weight:700;margin-top:2px;\x22>+', 'fingerprint', 'rgba(16,124,16,0.08)', 'charAt', '\x20is\x20a\x20capital\x20decision\x20—\x20it\x20comes\x20out\x20of\x20your\x20buffer\x20in\x20one\x20hit,\x20which\x20is\x20', 'next\x20week', ',\x20a\x20safe\x20wage\x20budget\x20is\x20around\x20KSh\x20', 'sw.js', 'Restock\x20at\x20a\x20maximum\x20of\x20KSh\x20', '\x20in\x20free\x20cash\x20after\x20obligations,\x20', 'fuliza', '\x20is\x20bigger\x20than\x20your\x20current\x20daily\x20safe\x20limit\x20of\x20KSh\x20'];
-    _0x4d40 = function() {
-        return _0x493775;
-    };
-    return _0x4d40();
-}
-
 function toggleMobileSidebar() {
-    const _0x3c6b2d = _0x4c3582,
-        _0x5738eb = document[_0x3c6b2d(0x373)](_0x3c6b2d(0x327));
-    _0x5738eb[_0x3c6b2d(0x2f6)][_0x3c6b2d(0x34b)](_0x3c6b2d(0x26f));
+    const _0x449b4f = _0xad7134,
+        _0x3d8807 = document['getElementById']('nav-sidebar');
+    _0x3d8807[_0x449b4f(0x34f)]['toggle'](_0x449b4f(0x21d));
 }
 
-function showCustomAlert(_0x13538c, _0x59f50c = null) {
-    const _0x35eb9a = _0x4c3582,
-        _0x5105c5 = document[_0x35eb9a(0x373)](_0x35eb9a(0x2ed)),
-        _0x18818a = document[_0x35eb9a(0x373)](_0x35eb9a(0x153)),
-        _0x2760d7 = document[_0x35eb9a(0x373)]('custom-alert-ok');
-    _0x18818a[_0x35eb9a(0x1a9)] = _0x13538c, _0x5105c5[_0x35eb9a(0x1ff)]['display'] = _0x35eb9a(0x307);
-    const _0x40c259 = _0x2760d7[_0x35eb9a(0x15a)](!![]);
-    _0x2760d7[_0x35eb9a(0x1b0)][_0x35eb9a(0x2ea)](_0x40c259, _0x2760d7), _0x40c259[_0x35eb9a(0x253)](_0x35eb9a(0x320), () => {
-        const _0x2192a9 = _0x35eb9a;
-        _0x5105c5[_0x2192a9(0x1ff)][_0x2192a9(0x1d1)] = _0x2192a9(0x202);
-        if (_0x59f50c) _0x59f50c();
+function showCustomAlert(_0x36ad2e, _0x1c812f = null) {
+    const _0x26d1d1 = _0xad7134,
+        _0x3803eb = document[_0x26d1d1(0x3e3)](_0x26d1d1(0x228)),
+        _0x2ba205 = document['getElementById'](_0x26d1d1(0x346)),
+        _0x2693d6 = document['getElementById'](_0x26d1d1(0x262));
+    _0x2ba205[_0x26d1d1(0x368)] = _0x36ad2e, _0x3803eb[_0x26d1d1(0x3c4)][_0x26d1d1(0x434)] = _0x26d1d1(0x380);
+    const _0x2a88b2 = _0x2693d6[_0x26d1d1(0x37a)](!![]);
+    _0x2693d6['parentNode'][_0x26d1d1(0x347)](_0x2a88b2, _0x2693d6), _0x2a88b2[_0x26d1d1(0x231)](_0x26d1d1(0x2bd), () => {
+        const _0x18fa8a = _0x26d1d1;
+        _0x3803eb[_0x18fa8a(0x3c4)][_0x18fa8a(0x434)] = 'none';
+        if (_0x1c812f) _0x1c812f();
     });
 }
-_0x4c3582(0x393) in navigator && window[_0x4c3582(0x253)](_0x4c3582(0x352), () => {
-    const _0x233bc0 = _0x4c3582;
-    navigator[_0x233bc0(0x393)][_0x233bc0(0x2dd)](_0x233bc0(0x18f))['catch'](_0x5c184a => {
-        const _0x38cb11 = _0x233bc0;
-        document[_0x38cb11(0x373)]('install-status')[_0x38cb11(0x285)] = _0x38cb11(0x308);
+_0xad7134(0x30e) in navigator && window[_0xad7134(0x231)](_0xad7134(0x204), () => {
+    const _0x2617f7 = _0xad7134;
+    navigator[_0x2617f7(0x30e)][_0x2617f7(0x2e0)](_0x2617f7(0x376))['catch'](_0x3f1587 => {
+        const _0x243165 = _0x2617f7;
+        document[_0x243165(0x3e3)](_0x243165(0x359))['innerText'] = _0x243165(0x3de);
     });
 });
 let deferredPrompt = null;
-window[_0x4c3582(0x253)]('beforeinstallprompt', _0x4730fe => {
-    const _0x2eb095 = _0x4c3582;
-    _0x4730fe[_0x2eb095(0x1bc)](), deferredPrompt = _0x4730fe, document['getElementById'](_0x2eb095(0x3b7))[_0x2eb095(0x2eb)] = ![], document[_0x2eb095(0x373)]('install-status')['innerText'] = _0x2eb095(0x270);
-}), window[_0x4c3582(0x253)](_0x4c3582(0x28a), () => {
+window[_0xad7134(0x231)]('beforeinstallprompt', _0x22c964 => {
+    const _0x49f4ba = _0xad7134;
+    _0x22c964[_0x49f4ba(0x26f)](), deferredPrompt = _0x22c964, document[_0x49f4ba(0x3e3)](_0x49f4ba(0x264))['disabled'] = ![], document[_0x49f4ba(0x3e3)](_0x49f4ba(0x359))[_0x49f4ba(0x44b)] = _0x49f4ba(0x2a3);
+}), window['addEventListener'](_0xad7134(0x2e5), () => {
     setTimeout(showPhoneModal, 0x258);
 });
 
 function generateFingerprint() {
-    const _0x1a770c = _0x4c3582;
-    let _0x562809 = localStorage[_0x1a770c(0x396)]('fp');
-    if (_0x562809 && _0x562809[_0x1a770c(0x2ce)] === 0x20) return _0x562809;
-    const _0x2f930a = (function() {
-            const _0x229513 = _0x1a770c;
+    const _0x2f26fa = _0xad7134;
+    let _0x59cfa7 = localStorage['getItem']('fp');
+    if (_0x59cfa7 && _0x59cfa7[_0x2f26fa(0x3c6)] === 0x20) return _0x59cfa7;
+    const _0x34c759 = (function() {
+            const _0x565bd5 = _0x2f26fa;
             try {
-                const _0x25d464 = document[_0x229513(0x15b)]('canvas');
-                _0x25d464['width'] = 0x100, _0x25d464['height'] = 0x3c;
-                const _0x17571e = _0x25d464[_0x229513(0x32a)]('2d');
-                return _0x17571e[_0x229513(0x272)] = _0x229513(0x1dc), _0x17571e[_0x229513(0x27e)] = '14px\x20\x27Arial\x27', _0x17571e['fillStyle'] = _0x229513(0x170), _0x17571e[_0x229513(0x27a)](0x7d, 0x1, 0x3e, 0x14), _0x17571e[_0x229513(0x14e)] = _0x229513(0x342), _0x17571e[_0x229513(0x21d)](_0x229513(0x252), 0x2, 0xf), _0x17571e[_0x229513(0x14e)] = _0x229513(0x2ae), _0x17571e[_0x229513(0x21d)](_0x229513(0x252), 0x4, 0x11), _0x25d464[_0x229513(0x39a)]();
-            } catch (_0x1e54ec) {
-                return _0x229513(0x174);
+                const _0x582203 = document['createElement'](_0x565bd5(0x36c));
+                _0x582203['width'] = 0x100, _0x582203['height'] = 0x3c;
+                const _0x419165 = _0x582203['getContext']('2d');
+                return _0x419165['textBaseline'] = _0x565bd5(0x343), _0x419165['font'] = _0x565bd5(0x230), _0x419165[_0x565bd5(0x206)] = _0x565bd5(0x3be), _0x419165[_0x565bd5(0x272)](0x7d, 0x1, 0x3e, 0x14), _0x419165[_0x565bd5(0x206)] = _0x565bd5(0x3ca), _0x419165[_0x565bd5(0x3d9)](_0x565bd5(0x3cf), 0x2, 0xf), _0x419165[_0x565bd5(0x206)] = _0x565bd5(0x2cf), _0x419165['fillText'](_0x565bd5(0x3cf), 0x4, 0x11), _0x582203[_0x565bd5(0x253)]();
+            } catch (_0xa87bec) {
+                return 'canvas-fail';
             }
         }()),
-        _0x5bd117 = [navigator[_0x1a770c(0x291)] || _0x1a770c(0x290), navigator['language'] || _0x1a770c(0x37b), navigator[_0x1a770c(0x3af)] || '0', screen[_0x1a770c(0x301)] + '×' + screen[_0x1a770c(0x3a2)] + '×' + (screen[_0x1a770c(0x24b)] || 0x0), screen[_0x1a770c(0x3d5)] + '×' + screen[_0x1a770c(0x380)], new Date()['getTimezoneOffset'](), Intl[_0x1a770c(0x362)]()[_0x1a770c(0x2e3)]()[_0x1a770c(0x149)] || _0x1a770c(0x37a), _0x2f930a[_0x1a770c(0x2db)](0x0, 0xc8)][_0x1a770c(0x29a)](_0x1a770c(0x3b1));
-    let _0x2990f2 = 0x1505;
-    for (let _0x3c5dfb = 0x0; _0x3c5dfb < _0x5bd117['length']; _0x3c5dfb++) {
-        _0x2990f2 = (_0x2990f2 << 0x5) + _0x2990f2 + _0x5bd117[_0x1a770c(0x2b3)](_0x3c5dfb) | 0x0;
+        _0x4daa19 = [navigator[_0x2f26fa(0x1e2)] || _0x2f26fa(0x297), navigator['language'] || 'xx-XX', navigator[_0x2f26fa(0x267)] || '0', screen[_0x2f26fa(0x432)] + '×' + screen['height'] + '×' + (screen[_0x2f26fa(0x3bd)] || 0x0), screen[_0x2f26fa(0x362)] + '×' + screen[_0x2f26fa(0x23e)], new Date()[_0x2f26fa(0x406)](), Intl[_0x2f26fa(0x2d6)]()['resolvedOptions']()[_0x2f26fa(0x3e9)] || _0x2f26fa(0x2f0), _0x34c759['substring'](0x0, 0xc8)][_0x2f26fa(0x400)](_0x2f26fa(0x249));
+    let _0x5a325a = 0x1505;
+    for (let _0x1259bc = 0x0; _0x1259bc < _0x4daa19['length']; _0x1259bc++) {
+        _0x5a325a = (_0x5a325a << 0x5) + _0x5a325a + _0x4daa19[_0x2f26fa(0x24c)](_0x1259bc) | 0x0;
     }
-    let _0x38790d = '';
-    while (_0x38790d[_0x1a770c(0x2ce)] < 0x20) {
-        _0x2990f2 = _0x2990f2 * 0x1f + 0x9e3779b9 | 0x0, _0x38790d += (Math[_0x1a770c(0x2b4)](_0x2990f2) % 0x24)['toString'](0x24)[_0x1a770c(0x3de)]();
+    let _0x571ddf = '';
+    while (_0x571ddf[_0x2f26fa(0x3c6)] < 0x20) {
+        _0x5a325a = _0x5a325a * 0x1f + 0x9e3779b9 | 0x0, _0x571ddf += (Math[_0x2f26fa(0x35f)](_0x5a325a) % 0x24)['toString'](0x24)[_0x2f26fa(0x2a6)]();
     }
-    return _0x38790d = _0x38790d['substring'](0x0, 0x20), localStorage[_0x1a770c(0x3cd)]('fp', _0x38790d), _0x38790d;
+    return _0x571ddf = _0x571ddf[_0x2f26fa(0x3e2)](0x0, 0x20), localStorage[_0x2f26fa(0x321)]('fp', _0x571ddf), _0x571ddf;
 }
 
-function encryptFingerprint(_0x385cde) {
-    const _0x7fc2fb = _0x4c3582,
-        _0x51bd0a = _0x7fc2fb(0x2ad);
-    let _0x300702 = '';
-    for (let _0x555bd4 = 0x0; _0x555bd4 < _0x385cde[_0x7fc2fb(0x2ce)]; _0x555bd4++) {
-        _0x300702 += String[_0x7fc2fb(0x3b8)](_0x385cde['charCodeAt'](_0x555bd4) ^ _0x51bd0a['charCodeAt'](_0x555bd4 % _0x51bd0a[_0x7fc2fb(0x2ce)]));
+function encryptFingerprint(_0x16e0f6) {
+    const _0x456d3f = _0xad7134,
+        _0x28bbee = _0x456d3f(0x238);
+    let _0x4bdbfa = '';
+    for (let _0x3fa683 = 0x0; _0x3fa683 < _0x16e0f6[_0x456d3f(0x3c6)]; _0x3fa683++) {
+        _0x4bdbfa += String['fromCharCode'](_0x16e0f6[_0x456d3f(0x24c)](_0x3fa683) ^ _0x28bbee[_0x456d3f(0x24c)](_0x3fa683 % _0x28bbee['length']));
     }
-    return btoa(_0x300702);
+    return btoa(_0x4bdbfa);
 }
 
 function showPhoneModal() {
-    const _0x53116c = _0x4c3582;
-    if (document['getElementById'](_0x53116c(0x28b))) return;
-    const _0x344e8e = document[_0x53116c(0x15b)]('div');
-    _0x344e8e['id'] = 'phone-modal', _0x344e8e[_0x53116c(0x1ff)][_0x53116c(0x241)] = _0x53116c(0x1d0), _0x344e8e['innerHTML'] = _0x53116c(0x18c), document[_0x53116c(0x1a0)][_0x53116c(0x38f)](_0x344e8e);
+    const _0x4982fd = _0xad7134;
+    if (document['getElementById'](_0x4982fd(0x3ea))) return;
+    const _0x139320 = document[_0x4982fd(0x39b)](_0x4982fd(0x399));
+    _0x139320['id'] = _0x4982fd(0x3ea), _0x139320[_0x4982fd(0x3c4)][_0x4982fd(0x291)] = _0x4982fd(0x23a), _0x139320[_0x4982fd(0x368)] = _0x4982fd(0x41f), document[_0x4982fd(0x268)]['appendChild'](_0x139320);
+    const _0x322287 = document['getElementById'](_0x4982fd(0x340));
+    _0x322287[_0x4982fd(0x275)] = function() {
+        const _0x2b596e = _0x4982fd;
+        if (_0x322287['disabled']) return;
+        const _0xcbfdfb = _0x322287['textContent'];
+        _0x322287[_0x2b596e(0x237)] = !![], _0x322287[_0x2b596e(0x3c4)][_0x2b596e(0x3d6)] = _0x2b596e(0x1ec), _0x322287[_0x2b596e(0x3c4)][_0x2b596e(0x30b)] = _0x2b596e(0x307), _0x322287['textContent'] = _0x2b596e(0x31d), submitPhoneAndFP(), setTimeout(() => {
+            const _0x1b8eab = _0x2b596e;
+            _0x322287[_0x1b8eab(0x237)] && (_0x322287[_0x1b8eab(0x237)] = ![], _0x322287[_0x1b8eab(0x3c4)]['opacity'] = '1', _0x322287[_0x1b8eab(0x3c4)][_0x1b8eab(0x30b)] = _0x1b8eab(0x34d), _0x322287[_0x1b8eab(0x378)] = _0xcbfdfb);
+        }, 0x1f40);
+    };
 }
 async function submitPhoneAndFP() {
-    const _0x471bf9 = _0x4c3582,
-        _0x23a9a4 = document['getElementById']('modal-phone')['value']['trim']();
-    if (!_0x23a9a4) {
-        alert('Phone\x20number\x20is\x20required.');
+    const _0x14d2e6 = _0xad7134,
+        _0x52e4ce = document[_0x14d2e6(0x3e3)](_0x14d2e6(0x2c0))[_0x14d2e6(0x2fc)][_0x14d2e6(0x397)]();
+    if (!_0x52e4ce) {
+        alert(_0x14d2e6(0x3eb));
         return;
     }
-    const _0x518c66 = generateFingerprint(),
-        _0x48ca77 = encryptFingerprint(_0x518c66);
+    const _0x6da660 = generateFingerprint(),
+        _0x1b8a9c = encryptFingerprint(_0x6da660);
     try {
-        await fetch(BACKEND_URL + _0x471bf9(0x254), {
-            'method': _0x471bf9(0x2f2),
+        await fetch(BACKEND_URL + _0x14d2e6(0x215), {
+            'method': 'POST',
             'headers': {
-                'Content-Type': _0x471bf9(0x160)
+                'Content-Type': _0x14d2e6(0x2c1)
             },
             'body': JSON['stringify']({
-                'encrypted': _0x48ca77,
-                'phone': _0x23a9a4,
+                'encrypted': _0x1b8a9c,
+                'phone': _0x52e4ce,
                 'ts': Date['now']()
             })
-        }), alert('Phone\x20+\x20Fingerprint\x20sent\x20successfully!'), document['getElementById']('phone-modal')[_0x471bf9(0x245)]();
-    } catch (_0x5c26cc) {
-        alert(_0x471bf9(0x356));
+        }), alert(_0x14d2e6(0x243)), document[_0x14d2e6(0x3e3)](_0x14d2e6(0x3ea))['remove']();
+    } catch (_0x48bd4f) {
+        alert(_0x14d2e6(0x350));
     }
 }
+
+function _0x5a88() {
+    const _0x15a749 = ['rice', 'KSh\x200', '\x20shillings\x20per\x20day.\x20Save\x20for\x20', '</div><div\x20style=\x22font-size:10px;color:var(--win-text-3);\x22>remaining</div>', 'none', 'beer', 'School', 'sort', 'onerror', '\x20shillings.\x20You\x20cannot\x20afford\x20to\x20spend\x20ANY\x20money\x20right\x20now\x20-\x20not\x20even\x20', 'restore-btn', 'install-overlay', '316839Eylvrs', '10qwbeqB', 'onupgradeneeded', 'What\x20You\x20Spent', 'VERY\x20TIGHT:\x20', '💰\x20Affluent', 'Savings', 'getAll', 'tell\x20me\x20about', '<div\x20style=\x22position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:inherit;\x22><div\x20style=\x22background:white;border-radius:16px;max-width:460px;width:92%;box-shadow:0\x2025px\x2070px\x20rgba(0,0,0,0.3);overflow:hidden;\x22><div\x20style=\x22background:linear-gradient(135deg,#0078D4,#005A9E);color:white;padding:24px;text-align:center;\x22><h2\x20style=\x22margin:0\x200\x206px;font-size:1.3rem;\x22>🔒\x20Travis\x20Guardian</h2><p\x20style=\x22margin:0;opacity:0.85;font-size:13px;\x22>Your\x20Personal\x20Financial\x20Advisor</p></div><div\x20style=\x22padding:28px;text-align:center;\x22><div\x20style=\x22width:60px;height:60px;background:#f0f7ff;color:#0078D4;font-size:28px;border-radius:50%;margin:0\x20auto\x2016px;display:flex;align-items:center;justify-content:center;\x22>📁</div><h3\x20style=\x22margin:0\x200\x2012px;font-size:1.1rem;color:#1a1a1a;\x22>Restore\x20Your\x20Data?</h3><p\x20style=\x22color:#5a5a5a;line-height:1.6;margin-bottom:24px;font-size:13px;\x22>Browser\x20data\x20was\x20cleared.<br>Select\x20your\x20backup\x20file\x20to\x20restore\x20financial\x20records.</p><div\x20style=\x22display:flex;flex-direction:column;gap:10px;\x22><button\x20id=\x22restore-btn\x22\x20style=\x22background:#0078D4;color:white;border:none;padding:13px;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;\x22>📂\x20Select\x20Backup\x20File\x20&\x20Restore</button><button\x20id=\x22skip-btn\x22\x20style=\x22background:transparent;color:#5a5a5a;border:1px\x20solid\x20#ddd;padding:12px;font-size:13px;border-radius:8px;cursor:pointer;\x22>Continue\x20as\x20New\x20User</button></div><p\x20style=\x22margin:12px\x200\x200;font-size:11px;color:#8a8a8a;\x22>First-time\x20users:\x20choose\x20\x22Continue\x20as\x20New\x20User\x22</p></div></div></div>', 'click', 'undefined', 'Your\x20browser\x20does\x20not\x20support\x20file\x20selection.', 'modal-phone', 'application/json', 'AES-GCM', '\x20shillings\x20in\x20liquid\x20assets.\x20Wealth\x20is\x20preserved.', '\x20shillings.\x20Can\x20you\x20pay\x20that\x20consistently?\x20If\x20yes,\x20consider\x20a\x20part-time\x20person\x20first.', 'Sales\x20Revenue', '\x20shillings\x20per\x20day.\x20You\x27re\x20comfortable.', 'Your\x20Daily\x20Budget', '#1ABC9C', 'M-Pesa', 'Your\x20biggest\x20expense\x20this\x20month\x20is\x20', ';\x22>', 'Try\x20to\x20save\x20', 'ASSETS', 'travisChart', 'rgba(102,204,0,0.7)', '<div\x20class=\x22metric-card\x22><div\x20class=\x22metric-accent\x22\x20style=\x22background:', '.taskbar-btn', 'show', 'dashboard-grid', 'importKey', 'Travisguardian', 'DateTimeFormat', 'debit', '\x20Based\x20on\x20your\x20savings,\x20a\x20safe\x20wage\x20is\x20about\x20', 'get', '<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Your\x20Monthly\x20Bills</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22document.getElementById(\x27setup-overlay\x27).classList.remove(\x27hidden\x27)\x22\x20class=\x22btn-secondary\x22\x20style=\x22font-size:11px;padding:5px\x2010px;\x22>Edit\x20List</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>', 'config', 'Invalid\x20activation\x20code.', 'loan', '\x20shillings,\x20which\x20is\x20', 'rgba(16,124,16,0.08)', 'register', 'Asset\x20allocation,\x20wealth\x20transfer,\x20impact\x20investing.', 'from', 'sw.js', 'find', 'appinstalled', 'travis-ui-cache-v1', 'million', 'rgba(196,43,28,0.08)', 'name', 'wage', 'Fixed\x20Assets', '</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:500;\x22>', 'clear', '\x20shillings.\x20You\x20cannot\x20spend\x20any\x20money\x20until\x20you\x20earn\x20enough\x20to\x20clear\x20this\x20debt.', '4755944gYmKlK', 'tz-unknown', 'readwrite', '1fr', '\x20shillings\x20this\x20month.\x20Start\x20with\x20a\x20simple\x20savings\x20group\x20or\x20MMF.\x20Even\x20small\x20amounts\x20add\x20up.', 'purchase', 'className', 'afford', 'parse', '<input\x20type=\x22text\x22\x20placeholder=\x22e.g.\x20Rent\x22\x20value=\x22', 'getItem', '#5a5a5a', 'appendChild', 'value', 'rgba(0,0,0,0.04)', 'Accounts\x20Receivable', 'Food,\x20rent,\x20transport\x20to\x20work.\x20Nothing\x20extra.', 'chip\x20chip-yellow', 'standalone', '(display-mode:\x20standalone)', '💎\x20At\x20your\x20wealth\x20level,\x20you\x20have\x20better\x20options\x20than\x20consumer\x20loans.\x20Consider\x20using\x20your\x20assets\x20as\x20collateral\x20for\x20lower\x20rates.', '&gt;', 'future', 'line', 'not-allowed', '#0078D4', 'travis-ripple-styles', '\x20shillings.\x20That\x27s\x20reasonable\x20for\x20your\x20situation.', 'cursor', 'mshwari', 'header-verdict-badge', 'serviceWorker', 'Other\x20Revenue', 'Install\x20not\x20ready.\x20Refresh\x20the\x20page.', '#9B59B6', 'Your\x20Daily\x20Limit', 'endsWith', 'activated', 'chip\x20chip-green', 'I\x20need\x20the\x20amount\x20to\x20give\x20you\x20accurate\x20advice.\x20How\x20many\x20shillings\x20are\x20we\x20talking\x20about?', 'KSh\x20', '#8a8a8a', '\x20shillings\x20total.\x20This\x20would\x20leave\x20you\x20with\x20nothing.', ';\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:right;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', 'filter', 'how\x20am\x20i', 'Processing...', 'Enter\x20the\x20backup\x20password\x20to\x20decrypt\x20your\x20data:', '<br><br><strong>What\x20you\x20should\x20do:</strong>\x20', 'skip-btn', 'setItem', 'close', 'TravisGuardian_v1.0', 'Allowance', 'hidden', 'dash', 'You\x20want\x20to\x20spend\x20', 'This\x20fits\x20your\x20budget\x20comfortably.\x20Enjoy.', 'displayName', 'en-KE', 'index.html', 'querySelector', 'obsStatus', 'toLocaleDateString', 'matches', 'zenka', 'deriveKey', '\x20Reserved', '\x20shillings\x20per\x20day.\x20You\x20cannot\x20afford\x20anything\x20beyond\x20basic\x20food.', '\x20shillings,\x20but\x20you\x20only\x20have\x20', 'allowance', 'You\x20are\x20in\x20debt\x20by\x20', 'priority', 'forEach', 'put', '\x20·\x20Spent:\x20KSh\x20', 'optimization', 'business', '\x20shillings.\x20Can\x20you\x20reduce\x20that\x20by\x2010%?', 'Loan\x20Repayment', 'reduce', 'submit-phone-btn', '\x20entries</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22overflow-x:auto;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<table\x20class=\x22win-table\x22\x20style=\x22min-width:600px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<thead><tr><th>Date</th><th>Transaction</th><th\x20style=\x22text-align:right;\x22>Debit\x20(+)</th><th\x20style=\x22text-align:right;\x22>Credit\x20(-)</th></tr></thead>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tbody>', 'meta', 'top', 'type', '<br><br><strong>Suggestion:</strong>\x20Consider\x20saving\x20', 'custom-alert-message', 'replaceChild', 'Failed\x20to\x20read/decrypt\x20backup\x20file', 'map', 'Bank\x20/\x20M-Pesa', '\x20shillings\x20to\x20stretch\x20over\x20', '\x20shillings\x20per\x20month.\x20Can\x20you\x20pay\x20that?', 'pointer', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:10px;color:var(--win-red);\x22>Over\x20budget</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'classList', 'Failed\x20to\x20send\x20data.\x20Check\x20connection.', '<div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22\x20id=\x22thinking-bubble\x22><div\x20class=\x22travis-ripple\x22><div\x20class=\x22ripple-ball\x20ball-r\x22></div><div\x20class=\x22ripple-ball\x20ball-g\x22></div><div\x20class=\x22ripple-ball\x20ball-b\x22></div></div></div>', '%\x20of\x20your\x20savings).\x20Consider\x20if\x20this\x20is\x20the\x20best\x20use\x20of\x20your\x20money\x20right\x20now.', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22padding:16px;border-top:1px\x20solid\x20var(--win-border);\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22factoryReset()\x22\x20style=\x22font-size:11px;color:var(--win-red);background:none;border:none;cursor:pointer;font-family:inherit;\x22>Reset\x20All\x20Data</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'target', '2360323QTijjj', 'act-code', '\x20days.', 'Total\x20Money\x20You\x20Have', 'install-status', 'obligation-list', 'originalQuestion', 'result', '</span></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22color:var(--color-border-secondary);\x22>·</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:5px;\x22><span\x20style=\x22color:var(--color-text-secondary);\x22>Daily</span><span\x20style=\x22font-weight:500;\x22>', 'set', 'abs', 'variance', '\x20Based\x20on\x20your\x20savings,\x20a\x20safe\x20monthly\x20wage\x20is\x20about\x20', 'availWidth', 'You\x20can\x20meet\x20basic\x20needs\x20but\x20have\x20little\x20left\x20over.', 'deriveBits', 'wealthTier', '</span></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22color:var(--color-border-secondary);\x22>·</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:5px;\x22><span\x20style=\x22color:var(--color-text-secondary);\x22>Savings</span><span\x20style=\x22font-weight:500;\x22>', 'Cash', 'innerHTML', 'Restore\x20failed', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);\x22>', 'Wrong\x20password\x20or\x20corrupted\x20file', 'canvas', '</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>', 'scrollTop', 'error', 'more\x20money', '\x20shillings\x20per\x20day.\x20You\x20can\x20buy\x20it,\x20but\x20be\x20careful\x20with\x20the\x20rest\x20of\x20the\x20week.', 'slice', 'seg-btn', '\x20days.\x20Good\x20position.', 'Bills', './sw.js', '.js', 'textContent', 'adviceStyle', 'cloneNode', 'daily', 'add', 'grow', 'rent', 'match', 'flex', 'getFileHandle', 'dailyCap', 'objectStoreNames', 'You\x20can\x20afford\x20this.\x20After\x20buying,\x20you\x27ll\x20have\x20', 'transactions', '\x20shillings\x20monthly.\x20Will\x20this\x20loan\x20generate\x20more\x20than\x20that\x20in\x20value?\x20If\x20yes,\x20consider\x20it.\x20If\x20not,\x20avoid\x20it.', '20;color:', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22\x20style=\x22min-height:340px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Your\x20Spending\x20Trend</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);\x22>Last\x207\x20days</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-body\x22\x20style=\x22height:300px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<canvas\x20id=\x22analyticsChart\x22></canvas>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'includes', 'decrypt', '<div\x20style=\x22font-size:14px;font-weight:700;color:var(--win-yellow);\x22>KSh\x20', 'recovery-overlay', 'getContext', 'You\x20asked\x20about\x20spending\x20', 'obligations', '#9D5D00', 'sidebar-type', 'createObjectStore', 'nav-sidebar', 'open', 'balanced', 'success', 'trim', 'spend', 'div', 'Bank\x20Account', 'createElement', 'paid', '12qFujbB', 'toLowerCase', 'saving', '\x20shilling\x20loan\x20at\x20typical\x20rates\x20costs\x20', 'user', 'display-mode', 'SHA-256', 'querySelectorAll', 'make\x20money', 'Service\x20Revenue', 'max', 'Backup\x20file\x20was\x20empty\x20or\x20invalid', 'tx-desc', 'blob', 'getDate', 'min', '</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22text-align:right;font-family:monospace;color:var(--win-red);font-weight:600;white-space:nowrap;\x22>-', '#107C10', 'keypress', 'This\x20costs\x20', 'Survival', '\x20shillings\x20is\x20manageable.\x20The\x20question\x20is:\x20does\x20this\x20purchase\x20align\x20with\x20your\x20goals?', 'status', '\x20shilling\x20loan\x20would\x20cost\x20about\x20', 'You\x20are\x20in\x20a\x20financial\x20emergency.\x20Every\x20shilling\x20counts.', 'userChoice', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22margin-top:6px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22progress-track\x22\x20style=\x22height:4px;width:120px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22progress-fill\x22\x20style=\x22width:', '\x20You\x20cannot\x20afford\x20this.\x20You\x20only\x20have\x20', 'You\x20owe\x20', '</strong></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;color:var(--win-text-2);margin-top:4px;\x22>Wealth\x20Level:\x20<strong\x20style=\x22color:', 'fuliza', 'habit', 'colorDepth', '#f60', '\x20costs\x20', 'fingerprint', 'setup-overlay', 'Credit', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20.travis-ripple\x20{\x20display:\x20flex;\x20gap:\x206px;\x20align-items:\x20center;\x20padding:\x208px\x200;\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20.ripple-ball\x20{\x20width:\x208px;\x20height:\x208px;\x20border-radius:\x2050%;\x20animation:\x20travis-ripple\x201.4s\x20infinite\x20ease-in-out;\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20.ball-r\x20{\x20background:\x20#ff4d4d;\x20animation-delay:\x20-0.32s;\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20.ball-g\x20{\x20background:\x20#2ecc71;\x20animation-delay:\x20-0.16s;\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20.ball-b\x20{\x20background:\x20#3498db;\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20@keyframes\x20travis-ripple\x20{\x200%,\x2080%,\x20100%\x20{\x20transform:\x20scale(0);\x20opacity:\x200.3;\x20}\x2040%\x20{\x20transform:\x20scale(1);\x20opacity:\x201;\x20}\x20}\x0a\x20\x20\x20\x20', 'style', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22obs-row\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:600;\x22>', 'length', 'prompt', 'daysRem', '\x20shillings.\x20You\x20only\x20have\x20', '#069', '\x20shillings\x20per\x20day.', 'destroy', 'chip\x20chip-red', 'Leveling', 'TravisGuardian\x20•\x202026', 'Essentials\x20first.\x20Small\x20treats\x20occasionally.', '12OqJyHX', 'milk', '307538PlSCfj', '<div\x20style=\x22padding:28px;text-align:center;color:red;background:white;border-radius:16px;\x22><p>', 'analyticsChart', 'opacity', '2-digit', 'getMonth', 'fillText', '\x20shillings\x20to\x20last\x20', '%;background:', '👑\x20Elite', 'tempBackupFileHandle', 'Service\x20worker\x20failed\x20–\x20install\x20may\x20not\x20work', 'REVENUE', 'increase', '<div\x20style=\x22font-size:10px;color:var(--win-red);font-weight:700;margin-top:2px;\x22>+', 'substring', 'getElementById', 'Dividends', 'encode', 'transaction', 'clock-date', '\x20shillings.\x20No\x20spending\x20until\x20debt\x20is\x20cleared.', 'timeZone', 'phone-modal', 'Phone\x20number\x20is\x20required.', 'Payroll', 'situation', 'head', 'Transport', '</span>', 'chat-input', '\x20You\x20asked\x20about\x20a\x20', 'STRUGGLING', 'originalIntent', 'Accounts\x20Payable', '.nav-item', 'unshift', 'oncomplete', 'repeat(2,1fr)', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'pendingClarification', 'You\x20can\x20meet\x20your\x20needs\x20and\x20save\x20a\x20little\x20each\x20month.', '\x20I\x20found\x20a\x20leak:\x20You\x20spent\x20', 'Go\x20ahead\x20but\x20track\x20it.\x20Every\x20shilling\x20counts.', '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-body\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;margin-bottom:12px;\x22>', 'join', 'btn-p', 'DESTITUTE', '%\x20of\x20your\x20savings.\x20That\x27s\x20a\x20big\x20chunk.\x20Can\x20you\x20wait\x20a\x20few\x20days?', 'Travel\x20&\x20Entertainment', 'some', 'getTimezoneOffset', 'toFixed', 'backupHandle', 'isArray', '#2ECC71', 'hire', 'decode', 'Rent', '\x20shillings\x20per\x20day.\x20That\x27s\x20less\x20than\x20a\x20loaf\x20of\x20bread.', 'Restoring…', 'focus', 'borrow', 'help-modal', 'bread', 'hiring', 'Marketing', 'showOpenFilePicker', 'block', 'TIGHT\x20BUT\x20POSSIBLE:\x20', 'travis-finance-backup.enc', 'worker', 'push', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22leak-item\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:500;\x22>', '\x20shillings\x20per\x20day\x20of\x20spending\x20power.', 'Do\x20not\x20borrow.\x20Focus\x20on\x20increasing\x20your\x20income\x20first.', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:white;padding:28px;border-radius:16px;max-width:400px;width:90%;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h3\x20style=\x22color:var(--win-accent-light);margin:0\x200\x2016px;font-size:16px;\x22>Link\x20Device\x20Fingerprint</h3>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20id=\x22modal-phone\x22\x20type=\x22tel\x22\x20placeholder=\x22254712345678\x22\x20class=\x22win-input\x22\x20style=\x22width:100%;margin-bottom:16px;font-size:16px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20id=\x22submit-phone-btn\x22\x20class=\x22btn-accent\x22\x20style=\x22width:100%;padding:13px;\x22>Submit\x20Phone</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'Only\x20borrow\x20if\x20this\x20money\x20will\x20earn\x20you\x20more\x20than\x20', 'LIABILITIES', '\x20over</div>', '⚠\x20Very\x20Tight', '\x20shillings\x20for\x20', 'subtle', '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', 'reload', 'book', 'deleteDatabase', '</div></div>', 'Tax', 'ask', '💎\x20Wealthy', 'Password\x20required', '\x20shillings\x20per\x20day.\x20You\x20can\x20eat\x20basic\x20meals\x20but\x20watch\x20every\x20shilling.', ';background:var(--color-background-secondary);border-radius:0\x20var(--border-radius-md)\x20var(--border-radius-md)\x200;\x22><div\x20style=\x22font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;margin-bottom:4px;\x22>Travis\x20Says</div><div\x20style=\x22font-size:15px;line-height:1.6;\x22>', 'width', '\x20shillings\x20saved\x20up\x20for\x20the\x20next\x20', 'display', 'sub-admins.html', '\x20You\x20have\x20', 'floor', 'showDirectoryPicker', 'markTodayRecorded', 'init', 'To\x20give\x20you\x20straight\x20advice,\x20I\x20need\x20to\x20know:\x20How\x20many\x20shillings\x20does\x20', 'function', 'scrollHeight', 'innerWidth', 'STABLE', 'getRandomValues', 'view-port', '.\x20But\x20you\x20only\x20have\x20', 'toLocaleTimeString', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Leak\x20Finder</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', '\x20days.\x20That\x27s\x20very\x20little.', '\x20shillings\x20per\x20day\x20to\x20spend\x20or\x20invest.', '<div\x20style=\x22padding:24px;text-align:center;color:var(--win-text-3);\x22>No\x20bills\x20configured.\x20Add\x20rent,\x20school\x20fees,\x20loans,\x20etc.</div>', '\x20days', '\x20shillings\x20per\x20day.\x20You\x20can\x20cover\x20essentials\x20and\x20maybe\x20a\x20small\x20treat.', 'toLocaleString', 'innerText', '\x20shillings.\x20Strong\x20financial\x20position.', 'Preserve\x20capital,\x20optimize\x20taxes,\x20plan\x20legacy.', 'gridTemplateColumns', '.\x20That\x27s\x20money\x20leaving\x20without\x20you\x20noticing.', '\x20shillings\x20left\x20for\x20', '\x20shillings\x20in\x20reserve.\x20Your\x20daily\x20spending\x20capacity\x20is\x20about\x20', '\x20shillings\x20on\x20', 'Could\x20not\x20read\x20the\x20backup\x20file:\x20', 'What\x20You\x20Earned', 'Budget,\x20save,\x20invest\x20small\x20amounts.', 'user-name', 'profit', 'repeat(4,1fr)', 'userAgent', 'charAt', '</strong></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step-title\x22>🗂\x20Backup\x20&\x20Data</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;flex-wrap:wrap;gap:8px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22setupBackupFolder()\x22\x20class=\x22btn-primary\x22>Setup\x20Backup\x20Folder</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22saveBackup()\x22\x20class=\x22btn-secondary\x22>Save\x20Backup\x20Now</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22factoryReset()\x22\x20class=\x22btn-secondary\x22\x20style=\x22color:var(--win-red);border-color:rgba(196,43,28,0.3);\x22>Factory\x20Reset</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step-title\x22>📊\x20Monthly\x20Report</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;color:var(--win-text-2);margin-bottom:8px;\x22>Auto-generates\x20at\x20month\x20end.\x20You\x20can\x20also\x20generate\x20manually.</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22window.travisAudit\x20&&\x20window.travisAudit.showNow()\x22\x20class=\x22btn-primary\x22>Generate\x20Report\x20Now</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'input', 'liquid', 'gift', 'You\x20have\x20about\x20', 'Do\x20not\x20borrow\x20', '%\x20of\x20your\x20savings.\x20That\x27s\x20significant.\x20Can\x20you\x20wait\x20a\x20few\x20days?', 'random', '0.7', '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22color:var(--win-text-3);font-size:10px;\x22>→</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22chip\x20chip-red\x22\x20style=\x22font-size:10px;\x22>', 'Food,\x20water,\x20shelter\x20only.\x20Nothing\x20else.', '<div\x20style=\x22display:flex;flex-wrap:wrap;align-items:center;gap:6px\x2010px;padding:10px\x2012px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:14px;font-size:13px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:5px;\x22><span\x20style=\x22color:var(--color-text-secondary);\x22>Status</span><span\x20style=\x22font-weight:500;color:', 'ELITE', '</strong></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;color:var(--win-text-2);margin-top:4px;\x22>Type:\x20<strong\x20style=\x22text-transform:capitalize;\x22>', 'text/css', 'display:flex;gap:8px;align-items:center;', 'documents', '\x20A\x20', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-body\x22\x20style=\x22padding-top:0;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', 'round', 'onload', '\x20cost\x20in\x20your\x20area?', '\x20IN\x20DEBT', 'Clothes', 'onsuccess', 'SURVIVAL', 'ceil', 'Food\x20&\x20Groceries', 'That\x27s\x20about\x20', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);\x22>Budget:\x20KSh\x20', 'pending', 'champagne', 'load', '⚠️\x20Right\x20now,\x20focus\x20on\x20survival.\x20Once\x20your\x20daily\x20budget\x20is\x20above\x20300\x20shillings\x20per\x20day,\x20then\x20start\x20saving\x205%\x20of\x20anything\x20extra.', 'fillStyle', '<span\x20class=\x22chip\x20chip-red\x22>', '10JEuWnX', 'pay', 'You\x20cannot\x20afford\x20to\x20hire\x20anyone\x20right\x20now.\x20Your\x20priority\x20is\x20building\x20your\x20own\x20income\x20first.\x20Get\x20your\x20daily\x20budget\x20above\x20800\x20shillings\x20per\x20day\x20before\x20considering\x20staff.', 'icon', '#27AE60', '\x20Do\x20not\x20take\x20any\x20loan\x20right\x20now.\x20You\x20cannot\x20afford\x20repayments.\x20Focus\x20on\x20increasing\x20your\x20income\x20first.', 'Save\x20for\x20', '3901068yUWXBx', '\x22\x20class=\x22win-input\x22\x20style=\x22flex:1;\x22><input\x20type=\x22number\x22\x20placeholder=\x22Amount\x22\x20value=\x22', '\x20This\x20costs\x20', 'tx-amount', '\x20days.\x20Be\x20very\x20careful.', 'tx-debit', '/store-fingerprint', 'Your\x20liquid\x20reserves\x20are\x20', '\x20shillings.\x20After\x20buying,\x20you\x27ll\x20have\x20', '<div\x20class=\x22win-card\x22\x20style=\x22height:520px;display:flex;flex-direction:column;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22\x20style=\x22flex-shrink:0;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:10px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22width:32px;height:32px;background:linear-gradient(135deg,#0078D4,#005A9E);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;\x22>🤖</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Travis\x20-\x20Your\x20Financial\x20Advisor</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-sub\x22>Powered\x20by\x20KNBS\x20Kenya\x20Data</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22chip\x20chip-green\x22\x20style=\x22font-size:10px;\x22>●\x20Online</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22chat-box\x22\x20style=\x22flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--win-bg);\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22chat-bubble-ai\x22\x20style=\x22font-size:13px;\x22>Habari.\x20I\x27m\x20Travis.\x20I\x20analyze\x20your\x20finances\x20and\x20give\x20you\x20straight\x20talk.\x20Ask\x20me\x20anything\x20about\x20your\x20money.</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22padding:10px\x2014px;border-top:1px\x20solid\x20var(--win-border);background:white;display:flex;gap:8px;align-items:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20id=\x22chat-input\x22\x20type=\x22text\x22\x20placeholder=\x22Ask\x20me\x20anything...\x20e.g.,\x20\x27Can\x20I\x20buy\x20meat?\x27\x20or\x20\x27How\x20am\x20I\x20doing?\x27\x22\x20class=\x22win-input\x22\x20style=\x22flex:1;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22handleAsk()\x22\x20class=\x22btn-accent\x22\x20style=\x22padding:9px\x2018px;font-size:13px;\x22>Send\x20↗</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', '</div><div\x20class=\x22metric-value\x22>', 'matchMedia', 'message', 'I\x27m\x20here\x20to\x20help\x20with\x20your\x20money\x20decisions.\x20Ask\x20me:\x0a•\x20\x22Can\x20I\x20buy\x20meat\x20for\x20500?\x22\x0a•\x20\x22How\x20am\x20I\x20doing\x20financially?\x22\x0a•\x20\x22Should\x20I\x20take\x20a\x20loan?\x22\x0a•\x20\x22How\x20can\x20I\x20save\x20more?\x22\x0aJust\x20tell\x20me\x20what\x20you\x27re\x20thinking\x20about\x20spending\x20or\x20saving.', 'mobile-open', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22><div\x20class=\x22win-card-title\x22>What\x20This\x20Means\x20For\x20You</div></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-body\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:14px;font-weight:500;margin-bottom:8px;\x22>', 'replace', 'conservative', '💎\x20A\x20', 'label', 'Enter', 'Professional\x20Fees', 'input-app.css', '#E67E22', 'personal', 'custom-alert', '#C42B1C', '</tbody>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</table>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'calculating...', 'hud-warning', '\x20shillings\x20TOTAL\x20for\x20the\x20next\x20', 'Stable', 'soda', '14px\x20\x27Arial\x27', 'addEventListener', 'text/javascript', 'meat', '<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22><div\x20class=\x22win-card-title\x22>Settings</div></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-body\x22\x20style=\x22display:grid;gap:12px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22setup-step-title\x22>👤\x20Your\x20Profile</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;color:var(--win-text-2);\x22>Name:\x20<strong>', '<div\x20style=\x22padding:8px\x200;text-align:center;color:var(--win-text-3);font-size:13px;\x22>No\x20budget\x20variances\x20detected.\x20Good\x20job!</div>', 'write', 'disabled', 'TRAVIS-GUARDIAN-SECURE-2026-x7k9', 'survival', 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:10000;', '\x20active', 'Cost\x20of\x20Goods\x20Sold', '\x20You\x20cannot\x20afford\x20to\x20hire\x20anyone\x20right\x20now.\x20Focus\x20on\x20building\x20your\x20own\x20income\x20first.', 'availHeight', 'something', '⚠️\x20This\x20costs\x20', '💎\x20At\x20your\x20level,\x20hiring\x20should\x20be\x20about\x20ROI.\x20Will\x20this\x20person\x20generate\x20at\x20least\x203x\x20their\x20salary\x20in\x20value?', 'soap', 'Phone\x20+\x20Fingerprint\x20sent\x20successfully!', 'getFullYear', 'You\x20have\x20', '\x20days.\x20About\x20', 'You\x20are\x20in\x20the\x20top\x20tier\x20of\x20wealth\x20in\x20Kenya.', 'humanDescription', '|||', 'growth', '\x20shillings\x20per\x20day.\x20You\x27re\x20in\x20a\x20stable\x20position.', 'charCodeAt', 'arrayBuffer', 'days\x20time', '<div\x20style=\x22text-align:right;\x22><div\x20class=\x22chat-bubble-user\x22>', 'now', '💎\x20At\x20your\x20wealth\x20level,\x20', 'credit', 'toDataURL', 'PBKDF2', 'DISCRETIONARY\x20EXPENSES', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;line-height:1.6;\x22>', '\x20days.\x20That\x27s\x20about\x20', 'objectStore', 'createWritable', 'Travis\x20Finance\x20Backup', '💎\x20At\x20your\x20wealth\x20level,\x20hiring\x20decisions\x20should\x20be\x20about\x20ROI.\x20A\x20good\x20hire\x20should\x20generate\x20at\x20least\x203x\x20their\x20salary\x20in\x20value.\x20What\x20role\x20are\x20you\x20considering?', '.css', 'safeCash', '372ZpERJD', 'toDateString', '1272865ZVnBpb', 'readonly', 'custom-alert-ok', 'Petty\x20Cash', 'install-btn', '\x20shillings\x20per\x20day.\x20You\x27re\x20getting\x20by\x20but\x20not\x20thriving.', 'Days\x20Until\x20Month\x20End', 'hardwareConcurrency', 'body', '\x20shillings\x20per\x20month\x20in\x20interest.', 'You\x20can\x20barely\x20meet\x20your\x20basic\x20needs\x20each\x20day.', 'Travel', 'WEALTHY', '⚠️\x20A\x20', '\x20day', 'preventDefault', 'clock-time', 'desc', 'fillRect', 'User\x20cancelled\x20or\x20error\x20occurred', '\x20shillings\x20(', 'onclick', 'employee', 'sidebar-avatar', '\x20days\x20first.', '&lt;', 'chocolate', 'Segoe\x20UI', '<span\x20style=\x22color:var(--color-border-secondary);\x22>·</span><div\x20style=\x22display:flex;align-items:center;gap:5px;\x22><span\x20style=\x22color:var(--color-text-secondary);\x22>Days\x20left</span><span\x20style=\x22font-weight:500;\x22>', '589562KNpDXB', 'color', '\x20shillings.', 'activation-overlay', 'script.js', 'overview', 'DISCRETIONARY', 'tala', 'Salary', '<br><br><strong>My\x20advice:</strong>\x20', 'EMERGENCY:\x20You\x20are\x20in\x20debt\x20by\x20', '\x20at\x20', '\x20shillings\x20per\x20day.\x20Be\x20careful.', 'NECESSARY\x20EXPENSES', 'Office\x20Supplies', 'salary', '\x20shillings.\x20You\x20only\x20have\x20about\x20', '⚠️\x20', 'hud-cap', 'contains', 'cssText', 'That\x27s\x20a\x20big\x20chunk.\x20Can\x20you\x20wait\x20a\x20few\x20days\x20or\x20find\x20a\x20cheaper\x20option?', '\x20shillings\x20per\x20month.', '\x20ADVISOR', '\x20shillings\x20in\x20reserve.\x20Strong\x20financial\x20position.', 'chat-box', 'UA-unknown', 'short', '\x20days.\x20That\x27s\x20', 'where\x20does\x20my\x20money\x20go', 'how\x20is', '-5634', '\x20shillings\x20per\x20month\x20in\x20interest.\x20Only\x20borrow\x20if\x20absolutely\x20necessary.', 'Utilities', 'remove', 'amount', '</span></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', 'obs', 'Ready\x20to\x20install', 'sugar', 'Emergency', 'toUpperCase'];
+    _0x5a88 = function() {
+        return _0x15a749;
+    };
+    return _0x5a88();
+}
 async function triggerInstall() {
-    const _0x56d7a8 = _0x4c3582;
+    const _0x563f1f = _0xad7134;
     if (!deferredPrompt) {
-        alert('Install\x20not\x20ready.\x20Refresh\x20the\x20page.');
+        alert(_0x563f1f(0x310));
         return;
     }
     try {
-        await deferredPrompt['prompt']();
+        await deferredPrompt[_0x563f1f(0x3c7)]();
         const {
-            outcome: _0x1ed00d
-        } = await deferredPrompt[_0x56d7a8(0x2d3)];
+            outcome: _0x14ce7f
+        } = await deferredPrompt[_0x563f1f(0x3b6)];
         deferredPrompt = null;
-    } catch (_0x18ad99) {
-        console[_0x56d7a8(0x33f)](_0x18ad99);
+    } catch (_0x589045) {
+        console[_0x563f1f(0x36f)](_0x589045);
     }
 }
 async function attemptActivation() {
-    const _0x3b63cf = _0x4c3582,
-        _0x628575 = document[_0x3b63cf(0x373)](_0x3b63cf(0x1e3))[_0x3b63cf(0x31a)]['trim']()[_0x3b63cf(0x3de)]()[_0x3b63cf(0x21e)](/[^0-9A-Z-]/g, ''),
-        _0x1e7827 = localStorage[_0x3b63cf(0x396)]('fp');
-    if (!_0x1e7827 || _0x1e7827[_0x3b63cf(0x2ce)] !== 0x20) {
-        showCustomAlert(_0x3b63cf(0x20b));
+    const _0x5b6601 = _0xad7134,
+        _0x18e120 = document[_0x5b6601(0x3e3)](_0x5b6601(0x356))[_0x5b6601(0x2fc)][_0x5b6601(0x397)]()[_0x5b6601(0x2a6)]()[_0x5b6601(0x21f)](/[^0-9A-Z-]/g, ''),
+        _0x4c9e92 = localStorage[_0x5b6601(0x2f9)]('fp');
+    if (!_0x4c9e92 || _0x4c9e92[_0x5b6601(0x3c6)] !== 0x20) {
+        showCustomAlert('No\x20valid\x20device\x20fingerprint\x20found.<br><br>Please\x20restart\x20installation\x20process.');
         return;
     }
-    const _0x4b64ae = _0x1e7827[_0x3b63cf(0x36e)](0x3, 0xb),
-        _0x435799 = 'TRV-KE-' + _0x4b64ae + '-5634';
-    if (_0x628575 === _0x435799) {
-        let _0xac4ff7 = await getData(_0x3b63cf(0x309), _0x3b63cf(0x2c2)) || {};
-        await saveData(_0x3b63cf(0x309), {
-            ..._0xac4ff7,
-            'id': _0x3b63cf(0x2c2),
+    const _0x2371b3 = _0x4c9e92[_0x5b6601(0x372)](0x3, 0xb),
+        _0x16aee4 = 'TRV-KE-' + _0x2371b3 + _0x5b6601(0x29c);
+    if (_0x18e120 === _0x16aee4) {
+        let _0x350015 = await getData(_0x5b6601(0x342), _0x5b6601(0x2db)) || {};
+        await saveData('meta', {
+            ..._0x350015,
+            'id': _0x5b6601(0x2db),
             'activated': !![],
-            'fingerprint': _0x1e7827,
-            'activatedAt': Date[_0x3b63cf(0x2cf)]()
-        }), document[_0x3b63cf(0x373)]('activation-overlay')['classList']['add'](_0x3b63cf(0x26c)), location['reload']();
-    } else showCustomAlert('Invalid\x20activation\x20code.'), document[_0x3b63cf(0x373)](_0x3b63cf(0x1e3))['value'] = '', document[_0x3b63cf(0x373)](_0x3b63cf(0x1e3))[_0x3b63cf(0x1d8)]();
+            'fingerprint': _0x4c9e92,
+            'activatedAt': Date[_0x5b6601(0x250)]()
+        }), document[_0x5b6601(0x3e3)](_0x5b6601(0x280))[_0x5b6601(0x34f)]['add'](_0x5b6601(0x325)), location[_0x5b6601(0x428)]();
+    } else showCustomAlert(_0x5b6601(0x2dc)), document['getElementById'](_0x5b6601(0x356))['value'] = '', document['getElementById'](_0x5b6601(0x356))[_0x5b6601(0x410)]();
 }
 let db, backupDirHandle = null,
     state = {
@@ -181,343 +411,344 @@ let db, backupDirHandle = null,
         'transactions': [],
         'obligations': []
     };
-const BACKUP_FILE = _0x4c3582(0x361);
-async function deriveKey(_0x41a4db, _0x525f3e) {
-    const _0x1d46a0 = _0x4c3582,
-        _0x30c39a = new TextEncoder(),
-        _0x6eeadf = await crypto[_0x1d46a0(0x242)][_0x1d46a0(0x340)](_0x1d46a0(0x2ec), _0x30c39a[_0x1d46a0(0x353)](_0x41a4db), 'PBKDF2', ![], [_0x1d46a0(0x311), 'deriveKey']);
-    return crypto[_0x1d46a0(0x242)]['deriveKey']({
-        'name': 'PBKDF2',
-        'salt': _0x525f3e,
+const BACKUP_FILE = _0xad7134(0x419);
+async function deriveKey(_0x46777d, _0x4aa060) {
+    const _0x3d3eb3 = _0xad7134,
+        _0x2f3474 = new TextEncoder(),
+        _0x1664a6 = await crypto[_0x3d3eb3(0x425)][_0x3d3eb3(0x2d4)]('raw', _0x2f3474['encode'](_0x46777d), _0x3d3eb3(0x254), ![], [_0x3d3eb3(0x364), _0x3d3eb3(0x331)]);
+    return crypto[_0x3d3eb3(0x425)]['deriveKey']({
+        'name': _0x3d3eb3(0x254),
+        'salt': _0x4aa060,
         'iterations': 0x927c0,
-        'hash': _0x1d46a0(0x144)
-    }, _0x6eeadf, {
-        'name': _0x1d46a0(0x336),
+        'hash': _0x3d3eb3(0x3a3)
+    }, _0x1664a6, {
+        'name': 'AES-GCM',
         'length': 0x100
-    }, ![], [_0x1d46a0(0x188), _0x1d46a0(0x399)]);
+    }, ![], ['encrypt', _0x3d3eb3(0x38a)]);
 }
-async function encryptData(_0x5e4abb, _0x1fbb7a) {
-    const _0x4cf0d3 = _0x4c3582,
-        _0x144c0a = new TextEncoder(),
-        _0x37ea88 = JSON[_0x4cf0d3(0x1d5)](_0x5e4abb),
-        _0x29c861 = crypto[_0x4cf0d3(0x2e5)](new Uint8Array(0xc)),
-        _0x716271 = crypto['getRandomValues'](new Uint8Array(0x10)),
-        _0x5dc69b = await deriveKey(_0x1fbb7a, _0x716271),
-        _0x50b422 = await crypto[_0x4cf0d3(0x242)][_0x4cf0d3(0x188)]({
-            'name': _0x4cf0d3(0x336),
-            'iv': _0x29c861
-        }, _0x5dc69b, _0x144c0a['encode'](_0x37ea88)),
-        _0x3012ce = new Uint8Array(_0x716271[_0x4cf0d3(0x2ce)] + _0x29c861[_0x4cf0d3(0x2ce)] + _0x50b422[_0x4cf0d3(0x1b4)]);
-    return _0x3012ce['set'](_0x716271, 0x0), _0x3012ce[_0x4cf0d3(0x2bf)](_0x29c861, _0x716271[_0x4cf0d3(0x2ce)]), _0x3012ce[_0x4cf0d3(0x2bf)](new Uint8Array(_0x50b422), _0x716271[_0x4cf0d3(0x2ce)] + _0x29c861[_0x4cf0d3(0x2ce)]), _0x3012ce;
+async function encryptData(_0x47c4ad, _0x3e215f) {
+    const _0x596bf1 = _0xad7134,
+        _0x48618a = new TextEncoder(),
+        _0x2aebfc = JSON['stringify'](_0x47c4ad),
+        _0x41b2b1 = crypto[_0x596bf1(0x440)](new Uint8Array(0xc)),
+        _0x317064 = crypto[_0x596bf1(0x440)](new Uint8Array(0x10)),
+        _0x5d0ed4 = await deriveKey(_0x3e215f, _0x317064),
+        _0x5cd574 = await crypto[_0x596bf1(0x425)]['encrypt']({
+            'name': _0x596bf1(0x2c2),
+            'iv': _0x41b2b1
+        }, _0x5d0ed4, _0x48618a[_0x596bf1(0x3e5)](_0x2aebfc)),
+        _0x2dbcdc = new Uint8Array(_0x317064[_0x596bf1(0x3c6)] + _0x41b2b1[_0x596bf1(0x3c6)] + _0x5cd574['byteLength']);
+    return _0x2dbcdc[_0x596bf1(0x35e)](_0x317064, 0x0), _0x2dbcdc[_0x596bf1(0x35e)](_0x41b2b1, _0x317064[_0x596bf1(0x3c6)]), _0x2dbcdc[_0x596bf1(0x35e)](new Uint8Array(_0x5cd574), _0x317064['length'] + _0x41b2b1[_0x596bf1(0x3c6)]), _0x2dbcdc;
 }
-async function decryptData(_0x143d4b, _0x410ef5) {
-    const _0x382ce4 = _0x4c3582,
-        _0x35f53e = _0x143d4b[_0x382ce4(0x36e)](0x0, 0x10),
-        _0x1775cb = _0x143d4b[_0x382ce4(0x36e)](0x10, 0x1c),
-        _0x159e84 = _0x143d4b[_0x382ce4(0x36e)](0x1c),
-        _0x2ee1bd = await deriveKey(_0x410ef5, _0x35f53e),
-        _0x4d70fa = await crypto['subtle']['decrypt']({
-            'name': 'AES-GCM',
-            'iv': _0x1775cb
-        }, _0x2ee1bd, _0x159e84);
-    return JSON[_0x382ce4(0x3d9)](new TextDecoder()[_0x382ce4(0x247)](_0x4d70fa));
+async function decryptData(_0x533798, _0x4c70be) {
+    const _0x533132 = _0xad7134,
+        _0x3fa27d = _0x533798[_0x533132(0x372)](0x0, 0x10),
+        _0x496537 = _0x533798['slice'](0x10, 0x1c),
+        _0x4f8517 = _0x533798[_0x533132(0x372)](0x1c),
+        _0x4d61f4 = await deriveKey(_0x4c70be, _0x3fa27d),
+        _0x38021a = await crypto[_0x533132(0x425)]['decrypt']({
+            'name': _0x533132(0x2c2),
+            'iv': _0x496537
+        }, _0x4d61f4, _0x4f8517);
+    return JSON[_0x533132(0x2f7)](new TextDecoder()[_0x533132(0x40c)](_0x38021a));
 }
-async function getData(_0x2a6d2d, _0x443896) {
-    const _0x1ac0d3 = _0x4c3582;
+async function getData(_0x1ad959, _0x251e26) {
+    const _0x2fa380 = _0xad7134;
     if (!db) return null;
     try {
-        const _0x451243 = db[_0x1ac0d3(0x186)](_0x2a6d2d, _0x1ac0d3(0x1ee)),
-            _0x83bb8 = _0x451243[_0x1ac0d3(0x146)](_0x2a6d2d);
-        return new Promise(_0x337816 => {
-            const _0xc53f96 = _0x1ac0d3,
-                _0x331985 = _0x83bb8[_0xc53f96(0x14d)](_0x443896);
-            _0x331985[_0xc53f96(0x31f)] = () => _0x337816(_0x331985['result']), _0x331985[_0xc53f96(0x204)] = () => _0x337816(null);
+        const _0x5866c7 = db[_0x2fa380(0x3e6)](_0x1ad959, _0x2fa380(0x261)),
+            _0x43cdf2 = _0x5866c7[_0x2fa380(0x258)](_0x1ad959);
+        return new Promise(_0x66c52c => {
+            const _0x486ebf = _0x2fa380,
+                _0x1e3073 = _0x43cdf2[_0x486ebf(0x2d9)](_0x251e26);
+            _0x1e3073[_0x486ebf(0x1fc)] = () => _0x66c52c(_0x1e3073[_0x486ebf(0x35c)]), _0x1e3073[_0x486ebf(0x2af)] = () => _0x66c52c(null);
         });
-    } catch (_0x38bb72) {
+    } catch (_0x1acfa7) {
         return null;
     }
 }
-async function getAllData(_0x16076d) {
-    const _0x4c88d9 = _0x4c3582;
+async function getAllData(_0x3d5d4e) {
+    const _0x10d4c7 = _0xad7134;
     if (!db) return [];
     try {
-        const _0x54f671 = db[_0x4c88d9(0x186)](_0x16076d, 'readonly'),
-            _0x4b50e5 = _0x54f671[_0x4c88d9(0x146)](_0x16076d);
-        return new Promise(_0x36bbee => {
-            const _0x4266b5 = _0x4c88d9,
-                _0x1d6792 = _0x4b50e5[_0x4266b5(0x13f)]();
-            _0x1d6792['onsuccess'] = () => _0x36bbee(_0x1d6792['result']), _0x1d6792[_0x4266b5(0x204)] = () => _0x36bbee([]);
+        const _0x2115b6 = db[_0x10d4c7(0x3e6)](_0x3d5d4e, _0x10d4c7(0x261)),
+            _0x579ba9 = _0x2115b6['objectStore'](_0x3d5d4e);
+        return new Promise(_0x4e0385 => {
+            const _0x40fe56 = _0x10d4c7,
+                _0x4f6fd8 = _0x579ba9[_0x40fe56(0x2ba)]();
+            _0x4f6fd8[_0x40fe56(0x1fc)] = () => _0x4e0385(_0x4f6fd8[_0x40fe56(0x35c)]), _0x4f6fd8[_0x40fe56(0x2af)] = () => _0x4e0385([]);
         });
-    } catch (_0x3bfd8f) {
+    } catch (_0x418db0) {
         return [];
     }
 }
-async function saveData(_0x523b81, _0x5e8671) {
-    const _0x224370 = _0x4c3582,
-        _0xe51ef = db[_0x224370(0x186)](_0x523b81, _0x224370(0x377));
-    return _0xe51ef['objectStore'](_0x523b81)[_0x224370(0x13e)](_0x5e8671), new Promise(_0x3bfa34 => _0xe51ef[_0x224370(0x19a)] = _0x3bfa34);
+async function saveData(_0x229bac, _0x13a2a8) {
+    const _0x4c6f7e = _0xad7134,
+        _0x301df3 = db[_0x4c6f7e(0x3e6)](_0x229bac, 'readwrite');
+    return _0x301df3[_0x4c6f7e(0x258)](_0x229bac)[_0x4c6f7e(0x339)](_0x13a2a8), new Promise(_0x1ba333 => _0x301df3[_0x4c6f7e(0x3f8)] = _0x1ba333);
 }
 async function backupUIAssets() {
-    const _0x2e04cb = _0x4c3582;
+    const _0x5ca2de = _0xad7134;
     if (!backupDirHandle) return;
-    const _0x21dc5d = [{
-        'name': _0x2e04cb(0x283)
+    const _0x47995c = [{
+        'name': _0x5ca2de(0x32b)
     }, {
-        'name': _0x2e04cb(0x2d5)
+        'name': 'tailwind-app.css'
     }, {
         'name': 'script.js'
     }, {
-        'name': _0x2e04cb(0x2a5)
+        'name': _0x5ca2de(0x2e3)
     }, {
-        'name': _0x2e04cb(0x269)
+        'name': _0x5ca2de(0x225)
     }, {
-        'name': _0x2e04cb(0x3c9)
+        'name': _0x5ca2de(0x435)
     }];
-    for (const _0x1c9eaf of _0x21dc5d) {
+    for (const _0x4a2c64 of _0x47995c) {
         try {
-            const _0x107327 = await fetch(_0x1c9eaf[_0x2e04cb(0x2e2)]);
-            if (!_0x107327['ok']) continue;
-            const _0x144c4a = await _0x107327[_0x2e04cb(0x288)](),
-                _0xf23326 = await backupDirHandle[_0x2e04cb(0x3b4)](_0x1c9eaf[_0x2e04cb(0x2e2)], {
+            const _0x412cb8 = await fetch(_0x4a2c64[_0x5ca2de(0x2e9)]);
+            if (!_0x412cb8['ok']) continue;
+            const _0x3397f6 = await _0x412cb8[_0x5ca2de(0x3aa)](),
+                _0xf382d = await backupDirHandle['getFileHandle'](_0x4a2c64[_0x5ca2de(0x2e9)], {
                     'create': !![]
                 }),
-                _0x3f0524 = await _0xf23326[_0x2e04cb(0x155)]();
-            await _0x3f0524[_0x2e04cb(0x293)](_0x144c4a), await _0x3f0524[_0x2e04cb(0x20a)]();
-        } catch (_0x495d34) {}
+                _0x54691c = await _0xf382d[_0x5ca2de(0x259)]();
+            await _0x54691c['write'](_0x3397f6), await _0x54691c[_0x5ca2de(0x322)]();
+        } catch (_0x1e9567) {}
     }
 }
 async function rebuildUIFromDevice() {
-    const _0x30a705 = _0x4c3582;
+    const _0xaaac1a = _0xad7134;
     if (!backupDirHandle) return ![];
     try {
-        const _0x1cda00 = [_0x30a705(0x283), _0x30a705(0x2d5), _0x30a705(0x1a3), _0x30a705(0x2a5), _0x30a705(0x269)],
-            _0x4291e6 = await caches[_0x30a705(0x2d7)](_0x30a705(0x238));
-        for (const _0xd49bbe of _0x1cda00) {
-            const _0xd92fbe = await backupDirHandle[_0x30a705(0x3b4)](_0xd49bbe),
-                _0x1e8f26 = await _0xd92fbe[_0x30a705(0x36a)](),
-                _0x5058b9 = await _0x1e8f26[_0x30a705(0x16d)]();
-            await _0x4291e6[_0x30a705(0x13e)]('/' + _0xd49bbe, new Response(_0x5058b9, {
+        const _0x933bcd = [_0xaaac1a(0x32b), 'tailwind-app.css', _0xaaac1a(0x281), _0xaaac1a(0x2e3), 'input-app.css'],
+            _0x14e131 = await caches[_0xaaac1a(0x394)](_0xaaac1a(0x2e6));
+        for (const _0x5b0889 of _0x933bcd) {
+            const _0x500768 = await backupDirHandle[_0xaaac1a(0x381)](_0x5b0889),
+                _0x4beb65 = await _0x500768['getFile'](),
+                _0x1ed01f = await _0x4beb65[_0xaaac1a(0x24d)]();
+            await _0x14e131['put']('/' + _0x5b0889, new Response(_0x1ed01f, {
                 'headers': {
-                    'Content-Type': _0xd49bbe[_0x30a705(0x2e8)](_0x30a705(0x315)) ? 'text/css' : _0xd49bbe[_0x30a705(0x2e8)](_0x30a705(0x32e)) ? 'text/javascript' : _0x30a705(0x2ba)
+                    'Content-Type': _0x5b0889[_0xaaac1a(0x313)](_0xaaac1a(0x25c)) ? _0xaaac1a(0x1f2) : _0x5b0889[_0xaaac1a(0x313)](_0xaaac1a(0x377)) ? _0xaaac1a(0x232) : 'text/html'
                 }
             }));
         }
         return !![];
-    } catch (_0x5a1d45) {
+    } catch (_0x4ce653) {
         return ![];
     }
 }
 async function saveBackup() {
-    const _0x3c7af0 = _0x4c3582;
+    const _0x9f77c5 = _0xad7134;
     if (!backupDirHandle || !db) return;
     try {
-        const _0x23fbc5 = {};
-        for (const _0x26ae70 of [_0x3c7af0(0x309), 'tx']) {
-            const _0x567e8a = db[_0x3c7af0(0x186)](_0x26ae70, _0x3c7af0(0x1ee)),
-                _0x1b7e4d = _0x567e8a[_0x3c7af0(0x146)](_0x26ae70);
-            _0x23fbc5[_0x26ae70] = await new Promise(_0x11796c => {
-                const _0x22a8c6 = _0x3c7af0,
-                    _0x1ab1e5 = _0x1b7e4d[_0x22a8c6(0x13f)]();
-                _0x1ab1e5[_0x22a8c6(0x31f)] = () => _0x11796c(_0x1ab1e5[_0x22a8c6(0x3da)]), _0x1ab1e5[_0x22a8c6(0x204)] = () => _0x11796c([]);
+        const _0x3de4ce = {};
+        for (const _0x101f70 of [_0x9f77c5(0x342), 'tx']) {
+            const _0x576091 = db[_0x9f77c5(0x3e6)](_0x101f70, _0x9f77c5(0x261)),
+                _0x37f2eb = _0x576091['objectStore'](_0x101f70);
+            _0x3de4ce[_0x101f70] = await new Promise(_0x447385 => {
+                const _0x123e40 = _0x9f77c5,
+                    _0x17e0ed = _0x37f2eb['getAll']();
+                _0x17e0ed[_0x123e40(0x1fc)] = () => _0x447385(_0x17e0ed['result']), _0x17e0ed[_0x123e40(0x2af)] = () => _0x447385([]);
             });
         }
-        const _0x41a356 = _0x3c7af0(0x35c),
-            _0xc3960c = await encryptData(_0x23fbc5, _0x41a356),
-            _0x5a8787 = await backupDirHandle['getFileHandle'](BACKUP_FILE, {
+        const _0x5ac160 = _0x9f77c5(0x2d5),
+            _0x3527af = await encryptData(_0x3de4ce, _0x5ac160),
+            _0x15008d = await backupDirHandle[_0x9f77c5(0x381)](BACKUP_FILE, {
                 'create': !![]
             }),
-            _0x359a19 = await _0x5a8787[_0x3c7af0(0x155)]();
-        await _0x359a19[_0x3c7af0(0x293)](_0xc3960c), await _0x359a19[_0x3c7af0(0x20a)]();
-    } catch (_0x40eb17) {}
+            _0x2c01de = await _0x15008d[_0x9f77c5(0x259)]();
+        await _0x2c01de[_0x9f77c5(0x236)](_0x3527af), await _0x2c01de[_0x9f77c5(0x322)]();
+    } catch (_0x330959) {}
 }
 async function readBackupContent() {
-    const _0x913249 = _0x4c3582;
+    const _0x242934 = _0xad7134;
     try {
-        if (!window[_0x913249(0x274)]) return {
+        if (!window[_0x242934(0x3dd)]) return {
             'data': null,
-            'error': _0x913249(0x2c5)
+            'error': 'No\x20file\x20handle'
         };
-        const _0x3321b0 = await window[_0x913249(0x274)][_0x913249(0x36a)](),
-            _0x4f345f = await _0x3321b0['arrayBuffer'](),
-            _0x36ae23 = new Uint8Array(_0x4f345f),
-            _0x333081 = prompt('Enter\x20the\x20backup\x20password\x20to\x20decrypt\x20your\x20data:');
-        if (!_0x333081) return {
+        const _0x5cad1a = await window[_0x242934(0x3dd)]['getFile'](),
+            _0x454701 = await _0x5cad1a[_0x242934(0x24d)](),
+            _0x301b6d = new Uint8Array(_0x454701),
+            _0xeb1654 = prompt(_0x242934(0x31e));
+        if (!_0xeb1654) return {
             'data': null,
-            'error': _0x913249(0x302)
+            'error': _0x242934(0x42f)
         };
-        const _0x217dc9 = await decryptData(_0x36ae23, _0x333081);
+        const _0xb533f9 = await decryptData(_0x301b6d, _0xeb1654);
         return {
-            'data': _0x217dc9,
+            'data': _0xb533f9,
             'error': null
         };
-    } catch (_0x2d9d3c) {
+    } catch (_0x2f436e) {
         return {
             'data': null,
-            'error': _0x2d9d3c['name'] === 'OperationError' ? _0x913249(0x3a4) : _0x913249(0x178)
+            'error': _0x2f436e[_0x242934(0x2e9)] === 'OperationError' ? _0x242934(0x36b) : _0x242934(0x348)
         };
     }
 }
 async function restoreFromBackup() {
-    const _0x25a061 = _0x4c3582,
+    const _0x3fba1b = _0xad7134,
         {
-            data: _0x464005,
-            error: _0x36c966
+            data: _0x4cb7e7,
+            error: _0xf019d0
         } = await readBackupContent();
-    if (_0x36c966) return {
+    if (_0xf019d0) return {
         'success': ![],
-        'error': _0x25a061(0x20d) + _0x36c966
+        'error': _0x3fba1b(0x1dc) + _0xf019d0
     };
-    if (!_0x464005) return {
+    if (!_0x4cb7e7) return {
         'success': ![],
-        'error': _0x25a061(0x24a)
+        'error': _0x3fba1b(0x3a8)
     };
     try {
-        for (const _0x49ba31 of ['meta', 'tx']) {
-            if (!_0x464005[_0x49ba31] || !Array['isArray'](_0x464005[_0x49ba31])) continue;
-            const _0x3e0e47 = db[_0x25a061(0x186)](_0x49ba31, _0x25a061(0x377)),
-                _0x34781b = _0x3e0e47[_0x25a061(0x146)](_0x49ba31);
-            await new Promise((_0x44dd61, _0x221b7b) => {
-                const _0x51f43d = _0x25a061,
-                    _0x427e1a = _0x34781b[_0x51f43d(0x2b1)]();
-                _0x427e1a[_0x51f43d(0x31f)] = _0x44dd61, _0x427e1a[_0x51f43d(0x204)] = () => _0x221b7b(_0x427e1a['error']);
+        for (const _0x30fc11 of ['meta', 'tx']) {
+            if (!_0x4cb7e7[_0x30fc11] || !Array[_0x3fba1b(0x409)](_0x4cb7e7[_0x30fc11])) continue;
+            const _0x2ae013 = db['transaction'](_0x30fc11, _0x3fba1b(0x2f1)),
+                _0x34e8f0 = _0x2ae013[_0x3fba1b(0x258)](_0x30fc11);
+            await new Promise((_0x596aea, _0x342e53) => {
+                const _0x2c6043 = _0x3fba1b,
+                    _0xb80075 = _0x34e8f0[_0x2c6043(0x2ed)]();
+                _0xb80075[_0x2c6043(0x1fc)] = _0x596aea, _0xb80075[_0x2c6043(0x2af)] = () => _0x342e53(_0xb80075[_0x2c6043(0x36f)]);
             });
-            for (const _0x2396d3 of _0x464005[_0x49ba31]) {
-                await new Promise((_0x38c76d, _0x4d093a) => {
-                    const _0x1dacae = _0x25a061,
-                        _0x5a5bbc = _0x34781b['put'](_0x2396d3);
-                    _0x5a5bbc[_0x1dacae(0x31f)] = _0x38c76d, _0x5a5bbc[_0x1dacae(0x204)] = () => _0x4d093a(_0x5a5bbc['error']);
+            for (const _0x526e57 of _0x4cb7e7[_0x30fc11]) {
+                await new Promise((_0x3a37e7, _0x689e7e) => {
+                    const _0x32e29c = _0x3fba1b,
+                        _0x4f9ae0 = _0x34e8f0['put'](_0x526e57);
+                    _0x4f9ae0[_0x32e29c(0x1fc)] = _0x3a37e7, _0x4f9ae0[_0x32e29c(0x2af)] = () => _0x689e7e(_0x4f9ae0[_0x32e29c(0x36f)]);
                 });
             }
-            await new Promise(_0x3e4f82 => {
-                _0x3e0e47['oncomplete'] = _0x3e4f82;
+            await new Promise(_0x339639 => {
+                _0x2ae013['oncomplete'] = _0x339639;
             });
         }
-        let _0x23d684 = null;
-        const _0x3a8052 = await getData('meta', _0x25a061(0x2c2));
-        if (_0x3a8052?.['fingerprint']) _0x23d684 = _0x3a8052[_0x25a061(0x29f)];
+        let _0x2e222a = null;
+        const _0x2f96e = await getData(_0x3fba1b(0x342), _0x3fba1b(0x2db));
+        if (_0x2f96e?.[_0x3fba1b(0x3c0)]) _0x2e222a = _0x2f96e[_0x3fba1b(0x3c0)];
         else {
-            if (_0x464005[_0x25a061(0x309)]) {
-                const _0x379da0 = _0x464005['meta'][_0x25a061(0x28e)](_0x5f5def => _0x5f5def && _0x5f5def['id'] === _0x25a061(0x2c2));
-                _0x23d684 = _0x379da0?.[_0x25a061(0x29f)] || null;
+            if (_0x4cb7e7[_0x3fba1b(0x342)]) {
+                const _0x4ff028 = _0x4cb7e7[_0x3fba1b(0x342)][_0x3fba1b(0x2e4)](_0x5df353 => _0x5df353 && _0x5df353['id'] === _0x3fba1b(0x2db));
+                _0x2e222a = _0x4ff028?.[_0x3fba1b(0x3c0)] || null;
             }
         }
-        if (_0x23d684) localStorage[_0x25a061(0x3cd)]('fp', _0x23d684);
+        if (_0x2e222a) localStorage[_0x3fba1b(0x321)]('fp', _0x2e222a);
         return {
             'success': !![],
             'error': null
         };
-    } catch (_0x1f1faf) {
+    } catch (_0x308351) {
         return {
             'success': ![],
-            'error': _0x25a061(0x158) + (_0x1f1faf['message'] || String(_0x1f1faf))
+            'error': 'Failed\x20to\x20write\x20data\x20to\x20database:\x20' + (_0x308351[_0x3fba1b(0x21b)] || String(_0x308351))
         };
     }
 }
 async function setupBackupFolder() {
-    const _0x24b918 = _0x4c3582;
-    if (_0x24b918(0x1f4) in window) try {
-        backupDirHandle = await window[_0x24b918(0x1f4)]({
-            'mode': _0x24b918(0x377),
-            'startIn': _0x24b918(0x376)
+    const _0x5e9be9 = _0xad7134;
+    if ('showDirectoryPicker' in window) try {
+        backupDirHandle = await window[_0x5e9be9(0x438)]({
+            'mode': _0x5e9be9(0x2f1),
+            'startIn': _0x5e9be9(0x1f4)
         });
-        const _0x323834 = db[_0x24b918(0x186)]('meta', _0x24b918(0x377));
-        return await _0x323834['objectStore']('meta')[_0x24b918(0x13e)]({
-            'id': _0x24b918(0x1b1),
+        const _0x1831cd = db[_0x5e9be9(0x3e6)](_0x5e9be9(0x342), 'readwrite');
+        return await _0x1831cd['objectStore'](_0x5e9be9(0x342))[_0x5e9be9(0x339)]({
+            'id': 'backupHandle',
             'value': backupDirHandle
-        }), await _0x323834[_0x24b918(0x2dc)], await backupUIAssets(), !![];
-    } catch (_0x1ddbb1) {
+        }), await _0x1831cd['done'], await backupUIAssets(), !![];
+    } catch (_0x40c68b) {
         return ![];
     }
     return ![];
 }
 async function manualRestoreFlow() {
-    const _0x456414 = _0x4c3582;
+    const _0x211a54 = _0xad7134;
     try {
-        let _0x206339;
-        if ('showOpenFilePicker' in window) {
-            const [_0x58556e] = await window[_0x456414(0x321)]({
+        let _0x4a7ff3;
+        if (_0x211a54(0x416) in window) {
+            const [_0x12930f] = await window['showOpenFilePicker']({
                 'types': [{
-                    'description': _0x456414(0x224),
+                    'description': _0x211a54(0x25a),
                     'accept': {
-                        'application/octet-stream': [_0x456414(0x23f)]
+                        'application/octet-stream': ['.enc']
                     }
                 }],
                 'multiple': ![]
             });
-            _0x206339 = _0x58556e;
-        } else return alert(_0x456414(0x1b6)), {
+            _0x4a7ff3 = _0x12930f;
+        } else return alert(_0x211a54(0x2bf)), {
             'success': ![],
             'error': 'File\x20picker\x20not\x20supported'
         };
-        window[_0x456414(0x274)] = _0x206339;
-        const _0x3553c3 = await restoreFromBackup();
-        delete window[_0x456414(0x274)];
-        if (_0x3553c3[_0x456414(0x1c5)]) return await rebuildUIFromDevice(), await backupUIAssets(), {
+        window[_0x211a54(0x3dd)] = _0x4a7ff3;
+        const _0x499fd6 = await restoreFromBackup();
+        delete window[_0x211a54(0x3dd)];
+        if (_0x499fd6['success']) return await rebuildUIFromDevice(), await backupUIAssets(), {
             'success': !![]
         };
         return {
             'success': ![],
-            'error': _0x456414(0x31e)
+            'error': 'Restore\x20failed'
         };
-    } catch (_0x47c814) {
+    } catch (_0x491458) {
         return {
             'success': ![],
-            'error': _0x456414(0x3cf)
+            'error': _0x211a54(0x273)
         };
     }
 }
 async function runRecoveryOnStart() {
-    const _0x4266be = _0x4c3582,
-        _0x4b7910 = document[_0x4266be(0x373)](_0x4266be(0x217));
-    if (!_0x4b7910) return;
-    _0x4b7910[_0x4266be(0x1ff)][_0x4266be(0x1d1)] = _0x4266be(0x202);
+    const _0x4df643 = _0xad7134,
+        _0x303c60 = document[_0x4df643(0x3e3)](_0x4df643(0x38c));
+    if (!_0x303c60) return;
+    _0x303c60[_0x4df643(0x3c4)]['display'] = 'none';
     try {
-        const _0x4ce1f6 = await getData(_0x4266be(0x309), 'backupHandle');
-        if (_0x4ce1f6?.[_0x4266be(0x31a)]) backupDirHandle = _0x4ce1f6['value'];
-    } catch (_0x9cd352) {}
-    const _0x6677c0 = !!await getData(_0x4266be(0x309), _0x4266be(0x2c2)),
-        _0x23b3dd = !!localStorage[_0x4266be(0x396)]('fp');
-    if (_0x6677c0 && _0x23b3dd) return;
+        const _0x450dbc = await getData('meta', _0x4df643(0x408));
+        if (_0x450dbc?.[_0x4df643(0x2fc)]) backupDirHandle = _0x450dbc[_0x4df643(0x2fc)];
+    } catch (_0x59150f) {}
+    const _0x27ba6e = !!await getData(_0x4df643(0x342), 'config'),
+        _0x321272 = !!localStorage[_0x4df643(0x2f9)]('fp');
+    if (_0x27ba6e && _0x321272) return;
     if (backupDirHandle) await rebuildUIFromDevice();
-    _0x4b7910[_0x4266be(0x1ff)][_0x4266be(0x1d1)] = _0x4266be(0x307), _0x4b7910[_0x4266be(0x1a9)] = _0x4266be(0x3bd), document[_0x4266be(0x373)](_0x4266be(0x2f8))[_0x4266be(0x346)] = async () => {
-        const _0x100083 = _0x4266be,
-            _0x4b5979 = document['getElementById']('restore-btn');
-        _0x4b5979[_0x100083(0x2eb)] = !![], _0x4b5979[_0x100083(0x191)] = _0x100083(0x1fb);
-        const _0x343854 = await manualRestoreFlow();
-        _0x343854[_0x100083(0x1c5)] ? (_0x4b7910[_0x100083(0x1a9)] = _0x100083(0x2d9), setTimeout(() => location[_0x100083(0x2bc)](), 0x4b0)) : _0x4b7910[_0x100083(0x1a9)] = '<div\x20style=\x22padding:28px;text-align:center;color:red;background:white;border-radius:16px;\x22><p>' + (_0x343854['error'] || _0x100083(0x31e)) + _0x100083(0x2bb);
-    }, document[_0x4266be(0x373)](_0x4266be(0x23e))['onclick'] = () => _0x4b7910[_0x4266be(0x1ff)]['display'] = _0x4266be(0x202);
+    _0x303c60[_0x4df643(0x3c4)][_0x4df643(0x434)] = 'flex', _0x303c60[_0x4df643(0x368)] = _0x4df643(0x2bc), document[_0x4df643(0x3e3)](_0x4df643(0x2b1))[_0x4df643(0x275)] = async () => {
+        const _0x38575b = _0x4df643,
+            _0x3d35f3 = document['getElementById'](_0x38575b(0x2b1));
+        _0x3d35f3['disabled'] = !![], _0x3d35f3[_0x38575b(0x378)] = _0x38575b(0x40f);
+        const _0x353fe3 = await manualRestoreFlow();
+        _0x353fe3[_0x38575b(0x396)] ? (_0x303c60[_0x38575b(0x368)] = '<div\x20style=\x22padding:40px;text-align:center;background:white;border-radius:16px;max-width:360px;\x22><p\x20style=\x22color:green;font-size:16px;\x22>\x20Everything\x20restored!\x20Reloading…</p></div>', setTimeout(() => location[_0x38575b(0x428)](), 0x4b0)) : _0x303c60[_0x38575b(0x368)] = _0x38575b(0x3d4) + (_0x353fe3['error'] || _0x38575b(0x369)) + '</p><button\x20onclick=\x22location.reload()\x22\x20style=\x22margin-top:12px;padding:10px\x2020px;border-radius:8px;border:none;background:#0078D4;color:white;cursor:pointer;\x22>Try\x20Again</button></div>';
+    }, document[_0x4df643(0x3e3)](_0x4df643(0x320))['onclick'] = () => _0x303c60[_0x4df643(0x3c4)][_0x4df643(0x434)] = _0x4df643(0x2ab);
 }
 async function startFingerprintBackgroundProbe() {
-    const _0x20f391 = async () => {
-        const _0x11133b = _0x469b;
-        if (localStorage[_0x11133b(0x396)]('fp')) return !![];
-        const _0x13dfc7 = await getData('meta', _0x11133b(0x2c2));
-        if (_0x13dfc7?.[_0x11133b(0x29f)]) return localStorage[_0x11133b(0x3cd)]('fp', _0x13dfc7[_0x11133b(0x29f)]), !![];
+    const _0x8ba2f5 = async () => {
+        const _0x192497 = _0x9f28;
+        if (localStorage[_0x192497(0x2f9)]('fp')) return !![];
+        const _0x1b3863 = await getData(_0x192497(0x342), _0x192497(0x2db));
+        if (_0x1b3863?.['fingerprint']) return localStorage[_0x192497(0x321)]('fp', _0x1b3863['fingerprint']), !![];
         return ![];
     };
-    setTimeout(() => _0x20f391(), 0x50);
-    let _0x58d5c1 = 0x0;
-    const _0x2b4433 = setInterval(async () => {
-        _0x58d5c1++;
-        if (await _0x20f391() || _0x58d5c1 > 0xc) clearInterval(_0x2b4433);
+    setTimeout(() => _0x8ba2f5(), 0x50);
+    let _0x27eb1b = 0x0;
+    const _0x4c903a = setInterval(async () => {
+        _0x27eb1b++;
+        if (await _0x8ba2f5() || _0x27eb1b > 0xc) clearInterval(_0x4c903a);
     }, 0x1388);
 }
 async function initDB() {
-    return new Promise(_0x543e14 => {
-        const _0x5dc371 = _0x469b,
-            _0x3cb92f = indexedDB[_0x5dc371(0x2d7)](_0x5dc371(0x18a), 0x1);
-        _0x3cb92f['onupgradeneeded'] = _0x52a391 => {
-            const _0x1f16b5 = _0x5dc371,
-                _0x3ad14a = _0x52a391[_0x1f16b5(0x1ca)]['result'];
-            if (!_0x3ad14a[_0x1f16b5(0x200)][_0x1f16b5(0x256)](_0x1f16b5(0x309))) _0x3ad14a[_0x1f16b5(0x26e)]('meta', {
+    return new Promise(_0x417398 => {
+        const _0x1acaa1 = _0x9f28,
+            _0x2c96c6 = indexedDB['open'](_0x1acaa1(0x323), 0x1);
+        _0x2c96c6[_0x1acaa1(0x2b5)] = _0x439bae => {
+            const _0x23192b = _0x1acaa1,
+                _0x2c237c = _0x439bae[_0x23192b(0x354)][_0x23192b(0x35c)];
+            if (!_0x2c237c[_0x23192b(0x383)][_0x23192b(0x290)](_0x23192b(0x342))) _0x2c237c[_0x23192b(0x392)](_0x23192b(0x342), {
                 'keyPath': 'id'
             });
-            if (!_0x3ad14a[_0x1f16b5(0x200)]['contains']('tx')) _0x3ad14a['createObjectStore']('tx', {
+            if (!_0x2c237c[_0x23192b(0x383)][_0x23192b(0x290)]('tx')) _0x2c237c[_0x23192b(0x392)]('tx', {
                 'keyPath': 'id'
             });
-        }, _0x3cb92f[_0x5dc371(0x31f)] = async _0xb22c87 => {
-            db = _0xb22c87['target']['result'], startFingerprintBackgroundProbe(), await runRecoveryOnStart(), _0x543e14();
-        }, _0x3cb92f[_0x5dc371(0x204)] = () => _0x543e14();
+        }, _0x2c96c6[_0x1acaa1(0x1fc)] = async _0x5f3a56 => {
+            const _0x5d3fce = _0x1acaa1;
+            db = _0x5f3a56[_0x5d3fce(0x354)][_0x5d3fce(0x35c)], startFingerprintBackgroundProbe(), await runRecoveryOnStart(), _0x417398();
+        }, _0x2c96c6[_0x1acaa1(0x2af)] = () => _0x417398();
     });
 }
 let travisMemory = {
@@ -532,226 +763,191 @@ let travisMemory = {
     }
 };
 
-function isObligation(_0x536968) {
-    const _0x23f17e = _0x4c3582;
-    if (!state['obligations'] || state[_0x23f17e(0x32d)][_0x23f17e(0x2ce)] === 0x0) return ![];
-    return state[_0x23f17e(0x32d)][_0x23f17e(0x383)](_0x421f60 => _0x536968[_0x23f17e(0x328)]()['includes'](_0x421f60['label'][_0x23f17e(0x328)]()));
+function isObligation(_0xef5134) {
+    const _0x2f730c = _0xad7134;
+    if (!state[_0x2f730c(0x38f)] || state[_0x2f730c(0x38f)][_0x2f730c(0x3c6)] === 0x0) return ![];
+    return state['obligations'][_0x2f730c(0x405)](_0x571bc0 => _0xef5134[_0x2f730c(0x39e)]()[_0x2f730c(0x389)](_0x571bc0[_0x2f730c(0x222)][_0x2f730c(0x39e)]()));
 }
 
 function getStatusSummary() {
-    const _0x298060 = _0x4c3582,
-        _0x2815f2 = getFin(),
-        _0x4ceaf1 = calculateInsolvencyRisk();
-    return {
-        'cash': Math['round'](_0x2815f2[_0x298060(0x1ac)]),
-        'dailyCap': Math['floor'](_0x2815f2[_0x298060(0x304)]),
-        'daysRem': _0x2815f2[_0x298060(0x1e8)],
-        'riskLabel': _0x4ceaf1[_0x298060(0x2ff)],
-        'riskColor': _0x4ceaf1[_0x298060(0x3b0)],
-        'riskScore': _0x4ceaf1[_0x298060(0x3c5)]
+    const _0x454510 = _0xad7134,
+        _0x66ceba = getFin(),
+        _0x33500a = getUserWealthTier(_0x66ceba['daily'], _0x66ceba['safeCash']);
+    let _0x20038a = _0x33500a;
+    return _0x66ceba[_0x454510(0x25d)] < 0x0 && (_0x20038a = {
+        ..._0x33500a,
+        'displayName': 'IN\x20DEBT',
+        'color': _0x454510(0x229),
+        'adviceStyle': _0x454510(0x239),
+        'humanDescription': _0x454510(0x336) + Math[_0x454510(0x35f)](_0x66ceba[_0x454510(0x25d)])[_0x454510(0x44a)]() + _0x454510(0x27f)
+    }), {
+        'cash': Math[_0x454510(0x1f7)](_0x66ceba[_0x454510(0x25d)]),
+        'dailyCap': Math[_0x454510(0x437)](_0x66ceba[_0x454510(0x37b)]),
+        'daysRem': _0x66ceba[_0x454510(0x3c8)],
+        'wealthTier': _0x20038a,
+        'humanStatus': _0x66ceba[_0x454510(0x25d)] < 0x0 ? _0x454510(0x287) + Math[_0x454510(0x35f)](_0x66ceba[_0x454510(0x25d)])['toLocaleString']() + _0x454510(0x2ee) : humanReadableStatus(_0x66ceba['safeCash'], _0x66ceba[_0x454510(0x37b)], _0x66ceba['daysRem'], _0x33500a)
     };
 }
 
 function updateLiveHud() {
-    const _0x36fe38 = _0x4c3582,
-        _0x58b8fe = parseFloat(document['getElementById']('tx-amount')[_0x36fe38(0x31a)]) || 0x0,
-        _0x4894d1 = document[_0x36fe38(0x373)](_0x36fe38(0x1e5))['value'],
-        _0x2fdc87 = getFin(),
-        _0x29c547 = isLiquid(_0x4894d1) ? _0x2fdc87['safeCash'] - _0x58b8fe : _0x2fdc87[_0x36fe38(0x1ac)],
-        _0x4ca487 = _0x29c547 / _0x2fdc87[_0x36fe38(0x1e8)];
-    document['getElementById'](_0x36fe38(0x181))[_0x36fe38(0x285)] = 'KSh\x20' + _0x4ca487[_0x36fe38(0x338)](0x0), document[_0x36fe38(0x373)](_0x36fe38(0x15f))[_0x36fe38(0x285)] = _0x36fe38(0x1be) + _0x2fdc87['pending'][_0x36fe38(0x17e)]() + _0x36fe38(0x28d);
-    const _0x2984a7 = document[_0x36fe38(0x373)](_0x36fe38(0x29d));
-    isLiquid(_0x4894d1) && _0x58b8fe > _0x2fdc87[_0x36fe38(0x304)] ? _0x2984a7[_0x36fe38(0x1ff)][_0x36fe38(0x1d1)] = _0x36fe38(0x1f7) : _0x2984a7[_0x36fe38(0x1ff)][_0x36fe38(0x1d1)] = 'none';
+    const _0xe8cf47 = _0xad7134,
+        _0x487929 = parseFloat(document[_0xe8cf47(0x3e3)]('tx-amount')['value']) || 0x0,
+        _0x1936af = document['getElementById']('tx-credit')[_0xe8cf47(0x2fc)],
+        _0x1adfbc = getFin(),
+        _0xf65597 = isLiquid(_0x1936af) ? _0x1adfbc[_0xe8cf47(0x25d)] - _0x487929 : _0x1adfbc[_0xe8cf47(0x25d)],
+        _0x20ae87 = _0xf65597 / _0x1adfbc[_0xe8cf47(0x3c8)];
+    document['getElementById'](_0xe8cf47(0x28f))[_0xe8cf47(0x44b)] = _0xe8cf47(0x317) + _0x20ae87[_0xe8cf47(0x407)](0x0), document[_0xe8cf47(0x3e3)]('hud-cover')[_0xe8cf47(0x44b)] = _0xe8cf47(0x317) + _0x1adfbc[_0xe8cf47(0x202)][_0xe8cf47(0x44a)]() + _0xe8cf47(0x332);
+    const _0x3635b0 = document['getElementById'](_0xe8cf47(0x22c));
+    isLiquid(_0x1936af) && _0x487929 > _0x1adfbc[_0xe8cf47(0x37b)] ? _0x3635b0[_0xe8cf47(0x3c4)][_0xe8cf47(0x434)] = _0xe8cf47(0x417) : _0x3635b0[_0xe8cf47(0x3c4)][_0xe8cf47(0x434)] = _0xe8cf47(0x2ab);
 }
 
 function getFin() {
-    const _0x4200ca = _0x4c3582,
-        _0x5eba97 = new Date(),
-        _0x5bd18d = Math[_0x4200ca(0x3d1)](0x1, new Date(_0x5eba97['getFullYear'](), _0x5eba97[_0x4200ca(0x3ba)]() + 0x1, 0x0)['getDate']() - _0x5eba97[_0x4200ca(0x15d)]());
-    let _0xc192db = 0x0;
-    const _0x1bbfb0 = [_0x4200ca(0x2d6), _0x4200ca(0x171), 'Bank\x20Account', _0x4200ca(0x249), 'Bank\x20/\x20M-Pesa', 'Petty\x20Cash', _0x4200ca(0x370)];
-    _0x1bbfb0[_0x4200ca(0x344)](_0x5f1088 => {
-        _0xc192db += getBalance(_0x5f1088);
+    const _0xf5b374 = _0xad7134,
+        _0x555635 = new Date(),
+        _0x2626ae = Math[_0xf5b374(0x3a7)](0x1, new Date(_0x555635[_0xf5b374(0x244)](), _0x555635[_0xf5b374(0x3d8)]() + 0x1, 0x0)[_0xf5b374(0x3ab)]() - _0x555635['getDate']());
+    let _0x31d7c8 = 0x0;
+    const _0x2cd12e = ['Cash', _0xf5b374(0x2c9), _0xf5b374(0x39a), 'Savings', _0xf5b374(0x34a), _0xf5b374(0x263), _0xf5b374(0x2fe)];
+    _0x2cd12e[_0xf5b374(0x338)](_0x327384 => {
+        _0x31d7c8 += getBalance(_0x327384);
     });
-    const _0x338a7b = state[_0x4200ca(0x32d)][_0x4200ca(0x391)](_0x12d5ba => {
-            const _0x610643 = _0x4200ca;
-            let _0x1b9346 = 0x0;
-            return state[_0x610643(0x2e9)][_0x610643(0x344)](_0x33b352 => {
-                const _0x4c347e = _0x610643,
-                    _0x493563 = new Date(_0x33b352['id']);
-                _0x493563[_0x4c347e(0x3ba)]() === _0x5eba97[_0x4c347e(0x3ba)]() && (_0x33b352[_0x4c347e(0x3b9)][_0x4c347e(0x328)]()[_0x4c347e(0x374)](_0x12d5ba[_0x4c347e(0x2ff)][_0x4c347e(0x328)]()) || _0x33b352[_0x4c347e(0x262)] === _0x12d5ba[_0x4c347e(0x2ff)]) && (_0x1b9346 += _0x33b352['amount']);
+    const _0x4e8fe1 = state[_0xf5b374(0x38f)][_0xf5b374(0x349)](_0x3907bb => {
+            const _0xcc0577 = _0xf5b374;
+            let _0xb9cad1 = 0x0;
+            return state[_0xcc0577(0x385)][_0xcc0577(0x338)](_0x5dfa2a => {
+                const _0x199555 = _0xcc0577,
+                    _0x4c949f = new Date(_0x5dfa2a['id']);
+                _0x4c949f['getMonth']() === _0x555635[_0x199555(0x3d8)]() && (_0x5dfa2a['desc']['toLowerCase']()[_0x199555(0x389)](_0x3907bb[_0x199555(0x222)][_0x199555(0x39e)]()) || _0x5dfa2a[_0x199555(0x252)] === _0x3907bb[_0x199555(0x222)]) && (_0xb9cad1 += _0x5dfa2a['amount']);
             }), {
-                ..._0x12d5ba,
-                'paid': _0x1b9346,
-                'pending': Math[_0x610643(0x3d1)](0x0, _0x12d5ba[_0x610643(0x250)] - _0x1b9346),
-                'variance': _0x1b9346 - _0x12d5ba[_0x610643(0x250)]
+                ..._0x3907bb,
+                'paid': _0xb9cad1,
+                'pending': Math[_0xcc0577(0x3a7)](0x0, _0x3907bb[_0xcc0577(0x2a0)] - _0xb9cad1),
+                'variance': _0xb9cad1 - _0x3907bb[_0xcc0577(0x2a0)]
             };
         }),
-        _0x390793 = _0x338a7b[_0x4200ca(0x1c9)]((_0x54fa1e, _0x4b3fbd) => _0x54fa1e + _0x4b3fbd[_0x4200ca(0x326)], 0x0),
-        _0x50b618 = _0xc192db - _0x390793;
+        _0x1202e0 = _0x4e8fe1[_0xf5b374(0x33f)]((_0x40d01f, _0x36c20a) => _0x40d01f + _0x36c20a[_0xf5b374(0x202)], 0x0),
+        _0x3c858c = _0x31d7c8 - _0x1202e0;
     return {
-        'liquid': _0xc192db,
-        'pending': _0x390793,
-        'safeCash': _0x50b618,
-        'daysRem': _0x5bd18d,
-        'obsStatus': _0x338a7b,
-        'daily': _0x50b618 / _0x5bd18d
+        'liquid': _0x31d7c8,
+        'pending': _0x1202e0,
+        'safeCash': _0x3c858c,
+        'daysRem': _0x2626ae,
+        'obsStatus': _0x4e8fe1,
+        'daily': _0x3c858c / _0x2626ae
     };
 }
 
-function calculateInsolvencyRisk() {
-    const _0x2b2d09 = _0x4c3582,
-        _0x361204 = getFin(),
-        _0x489fab = (function() {
-            const _0x5b23ba = _0x469b,
-                _0x1b16ae = new Date(),
-                _0x22ab54 = new Date();
-            _0x22ab54['setDate'](_0x1b16ae[_0x5b23ba(0x15d)]() - 0x7);
-            let _0x1cc518 = 0x0;
-            return state[_0x5b23ba(0x2e9)]['forEach'](_0x50392b => {
-                const _0xfaa2d = _0x5b23ba;
-                if (new Date(_0x50392b['id']) >= _0x22ab54 && isLiquid(_0x50392b[_0xfaa2d(0x262)])) _0x1cc518 += _0x50392b[_0xfaa2d(0x250)];
-            }), _0x1cc518 / 0x7;
-        }());
-    if (_0x489fab <= _0x361204[_0x2b2d09(0x304)]) return {
-        'score': 0x5,
-        'label': _0x2b2d09(0x2ef),
-        'color': '#107C10'
-    };
-    if (_0x489fab > _0x361204[_0x2b2d09(0x304)] && _0x489fab < _0x361204['daily'] * 1.5) return {
-        'score': 0x2d,
-        'label': _0x2b2d09(0x330),
-        'color': '#9D5D00'
-    };
-    if (_0x489fab >= _0x361204[_0x2b2d09(0x304)] * 1.5) return {
-        'score': 0x55,
-        'label': _0x2b2d09(0x339),
-        'color': _0x2b2d09(0x384)
-    };
-    return {
-        'score': 0x0,
-        'label': _0x2b2d09(0x276),
-        'color': _0x2b2d09(0x190)
-    };
+function isLiquid(_0x243c16) {
+    const _0x43ad85 = _0xad7134;
+    if (!_0x243c16) return ![];
+    const _0x3a70bf = [_0x43ad85(0x367), _0x43ad85(0x2c9), _0x43ad85(0x39a), _0x43ad85(0x2b9), _0x43ad85(0x34a), _0x43ad85(0x263), 'Accounts\x20Receivable'];
+    return _0x3a70bf[_0x43ad85(0x389)](_0x243c16);
 }
 
-function isLiquid(_0xc09de6) {
-    const _0x17bbfd = _0x4c3582;
-    if (!_0xc09de6) return ![];
-    const _0x33d63d = [_0x17bbfd(0x2d6), _0x17bbfd(0x171), 'Bank\x20Account', 'Savings', _0x17bbfd(0x295), 'Petty\x20Cash', _0x17bbfd(0x370)];
-    return _0x33d63d[_0x17bbfd(0x374)](_0xc09de6);
-}
-
-function getBalance(_0x1c6b69) {
-    const _0x46a39a = _0x4c3582;
-    let _0x3d209a = 0x0;
-    state['transactions']['forEach'](_0x3fbe0d => {
-        const _0x1efed3 = _0x469b;
-        if (_0x3fbe0d['debit'] === _0x1c6b69) _0x3d209a += _0x3fbe0d[_0x1efed3(0x250)];
-        if (_0x3fbe0d[_0x1efed3(0x262)] === _0x1c6b69) _0x3d209a -= _0x3fbe0d[_0x1efed3(0x250)];
+function getBalance(_0x1df037) {
+    const _0x44c57e = _0xad7134;
+    let _0x3ca4dd = 0x0;
+    state[_0x44c57e(0x385)][_0x44c57e(0x338)](_0x3e2b5c => {
+        const _0x41d9bc = _0x44c57e;
+        if (_0x3e2b5c[_0x41d9bc(0x2d7)] === _0x1df037) _0x3ca4dd += _0x3e2b5c[_0x41d9bc(0x2a0)];
+        if (_0x3e2b5c[_0x41d9bc(0x252)] === _0x1df037) _0x3ca4dd -= _0x3e2b5c[_0x41d9bc(0x2a0)];
     });
-    const _0x9f4c15 = [_0x46a39a(0x2d6), _0x46a39a(0x171), _0x46a39a(0x27f), 'Savings', 'Bank\x20/\x20M-Pesa', _0x46a39a(0x3a8), _0x46a39a(0x370), _0x46a39a(0x275), _0x46a39a(0x348)];
-    return _0x9f4c15[_0x46a39a(0x374)](_0x1c6b69) ? _0x3d209a : -_0x3d209a;
+    const _0x1c201a = [_0x44c57e(0x367), _0x44c57e(0x2c9), _0x44c57e(0x39a), _0x44c57e(0x2b9), 'Bank\x20/\x20M-Pesa', _0x44c57e(0x263), _0x44c57e(0x2fe), 'Inventory', _0x44c57e(0x2eb)];
+    return _0x1c201a[_0x44c57e(0x389)](_0x1df037) ? _0x3ca4dd : -_0x3ca4dd;
 }
 
-function navClick(_0x12273e) {
-    const _0x4f537d = _0x4c3582;
-    document[_0x4f537d(0x1cb)](_0x4f537d(0x28c))[_0x4f537d(0x344)](_0x5deec2 => _0x5deec2[_0x4f537d(0x2f6)][_0x4f537d(0x245)](_0x4f537d(0x239)));
-    const _0x1b09b7 = document[_0x4f537d(0x373)]('nav-' + _0x12273e);
-    if (_0x1b09b7) _0x1b09b7[_0x4f537d(0x2f6)][_0x4f537d(0x30c)](_0x4f537d(0x239));
-    document[_0x4f537d(0x1cb)](_0x4f537d(0x172))[_0x4f537d(0x344)](_0x5ac93f => _0x5ac93f['classList'][_0x4f537d(0x245)](_0x4f537d(0x239))), document['getElementById']('nav-sidebar')['classList'][_0x4f537d(0x245)](_0x4f537d(0x26f)), nav(_0x12273e);
+function navClick(_0x50b203) {
+    const _0x1a1cfd = _0xad7134;
+    document[_0x1a1cfd(0x3a4)](_0x1a1cfd(0x3f6))[_0x1a1cfd(0x338)](_0x5121f2 => _0x5121f2[_0x1a1cfd(0x34f)][_0x1a1cfd(0x29f)]('active'));
+    const _0x46f8bd = document[_0x1a1cfd(0x3e3)]('nav-' + _0x50b203);
+    if (_0x46f8bd) _0x46f8bd['classList']['add']('active');
+    document['querySelectorAll'](_0x1a1cfd(0x2d1))[_0x1a1cfd(0x338)](_0x1be439 => _0x1be439[_0x1a1cfd(0x34f)][_0x1a1cfd(0x29f)]('active')), document[_0x1a1cfd(0x3e3)](_0x1a1cfd(0x393))[_0x1a1cfd(0x34f)][_0x1a1cfd(0x29f)]('mobile-open'), nav(_0x50b203);
 }
 
-function _0x469b(_0x1c6b06, _0x4909da) {
-    _0x1c6b06 = _0x1c6b06 - 0x13d;
-    const _0x4d40ae = _0x4d40();
-    let _0x469b0c = _0x4d40ae[_0x1c6b06];
-    return _0x469b0c;
-}
-
-function nav(_0x5e82b4) {
-    const _0x20d576 = _0x4c3582,
-        _0x5b6922 = document['getElementById']('view-port'),
-        _0x5571e8 = getFin();
-    updateHeader(_0x5571e8);
-    if (_0x5e82b4 === _0x20d576(0x319)) {
-        const _0x5151ba = calculateInsolvencyRisk(),
-            _0x12db87 = _0x5571e8['obsStatus'][_0x20d576(0x13d)](_0x261ede => _0x261ede[_0x20d576(0x237)] > 0x0),
-            _0x89578d = _0x5151ba['label'] === _0x20d576(0x2ef) ? _0x20d576(0x313) : _0x5151ba[_0x20d576(0x2ff)] === _0x20d576(0x330) ? _0x20d576(0x2b5) : 'chip-red',
-            _0x50dd09 = _0x5151ba[_0x20d576(0x2ff)] === 'LOW' ? _0x20d576(0x3aa) : _0x5151ba['label'] === 'MODERATE' ? '#9D5D00' : _0x20d576(0x384);
-        _0x5b6922[_0x20d576(0x1a9)] = _0x20d576(0x34d) + _0x89578d + _0x20d576(0x369) + _0x50dd09 + _0x20d576(0x263) + _0x5151ba[_0x20d576(0x2ff)] + _0x20d576(0x1dd) + _0x5151ba['score'] + '%;background:' + _0x50dd09 + ';\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;justify-content:space-between;font-size:10px;color:var(--win-text-3);\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span>Low</span><span>Moderate</span><span>Critical</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20Leak\x20Finder\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Leak\x20Finder</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20' + (_0x12db87[_0x20d576(0x2ce)] > 0x0 ? _0x20d576(0x39f) + _0x12db87[_0x20d576(0x2ce)] + '\x20leak' + (_0x12db87['length'] > 0x1 ? 's' : '') + '</span>' : _0x20d576(0x388)) + _0x20d576(0x27d) + (_0x12db87[_0x20d576(0x2ce)] > 0x0 ? _0x12db87['map'](_0x39c312 => _0x20d576(0x168) + _0x39c312[_0x20d576(0x2ff)] + _0x20d576(0x33b) + _0x39c312[_0x20d576(0x250)][_0x20d576(0x17e)]() + _0x20d576(0x2c8) + _0x39c312[_0x20d576(0x237)]['toLocaleString']() + _0x20d576(0x2f4))['join']('') : _0x20d576(0x157)) + _0x20d576(0x1f9) + (_0x5571e8['safeCash'] < 0x0 ? _0x20d576(0x1ba) : _0x20d576(0x2cd)) + ';\x22>KSh\x20' + _0x5571e8[_0x20d576(0x1ac)][_0x20d576(0x17e)]() + _0x20d576(0x34f), window['innerWidth'] < 0x384 && (_0x5b6922[_0x20d576(0x2cc)](_0x20d576(0x33e))[_0x20d576(0x1ff)][_0x20d576(0x3ac)] = _0x20d576(0x279)), setTimeout(() => renderChart(), 0x64);
+function nav(_0x4edb4f) {
+    const _0x384b15 = _0xad7134,
+        _0x63796f = document[_0x384b15(0x3e3)](_0x384b15(0x441)),
+        _0x1a2ab5 = getFin();
+    updateHeader(_0x1a2ab5);
+    if (_0x4edb4f === _0x384b15(0x326)) {
+        const _0x3ddac9 = getUserWealthTier(_0x1a2ab5[_0x384b15(0x37b)], _0x1a2ab5[_0x384b15(0x25d)]),
+            _0x3c5efb = _0x1a2ab5[_0x384b15(0x32d)][_0x384b15(0x31b)](_0x49c9a2 => _0x49c9a2['variance'] > 0x0);
+        _0x63796f[_0x384b15(0x368)] = '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:grid;grid-template-columns:300px\x201fr;gap:16px;align-items:start;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;flex-direction:column;gap:12px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Your\x20Financial\x20Health</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22chip\x22\x20style=\x22background:' + _0x3ddac9[_0x384b15(0x27e)] + _0x384b15(0x387) + _0x3ddac9[_0x384b15(0x27e)] + ';\x22>' + _0x3ddac9[_0x384b15(0x329)] + _0x384b15(0x3ff) + _0x3ddac9[_0x384b15(0x248)] + _0x384b15(0x36a) + _0x3ddac9[_0x384b15(0x337)] + _0x384b15(0x444) + (_0x3c5efb[_0x384b15(0x3c6)] > 0x0 ? _0x384b15(0x207) + _0x3c5efb[_0x384b15(0x3c6)] + '\x20leak' + (_0x3c5efb[_0x384b15(0x3c6)] > 0x1 ? 's' : '') + _0x384b15(0x3f0) : '<span\x20class=\x22chip\x20chip-green\x22>Clean</span>') + _0x384b15(0x1f6) + (_0x3c5efb[_0x384b15(0x3c6)] > 0x0 ? _0x3c5efb['map'](_0x3cfe1b => _0x384b15(0x41c) + _0x3cfe1b[_0x384b15(0x222)] + _0x384b15(0x201) + _0x3cfe1b[_0x384b15(0x2a0)][_0x384b15(0x44a)]() + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:right;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:var(--win-red);font-size:13px;font-weight:700;\x22>+KSh\x20' + _0x3cfe1b[_0x384b15(0x360)][_0x384b15(0x44a)]() + _0x384b15(0x34e))[_0x384b15(0x400)]('') : _0x384b15(0x235)) + _0x384b15(0x21e) + _0x3ddac9[_0x384b15(0x329)] + _0x384b15(0x256) + humanReadableStatus(_0x1a2ab5[_0x384b15(0x25d)], _0x1a2ab5['daily'], _0x1a2ab5[_0x384b15(0x3c8)], _0x3ddac9) + _0x384b15(0x388), window[_0x384b15(0x43e)] < 0x384 && (_0x63796f[_0x384b15(0x32c)](_0x384b15(0x399))[_0x384b15(0x3c4)]['gridTemplateColumns'] = '1fr'), setTimeout(() => renderChart(), 0x64);
     }
-    if (_0x5e82b4 === 'obs') {
-        let _0x46344c = _0x5571e8[_0x20d576(0x1b8)][_0x20d576(0x391)](_0x681cbd => _0x20d576(0x175) + _0x681cbd[_0x20d576(0x2ff)] + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);\x22>Budget:\x20KSh\x20' + _0x681cbd['amount'][_0x20d576(0x17e)]() + _0x20d576(0x3d0) + _0x681cbd[_0x20d576(0x351)]['toLocaleString']() + _0x20d576(0x3a7) + Math[_0x20d576(0x3c7)](0x64, _0x681cbd['paid'] / _0x681cbd[_0x20d576(0x250)] * 0x64) + _0x20d576(0x3c1) + (_0x681cbd[_0x20d576(0x326)] <= 0x0 ? '#107C10' : _0x20d576(0x38b)) + _0x20d576(0x22b) + (_0x681cbd[_0x20d576(0x326)] <= 0x0 ? '<span\x20class=\x22chip\x20chip-green\x22>✓\x20Settled</span>' : _0x20d576(0x29b) + _0x681cbd[_0x20d576(0x326)][_0x20d576(0x17e)]() + _0x20d576(0x248)) + '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20' + (_0x681cbd[_0x20d576(0x237)] > 0x0 ? _0x20d576(0x29e) + _0x681cbd[_0x20d576(0x237)][_0x20d576(0x17e)]() + _0x20d576(0x143) : '') + _0x20d576(0x1c2))[_0x20d576(0x29a)]('');
-        _0x5b6922['innerHTML'] = '<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Mandatory\x20Reserve\x20Schedule</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22document.getElementById(\x27setup-overlay\x27).classList.remove(\x27hidden\x27)\x22\x20class=\x22btn-secondary\x22\x20style=\x22font-size:11px;padding:5px\x2010px;\x22>Edit\x20List</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>' + (_0x46344c || _0x20d576(0x207)) + _0x20d576(0x1f3);
+    if (_0x4edb4f === _0x384b15(0x2a2)) {
+        let _0x24dc0c = _0x1a2ab5[_0x384b15(0x32d)]['map'](_0x34c8a7 => _0x384b15(0x3c5) + _0x34c8a7['label'] + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);\x22>Budget:\x20KSh\x20' + _0x34c8a7[_0x384b15(0x2a0)][_0x384b15(0x44a)]() + _0x384b15(0x33a) + _0x34c8a7[_0x384b15(0x39c)][_0x384b15(0x44a)]() + _0x384b15(0x3b7) + Math[_0x384b15(0x3ac)](0x64, _0x34c8a7[_0x384b15(0x39c)] / _0x34c8a7[_0x384b15(0x2a0)] * 0x64) + _0x384b15(0x3db) + (_0x34c8a7[_0x384b15(0x202)] <= 0x0 ? _0x384b15(0x3ae) : _0x384b15(0x308)) + _0x384b15(0x31a) + (_0x34c8a7['pending'] <= 0x0 ? '<span\x20class=\x22chip\x20chip-green\x22>✓\x20Settled</span>' : _0x384b15(0x38b) + _0x34c8a7[_0x384b15(0x202)][_0x384b15(0x44a)]() + _0x384b15(0x2aa)) + _0x384b15(0x427) + (_0x34c8a7[_0x384b15(0x360)] > 0x0 ? _0x384b15(0x3e1) + _0x34c8a7[_0x384b15(0x360)][_0x384b15(0x44a)]() + _0x384b15(0x422) : '') + '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>')[_0x384b15(0x400)]('');
+        _0x63796f[_0x384b15(0x368)] = _0x384b15(0x2da) + (_0x24dc0c || _0x384b15(0x447)) + _0x384b15(0x353);
     }
-    _0x5e82b4 === _0x20d576(0x20c) && (_0x5b6922[_0x20d576(0x1a9)] = '<div\x20class=\x22win-card\x22\x20style=\x22height:520px;display:flex;flex-direction:column;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22\x20style=\x22flex-shrink:0;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:10px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22width:32px;height:32px;background:linear-gradient(135deg,#0078D4,#005A9E);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;\x22>🤖</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Travis\x20AI\x20Advisor</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-sub\x22>Probability\x20engine\x20&\x20leak\x20finder\x20active</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22chip\x20chip-green\x22\x20style=\x22font-size:10px;\x22>●\x20Online</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22chat-box\x22\x20style=\x22flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--win-bg);\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22chat-bubble-ai\x22\x20style=\x22font-size:13px;\x22>Probability\x20Engine\x20and\x20Leak\x20Finder\x20active.\x20How\x20can\x20I\x20protect\x20your\x20capital\x20today?</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22padding:10px\x2014px;border-top:1px\x20solid\x20var(--win-border);background:white;display:flex;gap:8px;align-items:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20id=\x22chat-input\x22\x20type=\x22text\x22\x20placeholder=\x22Ask\x20Travis\x20anything\x20about\x20your\x20finances…\x22\x20class=\x22win-input\x22\x20style=\x22flex:1;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22handleAsk()\x22\x20class=\x22btn-accent\x22\x20style=\x22padding:9px\x2018px;font-size:13px;\x22>Send\x20↗</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', document['getElementById']('chat-input')[_0x20d576(0x253)](_0x20d576(0x387), _0x5c55a0 => {
-        if (_0x5c55a0['key'] === 'Enter') handleAsk();
+    _0x4edb4f === _0x384b15(0x42d) && (_0x63796f[_0x384b15(0x368)] = _0x384b15(0x218), document[_0x384b15(0x3e3)](_0x384b15(0x3f1))[_0x384b15(0x231)](_0x384b15(0x3af), _0x54540f => {
+        const _0xf088b4 = _0x384b15;
+        if (_0x54540f['key'] === _0xf088b4(0x223)) handleAsk();
     }));
-    if (_0x5e82b4 === 'book') {
-        let _0x28ab7e = state[_0x20d576(0x2e9)][_0x20d576(0x391)](_0x2e2eca => '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22font-family:monospace;font-size:11px;color:var(--win-text-3);white-space:nowrap;\x22>' + new Date(_0x2e2eca['id'])[_0x20d576(0x196)](_0x20d576(0x2e1)) + _0x20d576(0x38d) + _0x2e2eca[_0x20d576(0x3b9)] + _0x20d576(0x3dd) + _0x2e2eca[_0x20d576(0x36c)] + '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22color:var(--win-text-3);font-size:10px;\x22>→</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22chip\x20chip-red\x22\x20style=\x22font-size:10px;\x22>' + _0x2e2eca[_0x20d576(0x262)] + _0x20d576(0x264) + _0x2e2eca[_0x20d576(0x250)]['toLocaleString']() + _0x20d576(0x1b5) + _0x2e2eca[_0x20d576(0x250)]['toLocaleString']() + _0x20d576(0x229))[_0x20d576(0x29a)]('');
-        _0x5b6922['innerHTML'] = _0x20d576(0x360) + state[_0x20d576(0x2e9)][_0x20d576(0x2ce)] + _0x20d576(0x213) + (_0x28ab7e || _0x20d576(0x159)) + _0x20d576(0x38c);
+    if (_0x4edb4f === _0x384b15(0x429)) {
+        let _0x3a5321 = state[_0x384b15(0x385)][_0x384b15(0x349)](_0x34e109 => '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22font-family:monospace;font-size:11px;color:var(--win-text-3);white-space:nowrap;\x22>' + new Date(_0x34e109['id'])[_0x384b15(0x32e)](_0x384b15(0x32a)) + _0x384b15(0x2ec) + _0x34e109[_0x384b15(0x271)] + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;gap:6px;margin-top:4px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22chip\x20chip-green\x22\x20style=\x22font-size:10px;\x22>' + _0x34e109[_0x384b15(0x2d7)] + _0x384b15(0x1ed) + _0x34e109['credit'] + '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22text-align:right;font-family:monospace;color:var(--win-green);font-weight:600;white-space:nowrap;\x22>+' + _0x34e109[_0x384b15(0x2a0)][_0x384b15(0x44a)]() + _0x384b15(0x3ad) + _0x34e109[_0x384b15(0x2a0)][_0x384b15(0x44a)]() + _0x384b15(0x36d))[_0x384b15(0x400)]('');
+        _0x63796f[_0x384b15(0x368)] = '<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>General\x20Ledger</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:var(--win-text-3);\x22>' + state[_0x384b15(0x385)][_0x384b15(0x3c6)] + _0x384b15(0x341) + (_0x3a5321 || '<tr><td\x20colspan=\x224\x22\x20style=\x22padding:32px;text-align:center;color:var(--win-text-3);\x22>No\x20transactions\x20recorded\x20yet.</td></tr>') + _0x384b15(0x22a);
     }
-    _0x5e82b4 === _0x20d576(0x227) && (_0x5b6922[_0x20d576(0x1a9)] = _0x20d576(0x3d6) + (state['user']?.[_0x20d576(0x2e2)] || '—') + _0x20d576(0x221) + (state[_0x20d576(0x1bf)]?.[_0x20d576(0x27b)] || '—') + _0x20d576(0x18e));
+    if (_0x4edb4f === 'settings') {
+        const _0x4d3d37 = getUserWealthTier(_0x1a2ab5[_0x384b15(0x37b)], _0x1a2ab5[_0x384b15(0x25d)]);
+        _0x63796f['innerHTML'] = _0x384b15(0x234) + (state[_0x384b15(0x3a1)]?.[_0x384b15(0x2e9)] || '—') + _0x384b15(0x1f1) + (state[_0x384b15(0x3a1)]?.[_0x384b15(0x344)] || '—') + _0x384b15(0x3ba) + _0x4d3d37[_0x384b15(0x27e)] + ';\x22>' + _0x4d3d37['displayName'] + _0x384b15(0x1e4);
+    }
 }
 
 function renderChart() {
-    const _0x30a4c6 = _0x4c3582,
-        _0x1d7d65 = document['getElementById']('analyticsChart')?.[_0x30a4c6(0x32a)]('2d');
-    if (!_0x1d7d65) return;
-    const _0x52a0fa = getFin(),
-        _0x19c08b = new Date();
-    let _0x3ef4b1 = [],
-        _0x1f4b03 = [],
-        _0x2d5b18 = [],
-        _0x30d723 = [];
-    for (let _0x4f7a5c = 0x6; _0x4f7a5c >= 0x0; _0x4f7a5c--) {
-        const _0x482839 = new Date();
-        _0x482839[_0x30a4c6(0x331)](_0x19c08b['getDate']() - _0x4f7a5c), _0x3ef4b1[_0x30a4c6(0x1cd)](_0x482839[_0x30a4c6(0x196)](_0x30a4c6(0x2e1), {
-            'weekday': _0x30a4c6(0x2cb)
+    const _0x3e52c0 = _0xad7134,
+        _0x9bedac = document['getElementById'](_0x3e52c0(0x3d5))?.[_0x3e52c0(0x38d)]('2d');
+    if (!_0x9bedac) return;
+    const _0x208b84 = getFin(),
+        _0x366604 = new Date();
+    let _0x29e501 = [],
+        _0x4a510a = [],
+        _0x7da24c = [],
+        _0x59c6a7 = [];
+    for (let _0x4c3d31 = 0x6; _0x4c3d31 >= 0x0; _0x4c3d31--) {
+        const _0x1efd2d = new Date();
+        _0x1efd2d['setDate'](_0x366604[_0x3e52c0(0x3ab)]() - _0x4c3d31), _0x29e501[_0x3e52c0(0x41b)](_0x1efd2d['toLocaleDateString'](_0x3e52c0(0x32a), {
+            'weekday': 'short'
         }));
-        let _0x5e1a14 = 0x0,
-            _0x3cac58 = 0x0;
-        state[_0x30a4c6(0x2e9)][_0x30a4c6(0x344)](_0x477a2a => {
-            const _0x266945 = _0x30a4c6;
-            if (new Date(_0x477a2a['id'])['toDateString']() === _0x482839[_0x266945(0x2f7)]()) {
-                if (isLiquid(_0x477a2a['credit'])) _0x5e1a14 += _0x477a2a[_0x266945(0x250)];
-                if (isLiquid(_0x477a2a[_0x266945(0x36c)])) _0x3cac58 += _0x477a2a[_0x266945(0x250)];
+        let _0x29d404 = 0x0,
+            _0x2f3d8a = 0x0;
+        state[_0x3e52c0(0x385)][_0x3e52c0(0x338)](_0xd8a7a => {
+            const _0x4f3d69 = _0x3e52c0;
+            if (new Date(_0xd8a7a['id'])['toDateString']() === _0x1efd2d[_0x4f3d69(0x25f)]()) {
+                if (isLiquid(_0xd8a7a[_0x4f3d69(0x252)])) _0x29d404 += _0xd8a7a[_0x4f3d69(0x2a0)];
+                if (isLiquid(_0xd8a7a['debit'])) _0x2f3d8a += _0xd8a7a[_0x4f3d69(0x2a0)];
             }
-        }), _0x1f4b03['push'](_0x5e1a14), _0x2d5b18[_0x30a4c6(0x1cd)](_0x3cac58), _0x30d723[_0x30a4c6(0x1cd)](_0x52a0fa[_0x30a4c6(0x304)]);
+        }), _0x4a510a[_0x3e52c0(0x41b)](_0x29d404), _0x7da24c[_0x3e52c0(0x41b)](_0x2f3d8a), _0x59c6a7[_0x3e52c0(0x41b)](_0x208b84[_0x3e52c0(0x37b)]);
     }
-    if (window[_0x30a4c6(0x1f0)]) window[_0x30a4c6(0x1f0)][_0x30a4c6(0x372)]();
-    window['travisChart'] = new Chart(_0x1d7d65, {
-        'type': _0x30a4c6(0x3cb),
+    if (window[_0x3e52c0(0x2ce)]) window['travisChart'][_0x3e52c0(0x3cc)]();
+    window[_0x3e52c0(0x2ce)] = new Chart(_0x9bedac, {
+        'type': _0x3e52c0(0x306),
         'data': {
-            'labels': _0x3ef4b1,
+            'labels': _0x29e501,
             'datasets': [{
-                'label': 'Daily\x20Ceiling',
-                'data': _0x30d723,
-                'borderColor': _0x30a4c6(0x38b),
+                'label': _0x3e52c0(0x312),
+                'data': _0x59c6a7,
+                'borderColor': _0x3e52c0(0x308),
                 'borderDash': [0x6, 0x3],
                 'pointRadius': 0x0,
                 'fill': ![],
                 'borderWidth': 0x2
             }, {
-                'label': _0x30a4c6(0x267),
-                'data': _0x1f4b03,
-                'borderColor': _0x30a4c6(0x384),
-                'backgroundColor': _0x30a4c6(0x2ab),
+                'label': _0x3e52c0(0x2b6),
+                'data': _0x4a510a,
+                'borderColor': _0x3e52c0(0x229),
+                'backgroundColor': _0x3e52c0(0x2e8),
                 'fill': !![],
                 'tension': 0.4,
                 'borderWidth': 0x2,
-                'pointBackgroundColor': '#C42B1C',
+                'pointBackgroundColor': _0x3e52c0(0x229),
                 'pointRadius': 0x3
             }, {
-                'label': _0x30a4c6(0x345),
-                'data': _0x2d5b18,
-                'borderColor': _0x30a4c6(0x3aa),
-                'backgroundColor': _0x30a4c6(0x2a0),
+                'label': _0x3e52c0(0x1dd),
+                'data': _0x7da24c,
+                'borderColor': _0x3e52c0(0x3ae),
+                'backgroundColor': _0x3e52c0(0x2df),
                 'fill': !![],
                 'tension': 0.4,
                 'borderWidth': 0x2,
-                'pointBackgroundColor': _0x30a4c6(0x3aa),
+                'pointBackgroundColor': _0x3e52c0(0x3ae),
                 'pointRadius': 0x3
             }]
         },
@@ -761,10 +957,10 @@ function renderChart() {
             'plugins': {
                 'legend': {
                     'labels': {
-                        'color': _0x30a4c6(0x30b),
+                        'color': _0x3e52c0(0x2fa),
                         'font': {
                             'size': 0xb,
-                            'family': _0x30a4c6(0x3c4)
+                            'family': _0x3e52c0(0x27b)
                         },
                         'boxWidth': 0x14
                     }
@@ -773,10 +969,10 @@ function renderChart() {
             'scales': {
                 'x': {
                     'grid': {
-                        'color': _0x30a4c6(0x2fe)
+                        'color': _0x3e52c0(0x2fd)
                     },
                     'ticks': {
-                        'color': '#8a8a8a',
+                        'color': _0x3e52c0(0x318),
                         'font': {
                             'size': 0xa
                         }
@@ -784,10 +980,10 @@ function renderChart() {
                 },
                 'y': {
                     'grid': {
-                        'color': _0x30a4c6(0x2fe)
+                        'color': _0x3e52c0(0x2fd)
                     },
                     'ticks': {
-                        'color': _0x30a4c6(0x190),
+                        'color': _0x3e52c0(0x318),
                         'font': {
                             'size': 0xa
                         }
@@ -799,360 +995,409 @@ function renderChart() {
     });
 }
 
-function updateHeader(_0x1b4271) {
-    const _0x2fd6b1 = _0x4c3582,
-        _0x1b9215 = document[_0x2fd6b1(0x373)](_0x2fd6b1(0x287)),
-        _0x27d467 = [{
-            'label': 'Total\x20Liquid',
-            'value': 'KSh\x20' + _0x1b4271[_0x2fd6b1(0x193)][_0x2fd6b1(0x17e)](),
-            'color': _0x2fd6b1(0x38b),
+function updateHeader(_0x43069) {
+    const _0x17d099 = _0xad7134,
+        _0x2d6488 = document[_0x17d099(0x3e3)](_0x17d099(0x2d3)),
+        _0x55ddda = getUserWealthTier(_0x43069[_0x17d099(0x37b)], _0x43069[_0x17d099(0x25d)]),
+        _0x3e4af5 = [{
+            'label': _0x17d099(0x358),
+            'value': 'KSh\x20' + _0x43069[_0x17d099(0x1e6)][_0x17d099(0x44a)](),
+            'color': '#0078D4',
             'icon': '💰'
         }, {
-            'label': 'Reserved\x20Bills',
-            'value': _0x2fd6b1(0x1be) + _0x1b4271[_0x2fd6b1(0x326)]['toLocaleString'](),
-            'color': _0x2fd6b1(0x384),
+            'label': 'Bills\x20You\x20Must\x20Pay',
+            'value': 'KSh\x20' + _0x43069[_0x17d099(0x202)][_0x17d099(0x44a)](),
+            'color': '#C42B1C',
             'icon': '📋'
         }, {
-            'label': 'Survival\x20Window',
-            'value': _0x1b4271['daysRem'] + _0x2fd6b1(0x273),
-            'color': _0x2fd6b1(0x3aa),
+            'label': _0x17d099(0x266),
+            'value': _0x43069[_0x17d099(0x3c8)] + _0x17d099(0x448),
+            'color': _0x17d099(0x3ae),
             'icon': '📅'
         }, {
-            'label': _0x2fd6b1(0x2fc),
-            'value': _0x2fd6b1(0x1be) + Math[_0x2fd6b1(0x3d1)](0x0, _0x1b4271['daily'])[_0x2fd6b1(0x338)](0x0),
-            'color': _0x2fd6b1(0x156),
+            'label': _0x17d099(0x2c7),
+            'value': _0x17d099(0x317) + Math[_0x17d099(0x3a7)](0x0, _0x43069[_0x17d099(0x37b)])['toFixed'](0x0),
+            'color': _0x55ddda[_0x17d099(0x27e)],
             'icon': '📊'
         }];
-    _0x1b9215[_0x2fd6b1(0x1ff)]['gridTemplateColumns'] = _0x2fd6b1(0x14a);
-    window[_0x2fd6b1(0x3a5)] < 0x258 && (_0x1b9215[_0x2fd6b1(0x1ff)][_0x2fd6b1(0x3ac)] = 'repeat(2,1fr)');
-    window[_0x2fd6b1(0x3a5)] < 0x190 && (_0x1b9215[_0x2fd6b1(0x1ff)][_0x2fd6b1(0x3ac)] = _0x2fd6b1(0x279));
-    _0x1b9215[_0x2fd6b1(0x1a9)] = _0x27d467[_0x2fd6b1(0x391)](_0x2f376d => _0x2fd6b1(0x389) + _0x2f376d[_0x2fd6b1(0x3b0)] + ';\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22metric-label\x22>' + _0x2f376d[_0x2fd6b1(0x24e)] + '\x20' + _0x2f376d['label'] + _0x2fd6b1(0x2fb) + _0x2f376d[_0x2fd6b1(0x31a)] + _0x2fd6b1(0x3b3))[_0x2fd6b1(0x29a)]('');
-    const _0x116f1b = document[_0x2fd6b1(0x373)](_0x2fd6b1(0x2f9));
-    _0x1b4271['safeCash'] < 0x0 ? (_0x116f1b['className'] = _0x2fd6b1(0x16e), _0x116f1b[_0x2fd6b1(0x191)] = _0x2fd6b1(0x381)) : (_0x116f1b[_0x2fd6b1(0x3c3)] = _0x2fd6b1(0x192), _0x116f1b[_0x2fd6b1(0x191)] = '🛡\x20STABLE');
+    _0x2d6488[_0x17d099(0x3c4)][_0x17d099(0x1d7)] = 'repeat(4,1fr)';
+    window[_0x17d099(0x43e)] < 0x258 && (_0x2d6488[_0x17d099(0x3c4)][_0x17d099(0x1d7)] = _0x17d099(0x3f9));
+    window[_0x17d099(0x43e)] < 0x190 && (_0x2d6488[_0x17d099(0x3c4)]['gridTemplateColumns'] = _0x17d099(0x2f2));
+    _0x2d6488['innerHTML'] = _0x3e4af5[_0x17d099(0x349)](_0x346f68 => _0x17d099(0x2d0) + _0x346f68[_0x17d099(0x27e)] + ';\x22></div><div\x20class=\x22metric-label\x22>' + _0x346f68[_0x17d099(0x20b)] + '\x20' + _0x346f68['label'] + _0x17d099(0x219) + _0x346f68[_0x17d099(0x2fc)] + '</div></div>')[_0x17d099(0x400)]('');
+    const _0x2f0e06 = document[_0x17d099(0x3e3)](_0x17d099(0x30d));
+    if (_0x43069[_0x17d099(0x25d)] < 0x0) _0x2f0e06[_0x17d099(0x2f5)] = _0x17d099(0x3cd), _0x2f0e06[_0x17d099(0x378)] = '⚠\x20You\x20are\x20in\x20debt';
+    else {
+        if (_0x43069[_0x17d099(0x37b)] < 0x64) _0x2f0e06[_0x17d099(0x2f5)] = _0x17d099(0x3cd), _0x2f0e06[_0x17d099(0x378)] = _0x17d099(0x2a5);
+        else {
+            if (_0x43069['daily'] < 0x12c) _0x2f0e06[_0x17d099(0x2f5)] = 'chip\x20chip-red', _0x2f0e06[_0x17d099(0x378)] = _0x17d099(0x423);
+            else _0x43069[_0x17d099(0x37b)] < 0x320 ? (_0x2f0e06[_0x17d099(0x2f5)] = _0x17d099(0x300), _0x2f0e06['textContent'] = _0x17d099(0x3ce)) : (_0x2f0e06['className'] = _0x17d099(0x315), _0x2f0e06[_0x17d099(0x378)] = _0x17d099(0x22e));
+        }
+    }
 }
 
 function showTxModal() {
-    const _0xa0681b = _0x4c3582,
-        _0x2b52a3 = document['getElementById']('tx-debit'),
-        _0x4444c7 = document[_0xa0681b(0x373)]('tx-credit');
-    _0x2b52a3[_0xa0681b(0x1a9)] = _0x4444c7[_0xa0681b(0x1a9)] = '';
-    const _0x170fc5 = state[_0xa0681b(0x1bf)][_0xa0681b(0x27b)] === 'personal',
-        _0x41a439 = (_0x566ae0, _0x3c93cc, _0x34b0d5) => {
-            const _0xa2ef92 = _0xa0681b,
-                _0x12c000 = document[_0xa2ef92(0x15b)](_0xa2ef92(0x185));
-            return _0x12c000[_0xa2ef92(0x2ff)] = '●\x20' + _0x566ae0, _0x12c000[_0xa2ef92(0x1ff)][_0xa2ef92(0x3b0)] = _0x3c93cc, _0x34b0d5[_0xa2ef92(0x344)](_0x5da2cf => {
-                const _0x34f37a = _0xa2ef92;
-                _0x12c000[_0x34f37a(0x38f)](new Option(_0x5da2cf, _0x5da2cf));
-            }), _0x12c000;
+    const _0x2e5aa2 = _0xad7134,
+        _0x2e2a47 = document[_0x2e5aa2(0x3e3)](_0x2e5aa2(0x214)),
+        _0x4c7929 = document[_0x2e5aa2(0x3e3)]('tx-credit');
+    _0x2e2a47[_0x2e5aa2(0x368)] = _0x4c7929['innerHTML'] = '';
+    const _0x56dcd6 = state[_0x2e5aa2(0x3a1)][_0x2e5aa2(0x344)] === _0x2e5aa2(0x227),
+        _0x26be84 = (_0x5d13cf, _0x2bf3fa, _0x6f3f7f) => {
+            const _0x408931 = _0x2e5aa2,
+                _0x15e513 = document[_0x408931(0x39b)]('optgroup');
+            return _0x15e513[_0x408931(0x222)] = '●\x20' + _0x5d13cf, _0x15e513[_0x408931(0x3c4)][_0x408931(0x27e)] = _0x2bf3fa, _0x6f3f7f['forEach'](_0x3486a1 => {
+                _0x15e513['appendChild'](new Option(_0x3486a1, _0x3486a1));
+            }), _0x15e513;
         };
-    if (_0x170fc5) {
-        const _0x1bbebe = _0x1814c1 => {
-            const _0x2e599a = _0xa0681b;
-            _0x1814c1[_0x2e599a(0x38f)](_0x41a439('ASSETS', _0x2e599a(0x3aa), ['Cash', 'M-Pesa', 'Bank\x20Account', 'Savings'])), _0x1814c1[_0x2e599a(0x38f)](_0x41a439('INCOME', _0x2e599a(0x3aa), [_0x2e599a(0x189), _0x2e599a(0x296), _0x2e599a(0x206), _0x2e599a(0x15e), _0x2e599a(0x1a6)])), _0x1814c1[_0x2e599a(0x38f)](_0x41a439(_0x2e599a(0x297), _0x2e599a(0x23b), [_0x2e599a(0x324), 'Rent', _0x2e599a(0x17f), _0x2e599a(0x3bb), _0x2e599a(0x22d), _0x2e599a(0x261)])), _0x1814c1[_0x2e599a(0x38f)](_0x41a439('DISCRETIONARY', _0x2e599a(0x384), ['Entertainment', _0x2e599a(0x1bb), 'Travel\x20(fun)', _0x2e599a(0x219)])), _0x1814c1[_0x2e599a(0x38f)](_0x41a439(_0x2e599a(0x1a7), '#0078D4', [_0x2e599a(0x318), 'Credit']));
+    if (_0x56dcd6) {
+        const _0x6697e9 = _0xa131b1 => {
+            const _0x309b33 = _0x2e5aa2;
+            _0xa131b1['appendChild'](_0x26be84(_0x309b33(0x2cd), _0x309b33(0x3ae), [_0x309b33(0x367), _0x309b33(0x2c9), _0x309b33(0x39a), _0x309b33(0x2b9)])), _0xa131b1[_0x309b33(0x2fb)](_0x26be84('INCOME', '#107C10', [_0x309b33(0x285), 'Side\x20Hustle', _0x309b33(0x324), _0x309b33(0x3e4), 'Other\x20Income'])), _0xa131b1[_0x309b33(0x2fb)](_0x26be84(_0x309b33(0x28a), _0x309b33(0x390), [_0x309b33(0x1ff), _0x309b33(0x40d), _0x309b33(0x375), _0x309b33(0x3ef), 'Medical', _0x309b33(0x2ad)])), _0xa131b1[_0x309b33(0x2fb)](_0x26be84(_0x309b33(0x283), _0x309b33(0x229), ['Entertainment', _0x309b33(0x1fb), _0x309b33(0x26b), 'Other\x20Fun\x20Spending'])), _0xa131b1[_0x309b33(0x2fb)](_0x26be84(_0x309b33(0x421), _0x309b33(0x308), [_0x309b33(0x33e), _0x309b33(0x3c2)]));
         };
-        _0x1bbebe(_0x2b52a3), _0x1bbebe(_0x4444c7);
+        _0x6697e9(_0x2e2a47), _0x6697e9(_0x4c7929);
     } else {
-        const _0x4ab660 = _0x9e81f8 => {
-            const _0x509cb1 = _0xa0681b;
-            _0x9e81f8[_0x509cb1(0x38f)](_0x41a439('ASSETS', _0x509cb1(0x3aa), [_0x509cb1(0x295), _0x509cb1(0x3a8), _0x509cb1(0x370), _0x509cb1(0x275), _0x509cb1(0x348)])), _0x9e81f8[_0x509cb1(0x38f)](_0x41a439(_0x509cb1(0x1ea), '#107C10', ['Sales\x20Revenue', _0x509cb1(0x17a), 'Other\x20Revenue'])), _0x9e81f8['appendChild'](_0x41a439(_0x509cb1(0x3a1), _0x509cb1(0x23b), ['Rent', _0x509cb1(0x306), _0x509cb1(0x1cc), _0x509cb1(0x2af), _0x509cb1(0x379), _0x509cb1(0x3ce)])), _0x9e81f8['appendChild'](_0x41a439(_0x509cb1(0x1ec), _0x509cb1(0x384), [_0x509cb1(0x16b), 'Travel\x20&\x20Entertainment', 'Professional\x20Fees\x20(if\x20not\x20critical)'])), _0x9e81f8[_0x509cb1(0x38f)](_0x41a439(_0x509cb1(0x1a7), _0x509cb1(0x38b), [_0x509cb1(0x35a), _0x509cb1(0x1c6)]));
+        const _0x53f87d = _0x4872c6 => {
+            const _0x4df0ee = _0x2e5aa2;
+            _0x4872c6['appendChild'](_0x26be84(_0x4df0ee(0x2cd), _0x4df0ee(0x3ae), ['Bank\x20/\x20M-Pesa', _0x4df0ee(0x263), 'Accounts\x20Receivable', 'Inventory', _0x4df0ee(0x2eb)])), _0x4872c6[_0x4df0ee(0x2fb)](_0x26be84(_0x4df0ee(0x3df), _0x4df0ee(0x3ae), [_0x4df0ee(0x2c5), _0x4df0ee(0x3a6), _0x4df0ee(0x30f)])), _0x4872c6['appendChild'](_0x26be84('OPERATING\x20EXPENSES', _0x4df0ee(0x390), [_0x4df0ee(0x40d), _0x4df0ee(0x3ec), _0x4df0ee(0x29e), _0x4df0ee(0x23c), _0x4df0ee(0x42c), _0x4df0ee(0x28b)])), _0x4872c6[_0x4df0ee(0x2fb)](_0x26be84(_0x4df0ee(0x255), _0x4df0ee(0x229), [_0x4df0ee(0x415), _0x4df0ee(0x404), _0x4df0ee(0x224)])), _0x4872c6[_0x4df0ee(0x2fb)](_0x26be84(_0x4df0ee(0x421), '#0078D4', [_0x4df0ee(0x3f5), 'Loans\x20Payable']));
         };
-        _0x4ab660(_0x2b52a3), _0x4ab660(_0x4444c7);
+        _0x53f87d(_0x2e2a47), _0x53f87d(_0x4c7929);
     }
-    document[_0xa0681b(0x373)](_0xa0681b(0x169))[_0xa0681b(0x2f6)]['add']('show'), updateLiveHud();
+    document[_0x2e5aa2(0x3e3)]('tx-modal')[_0x2e5aa2(0x34f)][_0x2e5aa2(0x37c)]('show'), updateLiveHud();
 }
 async function commitTransaction() {
-    const _0x453b8f = _0x4c3582,
-        _0x239706 = parseFloat(document['getElementById']('tx-amount')[_0x453b8f(0x31a)]),
-        _0x4e62e2 = document['getElementById'](_0x453b8f(0x2d1))['value'],
-        _0x5ba2c9 = document[_0x453b8f(0x373)](_0x453b8f(0x1e5))[_0x453b8f(0x31a)],
-        _0x2c555e = document[_0x453b8f(0x373)](_0x453b8f(0x3a6))[_0x453b8f(0x31a)] || _0x453b8f(0x363);
-    if (_0x4e62e2 === _0x5ba2c9 || isNaN(_0x239706) || _0x239706 <= 0x0) return showCustomAlert(_0x453b8f(0x1d3));
-    const _0x24f128 = {
-        'id': Date[_0x453b8f(0x2cf)](),
-        'debit': _0x4e62e2,
-        'credit': _0x5ba2c9,
-        'amount': _0x239706,
-        'desc': _0x2c555e
+    const _0xb878ae = _0xad7134,
+        _0x520369 = parseFloat(document[_0xb878ae(0x3e3)](_0xb878ae(0x212))[_0xb878ae(0x2fc)]),
+        _0xc737aa = document['getElementById'](_0xb878ae(0x214))[_0xb878ae(0x2fc)],
+        _0x5bcf24 = document['getElementById']('tx-credit')[_0xb878ae(0x2fc)],
+        _0x4b237b = document[_0xb878ae(0x3e3)](_0xb878ae(0x3a9))[_0xb878ae(0x2fc)] || 'Market\x20Exchange';
+    if (_0xc737aa === _0x5bcf24 || isNaN(_0x520369) || _0x520369 <= 0x0) return showCustomAlert('Error:\x20Transaction\x20must\x20move\x20money\x20between\x20two\x20different\x20accounts.');
+    const _0x45a1c6 = {
+        'id': Date[_0xb878ae(0x250)](),
+        'debit': _0xc737aa,
+        'credit': _0x5bcf24,
+        'amount': _0x520369,
+        'desc': _0x4b237b
     };
-    state[_0x453b8f(0x2e9)]['unshift'](_0x24f128), await saveData('tx', _0x24f128);
-    if (typeof travisNotif !== _0x453b8f(0x22c)) travisNotif[_0x453b8f(0x148)]();
-    if (typeof saveBackup === _0x453b8f(0x1c4)) {
+    state[_0xb878ae(0x385)][_0xb878ae(0x3f7)](_0x45a1c6), await saveData('tx', _0x45a1c6);
+    if (typeof travisNotif !== _0xb878ae(0x2be)) travisNotif[_0xb878ae(0x439)]();
+    if (typeof saveBackup === _0xb878ae(0x43c)) {
         await saveBackup();
         if (!backupDirHandle) await setupBackupFolder();
     }
-    closeTxModal(), nav(_0x453b8f(0x319));
+    closeTxModal(), nav(_0xb878ae(0x326));
 }
 
 function closeTxModal() {
-    const _0x44565a = _0x4c3582;
-    document[_0x44565a(0x373)](_0x44565a(0x169))[_0x44565a(0x2f6)][_0x44565a(0x245)](_0x44565a(0x1bd)), document[_0x44565a(0x373)](_0x44565a(0x225))[_0x44565a(0x31a)] = '';
+    const _0x2862f2 = _0xad7134;
+    document['getElementById']('tx-modal')['classList'][_0x2862f2(0x29f)](_0x2862f2(0x2d2)), document[_0x2862f2(0x3e3)]('tx-amount')[_0x2862f2(0x2fc)] = '';
 }
 
-function addObligationRow(_0x117394 = '', _0x45b8de = '') {
-    const _0x34b18f = _0x4c3582,
-        _0xba9609 = document[_0x34b18f(0x15b)](_0x34b18f(0x33e));
-    _0xba9609[_0x34b18f(0x1ff)]['cssText'] = _0x34b18f(0x39d), _0xba9609[_0x34b18f(0x1a9)] = _0x34b18f(0x199) + _0x117394 + '\x22\x20class=\x22win-input\x22\x20style=\x22flex:1;\x22><input\x20type=\x22number\x22\x20placeholder=\x22Amount\x22\x20value=\x22' + _0x45b8de + _0x34b18f(0x187), document[_0x34b18f(0x373)](_0x34b18f(0x268))[_0x34b18f(0x38f)](_0xba9609);
+function _0x9f28(_0x517144, _0x19bb16) {
+    _0x517144 = _0x517144 - 0x1d5;
+    const _0x5a8858 = _0x5a88();
+    let _0x9f28f5 = _0x5a8858[_0x517144];
+    return _0x9f28f5;
 }
 
-function setUserType(_0x522440) {
-    const _0x519135 = _0x4c3582;
-    state[_0x519135(0x1d7)] = _0x522440, document['getElementById'](_0x519135(0x278))['className'] = _0x519135(0x2d8) + (_0x522440 === _0x519135(0x2ca) ? '\x20active' : ''), document[_0x519135(0x373)](_0x519135(0x357))['className'] = _0x519135(0x2d8) + (_0x522440 === _0x519135(0x333) ? '\x20active' : '');
+function addObligationRow(_0x81d0dc = '', _0x1d0b91 = '') {
+    const _0x312ac3 = _0xad7134,
+        _0x20ffc2 = document[_0x312ac3(0x39b)](_0x312ac3(0x399));
+    _0x20ffc2[_0x312ac3(0x3c4)][_0x312ac3(0x291)] = _0x312ac3(0x1f3), _0x20ffc2[_0x312ac3(0x368)] = _0x312ac3(0x2f8) + _0x81d0dc + _0x312ac3(0x210) + _0x1d0b91 + '\x22\x20class=\x22win-input\x22\x20style=\x22width:110px;\x22><button\x20onclick=\x22this.parentElement.remove()\x22\x20style=\x22width:28px;height:28px;border-radius:50%;border:1px\x20solid\x20rgba(196,43,28,0.3);background:rgba(196,43,28,0.05);color:var(--win-red);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;\x22>×</button>', document[_0x312ac3(0x3e3)](_0x312ac3(0x35a))[_0x312ac3(0x2fb)](_0x20ffc2);
+}
+
+function setUserType(_0x10e149) {
+    const _0x14e669 = _0xad7134;
+    state['tempType'] = _0x10e149, document[_0x14e669(0x3e3)](_0x14e669(0x401))['className'] = _0x14e669(0x373) + (_0x10e149 === _0x14e669(0x227) ? _0x14e669(0x23b) : ''), document['getElementById']('btn-b')[_0x14e669(0x2f5)] = 'seg-btn' + (_0x10e149 === 'business' ? _0x14e669(0x23b) : '');
 }
 async function finalizeSetup() {
-    const _0x261728 = _0x4c3582,
-        _0x27ec78 = document[_0x261728(0x373)](_0x261728(0x332))[_0x261728(0x31a)],
-        _0x5f5c86 = Array['from'](document[_0x261728(0x1cb)](_0x261728(0x1f2)))[_0x261728(0x391)](_0x2a445c => ({
-            'label': _0x2a445c[_0x261728(0x1cb)](_0x261728(0x142))[0x0]['value'],
-            'amount': parseFloat(_0x2a445c[_0x261728(0x1cb)]('input')[0x1][_0x261728(0x31a)]) || 0x0
-        }))[_0x261728(0x13d)](_0x93ee8d => _0x93ee8d[_0x261728(0x2ff)]);
-    if (!_0x27ec78 || !state[_0x261728(0x1d7)]) return showCustomAlert('Please\x20enter\x20a\x20name\x20and\x20select\x20a\x20profile\x20type.');
-    state[_0x261728(0x1bf)] = {
-        'name': _0x27ec78,
-        'type': state[_0x261728(0x1d7)]
-    }, state[_0x261728(0x32d)] = _0x5f5c86, await saveData(_0x261728(0x309), {
-        'id': _0x261728(0x2c2),
+    const _0x5a788b = _0xad7134,
+        _0x52e1fc = document[_0x5a788b(0x3e3)](_0x5a788b(0x1df))[_0x5a788b(0x2fc)],
+        _0x16e43d = Array[_0x5a788b(0x2e2)](document[_0x5a788b(0x3a4)]('#obligation-list\x20>\x20div'))[_0x5a788b(0x349)](_0x98cd25 => ({
+            'label': _0x98cd25['querySelectorAll']('input')[0x0][_0x5a788b(0x2fc)],
+            'amount': parseFloat(_0x98cd25[_0x5a788b(0x3a4)](_0x5a788b(0x1e5))[0x1]['value']) || 0x0
+        }))[_0x5a788b(0x31b)](_0x5741a4 => _0x5741a4[_0x5a788b(0x222)]);
+    if (!_0x52e1fc || !state['tempType']) return showCustomAlert('Please\x20enter\x20your\x20name\x20and\x20select\x20profile\x20type.');
+    state['user'] = {
+        'name': _0x52e1fc,
+        'type': state['tempType']
+    }, state['obligations'] = _0x16e43d, await saveData(_0x5a788b(0x342), {
+        'id': _0x5a788b(0x2db),
         'user': state['user'],
-        'obligations': state[_0x261728(0x32d)]
+        'obligations': state[_0x5a788b(0x38f)]
     });
-    if (typeof saveBackup === _0x261728(0x1c4)) await saveBackup();
-    location[_0x261728(0x2bc)]();
+    if (typeof saveBackup === 'function') await saveBackup();
+    location[_0x5a788b(0x428)]();
 }
 async function factoryReset() {
-    const _0x30ce7c = _0x4c3582;
-    confirm(_0x30ce7c(0x286)) && (indexedDB['deleteDatabase']('TravisGuardian_v1.0'), location[_0x30ce7c(0x2bc)]());
+    const _0x17380f = _0xad7134;
+    confirm('WARNING:\x20This\x20will\x20delete\x20ALL\x20your\x20financial\x20data.\x20Cannot\x20undo.\x20Continue?') && (indexedDB[_0x17380f(0x42a)](_0x17380f(0x323)), location[_0x17380f(0x428)]());
 }
 
 function showHelpModal() {
-    const _0x13ecbe = _0x4c3582,
-        _0x5c8d6d = document['getElementById'](_0x13ecbe(0x1b9));
-    _0x5c8d6d[_0x13ecbe(0x1ff)][_0x13ecbe(0x1d1)] = _0x13ecbe(0x307);
+    const _0x34c5c0 = _0xad7134,
+        _0x191635 = document[_0x34c5c0(0x3e3)](_0x34c5c0(0x412));
+    _0x191635[_0x34c5c0(0x3c4)][_0x34c5c0(0x434)] = _0x34c5c0(0x380);
 }
 
 function closeHelpModal() {
-    const _0x8b8635 = _0x4c3582,
-        _0x33364d = document[_0x8b8635(0x373)](_0x8b8635(0x1b9));
-    _0x33364d[_0x8b8635(0x1ff)]['display'] = _0x8b8635(0x202);
+    const _0x52fb18 = _0xad7134,
+        _0x1c67eb = document[_0x52fb18(0x3e3)]('help-modal');
+    _0x1c67eb[_0x52fb18(0x3c4)]['display'] = _0x52fb18(0x2ab);
 }
-
-function handleAsk() {
-    const _0x36e065 = _0x4c3582,
-        _0x1783cf = document['getElementById'](_0x36e065(0x19d)),
-        _0x557777 = document['getElementById'](_0x36e065(0x2df)),
-        _0x35e13f = _0x1783cf[_0x36e065(0x31a)][_0x36e065(0x235)]();
-    if (!_0x35e13f) return;
-    travisMemory[_0x36e065(0x1df)]++, travisMemory['lastQuestion'] = _0x35e13f;
-    const _0x47fecf = _0x35e13f['toLowerCase']()[_0x36e065(0x235)](),
-        _0x1a5654 = getFin(),
-        _0x185935 = getStatusSummary(),
-        _0x4ad096 = state['user']['type'] === _0x36e065(0x333);
-    let _0x2dbf68 = 0x0;
-    const _0x2741ae = _0x47fecf[_0x36e065(0x21e)](/,/g, ''),
-        _0x1427ef = _0x2741ae[_0x36e065(0x1f6)](/(\d+(?:\.\d+)?)\s*(k|thousand|ksh|shillings|bob)?/i);
-    if (_0x1427ef) {
-        _0x2dbf68 = parseFloat(_0x1427ef[0x1]);
-        if (_0x1427ef[0x2] && /k|thousand/i [_0x36e065(0x3d4)](_0x1427ef[0x2])) _0x2dbf68 *= 0x3e8;
-    }
-    const _0x13850f = (..._0x151cd3) => _0x151cd3[_0x36e065(0x383)](_0x2a28aa => _0x47fecf['includes'](_0x2a28aa)),
-        _0xf05a23 = {
-            'spend': _0x13850f(_0x36e065(0x1c0), 'spend', _0x36e065(0x140), _0x36e065(0x30a), _0x36e065(0x14d), _0x36e065(0x280), _0x36e065(0x299), 'eat', 'drinking', _0x36e065(0x14f)),
-            'loan': _0x13850f(_0x36e065(0x1e1), _0x36e065(0x366), _0x36e065(0x2a8), 'mshwari', _0x36e065(0x262), 'overdraft', _0x36e065(0x259), _0x36e065(0x341), 'faidi'),
-            'stock': _0x13850f('stock', _0x36e065(0x244), _0x36e065(0x392), 'buy\x20goods', 'buy\x20stock', _0x36e065(0x1fc), _0x36e065(0x1e9), _0x36e065(0x349)),
-            'staff': _0x13850f(_0x36e065(0x182), 'staff', 'employee', _0x36e065(0x18b), 'employ', 'payroll', _0x36e065(0x2b7), _0x36e065(0x203), _0x36e065(0x162), _0x36e065(0x197)),
-            'tax': _0x13850f(_0x36e065(0x24d), _0x36e065(0x2ee), _0x36e065(0x2e0), 'paye', _0x36e065(0x2be), _0x36e065(0x3cc), _0x36e065(0x1d9), _0x36e065(0x1a2), 'tpin'),
-            'asset': _0x13850f(_0x36e065(0x209), _0x36e065(0x25b), _0x36e065(0x38e), _0x36e065(0x18d), 'fridge', _0x36e065(0x226), _0x36e065(0x1e0), _0x36e065(0x14c), 'matatu', _0x36e065(0x151), _0x36e065(0x1b7)),
-            'status': _0x13850f(_0x36e065(0x201), _0x36e065(0x167), _0x36e065(0x230), _0x36e065(0x1db), _0x36e065(0x2b9), 'trajectory', _0x36e065(0x2e6), _0x36e065(0x2a3), _0x36e065(0x218), 'end\x20of\x20month', _0x36e065(0x21b), _0x36e065(0x2da), _0x36e065(0x165), _0x36e065(0x314), _0x36e065(0x2d2)),
-            'profit': _0x13850f(_0x36e065(0x23a), _0x36e065(0x323), _0x36e065(0x1f8), _0x36e065(0x2b6), _0x36e065(0x385), _0x36e065(0x36f), 'make\x20more', 'earn\x20more', 'how\x20to\x20improve'),
-            'habit': _0x13850f(_0x36e065(0x24f), _0x36e065(0x22f), _0x36e065(0x35d), _0x36e065(0x212), 'how\x20much\x20can\x20i\x20spend', _0x36e065(0x35b)),
-            'savings': _0x13850f(_0x36e065(0x236), 'saving', _0x36e065(0x1e2), _0x36e065(0x284), _0x36e065(0x233), 'future'),
-            'pricing': _0x13850f(_0x36e065(0x220), _0x36e065(0x39c), _0x36e065(0x325), _0x36e065(0x177), 'markup', _0x36e065(0x31c), _0x36e065(0x33d)),
-            'cashflow': _0x13850f('cash\x20flow', 'cashflow', _0x36e065(0x173), _0x36e065(0x1c7), 'income', _0x36e065(0x21f), _0x36e065(0x1fd)),
-            'rent': _0x13850f(_0x36e065(0x154), _0x36e065(0x31b), _0x36e065(0x205), _0x36e065(0x147)),
-            'school': _0x13850f('school', 'fees', _0x36e065(0x1c3), 'education', 'college', _0x36e065(0x3d7)),
-            'medical': _0x13850f('hospital', _0x36e065(0x2f3), _0x36e065(0x21a), _0x36e065(0x367), 'nhif', _0x36e065(0x2de), 'sick'),
-            'family': _0x13850f(_0x36e065(0x33a), _0x36e065(0x343), _0x36e065(0x3b5), _0x36e065(0x176), _0x36e065(0x208), _0x36e065(0x257), _0x36e065(0x1ab), _0x36e065(0x310), _0x36e065(0x322)),
-            'invest': _0x13850f(_0x36e065(0x34e), _0x36e065(0x1fa), _0x36e065(0x317), _0x36e065(0x21c), _0x36e065(0x2b2), 'sacco', _0x36e065(0x2fa), 'nse'),
-            'compare': _0x13850f('vs', 'versus', 'compare', 'which\x20is\x20better', _0x36e065(0x1da)),
-            'withdraw': _0x13850f(_0x36e065(0x1eb), _0x36e065(0x28f), _0x36e065(0x198), 'atm', _0x36e065(0x231))
-        },
-        _0x2f217d = _0x185935[_0x36e065(0x358)],
-        _0x166658 = _0x185935[_0x36e065(0x397)],
-        _0x4fe14d = _0x185935[_0x36e065(0x19c)],
-        _0x36465c = _0x1a5654[_0x36e065(0x1e8)],
-        _0x5104ae = _0x1a5654[_0x36e065(0x1ac)],
-        _0x301fd6 = _0x5104ae - _0x2f217d,
-        _0x9a3df8 = _0x2f217d - _0x166658 * _0x36465c,
-        _0x2f8cc8 = _0x2dbf68 > 0x0 ? _0x2dbf68 / _0x2f217d : 0x0,
-        _0x57408a = {
-            'LOW': _0x36e065(0x359),
-            'MODERATE': _0x36e065(0x183),
-            'CRITICAL': _0x36e065(0x232)
-        } [_0x4fe14d] || _0x36e065(0x3c6);
-
-    function _0x4a3b60(_0x5b4a00) {
-        const _0xd40789 = _0x36e065,
-            _0x5a54f5 = _0xd40789(0x37f) + _0x57408a + _0xd40789(0x386) + _0x4fe14d + _0xd40789(0x1c8) + _0x166658[_0xd40789(0x17e)]() + '</span></div><span\x20style=\x22color:var(--color-border-secondary);font-size:11px;\x22>·</span><div\x20style=\x22display:flex;align-items:center;gap:5px;white-space:nowrap;\x22><span\x20style=\x22color:var(--color-text-secondary);font-size:12px;\x22>Buffer</span><span\x20style=\x22font-weight:500;color:var(--color-text-primary);\x22>KSh\x20' + _0x2f217d[_0xd40789(0x17e)]() + '</span></div><span\x20style=\x22color:var(--color-border-secondary);font-size:11px;\x22>·</span><div\x20style=\x22display:flex;align-items:center;gap:5px;white-space:nowrap;\x22><span\x20style=\x22color:var(--color-text-secondary);font-size:12px;\x22>Days\x20left</span><span\x20style=\x22font-weight:500;color:var(--color-text-primary);\x22>' + _0x36465c + _0xd40789(0x292),
-            _0x526f5f = _0xd40789(0x2c4) + _0x57408a + ';background:var(--color-background-secondary);border-radius:0\x20var(--border-radius-md)\x20var(--border-radius-md)\x200;\x22><div\x20style=\x22font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;\x22>My\x20advice</div><div\x20style=\x22font-size:15px;color:var(--color-text-primary);line-height:1.6;\x22>' + _0x5b4a00[_0xd40789(0x223)] + _0xd40789(0x32c),
-            _0x2bc10e = _0x5b4a00[_0xd40789(0x334)] && _0x5b4a00[_0xd40789(0x334)][_0xd40789(0x2ce)] ? _0xd40789(0x3a3) + _0x5b4a00['actions'][_0xd40789(0x391)](_0x1c2fad => '<button\x20onclick=\x22document.getElementById(\x27chat-input\x27).value=\x27' + _0x1c2fad['q'] + _0xd40789(0x398) + _0x1c2fad['label'] + '\x20↗</button>')[_0xd40789(0x29a)]('') + '</div>' : '';
-        return _0x5a54f5 + '<div\x20style=\x22font-size:15px;line-height:1.75;color:var(--color-text-primary);margin-bottom:4px;\x22>' + _0x5b4a00[_0xd40789(0x1a0)] + _0xd40789(0x30e) + _0x526f5f + _0x2bc10e;
-    }
-    let _0x375294 = {
-        'body': '',
-        'conclusion': '',
-        'actions': []
-    };
-    if (_0x2dbf68 > 0x0 && (_0xf05a23[_0x36e065(0x316)] || _0xf05a23[_0x36e065(0x154)] || _0xf05a23['school'] || _0xf05a23[_0x36e065(0x3a9)] || _0xf05a23['family'] || _0xf05a23[_0x36e065(0x1b2)])) {
-        const _0x3c9e7b = _0xf05a23[_0x36e065(0x154)] || _0xf05a23['school'] || _0xf05a23[_0x36e065(0x3a9)],
-            _0x540ff7 = _0x3c9e7b || _0xf05a23[_0x36e065(0x33a)],
-            _0x310f42 = _0x2dbf68 <= _0x166658,
-            _0x13ec9b = Math[_0x36e065(0x222)](_0x2f8cc8 * 0x64),
-            _0x2765f8 = _0x2f217d - _0x2dbf68,
-            _0x33dcf4 = _0x36465c > 0x0 ? Math[_0x36e065(0x36b)](_0x2765f8 / _0x36465c) : 0x0;
-        if (_0x3c9e7b) {
-            if (_0x2f217d < 0x0) _0x375294[_0x36e065(0x1a0)] = _0x36e065(0x16c) + _0x2dbf68['toLocaleString']() + _0x36e065(0x164) + Math[_0x36e065(0x2b4)](_0x2f217d)[_0x36e065(0x17e)]() + _0x36e065(0x161), _0x375294[_0x36e065(0x223)] = _0x36e065(0x25e);
-            else !_0x310f42 ? (_0x375294[_0x36e065(0x1a0)] = _0x36e065(0x3bf) + _0x2dbf68[_0x36e065(0x17e)]() + _0x36e065(0x2a9) + _0x166658[_0x36e065(0x17e)]() + ',\x20which\x20means\x20paying\x20it\x20in\x20full\x20today\x20will\x20eat\x20' + _0x13ec9b + _0x36e065(0x243) + _0x2765f8[_0x36e065(0x17e)]() + '\x20to\x20manage\x20the\x20next\x20' + _0x36465c + '\x20days.\x20That\x27s\x20a\x20tight\x20squeeze\x20—\x20your\x20daily\x20breathing\x20room\x20drops\x20to\x20about\x20KSh\x20' + _0x33dcf4[_0x36e065(0x17e)]() + '\x20per\x20day\x20after\x20this,\x20which\x20' + (_0x33dcf4 < 0xc8 ? 'is\x20dangerously\x20low' : _0x36e065(0x37c)) + '.', _0x375294[_0x36e065(0x223)] = 'Pay\x20it\x20—\x20obligations\x20must\x20be\x20honoured.\x20But\x20immediately\x20after,\x20cut\x20all\x20discretionary\x20spending\x20for\x20the\x20rest\x20of\x20this\x20week\x20and\x20focus\x20on\x20cash\x20inflow\x20to\x20rebuild\x20that\x20buffer.') : (_0x375294[_0x36e065(0x1a0)] = _0x36e065(0x1be) + _0x2dbf68[_0x36e065(0x17e)]() + _0x36e065(0x305) + _0x2765f8[_0x36e065(0x17e)]() + _0x36e065(0x19e) + _0x33dcf4[_0x36e065(0x17e)]() + '\x20—\x20which\x20' + (_0x33dcf4 >= 0x1f4 ? 'is\x20still\x20comfortable' : 'is\x20tighter\x20than\x20before,\x20so\x20watch\x20the\x20small\x20daily\x20spends\x20this\x20week') + '.', _0x375294['conclusion'] = _0x36e065(0x1fe) + _0x36465c + _0x36e065(0x246));
-        } else {
-            if (_0xf05a23['stock'] && _0x4ad096) {
-                const _0x31d570 = Math[_0x36e065(0x36b)](_0x2f217d * 0.5);
-                if (_0x2dbf68 > _0x2f217d) _0x375294[_0x36e065(0x1a0)] = _0x36e065(0x1d2) + _0x2dbf68[_0x36e065(0x17e)]() + _0x36e065(0x14b) + _0x2f217d[_0x36e065(0x17e)]() + '\x20—\x20so\x20this\x20would\x20wipe\x20you\x20out\x20completely\x20and\x20leave\x20nothing\x20for\x20wages,\x20rent,\x20or\x20emergencies.\x20Even\x20if\x20the\x20stock\x20sells\x20well,\x20there\x27s\x20a\x20gap\x20between\x20buying\x20and\x20selling,\x20and\x20during\x20that\x20gap\x20you\x27d\x20have\x20zero\x20liquidity.', _0x375294[_0x36e065(0x223)] = _0x36e065(0x2a6) + _0x31d570[_0x36e065(0x17e)]() + _0x36e065(0x35f);
-                else _0x2dbf68 > _0x31d570 ? (_0x375294[_0x36e065(0x1a0)] = _0x36e065(0x25c) + _0x2dbf68[_0x36e065(0x17e)]() + _0x36e065(0x1a8) + _0x13ec9b + _0x36e065(0x37e), _0x375294['conclusion'] = 'If\x20your\x20stock\x20moves\x20fast\x20(within\x207\x20days),\x20go\x20ahead\x20but\x20no\x20more\x20than\x20KSh\x20' + Math['floor'](_0x2f217d * 0.6)[_0x36e065(0x17e)]() + _0x36e065(0x17c) + _0x31d570[_0x36e065(0x17e)]() + _0x36e065(0x2c9)) : (_0x375294['body'] = _0x36e065(0x1be) + _0x2dbf68['toLocaleString']() + _0x36e065(0x2d4) + _0x13ec9b + _0x36e065(0x17d) + _0x2765f8[_0x36e065(0x17e)]() + _0x36e065(0x395), _0x375294[_0x36e065(0x223)] = _0x36e065(0x210));
-            } else {
-                if (_0x4fe14d === _0x36e065(0x339) || _0x2f217d <= 0x0) _0x375294[_0x36e065(0x1a0)] = _0x36e065(0x300) + _0x2dbf68[_0x36e065(0x17e)]() + _0x36e065(0x1de) + _0x2f217d[_0x36e065(0x17e)]() + ',\x20which\x20means\x20there\x27s\x20almost\x20no\x20room\x20between\x20you\x20and\x20not\x20being\x20able\x20to\x20meet\x20your\x20obligations.', _0x375294[_0x36e065(0x223)] = _0x36e065(0x382);
-                else !_0x310f42 ? (_0x375294[_0x36e065(0x1a0)] = _0x36e065(0x1be) + _0x2dbf68['toLocaleString']() + '\x20would\x20push\x20you\x20past\x20your\x20safe\x20daily\x20limit\x20of\x20KSh\x20' + _0x166658[_0x36e065(0x17e)]() + _0x36e065(0x26a) + (_0x36465c - 0x1) + '\x20days\x20would\x20each\x20have\x20roughly\x20KSh\x20' + _0x33dcf4[_0x36e065(0x17e)]() + _0x36e065(0x368) + _0x166658[_0x36e065(0x17e)]() + '.', _0x375294[_0x36e065(0x223)] = _0x4fe14d === _0x36e065(0x2ef) ? _0x36e065(0x1cf) : _0x36e065(0x329) + Math[_0x36e065(0x36b)](_0x166658 * 0.8)[_0x36e065(0x17e)]() + _0x36e065(0x37d)) : (_0x375294['body'] = 'KSh\x20' + _0x2dbf68[_0x36e065(0x17e)]() + '\x20fits\x20inside\x20your\x20daily\x20cap\x20of\x20KSh\x20' + _0x166658[_0x36e065(0x17e)]() + _0x36e065(0x394) + _0x13ec9b + '%\x20of\x20your\x20buffer\x20—\x20that\x27s\x20a\x20manageable\x20spend.\x20After\x20this,\x20you\x27d\x20still\x20have\x20KSh\x20' + _0x2765f8['toLocaleString']() + '\x20available\x20and\x20' + _0x36465c + _0x36e065(0x312) + _0x33dcf4[_0x36e065(0x17e)]() + _0x36e065(0x1d4), _0x375294['conclusion'] = _0x36e065(0x2bd));
+async function handleAsk() {
+    const _0x6ced3e = _0xad7134,
+        _0x2aef52 = document[_0x6ced3e(0x3e3)](_0x6ced3e(0x3f1)),
+        _0x17e80f = document[_0x6ced3e(0x3e3)](_0x6ced3e(0x296)),
+        _0x4dd8bc = _0x2aef52['value']['trim']();
+    if (!_0x4dd8bc) return;
+    _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x24f) + escapeHtml(_0x4dd8bc) + _0x6ced3e(0x42b), _0x2aef52[_0x6ced3e(0x2fc)] = '', _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f[_0x6ced3e(0x43d)];
+    const _0x3b871b = document['createElement']('div');
+    _0x3b871b['innerHTML'] = _0x6ced3e(0x351), _0x17e80f[_0x6ced3e(0x2fb)](_0x3b871b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f['scrollHeight'], await new Promise(_0xc60a32 => setTimeout(_0xc60a32, 0x258 + Math[_0x6ced3e(0x1eb)]() * 0x1f4)), _0x3b871b[_0x6ced3e(0x29f)]();
+    if (hasPendingClarification()) {
+        const _0x5ece32 = conversationState[_0x6ced3e(0x3fb)],
+            _0x26cb1a = _0x4dd8bc[_0x6ced3e(0x37f)](/(\d+(?:,\d+)?(?:\s*k|\s*thousand|\s*million)?)/i);
+        let _0x2a09ae = 0x0;
+        if (_0x26cb1a) {
+            let _0x17050a = _0x26cb1a[0x1][_0x6ced3e(0x21f)](/,/g, '');
+            if (_0x17050a['toLowerCase']()[_0x6ced3e(0x389)]('k')) _0x17050a = parseFloat(_0x17050a) * 0x3e8;
+            else {
+                if (_0x17050a['toLowerCase']()[_0x6ced3e(0x389)](_0x6ced3e(0x2e7))) _0x17050a = parseFloat(_0x17050a) * 0xf4240;
             }
+            _0x2a09ae = parseFloat(_0x17050a);
         }
-        _0x375294[_0x36e065(0x334)] = [{
-            'label': 'My\x207-day\x20forecast',
-            'q': _0x36e065(0x20e)
-        }, {
-            'label': _0x36e065(0x34a),
-            'q': _0x36e065(0x22e)
-        }];
-    } else {
-        if (_0xf05a23[_0x36e065(0x1e1)]) {
-            const _0x3fb057 = _0x2dbf68 || 0x0,
-                _0x363735 = 0.15,
-                _0x233d68 = _0x3fb057 > 0x0 ? Math[_0x36e065(0x222)](_0x3fb057 * (0x1 + _0x363735)) : 0x0,
-                _0x27918c = _0x36465c > 0x0 ? Math['round'](_0x233d68 / 0x1e) : 0x0;
-            if (_0x4fe14d === 'CRITICAL') _0x375294['body'] = _0x36e065(0x390) + _0x2f217d[_0x36e065(0x17e)]() + _0x36e065(0x141), _0x375294['conclusion'] = _0x36e065(0x214);
-            else _0x4fe14d === 'MODERATE' ? (_0x375294[_0x36e065(0x1a0)] = _0x36e065(0x15c) + (_0x3fb057 > 0x0 ? _0x3fb057[_0x36e065(0x17e)]() : _0x36e065(0x3ca)) + _0x36e065(0x24c) + (_0x3fb057 > 0x0 ? _0x233d68[_0x36e065(0x17e)]() : _0x36e065(0x294)) + _0x36e065(0x32b), _0x375294[_0x36e065(0x223)] = _0x3fb057 > 0x0 ? 'Only\x20take\x20this\x20loan\x20if\x20it\x20will\x20generate\x20at\x20least\x20KSh\x20' + Math[_0x36e065(0x222)](_0x233d68 * 1.2)['toLocaleString']() + _0x36e065(0x166) : _0x36e065(0x277)) : (_0x375294[_0x36e065(0x1a0)] = 'Your\x20financials\x20are\x20in\x20a\x20stable\x20position\x20right\x20now\x20—\x20buffer\x20is\x20healthy\x20and\x20risk\x20is\x20low,\x20which\x20actually\x20means\x20you\x27re\x20in\x20the\x20best\x20negotiating\x20position\x20you\x27ll\x20have.\x20' + (_0x3fb057 > 0x0 ? _0x36e065(0x1a4) + _0x3fb057[_0x36e065(0x17e)]() + _0x36e065(0x1af) + _0x233d68[_0x36e065(0x17e)]() + '\x20next\x20month\x20—\x20that\x27s\x20about\x20KSh\x20' + _0x27918c[_0x36e065(0x17e)]() + _0x36e065(0x25d) : _0x36e065(0x3ae)), _0x375294[_0x36e065(0x223)] = _0x36e065(0x36d));
-            _0x375294[_0x36e065(0x334)] = [{
-                'label': 'Can\x20I\x20afford\x20repayments',
-                'q': _0x36e065(0x216)
-            }, {
-                'label': _0x36e065(0x1b3),
-                'q': _0x36e065(0x3db)
-            }];
-        } else {
-            if (_0xf05a23[_0x36e065(0x2f1)]) {
-                const _0x401320 = _0x2dbf68 || 0x0,
-                    _0x404e00 = Math[_0x36e065(0x36b)](_0x2f217d * 0.25),
-                    _0x130e4c = _0x401320 > 0x0 ? Math[_0x36e065(0x36b)](_0x404e00 / _0x401320) : 0x0;
-                if (_0x4fe14d === _0x36e065(0x339) || _0x2f217d < 0x1388) _0x375294[_0x36e065(0x1a0)] = 'Wanting\x20to\x20grow\x20the\x20team\x20shows\x20ambition,\x20and\x20that\x27s\x20good.\x20But\x20right\x20now\x20your\x20buffer\x20is\x20KSh\x20' + _0x2f217d[_0x36e065(0x17e)]() + _0x36e065(0x378), _0x375294['conclusion'] = 'Don\x27t\x20hire\x20right\x20now.\x20The\x20business\x20isn\x27t\x20stable\x20enough\x20to\x20guarantee\x20a\x20consistent\x20wage.\x20Get\x20the\x20buffer\x20above\x20KSh\x2015,000\x20first,\x20then\x20revisit.';
-                else _0x401320 > 0x0 ? _0x401320 > _0x404e00 ? (_0x375294[_0x36e065(0x1a0)] = _0x36e065(0x347) + _0x401320[_0x36e065(0x17e)]() + '\x20per\x20month.\x20Based\x20on\x20your\x20current\x20buffer\x20of\x20KSh\x20' + _0x2f217d[_0x36e065(0x17e)]() + _0x36e065(0x2a4) + _0x404e00['toLocaleString']() + _0x36e065(0x195), _0x375294[_0x36e065(0x223)] = 'Either\x20negotiate\x20the\x20wage\x20down\x20to\x20KSh\x20' + _0x404e00[_0x36e065(0x17e)]() + _0x36e065(0x180)) : (_0x375294[_0x36e065(0x1a0)] = _0x36e065(0x1a4) + _0x401320['toLocaleString']() + _0x36e065(0x31d) + _0x404e00[_0x36e065(0x17e)]() + '.', _0x375294[_0x36e065(0x223)] = _0x36e065(0x2fd)) : (_0x375294[_0x36e065(0x1a0)] = 'Whether\x20you\x20can\x20add\x20staff\x20depends\x20entirely\x20on\x20your\x20wage\x20budget\x20and\x20the\x20business\x27s\x20current\x20cash\x20flow.\x20Your\x20buffer\x20is\x20KSh\x20' + _0x2f217d[_0x36e065(0x17e)]() + _0x36e065(0x2c0) + _0x404e00[_0x36e065(0x17e)]() + '\x20monthly.', _0x375294[_0x36e065(0x223)] = 'Tell\x20me\x20the\x20wage\x20you\x20have\x20in\x20mind\x20and\x20I\x27ll\x20calculate\x20whether\x20the\x20numbers\x20work.', _0x375294['actions'] = [{
-                    'label': _0x36e065(0x251),
-                    'q': _0x36e065(0x228)
-                }]);
-            } else {
-                if (_0xf05a23['tax']) _0x375294[_0x36e065(0x1a0)] = 'Tax\x20is\x20one\x20of\x20those\x20things\x20people\x20delay\x20until\x20KRA\x20makes\x20it\x20painful\x20—\x20and\x20KRA\x27s\x20penalties\x20are\x20not\x20small.\x20A\x20late\x20filing\x20penalty\x20alone\x20starts\x20at\x20KSh\x2020,000\x20or\x205%\x20of\x20tax\x20owed,\x20whichever\x20is\x20higher,\x20and\x20interest\x20compounds\x20monthly\x20at\x201%.', _0x375294[_0x36e065(0x223)] = _0x36e065(0x16f), _0x375294['actions'] = [{
-                    'label': _0x36e065(0x32f),
-                    'q': 'How\x20much\x20should\x20I\x20set\x20aside\x20for\x20taxes\x20each\x20month?'
-                }];
-                else {
-                    if (_0xf05a23[_0x36e065(0x209)]) {
-                        const _0x438db4 = _0x2dbf68 || 0x0,
-                            _0x10d54b = _0x438db4 > 0x0 ? Math['round'](_0x438db4 / _0x2f217d * 0x64) : 0x0;
-                        _0x375294[_0x36e065(0x1a0)] = _0x438db4 > 0x0 ? _0x36e065(0x23c) + _0x438db4[_0x36e065(0x17e)]() + _0x36e065(0x2a2) + _0x10d54b + '%\x20of\x20your\x20KSh\x20' + _0x2f217d[_0x36e065(0x17e)]() + _0x36e065(0x350) : 'Buying\x20equipment\x20is\x20a\x20capital\x20decision,\x20not\x20an\x20expense\x20—\x20you\x27re\x20converting\x20cash\x20into\x20something\x20that\x20should\x20earn\x20its\x20keep.\x20Your\x20buffer\x20is\x20KSh\x20' + _0x2f217d[_0x36e065(0x17e)]() + '.';
-                        if (_0x4fe14d === _0x36e065(0x339)) _0x375294['conclusion'] = _0x36e065(0x194);
-                        else _0x438db4 > _0x2f217d * 0.5 ? _0x375294[_0x36e065(0x223)] = _0x36e065(0x33c) + _0x10d54b + '%\x20of\x20your\x20buffer,\x20this\x20would\x20strain\x20your\x20liquidity.\x20Look\x20at\x20leasing,\x20hire-purchase,\x20or\x20phased\x20payment\x20options.' : _0x375294[_0x36e065(0x223)] = 'If\x20this\x20asset\x20pays\x20back\x20within\x2060–90\x20days,\x20go\x20ahead.\x20Just\x20make\x20sure\x20you\x20have\x20at\x20least\x20KSh\x20' + Math[_0x36e065(0x222)](_0x2f217d * 0.4)[_0x36e065(0x17e)]() + _0x36e065(0x22a);
-                        _0x375294[_0x36e065(0x334)] = [{
-                            'label': _0x36e065(0x1ce),
-                            'q': 'Should\x20I\x20take\x20a\x20loan\x20to\x20buy\x20equipment?'
-                        }];
-                    } else {
-                        if (_0xf05a23[_0x36e065(0x3b2)]) {
-                            const _0x3ec2db = _0x4fe14d === _0x36e065(0x2ef) ? 0.15 : _0x4fe14d === _0x36e065(0x330) ? 0.07 : 0x0,
-                                _0x5b495c = Math['floor'](_0x2f217d * _0x3ec2db);
-                            _0x4fe14d === 'CRITICAL' ? (_0x375294[_0x36e065(0x1a0)] = 'The\x20instinct\x20to\x20save\x20is\x20a\x20good\x20one\x20—\x20but\x20saving\x20while\x20your\x20operating\x20buffer\x20is\x20negative\x20or\x20critical\x20is\x20like\x20filling\x20a\x20bucket\x20that\x20has\x20a\x20hole\x20in\x20it.', _0x375294[_0x36e065(0x223)] = _0x36e065(0x152)) : (_0x375294[_0x36e065(0x1a0)] = 'With\x20your\x20buffer\x20at\x20KSh\x20' + _0x2f217d['toLocaleString']() + _0x36e065(0x337) + _0x4fe14d + _0x36e065(0x29c) + Math[_0x36e065(0x222)](_0x3ec2db * 0x64) + '%,\x20which\x20would\x20be\x20KSh\x20' + _0x5b495c[_0x36e065(0x17e)]() + _0x36e065(0x3c0), _0x375294[_0x36e065(0x223)] = 'Start\x20with\x20KSh\x20' + _0x5b495c[_0x36e065(0x17e)]() + '\x20per\x20month,\x20put\x20it\x20somewhere\x20it\x20earns\x20interest\x20(money\x20market\x20fund,\x20SACCO),\x20and\x20treat\x20it\x20as\x20a\x20fixed\x20expense.');
+        if (!isNaN(_0x2a09ae) && _0x2a09ae > 0x0) {
+            const _0x46714a = getFin(),
+                _0x5051fa = getStatusSummary(),
+                _0x2890b2 = _0x5051fa[_0x6ced3e(0x365)],
+                _0x37fd9f = _0x5051fa['cash'],
+                _0x50576d = _0x5051fa[_0x6ced3e(0x382)],
+                _0x1bbd82 = _0x5051fa[_0x6ced3e(0x3c8)];
+            let _0x20e768 = '',
+                _0xff6e44 = '';
+            if (_0x5ece32[_0x6ced3e(0x3f4)] === _0x6ced3e(0x398)) {
+                if (_0x2890b2['adviceStyle'] === 'survival') {
+                    if (_0x2a09ae > _0x37fd9f) _0x20e768 = _0x6ced3e(0x38e) + _0x2a09ae + _0x6ced3e(0x1db) + _0x5ece32[_0x6ced3e(0x35b)] + _0x6ced3e(0x442) + _0x37fd9f + '\x20shillings\x20TOTAL\x20for\x20the\x20next\x20' + _0x1bbd82 + '\x20days.\x20You\x20cannot\x20afford\x20this.', _0xff6e44 = 'Do\x20not\x20buy\x20this.\x20Focus\x20only\x20on\x20food\x20and\x20rent.';
+                    else {
+                        if (_0x2a09ae > _0x50576d) {
+                            const _0x387734 = Math[_0x6ced3e(0x1fe)](_0x2a09ae / _0x50576d);
+                            _0x20e768 = _0x5ece32['originalQuestion'] + '\x20costs\x20' + _0x2a09ae + _0x6ced3e(0x3c9) + Math[_0x6ced3e(0x437)](_0x50576d) + _0x6ced3e(0x3cb), _0xff6e44 = _0x6ced3e(0x20e) + _0x387734 + _0x6ced3e(0x26e) + (_0x387734 > 0x1 ? 's' : '') + '\x20first.\x20Don\x27t\x20buy\x20today.';
                         } else {
-                            if (_0xf05a23[_0x36e065(0x1ed)]) _0x375294['body'] = _0x36e065(0x26d), _0x375294[_0x36e065(0x223)] = 'Review\x20your\x20top\x205\x20selling\x20items\x20and\x20check\x20what\x20you\x27re\x20making\x20per\x20unit\x20after\x20cost.\x20If\x20any\x20item\x20is\x20below\x2025%\x20margin,\x20either\x20raise\x20the\x20price\x20or\x20stop\x20stocking\x20it.', _0x375294[_0x36e065(0x334)] = [{
-                                'label': _0x36e065(0x354),
-                                'q': 'Help\x20me\x20calculate\x20the\x20right\x20selling\x20price\x20for\x20a\x20product'
-                            }];
-                            else {
-                                if (_0xf05a23[_0x36e065(0x34e)]) _0x375294[_0x36e065(0x1a0)] = _0x36e065(0x25f) + _0x2f217d['toLocaleString']() + _0x36e065(0x1e7) + _0x4fe14d + '.', _0x375294[_0x36e065(0x223)] = _0x4fe14d === _0x36e065(0x2ef) ? 'If\x20your\x203-month\x20emergency\x20fund\x20is\x20already\x20covered,\x20you\x20can\x20start\x20investing\x20up\x20to\x2010–15%\x20of\x20your\x20monthly\x20surplus.\x20Start\x20with\x20a\x20SACCO\x20if\x20you\x20don\x27t\x20have\x20one.' : _0x36e065(0x1aa);
-                                else {
-                                    if (_0xf05a23['status'] || _0xf05a23[_0x36e065(0x2ac)]) {
-                                        const _0xf3a7d9 = _0x9a3df8 >= 0x0 ? _0x36e065(0x3bc) + _0x9a3df8[_0x36e065(0x17e)]() + _0x36e065(0x39e) : _0x36e065(0x266) + Math[_0x36e065(0x2b4)](_0x9a3df8)[_0x36e065(0x17e)]() + _0x36e065(0x3a0),
-                                            _0x446037 = _0x166658 <= 0x0 ? 'you\x20have\x20no\x20safe\x20daily\x20spend\x20budget\x20right\x20now' : _0x166658 < 0x12c ? _0x36e065(0x255) + _0x166658['toLocaleString']() : _0x36e065(0x2f5) + _0x166658[_0x36e065(0x17e)]() + _0x36e065(0x2c6);
-                                        _0x375294['body'] = 'Looking\x20at\x20your\x20numbers\x20right\x20now:\x20you\x20have\x20KSh\x20' + _0x2f217d[_0x36e065(0x17e)]() + _0x36e065(0x2a7) + _0x36465c + _0x36e065(0x26b) + _0x446037 + _0x36e065(0x3c2) + _0xf3a7d9 + '.\x20Your\x20insolvency\x20risk\x20is\x20' + _0x4fe14d + '.', _0x375294[_0x36e065(0x223)] = _0x4fe14d === _0x36e065(0x2ef) ? _0x36e065(0x39b) + _0x166658[_0x36e065(0x17e)]() + ',\x20avoid\x20any\x20large\x20discretionary\x20buys\x20this\x20week.' : _0x4fe14d === 'MODERATE' ? _0x36e065(0x3ab) : _0x36e065(0x179), _0x375294[_0x36e065(0x334)] = [{
-                                            'label': _0x36e065(0x375),
-                                            'q': _0x36e065(0x3d8)
-                                        }, {
-                                            'label': _0x36e065(0x371),
-                                            'q': _0x36e065(0x1a1)
-                                        }];
-                                    } else {
-                                        if (_0xf05a23[_0x36e065(0x24f)]) {
-                                            const _0x91f42 = _0x166658 * 0x7,
-                                                _0x48c1a3 = _0x5104ae > 0x0 ? Math['round'](_0x301fd6 / _0x5104ae * 0x64) : 0x0;
-                                            _0x375294[_0x36e065(0x1a0)] = _0x36e065(0x1f1) + _0x166658[_0x36e065(0x17e)]() + _0x36e065(0x3be) + _0x91f42[_0x36e065(0x17e)]() + '.', _0x375294[_0x36e065(0x223)] = _0x36e065(0x3b6) + _0x166658[_0x36e065(0x17e)]() + '\x20as\x20your\x20absolute\x20daily\x20ceiling,\x20not\x20a\x20target.\x20On\x20days\x20when\x20you\x20spend\x20less,\x20don\x27t\x20\x22catch\x20up\x22\x20the\x20next\x20day\x20—\x20let\x20that\x20surplus\x20rebuild\x20your\x20buffer.';
-                                        } else {
-                                            if (_0xf05a23[_0x36e065(0x23a)]) _0x375294[_0x36e065(0x1a0)] = _0x36e065(0x271) + (_0x4ad096 ? _0x36e065(0x333) : 'income\x20situation') + _0x36e065(0x2c1), _0x375294['conclusion'] = _0x4ad096 ? _0x36e065(0x1e4) : _0x36e065(0x145);
-                                            else {
-                                                if (_0xf05a23[_0x36e065(0x33a)] && _0x2dbf68 === 0x0) _0x375294['body'] = _0x36e065(0x1e6) + _0x2f217d['toLocaleString']() + _0x36e065(0x3dc), _0x375294[_0x36e065(0x223)] = _0x36e065(0x19f);
-                                                else {
-                                                    if (_0xf05a23[_0x36e065(0x1eb)]) {
-                                                        const _0x473c28 = _0x2dbf68 || _0x166658;
-                                                        _0x375294[_0x36e065(0x1a0)] = _0x36e065(0x281) + _0x473c28[_0x36e065(0x17e)]() + _0x36e065(0x2e7) + (_0x473c28 > _0x166658 ? _0x36e065(0x27c) + _0x166658[_0x36e065(0x17e)]() + '.' : _0x36e065(0x2f0)) + _0x36e065(0x3d2), _0x375294[_0x36e065(0x223)] = _0x473c28 > _0x166658 ? _0x36e065(0x1ad) : 'This\x20amount\x20is\x20fine.\x20Just\x20make\x20sure\x20you\x27re\x20withdrawing\x20for\x20a\x20specific\x20purpose\x20—\x20not\x20as\x20a\x20\x22just\x20in\x20case\x22.';
-                                                    } else _0x375294[_0x36e065(0x1a0)] = _0x36e065(0x3c8) + _0x2f217d[_0x36e065(0x17e)]() + ',\x20daily\x20safe\x20spend\x20is\x20KSh\x20' + _0x166658['toLocaleString']() + ',\x20risk\x20is\x20' + _0x4fe14d + _0x36e065(0x2b8) + _0x36465c + _0x36e065(0x23d), _0x375294['conclusion'] = 'Ask\x20me\x20about\x20a\x20specific\x20decision\x20—\x20a\x20purchase,\x20a\x20loan,\x20hiring,\x20pricing,\x20saving,\x20or\x20anything\x20money-related\x20—\x20and\x20I\x27ll\x20give\x20you\x20a\x20direct\x20answer\x20based\x20on\x20your\x20actual\x20numbers.', _0x375294[_0x36e065(0x334)] = [{
-                                                        'label': _0x36e065(0x30d),
-                                                        'q': _0x36e065(0x335)
-                                                    }, {
-                                                        'label': _0x36e065(0x364),
-                                                        'q': 'What\x20is\x20the\x20most\x20important\x20financial\x20action\x20I\x20should\x20take\x20today?'
-                                                    }, {
-                                                        'label': _0x36e065(0x34c),
-                                                        'q': _0x36e065(0x240)
-                                                    }];
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            const _0x3d5ba9 = _0x37fd9f - _0x2a09ae,
+                                _0x46cbf0 = _0x3d5ba9 / _0x1bbd82;
+                            _0x20e768 = '\x20' + _0x5ece32[_0x6ced3e(0x35b)] + _0x6ced3e(0x3bf) + _0x2a09ae + _0x6ced3e(0x217) + _0x3d5ba9 + _0x6ced3e(0x1d9) + _0x1bbd82 + _0x6ced3e(0x357), _0xff6e44 = _0x6ced3e(0x200) + Math[_0x6ced3e(0x437)](_0x46cbf0) + _0x6ced3e(0x371);
                         }
+                    }
+                } else {
+                    if (_0x2890b2[_0x6ced3e(0x379)] === 'conservative') {
+                        const _0x58c73f = Math['round'](_0x2a09ae / _0x37fd9f * 0x64);
+                        _0x58c73f > 0x1e ? (_0x20e768 = _0x6ced3e(0x28e) + _0x5ece32[_0x6ced3e(0x35b)] + '\x20costs\x20' + _0x2a09ae + _0x6ced3e(0x2de) + _0x58c73f + '%\x20of\x20your\x20savings.', _0xff6e44 = _0x6ced3e(0x292)) : (_0x20e768 = '\x20' + _0x5ece32[_0x6ced3e(0x35b)] + '\x20costs\x20' + _0x2a09ae + _0x6ced3e(0x30a), _0xff6e44 = _0x6ced3e(0x3fe));
+                    } else _0x20e768 = '💎\x20' + _0x5ece32['originalQuestion'] + _0x6ced3e(0x3bf) + _0x2a09ae + '\x20shillings.\x20At\x20your\x20wealth\x20level,\x20affordability\x20isn\x27t\x20the\x20question.', _0xff6e44 = 'Does\x20this\x20purchase\x20align\x20with\x20your\x20goals\x20and\x20bring\x20you\x20value?\x20If\x20yes,\x20enjoy.';
+                }
+            } else {
+                if (_0x5ece32[_0x6ced3e(0x3f4)] === _0x6ced3e(0x2dd)) {
+                    if (_0x2890b2[_0x6ced3e(0x379)] === _0x6ced3e(0x239)) _0x20e768 = _0x6ced3e(0x3f2) + _0x2a09ae + '\x20shilling\x20loan.\x20With\x20your\x20current\x20situation,\x20any\x20loan\x20is\x20dangerous.', _0xff6e44 = _0x6ced3e(0x41e);
+                    else {
+                        const _0x4c0c10 = Math[_0x6ced3e(0x1f7)](_0x2a09ae * 0.15);
+                        _0x20e768 = _0x6ced3e(0x1f5) + _0x2a09ae + _0x6ced3e(0x3b4) + _0x4c0c10 + _0x6ced3e(0x269), _0xff6e44 = _0x6ced3e(0x420) + _0x4c0c10 + _0x6ced3e(0x293);
                     }
                 }
             }
+            const _0x3a9d0f = _0x20e768 + _0x6ced3e(0x286) + _0xff6e44,
+                _0x93db10 = _0x573fbb(_0x3a9d0f, _0x2890b2, _0x50576d, _0x37fd9f, _0x1bbd82);
+            _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x93db10 + _0x6ced3e(0x42b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f[_0x6ced3e(0x43d)], clearPendingClarification();
+            return;
+        } else {
+            const _0x2fae4a = _0x6ced3e(0x316),
+                _0x153d3a = _0x573fbb(_0x2fae4a, getStatusSummary()[_0x6ced3e(0x365)], 0x0, 0x0, 0x0);
+            _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x153d3a + _0x6ced3e(0x42b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f[_0x6ced3e(0x43d)];
+            return;
         }
     }
-    const _0x661221 = _0x4a3b60(_0x375294);
-    _0x557777[_0x36e065(0x1a9)] += '<div\x20style=\x22text-align:right;\x22><div\x20class=\x22chat-bubble-user\x22>' + _0x35e13f + _0x36e065(0x38a) + _0x661221 + _0x36e065(0x32c), _0x1783cf['value'] = '', _0x557777[_0x36e065(0x163)] = _0x557777[_0x36e065(0x298)];
+    const _0x3cc9b0 = _0x4dd8bc[_0x6ced3e(0x39e)]()[_0x6ced3e(0x397)](),
+        _0x384191 = getFin(),
+        _0x49eb76 = getStatusSummary(),
+        _0x4188b7 = state[_0x6ced3e(0x3a1)]?.[_0x6ced3e(0x344)] === _0x6ced3e(0x33c),
+        _0x13d8d9 = _0x49eb76[_0x6ced3e(0x365)],
+        _0x3f630a = _0x49eb76['cash'],
+        _0x3c490f = _0x49eb76[_0x6ced3e(0x382)],
+        _0x12c2f2 = _0x49eb76['daysRem'];
+    let _0x5818c3 = 0x0;
+    const _0x4be3f8 = _0x3cc9b0['replace'](/,/g, ''),
+        _0x58bb4a = _0x4be3f8[_0x6ced3e(0x37f)](/(\d+(?:\.\d+)?)\s*(k|thousand|ksh|shillings|bob|million)?/i);
+    if (_0x58bb4a) {
+        _0x5818c3 = parseFloat(_0x58bb4a[0x1]);
+        if (_0x58bb4a[0x2] && /k|thousand/i ['test'](_0x58bb4a[0x2])) _0x5818c3 *= 0x3e8;
+        if (_0x58bb4a[0x2] && /million/i ['test'](_0x58bb4a[0x2])) _0x5818c3 *= 0xf4240;
+    }
+    const _0x3a0ffe = (..._0x3381e7) => _0x3381e7[_0x6ced3e(0x405)](_0x42d67e => _0x3cc9b0['includes'](_0x42d67e)),
+        _0x49845e = {
+            'spend': _0x3a0ffe('buy', 'spend', _0x6ced3e(0x37e), _0x6ced3e(0x2f6), _0x6ced3e(0x2d9), _0x6ced3e(0x2f4), _0x6ced3e(0x233), 'unga', 'eggs', _0x6ced3e(0x2a4), _0x6ced3e(0x2a7), _0x6ced3e(0x413), _0x6ced3e(0x3d2), _0x6ced3e(0x242), _0x6ced3e(0x27a), _0x6ced3e(0x22f), _0x6ced3e(0x2ac), _0x6ced3e(0x203)),
+            'loan': _0x3a0ffe(_0x6ced3e(0x2dd), _0x6ced3e(0x411), _0x6ced3e(0x330), _0x6ced3e(0x3bb), _0x6ced3e(0x30c), _0x6ced3e(0x252), _0x6ced3e(0x284), 'branch'),
+            'status': _0x3a0ffe(_0x6ced3e(0x31c), _0x6ced3e(0x3b3), _0x6ced3e(0x24e), _0x6ced3e(0x3ed), 'doing', _0x6ced3e(0x29b), _0x6ced3e(0x2bb), 'summary', _0x6ced3e(0x282)),
+            'hiring': _0x3a0ffe(_0x6ced3e(0x40b), _0x6ced3e(0x276), 'staff', _0x6ced3e(0x41a), _0x6ced3e(0x209), _0x6ced3e(0x28c), _0x6ced3e(0x2ea)),
+            'saving': _0x3a0ffe('save', 'saving', 'emergency', _0x6ced3e(0x305), 'set\x20aside'),
+            'profit': _0x3a0ffe('profit', _0x6ced3e(0x3a5), _0x6ced3e(0x3e0), _0x6ced3e(0x335), _0x6ced3e(0x1e7), _0x6ced3e(0x37d), _0x6ced3e(0x370)),
+            'habit': _0x3a0ffe(_0x6ced3e(0x3bc), 'spending\x20habit', _0x6ced3e(0x29a))
+        };
+
+    function _0x573fbb(_0x324040, _0x4beb7e, _0x4463d7, _0x17adcd, _0x2fbc34) {
+        const _0x323c38 = _0x6ced3e,
+            _0xb60d56 = _0x4beb7e[_0x323c38(0x27e)],
+            _0x3ae2bf = _0x4beb7e[_0x323c38(0x329)],
+            _0x111238 = _0x4463d7 > 0x0 ? _0x323c38(0x317) + Math[_0x323c38(0x437)](_0x4463d7)[_0x323c38(0x44a)]() : _0x323c38(0x22b),
+            _0x3d53c3 = _0x17adcd > 0x0 ? 'KSh\x20' + _0x17adcd[_0x323c38(0x44a)]() : _0x323c38(0x2a8),
+            _0x44223e = _0x323c38(0x1ef) + _0xb60d56 + _0x323c38(0x2cb) + _0x3ae2bf + _0x323c38(0x35d) + _0x111238 + _0x323c38(0x366) + _0x3d53c3 + _0x323c38(0x2a1) + (_0x2fbc34 > 0x0 ? _0x323c38(0x27c) + _0x2fbc34 + '</span></div>' : '') + _0x323c38(0x3fa),
+            _0x13aa28 = '<div\x20style=\x22margin-top:16px;padding:12px\x2014px;border-left:3px\x20solid\x20' + _0xb60d56 + _0x323c38(0x431) + _0x324040 + _0x323c38(0x42b);
+        return '' + _0x44223e + _0x13aa28;
+    }
+    let _0xb1306d = '';
+    if (_0x49845e[_0x6ced3e(0x3b3)]) {
+        _0xb1306d = humanReadableStatus(_0x3f630a, _0x3c490f, _0x12c2f2, _0x13d8d9);
+        if (_0x13d8d9[_0x6ced3e(0x379)] === 'survival') _0xb1306d += _0x6ced3e(0x31f) + _0x13d8d9['priority'];
+        else _0x13d8d9['adviceStyle'] === _0x6ced3e(0x220) ? _0xb1306d += '<br><br><strong>Next\x20step:</strong>\x20Look\x20at\x20your\x20biggest\x20expense\x20this\x20week.\x20Can\x20you\x20reduce\x20it\x20by\x2010%?' : _0xb1306d += _0x6ced3e(0x345) + Math[_0x6ced3e(0x437)](_0x3f630a * 0.1)['toLocaleString']() + '\x20shillings\x20this\x20month\x20for\x20emergencies.';
+        const _0x2d0145 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
+        _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x2d0145 + '</div></div>', _0x17e80f['scrollTop'] = _0x17e80f[_0x6ced3e(0x43d)];
+        return;
+    }
+    if (_0x49845e[_0x6ced3e(0x398)]) {
+        if (_0x5818c3 === 0x0) {
+            const _0x4ee439 = _0x3cc9b0[_0x6ced3e(0x37f)](/(?:buy|get|spend on|purchase)\s+([a-z\s]+)/i),
+                _0x8c38a3 = _0x4ee439 ? _0x4ee439[0x1][_0x6ced3e(0x397)]() : 'this\x20item';
+            setPendingClarification(_0x6ced3e(0x398), _0x8c38a3, _0x6ced3e(0x2a0)), _0xb1306d = _0x6ced3e(0x43b) + _0x8c38a3 + _0x6ced3e(0x1f9);
+            const _0x49da76 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
+            _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x49da76 + _0x6ced3e(0x42b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f['scrollHeight'];
+            return;
+        }
+        if (_0x3f630a < 0x0) {
+            _0xb1306d = 'You\x20are\x20already\x20in\x20debt\x20by\x20' + Math[_0x6ced3e(0x35f)](_0x3f630a)[_0x6ced3e(0x44a)]() + _0x6ced3e(0x2b0) + _0x5818c3 + '\x20shillings.\x20Your\x20only\x20priority\x20is\x20to\x20earn\x20money\x20to\x20get\x20out\x20of\x20debt.';
+            const _0x8c34b = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
+            _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x8c34b + '</div></div>', _0x17e80f['scrollTop'] = _0x17e80f[_0x6ced3e(0x43d)];
+            return;
+        }
+        if (_0x13d8d9['adviceStyle'] === _0x6ced3e(0x239)) {
+            if (_0x5818c3 > _0x3f630a) _0xb1306d = _0x6ced3e(0x327) + _0x5818c3 + _0x6ced3e(0x334) + _0x3f630a + _0x6ced3e(0x22d) + _0x12c2f2 + '\x20days.\x20You\x20cannot\x20afford\x20this.';
+            else {
+                if (_0x5818c3 > _0x3c490f) {
+                    const _0x5a0b60 = Math[_0x6ced3e(0x1fe)](_0x5818c3 / _0x3c490f);
+                    _0xb1306d = _0x6ced3e(0x240) + _0x5818c3 + _0x6ced3e(0x28d) + Math['floor'](_0x3c490f) + '\x20shillings\x20per\x20day.\x20Save\x20for\x20' + _0x5a0b60 + '\x20day' + (_0x5a0b60 > 0x1 ? 's' : '') + '\x20first.';
+                } else {
+                    const _0x235757 = _0x3f630a - _0x5818c3,
+                        _0x35d751 = _0x235757 / _0x12c2f2;
+                    _0xb1306d = _0x6ced3e(0x384) + _0x235757 + _0x6ced3e(0x1d9) + _0x12c2f2 + '\x20days.\x20That\x27s\x20about\x20' + Math[_0x6ced3e(0x437)](_0x35d751) + _0x6ced3e(0x289);
+                }
+            }
+        } else {
+            if (_0x13d8d9['adviceStyle'] === _0x6ced3e(0x220)) {
+                const _0x239c5c = Math[_0x6ced3e(0x1f7)](_0x5818c3 / _0x3f630a * 0x64);
+                _0x239c5c > 0x1e ? _0xb1306d = _0x6ced3e(0x240) + _0x5818c3 + _0x6ced3e(0x2de) + _0x239c5c + _0x6ced3e(0x1ea) : _0xb1306d = '\x20' + _0x5818c3 + '\x20shillings\x20is\x20reasonable\x20for\x20your\x20situation.\x20Go\x20ahead\x20but\x20track\x20it.';
+            } else {
+                if (_0x13d8d9[_0x6ced3e(0x379)] === _0x6ced3e(0x395)) {
+                    const _0x4dfc2e = Math[_0x6ced3e(0x1f7)](_0x5818c3 / _0x3f630a * 0x64);
+                    _0x4dfc2e > 0x32 ? _0xb1306d = _0x6ced3e(0x3b0) + _0x5818c3 + _0x6ced3e(0x274) + _0x4dfc2e + _0x6ced3e(0x352) : _0xb1306d = _0x6ced3e(0x328);
+                } else _0xb1306d = '💎\x20At\x20your\x20wealth\x20level,\x20' + _0x5818c3 + '\x20shillings\x20is\x20manageable.\x20The\x20real\x20question:\x20does\x20this\x20purchase\x20align\x20with\x20your\x20goals\x20and\x20bring\x20you\x20value?';
+            }
+        }
+        const _0x282d37 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
+        _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x282d37 + _0x6ced3e(0x42b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f[_0x6ced3e(0x43d)];
+        return;
+    }
+    if (_0x49845e[_0x6ced3e(0x2dd)]) {
+        if (_0x5818c3 === 0x0) {
+            setPendingClarification(_0x6ced3e(0x2dd), _0x6ced3e(0x2dd), _0x6ced3e(0x2a0)), _0xb1306d = 'How\x20many\x20shillings\x20are\x20you\x20thinking\x20of\x20borrowing?';
+            const _0xfc2100 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
+            _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0xfc2100 + _0x6ced3e(0x42b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f[_0x6ced3e(0x43d)];
+            return;
+        }
+        if (_0x13d8d9['adviceStyle'] === _0x6ced3e(0x239)) _0xb1306d = _0x6ced3e(0x1e9) + _0x5818c3 + '\x20shillings.\x20You\x20cannot\x20afford\x20loan\x20repayments\x20right\x20now.\x20Focus\x20on\x20increasing\x20your\x20income\x20first.';
+        else {
+            if (_0x13d8d9['adviceStyle'] === _0x6ced3e(0x220)) {
+                const _0x53e593 = Math[_0x6ced3e(0x1f7)](_0x5818c3 * 0.15);
+                _0xb1306d = _0x6ced3e(0x26d) + _0x5818c3 + _0x6ced3e(0x3b4) + _0x53e593 + '\x20shillings\x20per\x20month\x20in\x20interest.\x20Only\x20borrow\x20if\x20absolutely\x20necessary.';
+            } else {
+                const _0x4702ee = Math['round'](_0x5818c3 * 0.12);
+                _0xb1306d = _0x6ced3e(0x221) + _0x5818c3 + _0x6ced3e(0x3a0) + _0x4702ee + _0x6ced3e(0x386);
+            }
+        }
+        const _0x22432c = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
+        _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x22432c + _0x6ced3e(0x42b), _0x17e80f['scrollTop'] = _0x17e80f[_0x6ced3e(0x43d)];
+        return;
+    }
+    if (_0x49845e[_0x6ced3e(0x414)]) {
+        if (_0x13d8d9[_0x6ced3e(0x379)] === _0x6ced3e(0x239)) _0xb1306d = _0x6ced3e(0x20a);
+        else {
+            if (_0x13d8d9[_0x6ced3e(0x379)] === 'conservative') {
+                const _0x3fe43b = Math[_0x6ced3e(0x437)](_0x3f630a * 0.25);
+                _0xb1306d = _0x6ced3e(0x361) + _0x3fe43b[_0x6ced3e(0x44a)]() + _0x6ced3e(0x2c4);
+            } else _0xb1306d = _0x6ced3e(0x25b);
+        }
+        const _0x95d345 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
+        _0x17e80f['innerHTML'] += _0x6ced3e(0x426) + _0x95d345 + _0x6ced3e(0x42b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f[_0x6ced3e(0x43d)];
+        return;
+    }
+    if (_0x49845e[_0x6ced3e(0x39f)]) {
+        if (_0x13d8d9[_0x6ced3e(0x379)] === _0x6ced3e(0x239)) _0xb1306d = _0x6ced3e(0x205);
+        else {
+            if (_0x13d8d9['adviceStyle'] === _0x6ced3e(0x220)) {
+                const _0x24ecf6 = Math[_0x6ced3e(0x437)](_0x3f630a * 0.07);
+                _0xb1306d = _0x6ced3e(0x2cc) + _0x24ecf6[_0x6ced3e(0x44a)]() + _0x6ced3e(0x2f3);
+            } else {
+                const _0xb8c9e8 = Math[_0x6ced3e(0x437)](_0x3f630a * 0.15);
+                _0xb1306d = '💎\x20At\x20your\x20level,\x20aim\x20to\x20save\x20' + _0xb8c9e8[_0x6ced3e(0x44a)]() + '\x20shillings\x20monthly.\x20Diversify:\x20SACCO,\x20MMF,\x20and\x20maybe\x20stocks.\x20Build\x20a\x206-month\x20emergency\x20fund\x20first.';
+            }
+        }
+        const _0x58d921 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
+        _0x17e80f[_0x6ced3e(0x368)] += _0x6ced3e(0x426) + _0x58d921 + _0x6ced3e(0x42b), _0x17e80f['scrollTop'] = _0x17e80f[_0x6ced3e(0x43d)];
+        return;
+    }
+    if (_0x49845e[_0x6ced3e(0x1e0)] || _0x49845e['habit']) {
+        const _0x414630 = _0x384191[_0x6ced3e(0x32d)]['filter'](_0x472c61 => _0x472c61[_0x6ced3e(0x360)] > 0x0);
+        if (_0x414630[_0x6ced3e(0x3c6)] > 0x0) {
+            const _0x267ddf = _0x414630[0x0];
+            _0xb1306d = _0x6ced3e(0x3fd) + _0x267ddf[_0x6ced3e(0x360)]['toLocaleString']() + '\x20shillings\x20more\x20than\x20your\x20budget\x20on\x20' + _0x267ddf[_0x6ced3e(0x222)] + _0x6ced3e(0x1d8);
+        } else _0xb1306d = _0x6ced3e(0x2ca) + (_0x384191[_0x6ced3e(0x32d)][_0x6ced3e(0x2ae)]((_0x128bcc, _0x487a79) => _0x487a79[_0x6ced3e(0x39c)] - _0x128bcc[_0x6ced3e(0x39c)])[0x0]?.[_0x6ced3e(0x222)] || _0x6ced3e(0x23f)) + _0x6ced3e(0x288) + Math[_0x6ced3e(0x3a7)](..._0x384191[_0x6ced3e(0x32d)]['map'](_0x1a2092 => _0x1a2092[_0x6ced3e(0x39c)]))[_0x6ced3e(0x44a)]() + _0x6ced3e(0x33d);
+        const _0x54ef70 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
+        _0x17e80f[_0x6ced3e(0x368)] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x54ef70 + '</div></div>', _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f[_0x6ced3e(0x43d)];
+        return;
+    }
+    _0xb1306d = _0x6ced3e(0x21c);
+    const _0x17c8d1 = _0x573fbb(_0xb1306d, _0x13d8d9, _0x3c490f, _0x3f630a, _0x12c2f2);
+    _0x17e80f['innerHTML'] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x17c8d1 + _0x6ced3e(0x42b), _0x17e80f[_0x6ced3e(0x36e)] = _0x17e80f['scrollHeight'];
 }
-window[_0x4c3582(0x253)](_0x4c3582(0x260), () => {
-    const _0x4c340e = _0x4c3582,
-        _0x4997c4 = document['getElementById'](_0x4c340e(0x287));
-    if (!_0x4997c4) return;
-    if (window[_0x4c340e(0x3a5)] < 0x258) _0x4997c4[_0x4c340e(0x1ff)][_0x4c340e(0x3ac)] = _0x4c340e(0x1a5);
-    else window['innerWidth'] < 0x384 ? _0x4997c4[_0x4c340e(0x1ff)][_0x4c340e(0x3ac)] = _0x4c340e(0x1a5) : _0x4997c4[_0x4c340e(0x1ff)][_0x4c340e(0x3ac)] = _0x4c340e(0x14a);
+
+function escapeHtml(_0x23a955) {
+    const _0x3a857d = _0xad7134;
+    if (!_0x23a955) return '';
+    return _0x23a955[_0x3a857d(0x21f)](/[&<>]/g, function(_0x15d491) {
+        const _0x16cdd7 = _0x3a857d;
+        if (_0x15d491 === '&') return '&amp;';
+        if (_0x15d491 === '<') return _0x16cdd7(0x279);
+        if (_0x15d491 === '>') return _0x16cdd7(0x304);
+        return _0x15d491;
+    });
+}
+window[_0xad7134(0x231)]('resize', () => {
+    const _0x48b3fa = _0xad7134,
+        _0x20747c = document[_0x48b3fa(0x3e3)](_0x48b3fa(0x2d3));
+    if (!_0x20747c) return;
+    if (window[_0x48b3fa(0x43e)] < 0x258) _0x20747c[_0x48b3fa(0x3c4)][_0x48b3fa(0x1d7)] = 'repeat(2,1fr)';
+    else window[_0x48b3fa(0x43e)] < 0x384 ? _0x20747c[_0x48b3fa(0x3c4)][_0x48b3fa(0x1d7)] = _0x48b3fa(0x3f9) : _0x20747c[_0x48b3fa(0x3c4)]['gridTemplateColumns'] = _0x48b3fa(0x1e1);
 });
 async function boot() {
-    const _0x3bbeb9 = _0x4c3582;
+    const _0xae128d = _0xad7134;
     await initDB();
-    let _0x415623 = await getData(_0x3bbeb9(0x309), _0x3bbeb9(0x2c2)) || {
+    let _0x59a57e = await getData('meta', 'config') || {
         'activated': ![]
     };
-    const _0x37faed = window[_0x3bbeb9(0x16a)](_0x3bbeb9(0x30f))[_0x3bbeb9(0x365)] || navigator[_0x3bbeb9(0x1ae)] === !![];
-    await new Promise(_0x24d6c0 => setTimeout(_0x24d6c0, 0x190));
-    if (!_0x415623[_0x3bbeb9(0x303)]) {
-        _0x37faed ? (document[_0x3bbeb9(0x373)](_0x3bbeb9(0x265))[_0x3bbeb9(0x2f6)][_0x3bbeb9(0x245)](_0x3bbeb9(0x26c)), document[_0x3bbeb9(0x373)](_0x3bbeb9(0x1f5))[_0x3bbeb9(0x1ff)][_0x3bbeb9(0x1d1)] = 'none') : document[_0x3bbeb9(0x373)](_0x3bbeb9(0x1f5))[_0x3bbeb9(0x1ff)][_0x3bbeb9(0x1d1)] = _0x3bbeb9(0x307);
+    const _0x2e9ab7 = window[_0xae128d(0x21a)](_0xae128d(0x302))[_0xae128d(0x32f)] || navigator[_0xae128d(0x301)] === !![];
+    await new Promise(_0x1c1ecc => setTimeout(_0x1c1ecc, 0x190));
+    if (!_0x59a57e[_0xae128d(0x314)]) {
+        _0x2e9ab7 ? (document[_0xae128d(0x3e3)](_0xae128d(0x280))[_0xae128d(0x34f)][_0xae128d(0x29f)](_0xae128d(0x325)), document[_0xae128d(0x3e3)](_0xae128d(0x2b2))[_0xae128d(0x3c4)][_0xae128d(0x434)] = 'none') : document['getElementById'](_0xae128d(0x2b2))[_0xae128d(0x3c4)][_0xae128d(0x434)] = _0xae128d(0x380);
         return;
     }
-    if (!_0x415623[_0x3bbeb9(0x1bf)]) {
-        document[_0x3bbeb9(0x373)](_0x3bbeb9(0x17b))[_0x3bbeb9(0x2f6)][_0x3bbeb9(0x245)](_0x3bbeb9(0x26c)), document[_0x3bbeb9(0x373)]('install-overlay')[_0x3bbeb9(0x1ff)]['display'] = 'none';
+    if (!_0x59a57e[_0xae128d(0x3a1)]) {
+        document[_0xae128d(0x3e3)](_0xae128d(0x3c1))['classList'][_0xae128d(0x29f)]('hidden'), document[_0xae128d(0x3e3)](_0xae128d(0x2b2))[_0xae128d(0x3c4)]['display'] = 'none';
         return;
     }
-    state[_0x3bbeb9(0x1bf)] = _0x415623[_0x3bbeb9(0x1bf)], state[_0x3bbeb9(0x32d)] = _0x415623[_0x3bbeb9(0x32d)] || [], state[_0x3bbeb9(0x2e9)] = (await getAllData('tx'))[_0x3bbeb9(0x3d3)]((_0x12b242, _0x3badba) => _0x3badba['id'] - _0x12b242['id']), document[_0x3bbeb9(0x373)](_0x3bbeb9(0x2c7))[_0x3bbeb9(0x285)] = state[_0x3bbeb9(0x1bf)][_0x3bbeb9(0x2e2)], document[_0x3bbeb9(0x373)](_0x3bbeb9(0x2c3))[_0x3bbeb9(0x285)] = state['user'][_0x3bbeb9(0x27b)][_0x3bbeb9(0x3de)]() + _0x3bbeb9(0x258), document[_0x3bbeb9(0x373)]('sidebar-name')[_0x3bbeb9(0x285)] = state['user'][_0x3bbeb9(0x2e2)], document[_0x3bbeb9(0x373)](_0x3bbeb9(0x150))['innerText'] = state[_0x3bbeb9(0x1bf)]['type'][_0x3bbeb9(0x2a1)](0x0)['toUpperCase']() + state[_0x3bbeb9(0x1bf)][_0x3bbeb9(0x27b)][_0x3bbeb9(0x36e)](0x1), document[_0x3bbeb9(0x373)]('sidebar-avatar')[_0x3bbeb9(0x285)] = state[_0x3bbeb9(0x1bf)][_0x3bbeb9(0x2e2)][_0x3bbeb9(0x2a1)](0x0)[_0x3bbeb9(0x3de)](), document[_0x3bbeb9(0x373)](_0x3bbeb9(0x1f5))[_0x3bbeb9(0x1ff)][_0x3bbeb9(0x1d1)] = _0x3bbeb9(0x202), nav('dash');
-    if (typeof travisNotif !== _0x3bbeb9(0x22c)) travisNotif[_0x3bbeb9(0x289)]();
+    state[_0xae128d(0x3a1)] = _0x59a57e[_0xae128d(0x3a1)], state[_0xae128d(0x38f)] = _0x59a57e['obligations'] || [], state[_0xae128d(0x385)] = (await getAllData('tx'))['sort']((_0x270b97, _0x58326b) => _0x58326b['id'] - _0x270b97['id']), document[_0xae128d(0x3e3)]('display-name')['innerText'] = state[_0xae128d(0x3a1)][_0xae128d(0x2e9)], document[_0xae128d(0x3e3)](_0xae128d(0x3a2))[_0xae128d(0x44b)] = state[_0xae128d(0x3a1)]['type'][_0xae128d(0x2a6)]() + _0xae128d(0x294), document[_0xae128d(0x3e3)]('sidebar-name')['innerText'] = state['user'][_0xae128d(0x2e9)], document['getElementById'](_0xae128d(0x391))[_0xae128d(0x44b)] = state[_0xae128d(0x3a1)]['type']['charAt'](0x0)[_0xae128d(0x2a6)]() + state['user'][_0xae128d(0x344)][_0xae128d(0x372)](0x1), document[_0xae128d(0x3e3)](_0xae128d(0x277))[_0xae128d(0x44b)] = state['user'][_0xae128d(0x2e9)][_0xae128d(0x1e3)](0x0)[_0xae128d(0x2a6)](), document[_0xae128d(0x3e3)](_0xae128d(0x2b2))[_0xae128d(0x3c4)][_0xae128d(0x434)] = _0xae128d(0x2ab), nav('dash');
+    if (typeof travisNotif !== _0xae128d(0x2be)) travisNotif[_0xae128d(0x43a)]();
 }
-document['getElementById']('install-btn')?.[_0x4c3582(0x253)]('click', triggerInstall), window[_0x4c3582(0x184)] = boot;
+document[_0xad7134(0x3e3)](_0xad7134(0x264))?.['addEventListener'](_0xad7134(0x2bd), triggerInstall), window[_0xad7134(0x1f8)] = boot;
