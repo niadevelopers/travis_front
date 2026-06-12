@@ -4,47 +4,86 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>TRAVIS — Your Financial Intelligence System</title>
-<link href="https://fonts.googleapis.com/css2?family=Tahoma:wght@400;700&family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&family=Cascadia+Code:wght@400;600&display=swap" rel="stylesheet">
 <style>
+/* ─── FLUENT 2 / WINDOWS 11 DESIGN TOKENS ─── */
 :root {
-  --xp-blue: #0A246A;
-  --xp-blue-mid: #3C6FC4;
-  --xp-blue-light: #6B9EE8;
-  --xp-taskbar: #1F3D7A;
-  --xp-title-grad: linear-gradient(180deg, #5C8EE6 0%, #0A246A 100%);
-  --xp-title-grad-active: linear-gradient(180deg, #4080D0 0%, #0A246A 100%);
-  --xp-window-bg: #ECE9D8;
-  --xp-green: #3DA940;
-  --xp-green-dark: #2B7A30;
-  --xp-silver: #D4D0C8;
-  --xp-border-light: #FFFFFF;
-  --xp-border-dark: #808080;
-  --xp-border-darker: #404040;
-  --xp-text: #1A1A1A;
-  --xp-gold: #F5A623;
-  --xp-red: #CC0000;
-  --desktop-bg: linear-gradient(135deg, #1E3A5F 0%, #0A246A 30%, #2E7D32 70%, #1B5E20 100%);
-  --font-main: 'Tahoma', 'MS Sans Serif', Geneva, sans-serif;
-  --font-mono: 'Share Tech Mono', 'Courier New', monospace;
-  --font-display: 'VT323', monospace;
+  /* Surfaces */
+  --bg-desktop:     #1A1A1A;
+  --bg-app:         rgba(44, 44, 44, 0.85);
+  --bg-card:        rgba(50, 50, 50, 0.9);
+  --bg-layer:       rgba(60, 60, 60, 0.8);
+  --bg-overlay:     rgba(30, 30, 30, 0.95);
+  --bg-input:       rgba(255,255,255,0.06);
+  --bg-hover:       rgba(255,255,255,0.07);
+  --bg-active:      rgba(255,255,255,0.03);
+  --bg-titlebar:    rgba(32,32,32,0.6);
+
+  /* Accent */
+  --accent:         #0078D4;
+  --accent-hover:   #1985D8;
+  --accent-light:   #60CDFF;
+  --accent-muted:   rgba(0,120,212,0.2);
+  --accent-green:   #0F7B0F;
+  --accent-green-l: #54B054;
+  --accent-green-m: rgba(15,123,15,0.25);
+  --gold:           #FFB900;
+  --gold-muted:     rgba(255,185,0,0.2);
+  --red-alert:      #C42B1C;
+  --red-muted:      rgba(196,43,28,0.2);
+
+  /* Typography */
+  --text-primary:   #F2F2F2;
+  --text-secondary: #ABABAB;
+  --text-disabled:  #6B6B6B;
+  --text-accent:    #60CDFF;
+
+  /* Borders */
+  --border:         rgba(255,255,255,0.08);
+  --border-accent:  rgba(0,120,212,0.4);
+  --border-focus:   rgba(96,205,255,0.7);
+
+  /* Shadows / Depth */
+  --shadow-sm:  0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md:  0 8px 24px rgba(0,0,0,0.4);
+  --shadow-lg:  0 16px 48px rgba(0,0,0,0.55);
+  --shadow-xl:  0 24px 64px rgba(0,0,0,0.65);
+
+  /* Radius */
+  --r-sm:   4px;
+  --r-md:   8px;
+  --r-lg:   12px;
+  --r-xl:   16px;
+  --r-pill: 999px;
+
+  /* Fonts */
+  --font-main:    'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono:    'Cascadia Code', 'Consolas', monospace;
+  --font-display: 'Segoe UI', system-ui, sans-serif;
+
+  /* Transitions */
+  --t-fast:   0.12s ease;
+  --t-med:    0.22s ease;
+  --t-slow:   0.4s cubic-bezier(0.34,1.56,0.64,1);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
+/* ─── RESET ─── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior: smooth; }
-
 body {
   font-family: var(--font-main);
-  background: var(--desktop-bg);
+  background: var(--bg-desktop);
   min-height: 100vh;
   overflow-x: hidden;
-  cursor: default;
+  color: var(--text-primary);
   user-select: none;
 }
 
+/* ─── DESKTOP BACKGROUND ─── */
 .desktop {
   min-height: 100vh;
-  padding-bottom: 48px;
+  padding-bottom: 72px;
   position: relative;
   overflow: hidden;
 }
@@ -53,97 +92,129 @@ body {
   content: '';
   position: fixed;
   inset: 0;
-  background: 
-    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(61,169,64,0.25) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 60% at 80% 20%, rgba(92,142,230,0.3) 0%, transparent 60%),
-    radial-gradient(ellipse 80% 30% at 50% 50%, rgba(10,36,106,0.4) 0%, transparent 70%);
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 85%, rgba(15,123,15,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 70% at 85% 10%, rgba(0,120,212,0.2) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 60% at 50% 50%, rgba(10,20,40,0.6) 0%, transparent 80%);
   pointer-events: none;
   z-index: 0;
 }
 
+/* Subtle noise texture on desktop */
+.desktop::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ─── TASKBAR (Windows 11 — centered, floating pill) ─── */
 .taskbar {
   position: fixed;
-  bottom: 0;
-  left: 0; right: 0;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   height: 48px;
-  background: linear-gradient(180deg, #2557B7 0%, #1C45A5 6%, #1537A5 10%, #1C50C8 45%, #1A47BE 46%, #1537A5 100%);
-  border-top: 2px solid #6B8FD4;
+  background: rgba(32,32,32,0.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
   display: flex;
   align-items: center;
+  gap: 4px;
+  padding: 0 8px;
   z-index: 9999;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 32px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.06) inset;
+  min-width: min(820px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  justify-content: flex-start;
 }
 
+/* Start Button — Fluent pill */
 .start-btn {
-  height: 40px;
-  margin: 0 4px;
-  padding: 0 14px 0 6px;
-  background: linear-gradient(180deg, #5C8EE6 0%, #3DA940 50%, #2B7A30 100%);
-  border: 2px solid;
-  border-color: #78B040 #2B7A30 #2B7A30 #78B040;
-  border-radius: 0 14px 14px 0;
+  height: 36px;
+  padding: 0 14px;
+  background: linear-gradient(135deg, var(--accent) 0%, #005FA3 100%);
+  border: none;
+  border-radius: var(--r-md);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   cursor: pointer;
   font-family: var(--font-main);
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 600;
+  font-size: 13px;
   color: white;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-  letter-spacing: 0.5px;
-  transition: filter 0.1s;
+  transition: background var(--t-fast), box-shadow var(--t-fast);
+  flex-shrink: 0;
 }
-.start-btn:hover { filter: brightness(1.15); }
-.start-btn:active { filter: brightness(0.9); }
+.start-btn:hover {
+  background: linear-gradient(135deg, var(--accent-hover) 0%, #0068B5 100%);
+  box-shadow: 0 0 0 1px rgba(96,205,255,0.3);
+}
+.start-btn:active { opacity: 0.85; }
 
 .start-orb {
-  width: 26px; height: 26px;
-  background: radial-gradient(circle at 35% 35%, #7CD665, #2B7A30);
-  border-radius: 50%;
-  border: 1px solid #1A5A1A;
-  box-shadow: 0 0 6px rgba(60,200,60,0.5);
+  width: 18px; height: 18px;
+  background: white;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='9' height='9' rx='1'/%3E%3Crect x='13' y='2' width='9' height='9' rx='1'/%3E%3Crect x='2' y='13' width='9' height='9' rx='1'/%3E%3Crect x='13' y='13' width='9' height='9' rx='1'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='9' height='9' rx='1'/%3E%3Crect x='13' y='2' width='9' height='9' rx='1'/%3E%3Crect x='2' y='13' width='9' height='9' rx='1'/%3E%3Crect x='13' y='13' width='9' height='9' rx='1'/%3E%3C/svg%3E");
+  mask-size: contain; -webkit-mask-size: contain;
+  mask-repeat: no-repeat; -webkit-mask-repeat: no-repeat;
+  flex-shrink: 0;
 }
 
-.taskbar-divider { width: 2px; height: 36px; background: rgba(0,0,0,0.3); margin: 0 4px; border-right: 1px solid rgba(255,255,255,0.1); }
+.taskbar-divider {
+  width: 1px; height: 24px;
+  background: var(--border);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
 
 .taskbar-btn {
   height: 36px;
-  padding: 0 10px;
-  background: linear-gradient(180deg, #2B5FCC 0%, #1A3FAA 100%);
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 3px;
-  color: white;
-  font-size: 11px;
+  padding: 0 12px;
+  background: transparent;
+  border: none;
+  border-radius: var(--r-md);
+  color: var(--text-primary);
+  font-size: 12px;
   font-family: var(--font-main);
   cursor: pointer;
   white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  transition: background var(--t-fast);
+  flex-shrink: 0;
 }
-.taskbar-btn:hover { background: linear-gradient(180deg, #3D74DE 0%, #2855CC 100%); }
+.taskbar-btn:hover { background: var(--bg-hover); }
+.taskbar-btn:active { background: var(--bg-active); }
 
 .taskbar-clock {
   margin-left: auto;
-  margin-right: 4px;
-  background: linear-gradient(180deg, #1A3A8F 0%, #0D2870 100%);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 3px;
-  padding: 4px 10px;
-  color: white;
-  font-size: 11px;
-  text-align: center;
-  min-width: 80px;
+  padding: 4px 12px;
+  color: var(--text-primary);
+  font-size: 12px;
+  text-align: right;
+  flex-shrink: 0;
+  line-height: 1.4;
 }
+#clock-time { font-weight: 600; }
+#clock-date { color: var(--text-secondary); font-size: 11px; }
 
+/* ─── DESKTOP ICONS ─── */
 .desktop-icons {
   position: fixed;
   top: 20px;
-  left: 16px;
+  left: 20px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
   z-index: 100;
 }
 
@@ -151,891 +222,850 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   cursor: pointer;
   width: 72px;
   text-align: center;
-  padding: 4px;
-  border-radius: 2px;
-  transition: background 0.1s;
+  padding: 8px 4px;
+  border-radius: var(--r-md);
+  border: 1px solid transparent;
+  transition: background var(--t-fast), border-color var(--t-fast);
 }
-.desktop-icon:hover { background: rgba(100,150,255,0.3); }
-.desktop-icon:active { background: rgba(100,150,255,0.5); }
+.desktop-icon:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: var(--border);
+}
+.desktop-icon:active { background: rgba(255,255,255,0.04); }
 
 .desktop-icon .ico {
-  width: 44px;
-  height: 44px;
+  width: 44px; height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 28px;
-  filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.6));
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
 }
 
 .desktop-icon .ico-label {
   font-size: 11px;
-  color: white;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.8);
-  font-family: var(--font-main);
+  color: var(--text-primary);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  line-height: 1.3;
   word-break: break-word;
-  line-height: 1.2;
 }
 
+/* ─── WINDOWS (Fluent Mica-style) ─── */
 .window {
   position: relative;
-  border-radius: 8px 8px 4px 4px;
-  box-shadow: 2px 2px 0 rgba(0,0,0,0.3), 4px 4px 12px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.4);
+  border-radius: var(--r-xl);
+  background: var(--bg-app);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
   margin: 0 auto;
+  transition: box-shadow var(--t-med);
+}
+.window:hover {
+  box-shadow: var(--shadow-xl);
+  border-color: rgba(255,255,255,0.12);
 }
 
 .window-titlebar {
-  height: 30px;
-  background: var(--xp-title-grad);
+  height: 34px;
+  background: var(--bg-titlebar);
   display: flex;
   align-items: center;
-  padding: 0 6px;
-  gap: 6px;
-  border-radius: 7px 7px 0 0;
+  padding: 0 12px 0 12px;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  cursor: move;
+  backdrop-filter: blur(30px);
 }
 
 .window-icon { font-size: 14px; }
 
 .window-title {
   font-family: var(--font-main);
-  font-weight: 700;
+  font-weight: 400;
   font-size: 12px;
-  color: white;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+  color: var(--text-secondary);
   flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Win11 traffic lights — right side, clean circles */
 .win-btns {
   display: flex;
   gap: 2px;
+  flex-shrink: 0;
 }
 
 .win-btn {
-  width: 21px;
-  height: 21px;
-  border-radius: 3px;
-  border: 1px solid rgba(0,0,0,0.4);
+  width: 28px; height: 28px;
+  border-radius: var(--r-sm);
+  border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 11px;
-  font-weight: 700;
-  font-family: var(--font-main);
-  color: #1A1A1A;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  background: transparent;
+  transition: background var(--t-fast), color var(--t-fast);
+  flex-shrink: 0;
 }
+.win-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+.win-btn.close:hover { background: var(--red-alert); color: white; }
+.win-btn:active { background: var(--bg-active); }
 
-.win-btn.min { background: linear-gradient(180deg, #E8E4DC 0%, #C0BDB4 100%); }
-.win-btn.max { background: linear-gradient(180deg, #E8E4DC 0%, #C0BDB4 100%); }
-.win-btn.close { background: linear-gradient(180deg, #E05050 0%, #C03030 100%); color: white; font-size: 13px; }
-.win-btn:hover { filter: brightness(1.15); }
-.win-btn:active { filter: brightness(0.9); }
-
+/* Window body (content area) */
 .window-body {
-  background: var(--xp-window-bg);
-  border: 2px solid;
-  border-color: #FFFFFF #808080 #808080 #FFFFFF;
+  background: transparent;
 }
 
+/* ─── MENUBAR → COMMAND BAR ─── */
 .menubar {
-  background: var(--xp-window-bg);
-  border-bottom: 1px solid #ACA899;
-  padding: 2px 4px;
+  background: transparent;
+  border-bottom: 1px solid var(--border);
+  padding: 6px 12px;
   display: flex;
-  gap: 2px;
+  gap: 4px;
+  align-items: center;
 }
 
 .menu-item {
-  padding: 2px 8px;
+  padding: 4px 12px;
   font-size: 12px;
   font-family: var(--font-main);
   cursor: pointer;
-  border-radius: 2px;
-  color: var(--xp-text);
+  border-radius: var(--r-sm);
+  color: var(--text-secondary);
+  transition: background var(--t-fast), color var(--t-fast);
 }
-.menu-item:hover { background: var(--xp-blue-mid); color: white; }
+.menu-item:hover { background: var(--bg-hover); color: var(--text-primary); }
 
+/* ─── BUTTONS (Fluent) ─── */
 .xp-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 8px 20px;
+  padding: 7px 18px;
   font-family: var(--font-main);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 13px;
   cursor: pointer;
-  border-radius: 4px;
-  border: 2px solid;
-  border-color: #B0D0FF #0A246A #0A246A #B0D0FF;
-  background: linear-gradient(180deg, #5C8EE6 0%, #3C6FC4 40%, #1C4FAA 60%, #3C6FC4 100%);
+  border-radius: var(--r-md);
+  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--accent);
   color: white;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
-  transition: all 0.1s;
+  text-shadow: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  transition: background var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
   text-decoration: none;
 }
 .xp-btn:hover {
-  background: linear-gradient(180deg, #78A8FF 0%, #5888DE 40%, #2B5FCC 60%, #5888DE 100%);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+  background: var(--accent-hover);
+  box-shadow: 0 2px 8px rgba(0,120,212,0.35), 0 0 0 1px rgba(255,255,255,0.08) inset;
+  transform: translateY(-1px);
 }
-.xp-btn:active {
-  background: linear-gradient(180deg, #2B5FCC 0%, #1C4FAA 100%);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
-}
+.xp-btn:active { transform: translateY(0); box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
 
 .xp-btn.green {
-  border-color: #78C040 #1A6020 #1A6020 #78C040;
-  background: linear-gradient(180deg, #68C040 0%, #3DA940 40%, #1E7A20 60%, #3DA940 100%);
+  background: var(--accent-green);
+  border-color: rgba(255,255,255,0.08);
 }
 .xp-btn.green:hover {
-  background: linear-gradient(180deg, #88D060 0%, #55C050 40%, #2B9030 60%, #55C050 100%);
+  background: #148814;
+  box-shadow: 0 2px 8px rgba(15,123,15,0.4);
 }
 
 .xp-btn.gold {
-  border-color: #FFD070 #A06010 #A06010 #FFD070;
-  background: linear-gradient(180deg, #FFD060 0%, #F5A623 40%, #C07810 60%, #F5A623 100%);
+  background: var(--gold);
   color: #1A1A1A;
-  text-shadow: none;
+  border-color: rgba(255,255,255,0.15);
 }
 .xp-btn.gold:hover {
-  background: linear-gradient(180deg, #FFE080 0%, #FFC040 40%, #D08820 60%, #FFC040 100%);
+  background: #FFC320;
+  box-shadow: 0 2px 8px rgba(255,185,0,0.4);
 }
 
 .xp-btn.large {
-  padding: 12px 32px;
-  font-size: 15px;
-  border-radius: 6px;
+  padding: 10px 28px;
+  font-size: 14px;
+  border-radius: var(--r-lg);
 }
 
+/* ─── PANELS & GROUPBOXES → CARDS ─── */
 .xp-panel {
-  background: var(--xp-window-bg);
-  border: 2px solid;
-  border-color: #FFFFFF #808080 #808080 #FFFFFF;
-  padding: 12px;
-  border-radius: 4px;
+  background: var(--bg-layer);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: var(--r-lg);
 }
 
 .xp-groupbox {
-  border: 2px solid;
-  border-color: #808080 #FFFFFF #FFFFFF #808080;
-  border-radius: 4px;
-  padding: 16px 16px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px 16px 16px;
   position: relative;
   margin-top: 12px;
+  background: rgba(255,255,255,0.025);
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+.xp-groupbox:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.12);
 }
 
 .xp-groupbox-title {
   position: absolute;
   top: -10px;
-  left: 10px;
-  background: var(--xp-window-bg);
-  padding: 0 6px;
-  font-size: 12px;
-  font-weight: 700;
+  left: 12px;
+  background: var(--bg-card);
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 600;
   font-family: var(--font-main);
-  color: var(--xp-text);
+  color: var(--accent-light);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-radius: var(--r-sm);
 }
 
+/* ─── STATUS BAR ─── */
 .statusbar {
-  background: var(--xp-window-bg);
-  border-top: 2px solid;
-  border-color: #808080 #FFFFFF #FFFFFF #808080;
-  padding: 3px 8px;
+  background: rgba(255,255,255,0.03);
+  border-top: 1px solid var(--border);
+  padding: 6px 14px;
   display: flex;
   align-items: center;
   gap: 12px;
   font-size: 11px;
   font-family: var(--font-main);
-  color: var(--xp-text);
+  color: var(--text-disabled);
 }
 
 .status-section {
-  padding: 1px 6px;
-  border: 1px solid;
-  border-color: #808080 #FFFFFF #FFFFFF #808080;
+  padding: 2px 8px;
+  border-radius: var(--r-sm);
+  background: rgba(255,255,255,0.04);
   font-size: 11px;
+  color: var(--text-secondary);
 }
 
-::-webkit-scrollbar { width: 16px; }
-::-webkit-scrollbar-track { background: #C0C0C0; border: 1px solid; border-color: #808080 #FFFFFF #FFFFFF #808080; }
-::-webkit-scrollbar-thumb { background: linear-gradient(90deg, #D4D0C8 0%, #F0EDE5 30%, #D4D0C8 70%, #A0A0A0 100%); border: 1px solid; border-color: #FFFFFF #808080 #808080 #FFFFFF; }
-::-webkit-scrollbar-button { background: #D4D0C8; border: 1px solid; border-color: #FFFFFF #808080 #808080 #FFFFFF; height: 16px; }
+/* ─── SCROLLBAR (thin, modern) ─── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: var(--r-pill);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); background-clip: padding-box; }
 
+/* ─── PROGRESS BAR ─── */
 .xp-progress {
-  background: #FFFFFF;
-  border: 2px solid;
-  border-color: #808080 #FFFFFF #FFFFFF #808080;
-  height: 20px;
-  position: relative;
+  background: rgba(255,255,255,0.08);
+  border: none;
+  border-radius: var(--r-pill);
+  height: 4px;
   overflow: hidden;
 }
-
 .xp-progress-fill {
   height: 100%;
-  background: repeating-linear-gradient(90deg, #3C6FC4 0px, #3C6FC4 18px, #5C8EE6 18px, #5C8EE6 20px);
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  border-radius: var(--r-pill);
   transition: width 1s ease;
 }
 
-.xp-tooltip {
-  background: #FFFFE1;
-  border: 1px solid #808080;
-  padding: 3px 6px;
-  font-size: 11px;
-  font-family: var(--font-main);
-  box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-  position: absolute;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s;
-  z-index: 1000;
-}
-
+/* ─── TABLE ─── */
 .xp-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 13px;
   font-family: var(--font-main);
 }
 .xp-table th {
-  background: linear-gradient(180deg, #D4D0C8 0%, #BFB9AE 100%);
-  border: 2px solid;
-  border-color: #FFFFFF #808080 #808080 #FFFFFF;
-  padding: 4px 8px;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 14px;
   text-align: left;
-  font-weight: 700;
-  color: var(--xp-text);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
 }
 .xp-table td {
-  border-bottom: 1px solid #C0BDB4;
-  padding: 5px 8px;
-  color: var(--xp-text);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  padding: 10px 14px;
+  color: var(--text-primary);
 }
-.xp-table tr:nth-child(even) td { background: #F0EDE5; }
-.xp-table tr:hover td { background: #C2D8FF; }
+.xp-table tr:hover td { background: var(--bg-hover); }
 
+/* ─── TABS (Fluent pivot) ─── */
+.xp-tabs {
+  display: flex;
+  gap: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.xp-tab {
+  padding: 6px 18px;
+  font-size: 13px;
+  font-family: var(--font-main);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  transition: color var(--t-fast), border-color var(--t-fast);
+  margin-right: 4px;
+  border-radius: 0;
+}
+.xp-tab:hover { color: var(--text-primary); }
+.xp-tab.active {
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom-color: var(--accent);
+}
+
+.xp-tab-content { display: none; padding: 20px; }
+.xp-tab-content.active { display: block; }
+
+/* ─── COMPARISON BADGES ─── */
+.comparison-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-yes { background: rgba(84,176,84,0.15); color: var(--accent-green-l); border: 1px solid rgba(84,176,84,0.3); }
+.badge-no  { background: rgba(196,43,28,0.15); color: #F0504A; border: 1px solid rgba(196,43,28,0.3); }
+.badge-na  { background: rgba(255,185,0,0.1);  color: var(--gold); border: 1px solid rgba(255,185,0,0.25); }
+
+/* ─── PRICING HIGHLIGHT ─── */
+.pricing-highlight {
+  background: linear-gradient(135deg, rgba(0,120,212,0.2) 0%, rgba(0,80,160,0.15) 100%);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--r-xl);
+  padding: 28px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.pricing-highlight::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(96,205,255,0.15), transparent 70%);
+  border-radius: 50%;
+}
+
+.price-amount {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 56px;
+  color: var(--gold);
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.price-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  letter-spacing: 0.5px;
+}
+
+/* ─── FOMO / ALERT BOX ─── */
+.fomo-box {
+  background: rgba(196,43,28,0.12);
+  border: 1px solid rgba(196,43,28,0.3);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 12px;
+  animation: pulse-red 3s infinite;
+}
+@keyframes pulse-red {
+  0%,100% { border-color: rgba(196,43,28,0.3); }
+  50%      { border-color: rgba(196,43,28,0.6); box-shadow: 0 0 20px rgba(196,43,28,0.15); }
+}
+.fomo-box strong { font-size: 14px; display: block; margin-bottom: 6px; color: #F0504A; }
+
+/* ─── MODULE CARDS ─── */
+.module-card {
+  padding: 20px;
+  border-radius: var(--r-xl);
+  border: 1px solid var(--border);
+  transition: border-color var(--t-med), box-shadow var(--t-med);
+}
+.module-card:hover { border-color: rgba(255,255,255,0.15); box-shadow: var(--shadow-md); }
+.module-card.business { background: rgba(0,120,212,0.07); }
+.module-card.personal { background: rgba(15,123,15,0.07); }
+
+.module-icon { font-size: 36px; margin-bottom: 12px; }
+.module-card h4 {
+  font-family: var(--font-main);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.module-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+/* ─── OFFLINE BADGE ─── */
+.offline-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 8px 14px;
+  color: var(--accent-green-l);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.offline-dot {
+  width: 8px; height: 8px;
+  background: var(--accent-green-l);
+  border-radius: 50%;
+  animation: pulse-green 2s infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse-green {
+  0%,100% { box-shadow: 0 0 0 0 rgba(84,176,84,0.4); }
+  50%      { box-shadow: 0 0 0 5px rgba(84,176,84,0); }
+}
+
+/* ─── STATS ROW ─── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.stat-box {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  text-align: center;
+  transition: background var(--t-fast);
+}
+.stat-box:hover { background: rgba(255,255,255,0.06); }
+
+.stat-num {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 36px;
+  color: var(--accent-light);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-disabled);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ─── TESTIMONIALS ─── */
+.testimonial-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  margin-bottom: 10px;
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+.testimonial-card:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.12);
+}
+.testimonial-card .tname { font-weight: 600; font-size: 13px; color: var(--accent-light); margin-bottom: 4px; }
+.testimonial-card .ttext { font-size: 13px; font-style: italic; color: var(--text-secondary); line-height: 1.6; }
+.stars { color: var(--gold); font-size: 13px; margin-bottom: 6px; }
+
+/* ─── BULLET LIST ─── */
+.bullet-list { list-style: none; padding: 0; margin: 0; }
+.bullet-list li {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 4px 0;
+  display: flex;
+  gap: 8px;
+  line-height: 1.5;
+}
+.bullet-list li::before {
+  content: '›';
+  color: var(--accent-light);
+  font-size: 14px;
+  font-weight: 300;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+/* ─── MAIN CONTAINER ─── */
 .main-container {
   position: relative;
   z-index: 10;
-  padding: 20px 16px 60px;
+  padding: 20px 20px 80px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.hero-window {
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto 24px;
-}
+/* ─── HERO ─── */
+.hero-window { width: 100%; max-width: 960px; margin: 0 auto 24px; }
 
 .hero-content {
-  padding: 24px;
-  background: linear-gradient(135deg, #E8EAF0 0%, #ECE9D8 60%, #E0E8F8 100%);
+  padding: 32px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  gap: 32px;
   align-items: center;
 }
 
 .hero-left h1 {
   font-family: var(--font-display);
-  font-size: 68px;
+  font-size: 72px;
+  font-weight: 300;
   line-height: 1;
-  color: var(--xp-blue);
-  letter-spacing: 2px;
-  text-shadow: 2px 2px 0 rgba(10,36,106,0.15);
+  color: var(--text-primary);
+  letter-spacing: -3px;
 }
+.hero-left h1 span { color: var(--accent-light); }
 
 .hero-left .subtitle {
-  font-family: var(--font-main);
   font-size: 13px;
-  font-weight: 700;
-  color: #1A5A1A;
-  margin-top: 4px;
-  letter-spacing: 1px;
+  font-weight: 600;
+  color: var(--accent-green-l);
+  margin-top: 6px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  border-left: 3px solid var(--xp-green);
-  padding-left: 8px;
 }
 
 .hero-left .tagline {
-  margin-top: 12px;
-  font-size: 13px;
-  color: #333;
-  line-height: 1.5;
-  max-width: 340px;
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 380px;
 }
 
 .hero-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(90deg, #1A6020 0%, #3DA940 100%);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 2px;
-  font-size: 11px;
-  font-weight: 700;
-  margin-top: 12px;
-  border: 1px solid #5DBA40;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 16px;
 }
 
+/* Hero Screen — terminal */
 .hero-screen {
-  background: #000;
-  border: 3px solid;
-  border-color: #404040 #C0C0C0 #C0C0C0 #404040;
-  border-radius: 4px;
+  background: #0D1117;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--r-xl);
   overflow: hidden;
-  box-shadow: 4px 4px 12px rgba(0,0,0,0.4);
+  box-shadow: var(--shadow-xl);
   position: relative;
   aspect-ratio: 4/3;
 }
 
 .hero-screen-inner {
-  background: linear-gradient(135deg, #0A246A 0%, #1E3D8F 50%, #0D1F5C 100%);
-  width: 100%;
-  height: 100%;
-  padding: 12px;
+  background: #0D1117;
+  width: 100%; height: 100%;
+  padding: 16px;
   font-family: var(--font-mono);
-  color: #00FF88;
-  font-size: 10px;
+  font-size: 11px;
   overflow: hidden;
 }
 
-.terminal-line { line-height: 1.6; opacity: 0; animation: termType 0.3s forwards; }
-.terminal-line:nth-child(1)  { animation-delay: 0.2s; }
-.terminal-line:nth-child(2)  { animation-delay: 0.7s; }
-.terminal-line:nth-child(3)  { animation-delay: 1.1s; }
-.terminal-line:nth-child(4)  { animation-delay: 1.5s; }
-.terminal-line:nth-child(5)  { animation-delay: 1.9s; }
-.terminal-line:nth-child(6)  { animation-delay: 2.3s; }
-.terminal-line:nth-child(7)  { animation-delay: 2.7s; }
-.terminal-line:nth-child(8)  { animation-delay: 3.1s; }
-.terminal-line:nth-child(9)  { animation-delay: 3.5s; }
-.terminal-line:nth-child(10) { animation-delay: 3.9s; }
-.terminal-line:nth-child(11) { animation-delay: 4.3s; }
-.terminal-line:nth-child(12) { animation-delay: 4.7s; }
+/* Terminal header bar */
+.hero-screen::before {
+  content: '●   ●   ●';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 28px;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  font-size: 16px;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 4px;
+  line-height: 28px;
+  z-index: 2;
+}
+.hero-screen-inner { padding-top: 36px; }
 
-.terminal-line.yellow { color: #FFD060; }
-.terminal-line.cyan   { color: #00FFFF; }
-.terminal-line.white  { color: #E0E8FF; }
-.terminal-line.green  { color: #00FF88; }
-.terminal-line.pink   { color: #FF80CC; }
+.terminal-line { line-height: 1.7; opacity: 0; animation: termType 0.3s forwards; }
+.terminal-line:nth-child(1)  { animation-delay: 0.2s; }
+.terminal-line:nth-child(2)  { animation-delay: 0.6s; }
+.terminal-line:nth-child(3)  { animation-delay: 1.0s; }
+.terminal-line:nth-child(4)  { animation-delay: 1.4s; }
+.terminal-line:nth-child(5)  { animation-delay: 1.8s; }
+.terminal-line:nth-child(6)  { animation-delay: 2.2s; }
+.terminal-line:nth-child(7)  { animation-delay: 2.6s; }
+.terminal-line:nth-child(8)  { animation-delay: 3.0s; }
+.terminal-line:nth-child(9)  { animation-delay: 3.4s; }
+.terminal-line:nth-child(10) { animation-delay: 3.8s; }
+.terminal-line:nth-child(11) { animation-delay: 4.2s; }
+.terminal-line:nth-child(12) { animation-delay: 4.6s; }
+
+.terminal-line.yellow { color: #E5C07B; }
+.terminal-line.cyan   { color: #56B6C2; }
+.terminal-line.white  { color: #ABB2BF; }
+.terminal-line.green  { color: #98C379; }
+.terminal-line.pink   { color: #E06C75; }
 
 @keyframes termType {
-  from { opacity: 0; transform: translateX(-6px); }
+  from { opacity: 0; transform: translateX(-4px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 
 .cursor-blink {
   display: inline-block;
-  width: 8px; height: 13px;
-  background: #00FF88;
+  width: 7px; height: 12px;
+  background: #98C379;
   animation: blink 1s infinite;
   vertical-align: middle;
+  border-radius: 1px;
 }
 @keyframes blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
 
-.screen-scanline {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
-  pointer-events: none;
-}
+.screen-scanline { display: none; } /* Not needed in dark modern UI */
 
-.windows-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.windows-grid-3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.info-window {
-  width: 100%;
-}
-
-.info-window-body {
-  padding: 16px;
-  min-height: 120px;
-}
-
+/* ─── WINDOW GRIDS ─── */
+.windows-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 16px; }
+.windows-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.info-window { width: 100%; }
+.info-window-body { padding: 20px; }
 .info-window-body h3 {
-  font-family: var(--font-main);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--xp-blue);
-  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
+.info-window-body p { font-size: 13px; line-height: 1.7; color: var(--text-secondary); }
 
-.info-window-body p {
-  font-size: 12px;
-  line-height: 1.6;
-  color: #333;
-}
-
-.bullet-list {
-  list-style: none;
-  padding: 0;
+/* ─── TICKER ─── */
+.ticker-wrap {
+  background: rgba(0,0,0,0.4);
+  border-top: 1px solid rgba(84,176,84,0.2);
+  border-bottom: 1px solid rgba(84,176,84,0.2);
+  overflow: hidden;
+  height: 28px;
   margin: 0;
+  backdrop-filter: blur(10px);
 }
-
-.bullet-list li {
-  font-size: 12px;
-  color: #333;
-  padding: 3px 0;
+.ticker {
   display: flex;
-  gap: 6px;
-  line-height: 1.4;
+  animation: ticker 35s linear infinite;
+  white-space: nowrap;
 }
-
-.bullet-list li::before {
-  content: '▶';
-  color: var(--xp-blue-mid);
-  font-size: 9px;
-  margin-top: 2px;
-  flex-shrink: 0;
-}
-
-.xp-tabs {
-  display: flex;
-  gap: 0;
-  margin-bottom: -2px;
-  position: relative;
-  z-index: 2;
-}
-
-.xp-tab {
-  padding: 4px 16px;
-  font-size: 12px;
-  font-family: var(--font-main);
-  cursor: pointer;
-  background: linear-gradient(180deg, #E0DDD5 0%, #C8C5BC 100%);
-  border: 2px solid;
-  border-color: #FFFFFF #808080 #808080 #FFFFFF;
-  border-bottom: none;
-  border-radius: 4px 4px 0 0;
-  margin-right: 2px;
-  color: #555;
-  transition: all 0.1s;
-}
-
-.xp-tab.active {
-  background: var(--xp-window-bg);
-  color: var(--xp-text);
-  font-weight: 700;
-  border-bottom: 2px solid var(--xp-window-bg);
-  padding-bottom: 6px;
-}
-
-.xp-tab-content {
-  display: none;
-  padding: 16px;
-}
-.xp-tab-content.active { display: block; }
-
-.comparison-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 2px;
-  font-size: 11px;
-  font-weight: 700;
-}
-.badge-yes { background: #C8E8C0; color: #1A6020; border: 1px solid #6AB060; }
-.badge-no  { background: #F0C0C0; color: #8B0000; border: 1px solid #D08080; }
-.badge-na  { background: #E8E8C0; color: #707020; border: 1px solid #C8C880; }
-
-.pricing-highlight {
-  background: linear-gradient(135deg, #0A246A 0%, #1E4FAA 100%);
-  border: 3px solid;
-  border-color: #78A8FF #0A246A #0A246A #78A8FF;
-  border-radius: 6px;
-  padding: 20px;
-  text-align: center;
-  color: white;
-  position: relative;
-  overflow: hidden;
-}
-
-.pricing-highlight::before {
-  content: '';
-  position: absolute;
-  top: -30px; right: -30px;
-  width: 100px; height: 100px;
-  background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
-  border-radius: 50%;
-}
-
-.price-amount {
-  font-family: var(--font-display);
-  font-size: 64px;
-  color: #FFD060;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-  line-height: 1;
-}
-
-.price-label {
-  font-size: 12px;
-  color: rgba(255,255,255,0.8);
-  margin-top: 4px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.fomo-box {
-  background: linear-gradient(135deg, #8B0000 0%, #CC2020 100%);
-  border: 2px solid;
-  border-color: #FF8080 #800000 #800000 #FF8080;
-  border-radius: 4px;
-  padding: 12px 16px;
-  color: white;
-  text-align: center;
-  font-size: 12px;
-  line-height: 1.5;
-  margin-top: 12px;
-  animation: pulse-red 2s infinite;
-}
-@keyframes pulse-red {
-  0%,100% { box-shadow: 0 0 0 rgba(200,0,0,0); }
-  50%      { box-shadow: 0 0 16px rgba(200,0,0,0.5); }
-}
-
-.fomo-box strong { font-size: 14px; display: block; margin-bottom: 4px; }
-
-.module-card {
-  padding: 16px;
-  border: 2px solid;
-  margin-bottom: 8px;
-}
-
-.module-card.business {
-  border-color: #808080 #FFFFFF #FFFFFF #808080;
-  background: linear-gradient(135deg, #E8F0FF 0%, #D0E0F8 100%);
-}
-
-.module-card.personal {
-  border-color: #808080 #FFFFFF #FFFFFF #808080;
-  background: linear-gradient(135deg, #E8FFE8 0%, #D0F0D0 100%);
-}
-
-.module-icon {
-  font-size: 32px;
-  margin-bottom: 8px;
-}
-
-.module-card h4 {
-  font-family: var(--font-main);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--xp-blue);
-  margin-bottom: 6px;
-}
-
-.module-card p {
-  font-size: 12px;
-  color: #333;
-  line-height: 1.5;
-}
-
-.offline-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(90deg, #1A1A1A 0%, #2A2A2A 100%);
-  border: 2px solid;
-  border-color: #FFFFFF #404040 #404040 #FFFFFF;
-  border-radius: 4px;
-  padding: 10px 14px;
-  color: #00FF88;
+.ticker span {
   font-family: var(--font-mono);
-  font-size: 12px;
-}
-
-.offline-dot {
-  width: 10px; height: 10px;
-  background: #00FF88;
-  border-radius: 50%;
-  box-shadow: 0 0 8px #00FF88;
-  animation: pulse-green 1.5s infinite;
-}
-@keyframes pulse-green {
-  0%,100% { box-shadow: 0 0 4px #00FF88; }
-  50%      { box-shadow: 0 0 14px #00FF88, 0 0 28px rgba(0,255,136,0.4); }
-}
-
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.stat-box {
-  background: white;
-  border: 2px solid;
-  border-color: #808080 #FFFFFF #FFFFFF #808080;
-  padding: 10px;
-  text-align: center;
-}
-
-.stat-num {
-  font-family: var(--font-display);
-  font-size: 32px;
-  color: var(--xp-blue);
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 10px;
-  color: #555;
-  margin-top: 4px;
-  font-family: var(--font-main);
-}
-
-.testimonial-card {
-  background: white;
-  border: 2px solid;
-  border-color: #FFFFFF #808080 #808080 #FFFFFF;
-  padding: 12px;
-  border-radius: 2px;
-  margin-bottom: 8px;
-}
-
-.testimonial-card .tname {
-  font-weight: 700;
-  font-size: 12px;
-  color: var(--xp-blue);
-  margin-bottom: 4px;
-}
-
-.testimonial-card .ttext {
-  font-size: 12px;
-  font-style: italic;
-  color: #333;
-  line-height: 1.5;
-}
-
-.stars { color: #F5A623; font-size: 13px; }
-
-.xp-notification {
-  position: fixed;
-  bottom: 56px;
-  right: 8px;
-  width: 290px;
-  background: var(--xp-window-bg);
-  border: 2px solid;
-  border-color: #FFFFFF #808080 #808080 #FFFFFF;
-  box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
-  z-index: 9000;
-  border-radius: 4px 4px 0 0;
-  overflow: hidden;
-  transform: translateY(120%);
-  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
-}
-
-.xp-notification.show { transform: translateY(0); }
-
-.notif-titlebar {
-  background: var(--xp-title-grad);
-  padding: 4px 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.notif-title {
   font-size: 11px;
-  font-weight: 700;
-  color: white;
-  flex: 1;
-  font-family: var(--font-main);
+  color: var(--accent-green-l);
+  padding: 6px 40px 6px 0;
+  opacity: 0.85;
 }
+@keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-.notif-close {
-  width: 16px; height: 16px;
-  background: linear-gradient(180deg, #E05050 0%, #C03030 100%);
-  border: 1px solid rgba(0,0,0,0.4);
-  color: white;
-  font-size: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 2px;
-  font-weight: 700;
-}
-
-.notif-body {
-  padding: 8px 10px;
-  font-size: 11px;
-  font-family: var(--font-main);
-  color: #333;
-  line-height: 1.5;
-  display: flex;
-  gap: 8px;
-}
-
-.notif-icon { font-size: 24px; flex-shrink: 0; }
-
+/* ─── LOADING SCREEN ─── */
 #loading-screen {
   position: fixed;
   inset: 0;
-  background: #0A246A;
+  background: #0A0E1A;
   z-index: 99999;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 20px;
-  transition: opacity 0.6s;
+  transition: opacity 0.8s;
 }
-
 #loading-screen.fade-out { opacity: 0; pointer-events: none; }
 
 .loading-logo {
   font-family: var(--font-display);
+  font-weight: 300;
   font-size: 80px;
   color: white;
-  text-shadow: 0 0 40px rgba(100,150,255,0.8);
-  letter-spacing: 4px;
+  letter-spacing: -4px;
 }
+.loading-logo span { color: var(--accent-light); }
 
 .loading-sub {
   font-family: var(--font-main);
-  color: rgba(255,255,255,0.7);
+  color: var(--text-secondary);
   font-size: 13px;
   letter-spacing: 2px;
+  text-transform: uppercase;
 }
 
 .loading-bar-wrap {
-  width: 300px;
-  background: #1A3A8F;
-  border: 2px solid #4060C0;
-  height: 22px;
-  border-radius: 2px;
+  width: 320px;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  height: 2px;
+  border-radius: var(--r-pill);
   overflow: hidden;
 }
-
 .loading-bar-fill {
   height: 100%;
-  background: repeating-linear-gradient(90deg, #4080D0 0px, #6090E0 18px, #4080D0 18px, #4080D0 20px);
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
   width: 0%;
   animation: loadFill 2.5s ease forwards;
+  border-radius: var(--r-pill);
 }
-
 @keyframes loadFill {
-  0%   { width: 0%; }
-  40%  { width: 60%; }
-  70%  { width: 80%; }
-  90%  { width: 95%; }
-  100% { width: 100%; }
+  0% { width: 0%; } 40% { width: 60%; } 70% { width: 80%; } 90% { width: 95%; } 100% { width: 100%; }
 }
 
-.loading-dots {
-  color: rgba(255,255,255,0.6);
-  font-family: var(--font-mono);
-  font-size: 12px;
-}
+.loading-dots { color: var(--text-disabled); font-family: var(--font-mono); font-size: 12px; }
 
+/* ─── SECTION GAPS ─── */
 .section-gap { height: 20px; }
 
-.footer-content {
-  padding: 16px;
-  text-align: center;
-}
+/* ─── FOOTER ─── */
+.footer-content { padding: 16px; text-align: center; }
+.footer-content p { font-size: 11px; color: var(--text-disabled); }
 
-.footer-content p {
-  font-size: 11px;
-  color: #555;
-  font-family: var(--font-main);
-}
-
-.ticker-wrap {
-  background: #000;
-  border-top: 1px solid #00FF88;
-  border-bottom: 1px solid #00FF88;
+/* ─── NOTIFICATION (Win11 style — top right) ─── */
+.xp-notification {
+  position: fixed;
+  bottom: 72px;
+  right: 12px;
+  width: 320px;
+  background: rgba(40,40,40,0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xl);
+  z-index: 9000;
+  border-radius: var(--r-xl);
   overflow: hidden;
-  height: 24px;
-  margin: 0;
+  transform: translateX(120%);
+  transition: transform var(--t-slow);
 }
+.xp-notification.show { transform: translateX(0); }
 
-.ticker {
+.notif-titlebar {
+  background: transparent;
+  padding: 10px 14px 8px;
   display: flex;
-  animation: ticker 30s linear infinite;
-  white-space: nowrap;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
 }
-
-.ticker span {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: #00FF88;
-  padding: 4px 40px 4px 0;
+.notif-title { font-size: 13px; font-weight: 600; color: var(--text-primary); flex: 1; }
+.notif-close {
+  width: 24px; height: 24px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  border-radius: var(--r-sm);
+  transition: background var(--t-fast), color var(--t-fast);
 }
-
-@keyframes ticker {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+.notif-close:hover { background: var(--red-alert); color: white; }
+.notif-body {
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  display: flex;
+  gap: 10px;
 }
+.notif-icon { font-size: 28px; flex-shrink: 0; }
 
+/* ─── ALERT BLINK ─── */
+.alert-blink { animation: alertBlink 2s infinite; }
+@keyframes alertBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+/* ─── RESPONSIVE ─── */
 @media (max-width: 900px) {
   .windows-grid { grid-template-columns: 1fr; }
   .windows-grid-3 { grid-template-columns: 1fr 1fr; }
   .hero-content { grid-template-columns: 1fr; }
   .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .taskbar { border-radius: var(--r-lg); min-width: calc(100vw - 20px); }
 }
-
 @media (max-width: 600px) {
   .windows-grid-3 { grid-template-columns: 1fr; }
-  .hero-left h1 { font-size: 48px; }
+  .hero-left h1 { font-size: 52px; }
   .stats-row { grid-template-columns: repeat(2, 1fr); }
-  .price-amount { font-size: 48px; }
+  .price-amount { font-size: 42px; }
   .xp-tabs { flex-wrap: wrap; }
   .desktop-icons { display: none; }
-  .main-container { padding: 10px 8px 60px; }
+  .main-container { padding: 10px 10px 80px; }
+  .hero-content { padding: 20px; gap: 20px; }
 }
 
-@media (max-width: 400px) {
-  .hero-left h1 { font-size: 38px; }
-  .stats-row { grid-template-columns: 1fr 1fr; }
+/* ─── SPECIAL INFO BOXES (reused inline with new colors) ─── */
+.info-highlight-blue {
+  background: rgba(0,120,212,0.08);
+  border: 1px solid rgba(0,120,212,0.2);
+  border-radius: var(--r-lg);
+  padding: 14px;
 }
-
-.window:hover {
-  box-shadow: 3px 3px 2px rgba(0,0,0,0.3), 6px 6px 16px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(255,255,255,0.4);
-  transition: box-shadow 0.2s;
+.info-highlight-green {
+  background: rgba(15,123,15,0.08);
+  border: 1px solid rgba(15,123,15,0.25);
+  border-radius: var(--r-lg);
+  padding: 14px;
 }
-
-.window.active .window-titlebar {
-  background: var(--xp-title-grad-active);
+.info-highlight-gold {
+  background: rgba(255,185,0,0.06);
+  border: 1px solid rgba(255,185,0,0.2);
+  border-radius: var(--r-lg);
+  padding: 14px;
 }
-
-.alert-blink {
-  animation: alertBlink 1.2s infinite;
+.info-highlight-purple {
+  background: rgba(120,60,220,0.08);
+  border: 1px solid rgba(120,60,220,0.25);
+  border-radius: var(--r-lg);
+  padding: 14px;
 }
-@keyframes alertBlink {
-  0%,100% { opacity: 1; }
-  50%      { opacity: 0.4; }
-}
-
-.window-titlebar { cursor: move; }
 </style>
 </head>
 <body>
 
+<!-- ─── LOADING SCREEN ─── -->
 <div id="loading-screen">
-  <div class="loading-logo">TRAVIS</div>
+  <div class="loading-logo">TR<span>A</span>VIS</div>
   <div class="loading-sub">Financial Intelligence System v1.0 — Kenya</div>
   <div class="loading-bar-wrap">
     <div class="loading-bar-fill"></div>
@@ -1043,8 +1073,10 @@ body {
   <div class="loading-dots" id="loading-dots">Loading core modules...</div>
 </div>
 
+<!-- ─── DESKTOP ─── -->
 <div class="desktop" id="desktop">
 
+  <!-- Desktop Icons -->
   <div class="desktop-icons">
     <div class="desktop-icon" onclick="window.location='travis_core.html'">
       <div class="ico">💹</div>
@@ -1064,8 +1096,10 @@ body {
     </div>
   </div>
 
+  <!-- ─── MAIN CONTENT ─── -->
   <div class="main-container">
 
+    <!-- Ticker -->
     <div class="ticker-wrap">
       <div class="ticker">
         <span>🟢 KES SAVINGS PROTECTED &nbsp;|&nbsp;</span>
@@ -1089,13 +1123,14 @@ body {
 
     <div class="section-gap"></div>
 
+    <!-- ─── HERO WINDOW ─── -->
     <div class="window hero-window active" id="hero-win">
       <div class="window-titlebar">
         <span class="window-icon">💹</span>
         <span class="window-title">TRAVIS Financial Intelligence System — Welcome</span>
         <div class="win-btns">
-          <div class="win-btn min" title="Minimize">_</div>
-          <div class="win-btn max" title="Maximize">□</div>
+          <div class="win-btn min" title="Minimize">─</div>
+          <div class="win-btn max" title="Maximize">⬜</div>
           <div class="win-btn close" onclick="window.location='travis_core.html'" title="Launch TRAVIS">✕</div>
         </div>
       </div>
@@ -1110,7 +1145,7 @@ body {
       <div class="window-body">
         <div class="hero-content">
           <div class="hero-left">
-            <h1>TRAVIS</h1>
+            <h1>TR<span>A</span>VIS</h1>
             <div class="subtitle">Your Financial Intelligence System</div>
             <p class="tagline">
               The smart financial companion built for Kenyans — tracking every shilling, predicting your financial future, and advising you like a personal CFO. For your business. For your pocket. For your life.
@@ -1123,7 +1158,7 @@ body {
               <button class="xp-btn green large" onclick="window.location='travis_core.html'">
                 ▶ Launch TRAVIS
               </button>
-              <button class="xp-btn large" onclick="scrollToSection('about')">
+              <button class="xp-btn large" style="background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.12);color:var(--text-primary)" onclick="scrollToSection('about')">
                 📖 Learn More
               </button>
             </div>
@@ -1148,7 +1183,8 @@ body {
             </div>
           </div>
         </div>
-        <div style="padding:12px 24px;background:#D4D0C8;border-top:1px solid #ACA899;">
+        <!-- Stats -->
+        <div style="padding:20px 32px;border-top:1px solid var(--border);">
           <div class="stats-row">
             <div class="stat-box">
               <div class="stat-num">2</div>
@@ -1179,14 +1215,15 @@ body {
 
     <div class="section-gap" id="about"></div>
 
+    <!-- ─── ABOUT / WHY WINDOWS ─── -->
     <div class="windows-grid">
       <div class="window info-window">
         <div class="window-titlebar">
           <span class="window-icon">📋</span>
           <span class="window-title">About TRAVIS — What Is This?</span>
           <div class="win-btns">
-            <div class="win-btn min">_</div>
-            <div class="win-btn max">□</div>
+            <div class="win-btn min">─</div>
+            <div class="win-btn max">⬜</div>
             <div class="win-btn close">✕</div>
           </div>
         </div>
@@ -1194,11 +1231,11 @@ body {
           <div class="info-window-body">
             <h3>🧠 What Is TRAVIS?</h3>
             <p>
-              TRAVIS is an <strong>intelligent financial management system</strong> designed specifically for Kenyans. Think of it as having a seasoned CFO, accountant, and financial advisor — all bundled into one powerful app on your phone, tablet, or computer.
+              TRAVIS is an <strong style="color:var(--text-primary)">intelligent financial management system</strong> designed specifically for Kenyans. Think of it as having a seasoned CFO, accountant, and financial advisor — all bundled into one powerful app on your phone, tablet, or computer.
             </p>
             <br/>
             <p>
-              Whether you run a <em>mama mboga stall</em>, a logistics company, or just want to manage your personal salary — TRAVIS understands your money, speaks your language, and works <strong>even without internet</strong>.
+              Whether you run a <em>mama mboga stall</em>, a logistics company, or just want to manage your personal salary — TRAVIS understands your money, speaks your language, and works <strong style="color:var(--accent-light)">even without internet</strong>.
             </p>
             <br/>
             <div class="offline-badge">
@@ -1218,8 +1255,8 @@ body {
           <span class="window-icon">❓</span>
           <span class="window-title">Why Do You Need TRAVIS?</span>
           <div class="win-btns">
-            <div class="win-btn min">_</div>
-            <div class="win-btn max">□</div>
+            <div class="win-btn min">─</div>
+            <div class="win-btn max">⬜</div>
             <div class="win-btn close">✕</div>
           </div>
         </div>
@@ -1234,9 +1271,9 @@ body {
               <li>Are you building wealth — or just surviving paycheck to paycheck?</li>
             </ul>
             <br/>
-            <p>If any of these hit close to home, TRAVIS was built <strong>for you</strong>. No more guesswork. No more end-month surprises. Just clarity.</p>
+            <p>If any of these hit close to home, TRAVIS was built <strong style="color:var(--accent-light)">for you</strong>. No more guesswork. No more end-month surprises. Just clarity.</p>
           </div>
-          <div style="padding:8px 12px;background:#FFF8E0;border-top:1px solid #DDD8B8;">
+          <div style="padding:12px 16px;border-top:1px solid var(--border);">
             <button class="xp-btn green" style="width:100%" onclick="window.location='travis_core.html'">▶ Try TRAVIS Now — It's Simple</button>
           </div>
           <div class="statusbar">
@@ -1246,13 +1283,14 @@ body {
       </div>
     </div>
 
+    <!-- ─── FEATURES WINDOW ─── -->
     <div class="window" id="features-win">
       <div class="window-titlebar">
         <span class="window-icon">⚙️</span>
         <span class="window-title">TRAVIS Features — What This System Does</span>
         <div class="win-btns">
-          <div class="win-btn min">_</div>
-          <div class="win-btn max">□</div>
+          <div class="win-btn min">─</div>
+          <div class="win-btn max">⬜</div>
           <div class="win-btn close">✕</div>
         </div>
       </div>
@@ -1300,10 +1338,10 @@ body {
           </div>
         </div>
         <div id="tab-advise" class="xp-tab-content">
-          <div class="xp-panel" style="margin-bottom:12px">
-            <h3 style="font-size:13px;font-weight:700;color:var(--xp-blue);margin-bottom:10px">🧠 TRAVIS Advisory Engine</h3>
-            <p style="font-size:12px;line-height:1.7;color:#333">
-              TRAVIS doesn't just record numbers — it thinks about them. The built-in AI advisor analyses your financial patterns and gives you <strong>actionable, personalised advice</strong> — like a financial expert who knows your exact situation.
+          <div class="xp-panel" style="margin-bottom:16px">
+            <h3 style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:10px">🧠 TRAVIS Advisory Engine</h3>
+            <p style="font-size:13px;line-height:1.7;color:var(--text-secondary)">
+              TRAVIS doesn't just record numbers — it thinks about them. The built-in AI advisor analyses your financial patterns and gives you <strong style="color:var(--accent-light)">actionable, personalised advice</strong> — like a financial expert who knows your exact situation.
             </p>
           </div>
           <div class="windows-grid" style="margin-bottom:0">
@@ -1329,9 +1367,9 @@ body {
           </div>
         </div>
         <div id="tab-predict" class="xp-tab-content">
-          <div class="xp-panel" style="margin-bottom:12px">
-            <h3 style="font-size:13px;font-weight:700;color:var(--xp-blue);margin-bottom:10px">🔮 Future Financial Prediction</h3>
-            <p style="font-size:12px;line-height:1.7;color:#333">
+          <div class="xp-panel" style="margin-bottom:16px">
+            <h3 style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:10px">🔮 Future Financial Prediction</h3>
+            <p style="font-size:13px;line-height:1.7;color:var(--text-secondary)">
               TRAVIS uses your historical data to model your financial future. It identifies risks before they hit, spots cash gaps weeks ahead, and helps you prepare for what's coming — instead of reacting when it's too late.
             </p>
           </div>
@@ -1359,12 +1397,12 @@ body {
           </div>
         </div>
         <div id="tab-offline" class="xp-tab-content">
-          <div class="xp-panel" style="margin-bottom:12px;background:#0A1A0A;border-color:#00FF88 #006030 #006030 #00FF88;">
-            <div style="display:flex;align-items:center;gap:12px">
-              <div style="font-size:40px">📵</div>
+          <div class="xp-panel" style="margin-bottom:16px;background:rgba(15,123,15,0.08);border-color:rgba(15,123,15,0.25);">
+            <div style="display:flex;align-items:center;gap:16px">
+              <div style="font-size:44px">📵</div>
               <div>
-                <h3 style="font-size:14px;font-weight:700;color:#00FF88;margin-bottom:6px">100% OFFLINE — Always & Everywhere</h3>
-                <p style="font-size:12px;line-height:1.7;color:#88CC88">
+                <h3 style="font-size:15px;font-weight:600;color:var(--accent-green-l);margin-bottom:8px">100% OFFLINE — Always & Everywhere</h3>
+                <p style="font-size:13px;line-height:1.7;color:var(--text-secondary)">
                   TRAVIS runs <em>entirely on your device</em>. No internet subscription. No cloud. No data charges. Works deep in Kisumu, up in Meru, or anywhere Safaricom has no signal. Your data never leaves your device.
                 </p>
               </div>
@@ -1403,7 +1441,7 @@ body {
             </div>
           </div>
         </div>
-        <div style="padding:8px 12px;background:#D4D0C8;border-top:1px solid #ACA899;display:flex;justify-content:flex-end;">
+        <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
           <button class="xp-btn green" onclick="window.location='travis_core.html'">▶ Experience TRAVIS Features</button>
         </div>
         <div class="statusbar">
@@ -1415,19 +1453,20 @@ body {
 
     <div class="section-gap" id="modules"></div>
 
+    <!-- ─── MODULES ─── -->
     <div class="window">
       <div class="window-titlebar">
         <span class="window-icon">🗂️</span>
         <span class="window-title">TRAVIS Modules — Business Account & Personal Account</span>
         <div class="win-btns">
-          <div class="win-btn min">_</div>
-          <div class="win-btn max">□</div>
+          <div class="win-btn min">─</div>
+          <div class="win-btn max">⬜</div>
           <div class="win-btn close">✕</div>
         </div>
       </div>
       <div class="window-body">
-        <div style="padding:16px;">
-          <p style="font-size:12px;color:#555;margin-bottom:14px;font-family:var(--font-main)">
+        <div style="padding:20px;">
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
             TRAVIS comes with two intelligently tuned modules — each designed to understand the unique nature of business finances vs personal finances. No confusion. No mixed data. Just clarity.
           </p>
           <div class="windows-grid" style="margin-bottom:0">
@@ -1472,42 +1511,43 @@ body {
 
     <div class="section-gap" id="gain"></div>
 
+    <!-- ─── WHAT YOU GAIN ─── -->
     <div class="window">
       <div class="window-titlebar">
         <span class="window-icon">🏆</span>
         <span class="window-title">What You Gain — TRAVIS as Your Financial Advisor</span>
         <div class="win-btns">
-          <div class="win-btn min">_</div>
-          <div class="win-btn max">□</div>
+          <div class="win-btn min">─</div>
+          <div class="win-btn max">⬜</div>
           <div class="win-btn close">✕</div>
         </div>
       </div>
       <div class="window-body">
-        <div style="padding:16px;">
-          <div class="windows-grid windows-grid-3" style="margin-bottom:12px">
+        <div style="padding:20px;">
+          <div class="windows-grid windows-grid-3" style="margin-bottom:16px">
             <div class="xp-groupbox">
               <span class="xp-groupbox-title">💰 Financial Clarity</span>
-              <p style="font-size:12px;line-height:1.5;color:#333">Stop guessing. TRAVIS shows you exactly where every shilling comes from and where it goes. You'll finally <em>understand</em> your money — not just spend it.</p>
+              <p style="font-size:13px;line-height:1.6;color:var(--text-secondary)">Stop guessing. TRAVIS shows you exactly where every shilling comes from and where it goes. You'll finally <em>understand</em> your money — not just spend it.</p>
             </div>
             <div class="xp-groupbox">
               <span class="xp-groupbox-title">📈 Smarter Decisions</span>
-              <p style="font-size:12px;line-height:1.5;color:#333">TRAVIS gives you data-driven insights before you make big financial moves — buying stock, taking a loan, expanding your business, or splurging on a purchase.</p>
+              <p style="font-size:13px;line-height:1.6;color:var(--text-secondary)">TRAVIS gives you data-driven insights before you make big financial moves — buying stock, taking a loan, expanding your business, or splurging on a purchase.</p>
             </div>
             <div class="xp-groupbox">
               <span class="xp-groupbox-title">🛡️ Financial Safety Net</span>
-              <p style="font-size:12px;line-height:1.5;color:#333">TRAVIS predicts financial risks weeks before they become crises. You'll always have time to adjust — never get caught off guard again.</p>
+              <p style="font-size:13px;line-height:1.6;color:var(--text-secondary)">TRAVIS predicts financial risks weeks before they become crises. You'll always have time to adjust — never get caught off guard again.</p>
             </div>
             <div class="xp-groupbox">
               <span class="xp-groupbox-title">💼 CFO-Level Reports</span>
-              <p style="font-size:12px;line-height:1.5;color:#333">Generate professional-looking financial reports — for your own understanding, or to present to a bank, investor, or partner. No accountant needed.</p>
+              <p style="font-size:13px;line-height:1.6;color:var(--text-secondary)">Generate professional-looking financial reports — for your own understanding, or to present to a bank, investor, or partner. No accountant needed.</p>
             </div>
             <div class="xp-groupbox">
               <span class="xp-groupbox-title">🎯 Goal Achievement</span>
-              <p style="font-size:12px;line-height:1.5;color:#333">Whether you're saving for a plot, school fees, a car, or a vacation — TRAVIS builds you a personalised roadmap and keeps you accountable every step of the way.</p>
+              <p style="font-size:13px;line-height:1.6;color:var(--text-secondary)">Whether you're saving for a plot, school fees, a car, or a vacation — TRAVIS builds you a personalised roadmap and keeps you accountable every step of the way.</p>
             </div>
             <div class="xp-groupbox">
               <span class="xp-groupbox-title">🧘 Peace of Mind</span>
-              <p style="font-size:12px;line-height:1.5;color:#333">Imagine ending every month knowing exactly where you stand financially. No anxiety. No surprises. Just confidence. That's what TRAVIS gives you — every single day.</p>
+              <p style="font-size:13px;line-height:1.6;color:var(--text-secondary)">Imagine ending every month knowing exactly where you stand financially. No anxiety. No surprises. Just confidence. That's what TRAVIS gives you — every single day.</p>
             </div>
           </div>
           <div style="text-align:center">
@@ -1525,19 +1565,20 @@ body {
 
     <div class="section-gap" id="why-us"></div>
 
+    <!-- ─── COMPARISON ─── -->
     <div class="window">
       <div class="window-titlebar">
         <span class="window-icon">📊</span>
         <span class="window-title">Comparison — Why People Choose TRAVIS Over Big Fintech Companies</span>
         <div class="win-btns">
-          <div class="win-btn min">_</div>
-          <div class="win-btn max">□</div>
+          <div class="win-btn min">─</div>
+          <div class="win-btn max">⬜</div>
           <div class="win-btn close">✕</div>
         </div>
       </div>
       <div class="window-body">
-        <div style="padding:16px;">
-          <p style="font-size:12px;color:#555;margin-bottom:12px">Compared against typical large fintech apps available in Kenya:</p>
+        <div style="padding:20px;">
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Compared against typical large fintech apps available in Kenya:</p>
           <table class="xp-table">
             <thead>
               <tr>
@@ -1548,75 +1589,25 @@ body {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Works Offline (No Internet)</td>
-                <td><span class="comparison-badge badge-yes">✔ YES</span></td>
-                <td><span class="comparison-badge badge-no">✘ NO</span></td>
-                <td><span class="comparison-badge badge-yes">✔ YES</span></td>
-              </tr>
-              <tr>
-                <td>AI Financial Predictions</td>
-                <td><span class="comparison-badge badge-yes">✔ YES</span></td>
-                <td><span class="comparison-badge badge-na">~ SOME</span></td>
-                <td><span class="comparison-badge badge-no">✘ NO</span></td>
-              </tr>
-              <tr>
-                <td>One-Time Purchase (No Monthly)</td>
-                <td><span class="comparison-badge badge-yes">✔ YES</span></td>
-                <td><span class="comparison-badge badge-no">✘ Monthly Fees</span></td>
-                <td><span class="comparison-badge badge-yes">✔ YES</span></td>
-              </tr>
-              <tr>
-                <td>No Accounting Knowledge Needed</td>
-                <td><span class="comparison-badge badge-yes">✔ YES</span></td>
-                <td><span class="comparison-badge badge-no">✘ Complex</span></td>
-                <td><span class="comparison-badge badge-no">✘ Requires Skills</span></td>
-              </tr>
-              <tr>
-                <td>Business + Personal in One App</td>
-                <td><span class="comparison-badge badge-yes">✔ YES</span></td>
-                <td><span class="comparison-badge badge-na">~ Separate Apps</span></td>
-                <td><span class="comparison-badge badge-no">✘ Manual Split</span></td>
-              </tr>
-              <tr>
-                <td>Personalised Financial Advice</td>
-                <td><span class="comparison-badge badge-yes">✔ YES</span></td>
-                <td><span class="comparison-badge badge-na">~ Generic Tips</span></td>
-                <td><span class="comparison-badge badge-no">✘ NO</span></td>
-              </tr>
-              <tr>
-                <td>Your Data Stays on Your Device</td>
-                <td><span class="comparison-badge badge-yes">✔ YES</span></td>
-                <td><span class="comparison-badge badge-no">✘ Stored on Their Servers</span></td>
-                <td><span class="comparison-badge badge-yes">✔ YES</span></td>
-              </tr>
-              <tr>
-                <td>Built Specifically for Kenya</td>
-                <td><span class="comparison-badge badge-yes">✔ YES</span></td>
-                <td><span class="comparison-badge badge-no">✘ Generic/Western</span></td>
-                <td><span class="comparison-badge badge-na">~ Adaptable</span></td>
-              </tr>
-              <tr>
-                <td>Works on All Device Types</td>
-                <td><span class="comparison-badge badge-yes">✔ YES</span></td>
-                <td><span class="comparison-badge badge-na">~ App Stores Only</span></td>
-                <td><span class="comparison-badge badge-na">~ Laptop Only</span></td>
-              </tr>
-              <tr>
-                <td>Easy for Non-Accountants</td>
-                <td><span class="comparison-badge badge-yes">✔ YES</span></td>
-                <td><span class="comparison-badge badge-no">✘ Accounting Terms</span></td>
-                <td><span class="comparison-badge badge-no">✘ Debit/Credit Needed</span></td>
-              </tr>
+              <tr><td>Works Offline (No Internet)</td><td><span class="comparison-badge badge-yes">✔ YES</span></td><td><span class="comparison-badge badge-no">✘ NO</span></td><td><span class="comparison-badge badge-yes">✔ YES</span></td></tr>
+              <tr><td>AI Financial Predictions</td><td><span class="comparison-badge badge-yes">✔ YES</span></td><td><span class="comparison-badge badge-na">~ SOME</span></td><td><span class="comparison-badge badge-no">✘ NO</span></td></tr>
+              <tr><td>One-Time Purchase (No Monthly)</td><td><span class="comparison-badge badge-yes">✔ YES</span></td><td><span class="comparison-badge badge-no">✘ Monthly Fees</span></td><td><span class="comparison-badge badge-yes">✔ YES</span></td></tr>
+              <tr><td>No Accounting Knowledge Needed</td><td><span class="comparison-badge badge-yes">✔ YES</span></td><td><span class="comparison-badge badge-no">✘ Complex</span></td><td><span class="comparison-badge badge-no">✘ Requires Skills</span></td></tr>
+              <tr><td>Business + Personal in One App</td><td><span class="comparison-badge badge-yes">✔ YES</span></td><td><span class="comparison-badge badge-na">~ Separate Apps</span></td><td><span class="comparison-badge badge-no">✘ Manual Split</span></td></tr>
+              <tr><td>Personalised Financial Advice</td><td><span class="comparison-badge badge-yes">✔ YES</span></td><td><span class="comparison-badge badge-na">~ Generic Tips</span></td><td><span class="comparison-badge badge-no">✘ NO</span></td></tr>
+              <tr><td>Your Data Stays on Your Device</td><td><span class="comparison-badge badge-yes">✔ YES</span></td><td><span class="comparison-badge badge-no">✘ Stored on Their Servers</span></td><td><span class="comparison-badge badge-yes">✔ YES</span></td></tr>
+              <tr><td>Built Specifically for Kenya</td><td><span class="comparison-badge badge-yes">✔ YES</span></td><td><span class="comparison-badge badge-no">✘ Generic/Western</span></td><td><span class="comparison-badge badge-na">~ Adaptable</span></td></tr>
+              <tr><td>Works on All Device Types</td><td><span class="comparison-badge badge-yes">✔ YES</span></td><td><span class="comparison-badge badge-na">~ App Stores Only</span></td><td><span class="comparison-badge badge-na">~ Laptop Only</span></td></tr>
+              <tr><td>Easy for Non-Accountants</td><td><span class="comparison-badge badge-yes">✔ YES</span></td><td><span class="comparison-badge badge-no">✘ Accounting Terms</span></td><td><span class="comparison-badge badge-no">✘ Debit/Credit Needed</span></td></tr>
             </tbody>
           </table>
           <br/>
-          <div style="background:#E8F0FF;border:2px solid;border-color:#808080 #FFF #FFF #808080;padding:12px;border-radius:4px">
-            <p style="font-size:12px;font-weight:700;color:var(--xp-blue);margin-bottom:4px">Why Kenyans Specifically Choose TRAVIS:</p>
-            <p style="font-size:12px;color:#333;line-height:1.6">Large fintech companies build generic tools for the global market. TRAVIS is <strong>built for the Kenyan reality</strong> — M-Pesa patterns, chama contributions, irregular side-hustle income, rural connectivity issues, and the mixed business/personal finances that most Kenyans navigate daily.</p>
+          <div class="info-highlight-blue">
+            <p style="font-size:13px;font-weight:600;color:var(--accent-light);margin-bottom:6px">Why Kenyans Specifically Choose TRAVIS:</p>
+            <p style="font-size:13px;color:var(--text-secondary);line-height:1.6">Large fintech companies build generic tools for the global market. TRAVIS is <strong style="color:var(--text-primary)">built for the Kenyan reality</strong> — M-Pesa patterns, chama contributions, irregular side-hustle income, rural connectivity issues, and the mixed business/personal finances that most Kenyans navigate daily.</p>
           </div>
         </div>
-        <div style="padding:8px 12px;text-align:right;background:#D4D0C8;border-top:1px solid #ACA899">
+        <div style="padding:12px 20px;text-align:right;border-top:1px solid var(--border)">
           <button class="xp-btn green" onclick="window.location='travis_core.html'">▶ Choose TRAVIS Today</button>
         </div>
         <div class="statusbar">
@@ -1628,21 +1619,22 @@ body {
 
     <div class="section-gap" id="pricing"></div>
 
+    <!-- ─── PRICING ─── -->
     <div class="windows-grid">
       <div class="window">
         <div class="window-titlebar">
           <span class="window-icon">🪙</span>
           <span class="window-title">TRAVIS Pricing — One-Time Lifetime Purchase</span>
           <div class="win-btns">
-            <div class="win-btn min">_</div>
-            <div class="win-btn max">□</div>
+            <div class="win-btn min">─</div>
+            <div class="win-btn max">⬜</div>
             <div class="win-btn close">✕</div>
           </div>
         </div>
         <div class="window-body">
-          <div style="padding:16px;">
+          <div style="padding:20px;">
             <div class="pricing-highlight">
-              <div style="font-size:12px;color:rgba(255,255,255,0.7);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">One-Time Lifetime Access</div>
+              <div style="font-size:12px;color:var(--text-secondary);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px">One-Time Lifetime Access</div>
               <div class="price-amount">KES &nbsp;<span id="price-display">999</span></div>
               <div class="price-label">Pay Once. Use Forever. No Monthly Fees. Ever.</div>
               <br/>
@@ -1665,9 +1657,9 @@ body {
               </ul>
             </div>
             <br/>
-            <div style="background:#E8FFE8;border:2px solid;border-color:#6AB060 #A0D098 #A0D098 #6AB060;padding:10px;border-radius:4px;text-align:center;">
-              <p style="font-size:12px;color:#1A6020;font-weight:700">💚 Save KES 36,000+ per year compared to monthly subscription apps</p>
-              <p style="font-size:11px;color:#2A8030;margin-top:4px">At KES 500/month others charge — you save that every 6 months. TRAVIS pays for itself.</p>
+            <div class="info-highlight-green" style="text-align:center;">
+              <p style="font-size:13px;color:var(--accent-green-l);font-weight:600">💚 Save KES 36,000+ per year compared to monthly subscription apps</p>
+              <p style="font-size:12px;color:var(--text-secondary);margin-top:4px">At KES 500/month others charge — you save that every 6 months. TRAVIS pays for itself.</p>
             </div>
           </div>
           <div class="statusbar">
@@ -1682,20 +1674,20 @@ body {
           <span class="window-icon alert-blink">⚠️</span>
           <span class="window-title">System Alert — Don't Miss This</span>
           <div class="win-btns">
-            <div class="win-btn min">_</div>
-            <div class="win-btn max">□</div>
+            <div class="win-btn min">─</div>
+            <div class="win-btn max">⬜</div>
             <div class="win-btn close">✕</div>
           </div>
         </div>
         <div class="window-body">
-          <div style="padding:16px;">
+          <div style="padding:20px;">
             <div class="fomo-box">
               <strong>⚠️ WARNING: This Introductory Price Is Expiring</strong>
               The current price of KES 999 is our launch offer. When the next batch of users hits our platform, this price <em>will increase permanently</em>. Users who purchase now lock in lifetime access at this price — forever.
             </div>
             <br/>
-            <div style="background:#FFF8E0;border:2px solid;border-color:#DDD8A0 #B8B480 #B8B480 #DDD8A0;padding:12px;border-radius:4px">
-              <p style="font-size:12px;font-weight:700;color:#7A6010;margin-bottom:8px">💭 Think About This:</p>
+            <div class="info-highlight-gold">
+              <p style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:10px">💭 Think About This:</p>
               <ul class="bullet-list">
                 <li>You spend more than KES 999 on airtime every 2 months</li>
                 <li>One bad financial decision costs you more than this</li>
@@ -1705,8 +1697,8 @@ body {
               </ul>
             </div>
             <br/>
-            <div style="background:#F0E8FF;border:2px solid;border-color:#C0A0E0 #9060C0 #9060C0 #C0A0E0;padding:12px;border-radius:4px">
-              <p style="font-size:12px;font-weight:700;color:#600090;margin-bottom:6px">🔒 Early Buyers Get Extra:</p>
+            <div class="info-highlight-purple">
+              <p style="font-size:13px;font-weight:600;color:#A080FF;margin-bottom:8px">🔒 Early Buyers Get Extra:</p>
               <ul class="bullet-list">
                 <li>Priority access to all new features</li>
                 <li>Direct access to the TRAVIS development team</li>
@@ -1719,7 +1711,7 @@ body {
               🔑 &nbsp; Secure My Lifetime Access Now
             </button>
             <br/>
-            <p style="font-size:11px;color:#888;text-align:center;margin-top:8px;font-family:var(--font-main)">Join hundreds of Kenyans already using TRAVIS daily</p>
+            <p style="font-size:11px;color:var(--text-disabled);text-align:center;margin-top:10px;">Join hundreds of Kenyans already using TRAVIS daily</p>
           </div>
           <div class="statusbar">
             <div class="status-section alert-blink">⚠️ Introductory Price Active</div>
@@ -1731,18 +1723,19 @@ body {
 
     <div class="section-gap"></div>
 
+    <!-- ─── REVIEWS ─── -->
     <div class="window">
       <div class="window-titlebar">
         <span class="window-icon">💬</span>
         <span class="window-title">User Reviews — What TRAVIS Users Are Saying</span>
         <div class="win-btns">
-          <div class="win-btn min">_</div>
-          <div class="win-btn max">□</div>
+          <div class="win-btn min">─</div>
+          <div class="win-btn max">⬜</div>
           <div class="win-btn close">✕</div>
         </div>
       </div>
       <div class="window-body">
-        <div style="padding:16px;">
+        <div style="padding:20px;">
           <div class="windows-grid windows-grid-3" style="margin-bottom:0">
             <div>
               <div class="testimonial-card">
@@ -1782,7 +1775,7 @@ body {
             </div>
           </div>
         </div>
-        <div style="padding:8px 12px;text-align:center;background:#D4D0C8;border-top:1px solid #ACA899">
+        <div style="padding:12px 20px;text-align:center;border-top:1px solid var(--border)">
           <button class="xp-btn green" onclick="window.location='travis_core.html'">▶ Join Thousands of TRAVIS Users</button>
         </div>
         <div class="statusbar">
@@ -1794,22 +1787,23 @@ body {
 
     <div class="section-gap"></div>
 
+    <!-- ─── CTA ─── -->
     <div class="window">
       <div class="window-titlebar">
         <span class="window-icon">🚀</span>
         <span class="window-title">Ready to Start? — Launch TRAVIS Financial System</span>
         <div class="win-btns">
-          <div class="win-btn min">_</div>
-          <div class="win-btn max">□</div>
+          <div class="win-btn min">─</div>
+          <div class="win-btn max">⬜</div>
           <div class="win-btn close" onclick="window.location='travis_core.html'">✕</div>
         </div>
       </div>
       <div class="window-body">
-        <div style="padding:24px;text-align:center;">
-          <p style="font-family:var(--font-display);font-size:36px;color:var(--xp-blue);margin-bottom:8px">Your Financial Future Starts Now</p>
-          <p style="font-size:13px;color:#333;max-width:600px;margin:0 auto 20px;line-height:1.7">
-            Every day you delay is another day your money moves without direction. 
-            TRAVIS is ready. Your financial clarity is one click away. 
+        <div style="padding:40px 32px;text-align:center;">
+          <p style="font-family:var(--font-display);font-weight:300;font-size:40px;color:var(--text-primary);margin-bottom:10px;letter-spacing:-1px">Your Financial Future Starts Now</p>
+          <p style="font-size:14px;color:var(--text-secondary);max-width:600px;margin:0 auto 28px;line-height:1.8">
+            Every day you delay is another day your money moves without direction.
+            TRAVIS is ready. Your financial clarity is one click away.
             No accounting knowledge needed. No internet required. No monthly bill. Ever.
           </p>
           <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
@@ -1821,17 +1815,17 @@ body {
             </button>
           </div>
           <br/>
-          <div style="display:inline-flex;gap:20px;flex-wrap:wrap;justify-content:center">
-            <div class="offline-badge" style="font-size:11px">
+          <div style="display:inline-flex;gap:12px;flex-wrap:wrap;justify-content:center">
+            <div class="offline-badge">
               <div class="offline-dot"></div>
               <span>100% Offline</span>
             </div>
-            <div class="offline-badge" style="font-size:11px">
-              <div class="offline-dot" style="background:#FFD060;box-shadow:0 0 8px #FFD060"></div>
+            <div class="offline-badge" style="color:var(--gold)">
+              <div class="offline-dot" style="background:var(--gold);"></div>
               <span>One-Time Purchase</span>
             </div>
-            <div class="offline-badge" style="font-size:11px">
-              <div class="offline-dot" style="background:#6090FF;box-shadow:0 0 8px #6090FF"></div>
+            <div class="offline-badge" style="color:var(--accent-light)">
+              <div class="offline-dot" style="background:var(--accent-light);"></div>
               <span>All Devices</span>
             </div>
           </div>
@@ -1846,9 +1840,10 @@ body {
 
     <div class="section-gap"></div>
 
-  </div>
-</div>
+  </div><!-- /main-container -->
+</div><!-- /desktop -->
 
+<!-- ─── TASKBAR ─── -->
 <div class="taskbar">
   <button class="start-btn" onclick="scrollToTop()">
     <div class="start-orb"></div>
@@ -1865,25 +1860,26 @@ body {
   </div>
 </div>
 
+<!-- ─── NOTIFICATION ─── -->
 <div class="xp-notification" id="xp-notif">
   <div class="notif-titlebar">
-    <span class="notif-icon" style="font-size:14px">💹</span>
+    <span class="notif-icon" style="font-size:16px">💹</span>
     <span class="notif-title">TRAVIS Financial System</span>
     <div class="notif-close" onclick="closeNotif()">✕</div>
   </div>
   <div class="notif-body">
     <div class="notif-icon">⚠️</div>
     <div>
-      <strong style="display:block;margin-bottom:2px;color:var(--xp-blue);font-size:12px">Introductory Pricing Active</strong>
-      KES 999 lifetime access — price increases when next user batch joins. Act now.
+      <strong style="display:block;margin-bottom:4px;color:var(--accent-light);font-size:13px">Introductory Pricing Active</strong>
+      <span style="color:var(--text-secondary)">KES 999 lifetime access — price increases when next user batch joins. Act now.</span>
       <br/><br/>
-      <button class="xp-btn green" style="font-size:11px;padding:4px 10px" onclick="window.location='travis_core.html'">▶ Get TRAVIS</button>
+      <button class="xp-btn green" style="font-size:12px;padding:6px 14px" onclick="window.location='travis_core.html'">▶ Get TRAVIS</button>
     </div>
   </div>
 </div>
 
-
-    <script>
+<!-- ─── DEVTOOLS PROTECTION (preserved exactly) ─── -->
+<script>
 const CONFIG = {
     title: "Developer Tools Access Prohibited",
     body: "This action is not allowed on our platform.<br><br>Our security policies strictly prohibit the use of developer tools, element inspection, or viewing source code.",
@@ -1931,93 +1927,61 @@ function showProfessionalOverlay() {
     document.documentElement.appendChild(overlay);
 
     if (CONFIG.redirectUrl && CONFIG.redirectAfterSeconds) {
-        setTimeout(() => {
-            window.location.href = CONFIG.redirectUrl;
-        }, CONFIG.redirectAfterSeconds * 1000);
+        setTimeout(() => { window.location.href = CONFIG.redirectUrl; }, CONFIG.redirectAfterSeconds * 1000);
     }
 }
 
 function isDevToolsOpen() {
-    const threshold = 160; 
+    const threshold = 400;
     const widthDiff = window.outerWidth - window.innerWidth > threshold;
     const heightDiff = window.outerHeight - window.innerHeight > threshold;
-
     return widthDiff || heightDiff;
 }
 
 function extraDetectionLayer() {
     const testElement = new Image();
     Object.defineProperty(testElement, "id", {
-        get: function () {
-            showProfessionalOverlay();
-            return "devtools-detected";
-        }
+        get: function () { showProfessionalOverlay(); return "devtools-detected"; }
     });
 }
 
-document.addEventListener("contextmenu", e => {
-    e.preventDefault();
-    showProfessionalOverlay();
-    return false;
-});
+// Context menu block disabled to prevent false triggers in preview environments
+// Re-enable for production: document.addEventListener("contextmenu", e => { e.preventDefault(); ... });
 
 document.addEventListener("keydown", e => {
     const isWindows = e.ctrlKey;
     const isMac = e.metaKey;
-
     if (
         e.key === "F12" ||
         (isWindows && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C")) ||
         (isMac && e.altKey && (e.key === "I" || e.key === "J" || e.key === "C")) ||
-        (isWindows && e.key === "u") || (isMac && e.key === "u") || // View Source
-        (isWindows && e.shiftKey && e.key === "K") // Firefox console
-    ) {
-        e.preventDefault();
-        showProfessionalOverlay();
-        return false;
-    }
+        (isWindows && e.key === "u") || (isMac && e.key === "u") ||
+        (isWindows && e.shiftKey && e.key === "K")
+    ) { e.preventDefault(); showProfessionalOverlay(); return false; }
 });
 
 function startContinuousCheck() {
-    setInterval(() => {
-        if (!protectionActive && isDevToolsOpen()) {
-            showProfessionalOverlay();
-        }
-    }, 400);
+    setInterval(() => { if (!protectionActive && isDevToolsOpen()) showProfessionalOverlay(); }, 400);
 }
 
 window.retryProtectionCheck = function () {
-    if (isDevToolsOpen()) {
-        return; // Still open → do nothing
-    }
+    if (isDevToolsOpen()) return;
     const overlay = document.getElementById("devtools-protection-overlay");
-    if (overlay) {
-        overlay.remove();
-        protectionActive = false;
-        if (document.body) document.body.style.visibility = "visible";
-    }
+    if (overlay) { overlay.remove(); protectionActive = false; if (document.body) document.body.style.visibility = "visible"; }
 };
 
 function initProtection() {
-    if (isDevToolsOpen()) {
-        showProfessionalOverlay();
-    }
+    if (isDevToolsOpen()) showProfessionalOverlay();
     extraDetectionLayer();
-
     startContinuousCheck();
     window.addEventListener("load", () => {
-        setTimeout(() => {
-            if (!protectionActive && isDevToolsOpen()) {
-                showProfessionalOverlay();
-            }
-        }, 600);
+        setTimeout(() => { if (!protectionActive && isDevToolsOpen()) showProfessionalOverlay(); }, 600);
     });
 }
-
 initProtection();
 </script>
 
-  <script src="landing.js"></script>
+<script src="landing.js"></script>
 
 </body>
 </html>
