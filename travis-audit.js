@@ -1,785 +1,1296 @@
-(function(_0x20cd00, _0x14202b) {
-    const _0x2eac9d = _0xbcfa,
-        _0x370790 = _0x20cd00();
-    while (!![]) {
-        try {
-            const _0x2ae2ce = parseInt(_0x2eac9d(0x16c)) / 0x1 * (parseInt(_0x2eac9d(0xf4)) / 0x2) + parseInt(_0x2eac9d(0x161)) / 0x3 + -parseInt(_0x2eac9d(0x16e)) / 0x4 * (-parseInt(_0x2eac9d(0xe4)) / 0x5) + parseInt(_0x2eac9d(0xc7)) / 0x6 * (parseInt(_0x2eac9d(0x128)) / 0x7) + parseInt(_0x2eac9d(0xdd)) / 0x8 * (parseInt(_0x2eac9d(0xe9)) / 0x9) + parseInt(_0x2eac9d(0x131)) / 0xa + -parseInt(_0x2eac9d(0x99)) / 0xb * (parseInt(_0x2eac9d(0xfe)) / 0xc);
-            if (_0x2ae2ce === _0x14202b) break;
-            else _0x370790['push'](_0x370790['shift']());
-        } catch (_0x1603e6) {
-            _0x370790['push'](_0x370790['shift']());
-        }
-    }
-}(_0x33a9, 0x7a3fb), (function() {
-    'use strict';
-    const _0x4a3a62 = _0xbcfa;
+// ============================================================
+// TRAVIS GUARDIAN — MONTHLY FINANCIAL AUDIT
+// Deobfuscated from minified/obfuscated source
+// ============================================================
 
-    function _0x4ee88e() {
-        return new Promise((_0x1e9071, _0x227aa7) => {
-            const _0x3ca652 = _0xbcfa,
-                _0x5dd742 = indexedDB[_0x3ca652(0xf1)](_0x3ca652(0xa1), 0x1);
-            _0x5dd742['onsuccess'] = _0x6ae310 => _0x1e9071(_0x6ae310[_0x3ca652(0x19b)][_0x3ca652(0x1a5)]), _0x5dd742[_0x3ca652(0xc3)] = _0x2cedd2 => _0x227aa7(_0x2cedd2[_0x3ca652(0x19b)][_0x3ca652(0x18c)]), _0x5dd742[_0x3ca652(0x126)] = _0x292ab7 => {
-                const _0x317562 = _0x3ca652,
-                    _0x118eb8 = _0x292ab7[_0x317562(0x19b)]['result'];
-                if (!_0x118eb8[_0x317562(0x1ba)][_0x317562(0xda)](_0x317562(0xa0))) _0x118eb8[_0x317562(0x115)](_0x317562(0xa0), {
-                    'keyPath': 'id'
-                });
-                if (!_0x118eb8[_0x317562(0x1ba)]['contains']('tx')) _0x118eb8['createObjectStore']('tx', {
-                    'keyPath': 'id'
-                });
-            };
-        });
-    }
+'use strict';
 
-    function _0x31b428(_0x58e029, _0x23bdc9) {
-        return new Promise(_0x771809 => {
-            const _0x156a25 = _0xbcfa;
-            try {
-                const _0x23f9f8 = _0x58e029[_0x156a25(0xee)](_0x23bdc9, 'readonly'),
-                    _0x49f546 = _0x23f9f8[_0x156a25(0xf2)](_0x23bdc9),
-                    _0x5eb4a1 = _0x49f546['getAll']();
-                _0x5eb4a1['onsuccess'] = () => _0x771809(_0x5eb4a1[_0x156a25(0x1a5)] || []), _0x5eb4a1[_0x156a25(0xc3)] = () => _0x771809([]);
-            } catch (_0xc9231b) {
-                _0x771809([]);
+// ─────────────────────────────────────────────
+// 1. DATABASE HELPERS (IndexedDB)
+// ─────────────────────────────────────────────
+
+function openDatabase() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open('TravisGuardian_v1.0', 1);
+
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror  = (event) => reject(event.target.error);
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('meta')) {
+                db.createObjectStore('meta', { keyPath: 'id' });
             }
-        });
-    }
-
-    function _0x57cc8b(_0x18907a, _0x35097a, _0x5b913a) {
-        return new Promise(_0x4ef888 => {
-            const _0xab971b = _0xbcfa;
-            try {
-                const _0x364020 = _0x18907a['transaction'](_0x35097a, _0xab971b(0x9b)),
-                    _0x5ea038 = _0x364020[_0xab971b(0xf2)](_0x35097a),
-                    _0x5c557f = _0x5ea038[_0xab971b(0xb6)](_0x5b913a);
-                _0x5c557f['onsuccess'] = () => _0x4ef888(_0x5c557f[_0xab971b(0x1a5)] || null), _0x5c557f['onerror'] = () => _0x4ef888(null);
-            } catch (_0x19eb98) {
-                _0x4ef888(null);
+            if (!db.objectStoreNames.contains('tx')) {
+                db.createObjectStore('tx', { keyPath: 'id' });
             }
-        });
-    }
-    async function _0x5f3ea5() {
-        const _0x4bfea1 = _0xbcfa,
-            _0x39408f = await _0x4ee88e(),
-            [_0x2bb3b5, _0x39ace1] = await Promise[_0x4bfea1(0x19d)]([_0x31b428(_0x39408f, 'tx'), _0x57cc8b(_0x39408f, 'meta', _0x4bfea1(0x1a8))]);
-        return _0x39408f['close'](), {
-            'transactions': _0x2bb3b5['sort']((_0x219f06, _0x514bb9) => _0x514bb9['id'] - _0x219f06['id']),
-            'user': _0x39ace1?.[_0x4bfea1(0x1b6)] || {},
-            'obligations': _0x39ace1?.[_0x4bfea1(0xf5)] || []
         };
-    }
-    const _0x2ed9c3 = {
-            'Cash': _0x4a3a62(0x17f),
-            'M-Pesa': _0x4a3a62(0x17f),
-            'Bank\x20Account': _0x4a3a62(0x17f),
-            'Savings': _0x4a3a62(0x17f),
-            'Bank\x20/\x20M-Pesa': _0x4a3a62(0x17f),
-            'Petty\x20Cash': 'liquid_asset',
-            'Accounts\x20Receivable': _0x4a3a62(0x17f),
-            'Inventory': _0x4a3a62(0xb7),
-            'Fixed\x20Assets': _0x4a3a62(0xb7),
-            'Salary': 'income',
-            'Side\x20Hustle': _0x4a3a62(0x160),
-            'Allowance': 'income',
-            'Dividends': _0x4a3a62(0x160),
-            'Other\x20Income': _0x4a3a62(0x160),
-            'Sales\x20Revenue': _0x4a3a62(0x160),
-            'Service\x20Revenue': _0x4a3a62(0x160),
-            'Other\x20Revenue': 'income',
-            'Food\x20&\x20Groceries': _0x4a3a62(0x150),
-            'Rent': 'necessary_expense',
-            'Bills': _0x4a3a62(0x150),
-            'Transport': _0x4a3a62(0x150),
-            'Medical': _0x4a3a62(0x150),
-            'School': 'necessary_expense',
-            'Payroll': _0x4a3a62(0x150),
-            'Utilities': _0x4a3a62(0x150),
-            'Cost\x20of\x20Goods\x20Sold': _0x4a3a62(0x150),
-            'Tax': 'necessary_expense',
-            'Office\x20Supplies': _0x4a3a62(0x150),
-            'Entertainment': 'discretionary_expense',
-            'Clothes': 'discretionary_expense',
-            'Travel\x20(fun)': _0x4a3a62(0x1b3),
-            'Other\x20Fun\x20Spending': _0x4a3a62(0x1b3),
-            'Marketing': _0x4a3a62(0x1b3),
-            'Travel\x20&\x20Entertainment': 'discretionary_expense',
-            'Professional\x20Fees\x20(if\x20not\x20critical)': _0x4a3a62(0x1b3),
-            'Loan\x20Repayment': _0x4a3a62(0x11a),
-            'Credit': _0x4a3a62(0x11a),
-            'Accounts\x20Payable': _0x4a3a62(0x11a),
-            'Loans\x20Payable': _0x4a3a62(0x11a)
-        },
-        _0x22b82d = _0x214928 => _0x2ed9c3[_0x214928] || _0x4a3a62(0x17d),
-        _0x568903 = _0x89f67f => _0x22b82d(_0x89f67f) === 'liquid_asset',
-        _0x193676 = _0x5814bc => _0x22b82d(_0x5814bc) === _0x4a3a62(0x160),
-        _0x4410a0 = _0x220222 => _0x22b82d(_0x220222) === _0x4a3a62(0x150) || _0x22b82d(_0x220222) === 'discretionary_expense',
-        _0x32783f = _0x3c5057 => _0x22b82d(_0x3c5057) === 'liability';
-
-    function _0x5a4a68(_0x35b2ee) {
-        const _0x3750c8 = _0x4a3a62;
-        if (_0x568903(_0x35b2ee[_0x3750c8(0xf7)]) && _0x193676(_0x35b2ee['credit'])) return {
-            'flow': 'inflow',
-            'cat': _0x35b2ee[_0x3750c8(0x146)]
-        };
-        if (_0x193676(_0x35b2ee[_0x3750c8(0xf7)]) && _0x568903(_0x35b2ee['credit'])) return {
-            'flow': _0x3750c8(0xf3),
-            'cat': _0x35b2ee[_0x3750c8(0xf7)]
-        };
-        if (_0x568903(_0x35b2ee[_0x3750c8(0xf7)]) && _0x568903(_0x35b2ee[_0x3750c8(0x146)])) return {
-            'flow': 'transfer',
-            'cat': _0x3750c8(0x119)
-        };
-        if (_0x4410a0(_0x35b2ee[_0x3750c8(0xf7)]) && _0x568903(_0x35b2ee[_0x3750c8(0x146)])) return {
-            'flow': _0x3750c8(0x1bb),
-            'cat': _0x35b2ee[_0x3750c8(0xf7)]
-        };
-        if (_0x32783f(_0x35b2ee[_0x3750c8(0xf7)]) && _0x568903(_0x35b2ee[_0x3750c8(0x146)])) return {
-            'flow': _0x3750c8(0x1bb),
-            'cat': _0x35b2ee[_0x3750c8(0xf7)]
-        };
-        if (_0x22b82d(_0x35b2ee['debit']) === _0x3750c8(0xb7) && _0x568903(_0x35b2ee['credit'])) return {
-            'flow': 'outflow',
-            'cat': _0x35b2ee['debit']
-        };
-        if (_0x568903(_0x35b2ee['debit']) && _0x4410a0(_0x35b2ee[_0x3750c8(0x146)])) return {
-            'flow': _0x3750c8(0x1bb),
-            'cat': _0x35b2ee[_0x3750c8(0x146)]
-        };
-        if (_0x568903(_0x35b2ee[_0x3750c8(0x146)]) && !_0x568903(_0x35b2ee[_0x3750c8(0xf7)])) return {
-            'flow': _0x3750c8(0x1bb),
-            'cat': _0x35b2ee[_0x3750c8(0xf7)] || _0x3750c8(0x190)
-        };
-        if (_0x568903(_0x35b2ee['debit']) && !_0x568903(_0x35b2ee['credit'])) return {
-            'flow': 'inflow',
-            'cat': _0x35b2ee[_0x3750c8(0x146)] || _0x3750c8(0x163)
-        };
-        return {
-            'flow': _0x3750c8(0x17d),
-            'cat': (_0x35b2ee[_0x3750c8(0xf7)] || '') + _0x3750c8(0xc0) + (_0x35b2ee[_0x3750c8(0x146)] || '')
-        };
-    }
-
-    function _0x1f00d3(_0x5b9959) {
-        const _0x5606b6 = _0x4a3a62;
-        return _0x5606b6(0x17a) + Math[_0x5606b6(0x15f)](Math[_0x5606b6(0xb0)](_0x5b9959))[_0x5606b6(0x1c0)](_0x5606b6(0x1b7));
-    }
-
-    function _0xfc3269(_0x4ffacc) {
-        const _0x385102 = _0x4a3a62;
-        return [_0x385102(0x10a), _0x385102(0x129), 'March', _0x385102(0x15c), _0x385102(0xa6), _0x385102(0x1a2), _0x385102(0x11f), _0x385102(0x152), _0x385102(0x15e), 'October', _0x385102(0x1a9), 'December'][_0x4ffacc];
-    }
-
-    function _0xe8265f() {
-        const _0x1c90d7 = _0x4a3a62,
-            _0x30a8c2 = new Date();
-        return new Date(_0x30a8c2[_0x1c90d7(0x93)](), _0x30a8c2[_0x1c90d7(0xf6)]() + 0x1, 0x0)[_0x1c90d7(0xcd)]();
-    }
-
-    function _0x688423(_0x4acbba) {
-        const _0x3e4b8c = _0x4a3a62,
-            {
-                transactions: _0x2e6bf0,
-                user: _0x3f05e8,
-                obligations: _0x59dcde
-            } = _0x4acbba,
-            _0x415dc3 = new Date(),
-            _0x249c97 = _0x415dc3[_0x3e4b8c(0x93)](),
-            _0x680484 = _0x415dc3[_0x3e4b8c(0xf6)](),
-            _0x28b4f1 = _0x2e6bf0[_0x3e4b8c(0x1c5)](_0x1a5de0 => {
-                const _0x5e81ca = _0x3e4b8c,
-                    _0x4eb29c = new Date(Number(_0x1a5de0['id']));
-                return _0x4eb29c['getFullYear']() === _0x249c97 && _0x4eb29c[_0x5e81ca(0xf6)]() === _0x680484;
-            });
-        let _0x5bed8c = 0x0,
-            _0x3b9fe5 = 0x0;
-        const _0x1eb281 = {},
-            _0x108ea7 = {},
-            _0x552d03 = {},
-            _0x27b9f9 = {};
-        let _0xb105e = 0x0,
-            _0x37f4a5 = 0x0,
-            _0x4bd331 = 0x0;
-        _0x28b4f1['forEach'](_0x4cfd3f => {
-            const _0x4907ff = _0x3e4b8c,
-                _0x1bcef7 = _0x5a4a68(_0x4cfd3f),
-                _0xbfe349 = new Date(Number(_0x4cfd3f['id']))[_0x4907ff(0x123)]('en-KE');
-            _0x1bcef7[_0x4907ff(0x113)] === _0x4907ff(0xf3) && (_0x5bed8c += _0x4cfd3f[_0x4907ff(0x173)], _0x108ea7[_0x1bcef7[_0x4907ff(0xbf)]] = (_0x108ea7[_0x1bcef7[_0x4907ff(0xbf)]] || 0x0) + _0x4cfd3f['amount'], _0x27b9f9[_0xbfe349] = (_0x27b9f9[_0xbfe349] || 0x0) + _0x4cfd3f[_0x4907ff(0x173)]);
-            if (_0x1bcef7[_0x4907ff(0x113)] === _0x4907ff(0x1bb)) {
-                _0x3b9fe5 += _0x4cfd3f[_0x4907ff(0x173)], _0x1eb281[_0x1bcef7[_0x4907ff(0xbf)]] = (_0x1eb281[_0x1bcef7[_0x4907ff(0xbf)]] || 0x0) + _0x4cfd3f[_0x4907ff(0x173)], _0x552d03[_0xbfe349] = (_0x552d03[_0xbfe349] || 0x0) + _0x4cfd3f[_0x4907ff(0x173)];
-                const _0x49cf0 = _0x22b82d(_0x4cfd3f['debit']) !== 'unknown' ? _0x22b82d(_0x4cfd3f[_0x4907ff(0xf7)]) : _0x22b82d(_0x4cfd3f[_0x4907ff(0x146)]);
-                if (_0x49cf0 === _0x4907ff(0x150)) _0xb105e += _0x4cfd3f[_0x4907ff(0x173)];
-                else {
-                    if (_0x49cf0 === _0x4907ff(0x1b3)) _0x37f4a5 += _0x4cfd3f[_0x4907ff(0x173)];
-                    else {
-                        if (_0x49cf0 === 'liability') _0x4bd331 += _0x4cfd3f[_0x4907ff(0x173)];
-                    }
-                }
-            }
-        });
-        const _0x251dbe = _0x5bed8c - _0x3b9fe5,
-            _0x1dd02f = _0x5bed8c > 0x0 ? Math[_0x3e4b8c(0xb0)](_0x251dbe / _0x5bed8c * 0x64) : 0x0,
-            _0xfdfb2 = Object[_0x3e4b8c(0x198)](_0x1eb281)[_0x3e4b8c(0x106)]((_0x306dbb, _0x32edd1) => _0x32edd1[0x1] - _0x306dbb[0x1]),
-            _0x43b56a = Object[_0x3e4b8c(0x198)](_0x108ea7)[_0x3e4b8c(0x106)]((_0x20678a, _0x579b2d) => _0x579b2d[0x1] - _0x20678a[0x1]),
-            _0x487983 = Object[_0x3e4b8c(0x198)](_0x552d03)[_0x3e4b8c(0x106)]((_0x26e891, _0x2ab85) => _0x2ab85[0x1] - _0x26e891[0x1])[0x0] || ['—', 0x0],
-            _0x1ca0d7 = Object[_0x3e4b8c(0x198)](_0x27b9f9)[_0x3e4b8c(0x106)]((_0x4cb4c8, _0x2f1728) => _0x2f1728[0x1] - _0x4cb4c8[0x1])[0x0] || ['—', 0x0],
-            _0x246537 = (_0x59dcde || [])[_0x3e4b8c(0xdc)](_0x3421e3 => {
-                const _0x5af615 = _0x3e4b8c;
-                let _0xe82908 = 0x0;
-                return _0x28b4f1[_0x5af615(0x147)](_0x358e99 => {
-                    const _0x3b9dd1 = _0x5af615;
-                    if (_0x358e99['desc'] && _0x358e99[_0x3b9dd1(0xa2)][_0x3b9dd1(0xfd)]()['includes'](_0x3421e3[_0x3b9dd1(0x1af)]['toLowerCase']()) || _0x358e99[_0x3b9dd1(0xf7)] === _0x3421e3['label'] || _0x358e99['credit'] === _0x3421e3['label']) _0xe82908 += _0x358e99[_0x3b9dd1(0x173)];
-                }), {
-                    'label': _0x3421e3['label'],
-                    'budget': _0x3421e3[_0x5af615(0x173)],
-                    'paid': _0xe82908,
-                    'variance': _0xe82908 - _0x3421e3[_0x5af615(0x173)],
-                    'met': _0xe82908 >= _0x3421e3[_0x5af615(0x173)]
-                };
-            }),
-            _0x277be4 = _0x246537[_0x3e4b8c(0x1c5)](_0x4b1cae => _0x4b1cae[_0x3e4b8c(0x1aa)])[_0x3e4b8c(0xec)],
-            _0xb1737e = _0x246537['length'],
-            _0x29c0f8 = _0x246537['filter'](_0x244364 => _0x244364[_0x3e4b8c(0x1b0)] > 0x0);
-        let _0x4e63f0 = 0x32;
-        if (_0x1dd02f >= 0x14) _0x4e63f0 += 0x19;
-        else {
-            if (_0x1dd02f >= 0xf) _0x4e63f0 += 0x14;
-            else {
-                if (_0x1dd02f >= 0xa) _0x4e63f0 += 0xc;
-                else {
-                    if (_0x1dd02f >= 0x5) _0x4e63f0 += 0x6;
-                    else {
-                        if (_0x1dd02f < 0x0) _0x4e63f0 -= 0x14;
-                    }
-                }
-            }
-        }
-        _0x4e63f0 += _0xb1737e > 0x0 ? Math[_0x3e4b8c(0xb0)](_0x277be4 / _0xb1737e * 0x14) : 0xa, _0x4e63f0 -= _0x29c0f8[_0x3e4b8c(0xec)] * 0x5;
-        if (_0x3b9fe5 > 0x0) {
-            const _0x1fe05d = _0x37f4a5 / _0x3b9fe5;
-            if (_0x1fe05d > 0.5) _0x4e63f0 -= 0xa;
-            else {
-                if (_0x1fe05d > 0.3) _0x4e63f0 -= 0x5;
-            }
-        }
-        if (_0x28b4f1['length'] >= 0xa) _0x4e63f0 += 0x5;
-        else {
-            if (_0x28b4f1[_0x3e4b8c(0xec)] === 0x0) _0x4e63f0 -= 0xa;
-        }
-        _0x4e63f0 = Math[_0x3e4b8c(0xfc)](0x0, Math['min'](0x64, _0x4e63f0));
-        const _0x513f96 = _0x4e63f0 >= 0x50 ? _0x3e4b8c(0xef) : _0x4e63f0 >= 0x41 ? _0x3e4b8c(0xfa) : _0x4e63f0 >= 0x2d ? _0x3e4b8c(0x10f) : _0x3e4b8c(0x157),
-            _0x11a14c = {
-                'user': _0x3f05e8,
-                'netPosition': _0x251dbe,
-                'totalInflow': _0x5bed8c,
-                'totalOutflow': _0x3b9fe5,
-                'savingsRate': _0x1dd02f,
-                'score': _0x4e63f0,
-                'scoreLabel': _0x513f96,
-                'sortedSpend': _0xfdfb2,
-                'sortedIncome': _0x43b56a,
-                'obligationsMet': _0x277be4,
-                'obligationsTotal': _0xb1737e,
-                'overBudget': _0x29c0f8,
-                'obligationReport': _0x246537,
-                'worstDay': _0x487983,
-                'bestDay': _0x1ca0d7,
-                'monthTx': _0x28b4f1,
-                'm': _0x680484,
-                'y': _0x249c97,
-                'necessaryTotal': _0xb105e,
-                'discretionaryTotal': _0x37f4a5,
-                'liabilityTotal': _0x4bd331
-            };
-        return {
-            'month': _0xfc3269(_0x680484) + '\x20' + _0x249c97,
-            'user': _0x3f05e8,
-            'totalInflow': _0x5bed8c,
-            'totalOutflow': _0x3b9fe5,
-            'netPosition': _0x251dbe,
-            'savingsRate': _0x1dd02f,
-            'score': _0x4e63f0,
-            'scoreLabel': _0x513f96,
-            'txCount': _0x28b4f1[_0x3e4b8c(0xec)],
-            'monthTx': _0x28b4f1,
-            'sortedSpend': _0xfdfb2,
-            'sortedIncome': _0x43b56a,
-            'obligationReport': _0x246537,
-            'obligationsMet': _0x277be4,
-            'obligationsTotal': _0xb1737e,
-            'overBudget': _0x29c0f8,
-            'worstDay': _0x487983,
-            'bestDay': _0x1ca0d7,
-            'necessaryTotal': _0xb105e,
-            'discretionaryTotal': _0x37f4a5,
-            'liabilityTotal': _0x4bd331,
-            'narrative': _0x1a7d1d(_0x11a14c),
-            'recommendations': _0x4612cd(_0x11a14c)
-        };
-    }
-
-    function _0x1a7d1d(_0x1dfb93) {
-        const _0x21c022 = _0x4a3a62,
-            _0x121800 = [],
-            _0xf5d2d1 = _0x1dfb93[_0x21c022(0x1b6)]?.[_0x21c022(0x9f)] || 'Client',
-            _0x135c48 = _0xfc3269(_0x1dfb93['m']) + '\x20' + _0x1dfb93['y'];
-        _0x121800[_0x21c022(0xe3)](_0xf5d2d1 + _0x21c022(0x120) + _0x135c48 + _0x21c022(0xe0) + _0x1dfb93[_0x21c022(0x13f)] + _0x21c022(0x130) + _0x1dfb93['scoreLabel'] + '.');
-        if (_0x1dfb93[_0x21c022(0x13a)] > 0x0) _0x121800[_0x21c022(0xe3)](_0x21c022(0xc6) + _0x1f00d3(_0x1dfb93[_0x21c022(0x13a)]) + _0x21c022(0x117));
-        else {
-            if (_0x1dfb93[_0x21c022(0x13a)] === 0x0) _0x121800['push'](_0x21c022(0x181) + _0x1f00d3(_0x1dfb93[_0x21c022(0x14e)]) + '.');
-            else _0x121800[_0x21c022(0xe3)](_0x21c022(0xc9) + _0x1f00d3(_0x1dfb93['totalOutflow']) + '\x20went\x20out\x20against\x20' + _0x1f00d3(_0x1dfb93[_0x21c022(0x14e)]) + _0x21c022(0x174) + _0x1f00d3(Math[_0x21c022(0x15f)](_0x1dfb93[_0x21c022(0x13a)])) + '.');
-        }
-        if (_0x1dfb93[_0x21c022(0x14e)] === 0x0) _0x121800['push'](_0x21c022(0xf0));
-        else {
-            if (_0x1dfb93[_0x21c022(0xc1)] >= 0x14) _0x121800[_0x21c022(0xe3)](_0x21c022(0xf9) + _0x1dfb93[_0x21c022(0xc1)] + _0x21c022(0x18f));
-            else {
-                if (_0x1dfb93[_0x21c022(0xc1)] >= 0xa) _0x121800[_0x21c022(0xe3)](_0x21c022(0x11b) + _0x1dfb93[_0x21c022(0xc1)] + '%\x20is\x20acceptable,\x20though\x20there\x20is\x20room\x20to\x20push\x20toward\x2015-20%.');
-                else {
-                    if (_0x1dfb93[_0x21c022(0xc1)] >= 0x0) _0x121800[_0x21c022(0xe3)](_0x21c022(0x139) + _0x1dfb93[_0x21c022(0xc1)] + _0x21c022(0xd2));
-                    else _0x121800[_0x21c022(0xe3)]('The\x20savings\x20rate\x20was\x20negative\x20at\x20' + _0x1dfb93['savingsRate'] + _0x21c022(0x12a));
-                }
-            }
-        }
-        if (_0x1dfb93['sortedSpend']['length'] > 0x0) {
-            const [_0x35407b, _0x640e33] = _0x1dfb93['sortedSpend'][0x0], _0xaf932e = _0x1dfb93[_0x21c022(0x17e)] > 0x0 ? Math[_0x21c022(0xb0)](_0x640e33 / _0x1dfb93[_0x21c022(0x17e)] * 0x64) : 0x0;
-            _0x121800[_0x21c022(0xe3)]('The\x20largest\x20outflow\x20category\x20was\x20' + _0x35407b + _0x21c022(0x91) + _0x1f00d3(_0x640e33) + ',\x20representing\x20' + _0xaf932e + _0x21c022(0x14a));
-            if (_0x1dfb93[_0x21c022(0x12e)]['length'] > 0x1) _0x121800['push'](_0x21c022(0xaf) + _0x1dfb93[_0x21c022(0x12e)][0x1][0x0] + _0x21c022(0x91) + _0x1f00d3(_0x1dfb93[_0x21c022(0x12e)][0x1][0x1]) + '.');
-        }
-        if (_0x1dfb93[_0x21c022(0x17e)] > 0x0 && _0x1dfb93[_0x21c022(0x116)] > 0x0) {
-            const _0x4016d3 = Math[_0x21c022(0xb0)](_0x1dfb93['discretionaryTotal'] / _0x1dfb93[_0x21c022(0x17e)] * 0x64);
-            _0x121800[_0x21c022(0xe3)](_0x4016d3 > 0x1e ? 'Discretionary\x20spending\x20was\x20' + _0x4016d3 + _0x21c022(0xff) + _0x1f00d3(_0x1dfb93[_0x21c022(0x116)]) + _0x21c022(0xe8) : _0x21c022(0x142) + _0x4016d3 + _0x21c022(0xff) + _0x1f00d3(_0x1dfb93[_0x21c022(0x116)]) + ').');
-        }
-        if (_0x1dfb93[_0x21c022(0x1b1)] > 0x0) {
-            if (_0x1dfb93['obligationsMet'] === _0x1dfb93[_0x21c022(0x1b1)] && _0x1dfb93[_0x21c022(0x100)][_0x21c022(0xec)] === 0x0) _0x121800[_0x21c022(0xe3)](_0x21c022(0x14f) + _0x1dfb93[_0x21c022(0x1b1)] + _0x21c022(0xb1) + (_0x1dfb93['obligationsTotal'] > 0x1 ? _0x21c022(0x185) : _0x21c022(0x103)) + _0x21c022(0x169));
-            else {
-                if (_0x1dfb93['overBudget'][_0x21c022(0xec)] > 0x0) {
-                    const _0x5cfe39 = [..._0x1dfb93[_0x21c022(0x100)]][_0x21c022(0x106)]((_0x3dc561, _0x29f9cc) => _0x29f9cc[_0x21c022(0x1b0)] - _0x3dc561[_0x21c022(0x1b0)])[0x0];
-                    _0x121800[_0x21c022(0xe3)]('\x22' + _0x5cfe39[_0x21c022(0x1af)] + '\x22\x20ran\x20' + _0x1f00d3(_0x5cfe39[_0x21c022(0x1b0)]) + '\x20over\x20budget\x20—\x20the\x20most\x20significant\x20variance\x20this\x20month.');
-                } else _0x1dfb93['obligationsMet'] < _0x1dfb93[_0x21c022(0x1b1)] && _0x121800[_0x21c022(0xe3)](_0x1dfb93[_0x21c022(0x1b1)] - _0x1dfb93[_0x21c022(0x13e)] + _0x21c022(0x1a0) + _0x1dfb93[_0x21c022(0x1b1)] + _0x21c022(0x19e));
-            }
-        }
-        if (_0x1dfb93[_0x21c022(0x140)][0x1] > 0x0) _0x121800[_0x21c022(0xe3)](_0x21c022(0x153) + _0x1f00d3(_0x1dfb93[_0x21c022(0x140)][0x1]) + _0x21c022(0xb4) + _0x1dfb93['worstDay'][0x0] + '.');
-        return _0x121800[_0x21c022(0xe3)](_0x1dfb93[_0x21c022(0x14b)]['length'] < 0x5 ? _0x21c022(0xcc) + _0x1dfb93[_0x21c022(0x14b)][_0x21c022(0xec)] + _0x21c022(0x166) + (_0x1dfb93['monthTx']['length'] !== 0x1 ? 's' : '') + _0x21c022(0x141) : _0x1dfb93['monthTx'][_0x21c022(0xec)] + '\x20transactions\x20recorded\x20—\x20' + (_0x1dfb93['monthTx'][_0x21c022(0xec)] >= 0xa ? _0x21c022(0xbb) : _0x21c022(0x114)) + _0x21c022(0x16f)), _0x121800['join']('\x20');
-    }
-
-    function _0x4612cd(_0x5b5a49) {
-        const _0x30f39d = _0x4a3a62,
-            _0x45234a = [],
-            _0x7f9fa6 = _0x5b5a49[_0x30f39d(0x1b6)]?.[_0x30f39d(0x11d)] === _0x30f39d(0xeb);
-        if (_0x5b5a49['netPosition'] < 0x0) _0x45234a[_0x30f39d(0xe3)]({
-            'priority': _0x30f39d(0x157),
-            'area': _0x30f39d(0x164),
-            'advice': 'You\x20spent\x20' + _0x1f00d3(Math['abs'](_0x5b5a49[_0x30f39d(0x13a)])) + _0x30f39d(0xd4)
-        });
-        else {
-            if (_0x5b5a49[_0x30f39d(0xc1)] < 0x5 && _0x5b5a49['totalInflow'] > 0x0) _0x45234a['push']({
-                'priority': _0x30f39d(0x12f),
-                'area': 'Savings\x20Buffer',
-                'advice': _0x30f39d(0x189) + _0x5b5a49[_0x30f39d(0xc1)] + _0x30f39d(0x176)
-            });
-            else {
-                if (_0x5b5a49[_0x30f39d(0xc1)] >= 0xf) _0x45234a['push']({
-                    'priority': _0x30f39d(0x1c1),
-                    'area': _0x30f39d(0x175),
-                    'advice': _0x30f39d(0x154) + _0x5b5a49['savingsRate'] + '%\x20savings\x20rate\x20is\x20above\x20the\x20healthy\x20threshold.\x20Pay\x20yourself\x20first\x20—\x20transfer\x20savings\x20on\x20the\x20day\x20income\x20arrives.'
-                });
-            }
-        }
-        if (_0x5b5a49[_0x30f39d(0x12e)][_0x30f39d(0xec)] > 0x0) {
-            const [_0x280b35, _0x5af57d] = _0x5b5a49['sortedSpend'][0x0], _0x1caaf8 = _0x5b5a49[_0x30f39d(0x17e)] > 0x0 ? Math[_0x30f39d(0xb0)](_0x5af57d / _0x5b5a49[_0x30f39d(0x17e)] * 0x64) : 0x0;
-            if (_0x1caaf8 >= 0x23) _0x45234a[_0x30f39d(0xe3)]({
-                'priority': 'HIGH',
-                'area': _0x280b35,
-                'advice': _0x280b35 + _0x30f39d(0x101) + _0x1caaf8 + _0x30f39d(0x192) + _0x1f00d3(_0x5af57d) + _0x30f39d(0x187)
-            });
-        }
-        if (_0x5b5a49[_0x30f39d(0x17e)] > 0x0) {
-            const _0x1426eb = Math[_0x30f39d(0xb0)](_0x5b5a49['discretionaryTotal'] / _0x5b5a49[_0x30f39d(0x17e)] * 0x64);
-            if (_0x1426eb > 0x1e) _0x45234a[_0x30f39d(0xe3)]({
-                'priority': _0x30f39d(0x12f),
-                'area': _0x30f39d(0x118),
-                'advice': _0x30f39d(0x19f) + _0x1426eb + _0x30f39d(0xff) + _0x1f00d3(_0x5b5a49[_0x30f39d(0x116)]) + _0x30f39d(0x90)
-            });
-            else {
-                if (_0x1426eb <= 0xf && _0x5b5a49[_0x30f39d(0x116)] > 0x0) _0x45234a[_0x30f39d(0xe3)]({
-                    'priority': 'KEEP\x20UP',
-                    'area': 'Discretionary\x20Control',
-                    'advice': _0x30f39d(0xca) + _0x1426eb + _0x30f39d(0xad)
-                });
-            }
-        }
-        _0x5b5a49[_0x30f39d(0x100)][_0x30f39d(0x147)](_0x6ee0c3 => {
-            const _0x3485bf = _0x30f39d;
-            _0x45234a[_0x3485bf(0xe3)]({
-                'priority': 'HIGH',
-                'area': _0x6ee0c3[_0x3485bf(0x1af)],
-                'advice': '\x22' + _0x6ee0c3[_0x3485bf(0x1af)] + _0x3485bf(0x94) + _0x1f00d3(_0x6ee0c3[_0x3485bf(0x1b0)]) + '\x20(budgeted\x20' + _0x1f00d3(_0x6ee0c3['budget']) + _0x3485bf(0x8e) + _0x1f00d3(_0x6ee0c3['paid']) + _0x3485bf(0xce)
-            });
-        });
-        if (_0x5b5a49['obligationsMet'] < _0x5b5a49['obligationsTotal']) {
-            const _0x2d5331 = _0x5b5a49[_0x30f39d(0x1bf)][_0x30f39d(0x1c5)](_0x1fc176 => !_0x1fc176[_0x30f39d(0x1aa)]);
-            _0x45234a['push']({
-                'priority': _0x30f39d(0x157),
-                'area': _0x30f39d(0x158),
-                'advice': 'Unsettled:\x20' + _0x2d5331[_0x30f39d(0xdc)](_0x3ef2dc => _0x3ef2dc[_0x30f39d(0x1af)] + '\x20(short\x20' + _0x1f00d3(_0x3ef2dc['budget'] - _0x3ef2dc['paid']) + ')')[_0x30f39d(0x96)](',\x20') + _0x30f39d(0x197)
-            });
-        }
-        if (_0x5b5a49[_0x30f39d(0x14e)] === 0x0) _0x45234a[_0x30f39d(0xe3)]({
-            'priority': _0x30f39d(0x157),
-            'area': 'Income\x20Logging',
-            'advice': 'No\x20income\x20recorded.\x20Log\x20every\x20transaction\x20the\x20same\x20day\x20it\x20happens.\x20If\x20genuinely\x20zero,\x20an\x20urgent\x20recovery\x20plan\x20is\x20needed.'
-        });
-        if (_0x5b5a49[_0x30f39d(0xc1)] > 0x14 && _0x5b5a49[_0x30f39d(0x13a)] > 0x0 && _0x5b5a49[_0x30f39d(0x13e)] === _0x5b5a49[_0x30f39d(0x1b1)]) _0x45234a['push']({
-            'priority': _0x30f39d(0x135),
-            'area': _0x7f9fa6 ? 'Reinvestment' : _0x30f39d(0xa5),
-            'advice': _0x7f9fa6 ? _0x30f39d(0x109) : _0x30f39d(0x191)
-        });
-        if (_0x5b5a49[_0x30f39d(0x14b)][_0x30f39d(0xec)] < 0x5 && _0x5b5a49[_0x30f39d(0x14b)][_0x30f39d(0xec)] > 0x0) _0x45234a[_0x30f39d(0xe3)]({
-            'priority': 'HIGH',
-            'area': _0x30f39d(0x1c4),
-            'advice': 'Only\x20' + _0x5b5a49[_0x30f39d(0x14b)][_0x30f39d(0xec)] + _0x30f39d(0xac)
-        });
-        return _0x45234a;
-    }
-    async function _0x43474c() {
-        const _0x5653d1 = _0x4a3a62;
-        if (window['jspdf'] && window[_0x5653d1(0x159)]['jsPDF']) return window[_0x5653d1(0x159)][_0x5653d1(0x1b2)];
-        return new Promise((_0x508131, _0x36958d) => {
-            const _0x18347a = _0x5653d1,
-                _0xd27591 = document['createElement'](_0x18347a(0xfb));
-            _0xd27591[_0x18347a(0x104)] = _0x18347a(0x143), _0xd27591[_0x18347a(0x195)] = () => _0x508131(window['jspdf']['jsPDF']), _0xd27591[_0x18347a(0xc3)] = () => _0x36958d(new Error(_0x18347a(0x132))), document[_0x18347a(0x1c6)]['appendChild'](_0xd27591);
-        });
-    }
-    async function _0x17525f(_0x14877b) {
-        const _0x4b66a2 = _0x4a3a62,
-            _0x34c5a0 = await _0x43474c(),
-            _0x159ef7 = new _0x34c5a0({
-                'unit': 'mm',
-                'format': 'a4'
-            }),
-            _0x145cf0 = 0xd2,
-            _0x1e2c8e = 0x129,
-            _0x244297 = 0x10,
-            _0x118b13 = 0x10,
-            _0x2b7254 = _0x145cf0 - _0x244297 - _0x118b13;
-        let _0x30b783 = 0x12;
-        const _0x58de37 = {
-            'dark': [0x2, 0x6, 0x17],
-            'green': [0x4a, 0xde, 0x80],
-            'white': [0xff, 0xff, 0xff],
-            'slate': [0x64, 0x74, 0x8b],
-            'red': [0xef, 0x44, 0x44],
-            'yellow': [0xea, 0xb3, 0x8],
-            'blue': [0x3b, 0x82, 0xf6],
-            'bgLight': [0xf5, 0xf8, 0xff],
-            'border': [0xdc, 0xe2, 0xec],
-            'text': [0x1e, 0x28, 0x3c],
-            'sub': [0x50, 0x5a, 0x6e]
-        };
-
-        function _0x3b8602(_0x1280bd) {
-            const _0x19c9af = _0xbcfa;
-            _0x30b783 + (_0x1280bd || 0x14) > _0x1e2c8e - 0xe && (_0x159ef7[_0x19c9af(0xcf)](), _0x30b783 = 0x12, _0x2a57f6());
-        }
-
-        function _0x2a57f6() {
-            const _0x5047ed = _0xbcfa;
-            _0x159ef7['setFillColor'](..._0x58de37[_0x5047ed(0x182)]), _0x159ef7['rect'](0x0, 0x0, _0x145cf0, 0xa, 'F'), _0x159ef7[_0x5047ed(0x92)]('helvetica', _0x5047ed(0xd3)), _0x159ef7['setFontSize'](0x7), _0x159ef7['setTextColor'](..._0x58de37[_0x5047ed(0xb2)]), _0x159ef7['text'](_0x5047ed(0x1b4), _0x244297, 0x7), _0x159ef7['setTextColor'](..._0x58de37[_0x5047ed(0xe2)]), _0x159ef7[_0x5047ed(0xa9)](_0x14877b['month']['toUpperCase']() + _0x5047ed(0x11c) + (_0x14877b[_0x5047ed(0x1b6)]?.[_0x5047ed(0x9f)] || '')[_0x5047ed(0x18d)](), _0x145cf0 - _0x118b13, 0x7, {
-                'align': _0x5047ed(0x178)
-            });
-        }
-
-        function _0x492e01(_0x3ea3cf) {
-            const _0x5ba11d = _0xbcfa;
-            _0x3b8602(0xe), _0x159ef7['setFillColor'](..._0x58de37['dark']), _0x159ef7[_0x5ba11d(0x1ae)](_0x244297, _0x30b783, _0x2b7254, 0x8, 0x2, 0x2, 'F'), _0x159ef7[_0x5ba11d(0x92)](_0x5ba11d(0x1a1), _0x5ba11d(0xd3)), _0x159ef7[_0x5ba11d(0xbc)](8.5), _0x159ef7[_0x5ba11d(0xd7)](..._0x58de37[_0x5ba11d(0xb2)]), _0x159ef7[_0x5ba11d(0xa9)](_0x3ea3cf, _0x244297 + 0x4, _0x30b783 + 5.5), _0x30b783 += 0xd;
-        }
-        _0x159ef7[_0x4b66a2(0x14c)](..._0x58de37[_0x4b66a2(0x182)]), _0x159ef7[_0x4b66a2(0xa7)](0x0, 0x0, _0x145cf0, 0x37, 'F'), _0x159ef7[_0x4b66a2(0x14c)](..._0x58de37[_0x4b66a2(0xb2)]), _0x159ef7[_0x4b66a2(0xa7)](0x0, 0x37, _0x145cf0, 0x2, 'F'), _0x159ef7[_0x4b66a2(0x92)]('helvetica', 'bold'), _0x159ef7[_0x4b66a2(0xbc)](0x20), _0x159ef7[_0x4b66a2(0xd7)](..._0x58de37[_0x4b66a2(0xb2)]), _0x159ef7['text'](_0x4b66a2(0x1be), _0x244297, 0x1a), _0x159ef7['setTextColor'](..._0x58de37[_0x4b66a2(0xb5)]), _0x159ef7[_0x4b66a2(0xa9)]('GUARDIAN', _0x244297 + 0x34, 0x1a), _0x159ef7[_0x4b66a2(0xbc)](0x9), _0x159ef7[_0x4b66a2(0x92)]('helvetica', _0x4b66a2(0x151)), _0x159ef7['setTextColor'](0xa0, 0xb4, 0xd2), _0x159ef7[_0x4b66a2(0xa9)](_0x4b66a2(0x193), _0x244297, 0x23), _0x159ef7['text'](_0x14877b[_0x4b66a2(0xbe)][_0x4b66a2(0x18d)]() + _0x4b66a2(0x11c) + (_0x14877b[_0x4b66a2(0x1b6)]?.[_0x4b66a2(0x9f)] || '')[_0x4b66a2(0x18d)]() + _0x4b66a2(0x11c) + (_0x14877b[_0x4b66a2(0x1b6)]?.['type'] || _0x4b66a2(0x16a))[_0x4b66a2(0x18d)](), _0x244297, 0x2b), _0x159ef7[_0x4b66a2(0xa9)](_0x4b66a2(0x162) + new Date()[_0x4b66a2(0x1c0)](_0x4b66a2(0x1b7)), _0x244297, 0x31), _0x159ef7[_0x4b66a2(0xbc)](7.5), _0x159ef7[_0x4b66a2(0xd7)](0x4a, 0xde, 0x80), _0x159ef7[_0x4b66a2(0xa9)](_0x4b66a2(0x194) + _0x14877b[_0x4b66a2(0x170)] + _0x4b66a2(0x1ab), _0x244297, 0x37);
-        const _0x1b1f05 = _0x14877b[_0x4b66a2(0x13f)] >= 0x50 ? _0x58de37[_0x4b66a2(0xb2)] : _0x14877b[_0x4b66a2(0x13f)] >= 0x41 ? _0x58de37[_0x4b66a2(0x145)] : _0x58de37[_0x4b66a2(0xd9)];
-        _0x159ef7[_0x4b66a2(0x14c)](..._0x1b1f05), _0x159ef7['roundedRect'](_0x145cf0 - _0x118b13 - 0x28, 0xe, 0x28, 0x20, 0x3, 0x3, 'F'), _0x159ef7[_0x4b66a2(0x92)](_0x4b66a2(0x1a1), 'bold'), _0x159ef7[_0x4b66a2(0xbc)](0x1a), _0x159ef7['setTextColor'](..._0x58de37[_0x4b66a2(0x182)]), _0x159ef7[_0x4b66a2(0xa9)](String(_0x14877b[_0x4b66a2(0x13f)]), _0x145cf0 - _0x118b13 - 0x14, 0x22, {
-            'align': _0x4b66a2(0x1a4)
-        }), _0x159ef7[_0x4b66a2(0xbc)](6.5), _0x159ef7['text'](_0x4b66a2(0x179), _0x145cf0 - _0x118b13 - 0x14, 0x28, {
-            'align': 'center'
-        }), _0x159ef7[_0x4b66a2(0xa9)](_0x4b66a2(0x196), _0x145cf0 - _0x118b13 - 0x14, 0x2c, {
-            'align': _0x4b66a2(0x1a4)
-        }), _0x159ef7[_0x4b66a2(0xa9)](_0x14877b[_0x4b66a2(0x10d)], _0x145cf0 - _0x118b13 - 0x14, 0x31, {
-            'align': _0x4b66a2(0x1a4)
-        }), _0x30b783 = 0x43, _0x2a57f6();
-        const _0x58e87e = [{
-                'label': 'Total\x20Inflow',
-                'value': _0x1f00d3(_0x14877b['totalInflow']),
-                'bar': _0x58de37[_0x4b66a2(0xb2)]
-            }, {
-                'label': _0x4b66a2(0xab),
-                'value': _0x1f00d3(_0x14877b[_0x4b66a2(0x17e)]),
-                'bar': _0x58de37['red']
-            }, {
-                'label': _0x4b66a2(0x8f),
-                'value': (_0x14877b[_0x4b66a2(0x13a)] >= 0x0 ? '+' : '-') + _0x1f00d3(_0x14877b[_0x4b66a2(0x13a)]),
-                'bar': _0x14877b[_0x4b66a2(0x13a)] >= 0x0 ? _0x58de37[_0x4b66a2(0xb2)] : _0x58de37[_0x4b66a2(0xd9)]
-            }, {
-                'label': _0x4b66a2(0x186),
-                'value': _0x14877b[_0x4b66a2(0xc1)] + '%',
-                'bar': _0x14877b['savingsRate'] >= 0xa ? _0x58de37[_0x4b66a2(0xb2)] : _0x58de37[_0x4b66a2(0xd9)]
-            }],
-            _0x5dd132 = (_0x2b7254 - 0x9) / 0x4;
-        _0x58e87e[_0x4b66a2(0x147)]((_0x554f42, _0x3ea6e2) => {
-            const _0x2d2b3d = _0x4b66a2,
-                _0x39832a = _0x244297 + _0x3ea6e2 * (_0x5dd132 + 0x3);
-            _0x159ef7['setFillColor'](..._0x58de37['bgLight']), _0x159ef7['roundedRect'](_0x39832a, _0x30b783, _0x5dd132, 0x14, 0x2, 0x2, 'F'), _0x159ef7[_0x2d2b3d(0x14c)](..._0x554f42[_0x2d2b3d(0xa8)]), _0x159ef7[_0x2d2b3d(0x1ae)](_0x39832a, _0x30b783, _0x5dd132, 2.5, 0x1, 0x1, 'F'), _0x159ef7['setFont'](_0x2d2b3d(0x1a1), _0x2d2b3d(0x151)), _0x159ef7[_0x2d2b3d(0xbc)](0x7), _0x159ef7[_0x2d2b3d(0xd7)](..._0x58de37['slate']), _0x159ef7[_0x2d2b3d(0xa9)](_0x554f42[_0x2d2b3d(0x1af)]['toUpperCase'](), _0x39832a + _0x5dd132 / 0x2, _0x30b783 + 0x9, {
-                'align': 'center'
-            }), _0x159ef7[_0x2d2b3d(0x92)](_0x2d2b3d(0x1a1), 'bold'), _0x159ef7[_0x2d2b3d(0xbc)](8.5), _0x159ef7[_0x2d2b3d(0xd7)](..._0x58de37[_0x2d2b3d(0xa9)]), _0x159ef7[_0x2d2b3d(0xa9)](_0x554f42[_0x2d2b3d(0xaa)], _0x39832a + _0x5dd132 / 0x2, _0x30b783 + 0x10, {
-                'align': 'center'
-            });
-        }), _0x30b783 += 0x1c;
-        if (_0x14877b['totalOutflow'] > 0x0) {
-            _0x3b8602(0x12);
-            const _0x12aa30 = [{
-                    'label': _0x4b66a2(0x168),
-                    'val': _0x14877b['necessaryTotal'],
-                    'col': _0x58de37['blue']
-                }, {
-                    'label': _0x4b66a2(0x1ac),
-                    'val': _0x14877b[_0x4b66a2(0x116)],
-                    'col': _0x58de37[_0x4b66a2(0x145)]
-                }, {
-                    'label': 'Liabilities',
-                    'val': _0x14877b[_0x4b66a2(0x127)],
-                    'col': _0x58de37['red']
-                }],
-                _0x2b941d = (_0x2b7254 - 0x6) / 0x3;
-            _0x12aa30[_0x4b66a2(0x147)]((_0x1115a5, _0x457302) => {
-                const _0x574455 = _0x4b66a2,
-                    _0x125165 = _0x244297 + _0x457302 * (_0x2b941d + 0x3),
-                    _0x2a05eb = Math[_0x574455(0xb0)](_0x1115a5[_0x574455(0x138)] / _0x14877b[_0x574455(0x17e)] * 0x64);
-                _0x159ef7[_0x574455(0x14c)](0xf8, 0xfa, 0xff), _0x159ef7[_0x574455(0x1ae)](_0x125165, _0x30b783, _0x2b941d, 0xe, 0x2, 0x2, 'F'), _0x159ef7['setFillColor'](..._0x1115a5['col']), _0x159ef7['roundedRect'](_0x125165, _0x30b783, Math[_0x574455(0xfc)](_0x2b941d * (_0x2a05eb / 0x64), 0.5), 0x2, 0x1, 0x1, 'F'), _0x159ef7[_0x574455(0x92)](_0x574455(0x1a1), _0x574455(0x151)), _0x159ef7['setFontSize'](6.5), _0x159ef7[_0x574455(0xd7)](..._0x58de37[_0x574455(0xe2)]), _0x159ef7[_0x574455(0xa9)](_0x1115a5[_0x574455(0x1af)][_0x574455(0x18d)]() + '\x20EXPENSES', _0x125165 + 0x4, _0x30b783 + 0x7), _0x159ef7[_0x574455(0x92)](_0x574455(0x1a1), 'bold'), _0x159ef7[_0x574455(0xbc)](0x8), _0x159ef7[_0x574455(0xd7)](..._0x58de37[_0x574455(0xa9)]), _0x159ef7[_0x574455(0xa9)](_0x1f00d3(_0x1115a5[_0x574455(0x138)]) + _0x574455(0xed) + _0x2a05eb + '%)', _0x125165 + 0x4, _0x30b783 + 0xc);
-            }), _0x30b783 += 0x14;
-        }
-        _0x3b8602(0x23), _0x492e01(_0x4b66a2(0xb3)), _0x159ef7['setFont'](_0x4b66a2(0x1a1), _0x4b66a2(0x151)), _0x159ef7['setFontSize'](0x9), _0x159ef7['setTextColor'](..._0x58de37['sub']), _0x159ef7[_0x4b66a2(0xd5)](_0x14877b[_0x4b66a2(0xdf)], _0x2b7254)['forEach'](_0xace6af => {
-            const _0x4b7155 = _0x4b66a2;
-            _0x3b8602(0x7), _0x159ef7[_0x4b7155(0xa9)](_0xace6af, _0x244297, _0x30b783), _0x30b783 += 5.5;
-        }), _0x30b783 += 0x6;
-        if (_0x14877b[_0x4b66a2(0x170)] > 0x0) {
-            _0x3b8602(0x28), _0x492e01(_0x4b66a2(0x16b) + _0x14877b[_0x4b66a2(0x170)] + _0x4b66a2(0x1a6)), _0x159ef7[_0x4b66a2(0x14c)](..._0x58de37[_0x4b66a2(0x182)]), _0x159ef7[_0x4b66a2(0xa7)](_0x244297, _0x30b783, _0x2b7254, 0x8, 'F'), _0x159ef7[_0x4b66a2(0x92)](_0x4b66a2(0x1a1), 'bold'), _0x159ef7['setFontSize'](0x7), _0x159ef7[_0x4b66a2(0xd7)](..._0x58de37['green']), _0x159ef7[_0x4b66a2(0xa9)]('DATE', _0x244297 + 0x2, _0x30b783 + 5.5), _0x159ef7[_0x4b66a2(0xa9)](_0x4b66a2(0xa3), _0x244297 + 0x1a, _0x30b783 + 5.5), _0x159ef7['text']('CREDIT\x20(FROM)', _0x244297 + 0x58, _0x30b783 + 5.5), _0x159ef7[_0x4b66a2(0xa9)](_0x4b66a2(0xc2), _0x244297 + 0x82, _0x30b783 + 5.5), _0x159ef7[_0x4b66a2(0xa9)](_0x4b66a2(0x18a), _0x145cf0 - _0x118b13 - 0x2, _0x30b783 + 5.5, {
-                'align': 'right'
-            }), _0x30b783 += 0xa;
-            const _0x532ed8 = _0x14877b[_0x4b66a2(0x14b)][_0x4b66a2(0xbd)](0x0, 0x32);
-            _0x532ed8[_0x4b66a2(0x147)]((_0x334dde, _0x3e8a9e) => {
-                const _0x4639c7 = _0x4b66a2;
-                _0x3b8602(0xa);
-                _0x3e8a9e % 0x2 === 0x0 && (_0x159ef7['setFillColor'](0xf8, 0xfa, 0xff), _0x159ef7[_0x4639c7(0xa7)](_0x244297, _0x30b783 - 0x1, _0x2b7254, 0x9, 'F'));
-                const _0x1730cb = _0x5a4a68(_0x334dde),
-                    _0x2edb23 = new Date(Number(_0x334dde['id']))['toLocaleDateString'](_0x4639c7(0x1b7), {
-                        'day': '2-digit',
-                        'month': _0x4639c7(0x18b)
-                    }),
-                    _0x417ffd = _0x1730cb[_0x4639c7(0x113)] === 'inflow' ? _0x58de37['green'] : _0x1730cb[_0x4639c7(0x113)] === 'outflow' ? _0x58de37[_0x4639c7(0xd9)] : _0x58de37['slate'];
-                _0x159ef7[_0x4639c7(0x92)](_0x4639c7(0x1a1), 'normal'), _0x159ef7['setFontSize'](7.5), _0x159ef7[_0x4639c7(0xd7)](..._0x58de37[_0x4639c7(0xe2)]), _0x159ef7['text'](_0x2edb23, _0x244297 + 0x2, _0x30b783 + 0x5), _0x159ef7[_0x4639c7(0xd7)](..._0x58de37[_0x4639c7(0xa9)]), _0x159ef7['text']((_0x334dde[_0x4639c7(0xa2)] || _0x4639c7(0x1c9))[_0x4639c7(0xd6)](0x0, 0x1a), _0x244297 + 0x1a, _0x30b783 + 0x5), _0x159ef7[_0x4639c7(0xd7)](..._0x58de37[_0x4639c7(0xe2)]), _0x159ef7['text']((_0x334dde[_0x4639c7(0x146)] || '')['substring'](0x0, 0x12), _0x244297 + 0x58, _0x30b783 + 0x5), _0x159ef7[_0x4639c7(0xa9)]((_0x334dde[_0x4639c7(0xf7)] || '')[_0x4639c7(0xd6)](0x0, 0x10), _0x244297 + 0x82, _0x30b783 + 0x5), _0x159ef7[_0x4639c7(0x92)](_0x4639c7(0x1a1), _0x4639c7(0xd3)), _0x159ef7['setTextColor'](..._0x417ffd), _0x159ef7['text'](_0x1f00d3(_0x334dde[_0x4639c7(0x173)]), _0x145cf0 - _0x118b13 - 0x2, _0x30b783 + 0x5, {
-                    'align': _0x4639c7(0x178)
-                }), _0x30b783 += 0x9;
-            }), _0x14877b[_0x4b66a2(0x170)] > 0x32 && (_0x3b8602(0x8), _0x159ef7[_0x4b66a2(0x92)](_0x4b66a2(0x1a1), 'italic'), _0x159ef7[_0x4b66a2(0xbc)](7.5), _0x159ef7['setTextColor'](..._0x58de37['slate']), _0x159ef7[_0x4b66a2(0xa9)]('…\x20' + (_0x14877b['txCount'] - 0x32) + _0x4b66a2(0xea), _0x244297 + 0x2, _0x30b783 + 0x4), _0x30b783 += 0xa), _0x30b783 += 0x6;
-        }
-        if (_0x14877b[_0x4b66a2(0x12e)][_0x4b66a2(0xec)] > 0x0) {
-            _0x3b8602(0x28), _0x492e01('SPENDING\x20BREAKDOWN');
-            const _0x37d97a = _0x14877b['sortedSpend'][0x0][0x1];
-            _0x14877b[_0x4b66a2(0x12e)][_0x4b66a2(0x147)](([_0x49f16b, _0xe4aaec]) => {
-                const _0x582205 = _0x4b66a2;
-                _0x3b8602(0xe);
-                const _0x180cfa = _0x14877b[_0x582205(0x17e)] > 0x0 ? Math[_0x582205(0xb0)](_0xe4aaec / _0x14877b[_0x582205(0x17e)] * 0x64) : 0x0,
-                    _0xbe8faf = _0x37d97a > 0x0 ? _0xe4aaec / _0x37d97a * (_0x2b7254 - 0x3a) : 0x0,
-                    _0x12caa0 = _0x180cfa > 0x28 ? _0x58de37['red'] : _0x180cfa > 0x14 ? _0x58de37[_0x582205(0x145)] : _0x58de37[_0x582205(0x1c8)];
-                _0x159ef7[_0x582205(0x92)](_0x582205(0x1a1), _0x582205(0x151)), _0x159ef7[_0x582205(0xbc)](8.5), _0x159ef7['setTextColor'](..._0x58de37[_0x582205(0xa9)]), _0x159ef7['text'](_0x49f16b, _0x244297, _0x30b783 + 0x4), _0x159ef7[_0x582205(0xd7)](..._0x58de37['slate']), _0x159ef7[_0x582205(0xa9)](_0x180cfa + '%', _0x145cf0 - _0x118b13 - 0x18, _0x30b783 + 0x4, {
-                    'align': _0x582205(0x178)
-                }), _0x159ef7[_0x582205(0x92)]('helvetica', _0x582205(0xd3)), _0x159ef7[_0x582205(0xd7)](..._0x58de37['text']), _0x159ef7[_0x582205(0xa9)](_0x1f00d3(_0xe4aaec), _0x145cf0 - _0x118b13, _0x30b783 + 0x4, {
-                    'align': _0x582205(0x178)
-                }), _0x159ef7['setFillColor'](..._0x58de37[_0x582205(0x144)]), _0x159ef7[_0x582205(0x1ae)](_0x244297, _0x30b783 + 0x6, _0x2b7254 - 0x3a, 3.5, 0x1, 0x1, 'F'), _0xbe8faf > 0x0 && (_0x159ef7[_0x582205(0x14c)](..._0x12caa0), _0x159ef7['roundedRect'](_0x244297, _0x30b783 + 0x6, _0xbe8faf, 3.5, 0x1, 0x1, 'F')), _0x30b783 += 0xe;
-            }), _0x30b783 += 0x4;
-        }
-        _0x14877b['sortedIncome'][_0x4b66a2(0xec)] > 0x0 && (_0x3b8602(0x1e), _0x492e01('INCOME\x20SOURCES'), _0x14877b[_0x4b66a2(0x102)][_0x4b66a2(0x147)](([_0x4f639f, _0x5a57f9]) => {
-            const _0x1be98a = _0x4b66a2;
-            _0x3b8602(0xa);
-            const _0x43b60d = _0x14877b['totalInflow'] > 0x0 ? Math['round'](_0x5a57f9 / _0x14877b[_0x1be98a(0x14e)] * 0x64) : 0x0,
-                _0x4639e3 = _0x14877b[_0x1be98a(0x14e)] > 0x0 ? _0x5a57f9 / _0x14877b[_0x1be98a(0x14e)] * (_0x2b7254 - 0x3a) : 0x0;
-            _0x159ef7['setFont'](_0x1be98a(0x1a1), 'normal'), _0x159ef7['setFontSize'](8.5), _0x159ef7[_0x1be98a(0xd7)](..._0x58de37[_0x1be98a(0xa9)]), _0x159ef7[_0x1be98a(0xa9)](_0x4f639f, _0x244297, _0x30b783), _0x159ef7[_0x1be98a(0xd7)](..._0x58de37['slate']), _0x159ef7[_0x1be98a(0xa9)](_0x43b60d + '%', _0x145cf0 - _0x118b13 - 0x18, _0x30b783, {
-                'align': 'right'
-            }), _0x159ef7[_0x1be98a(0x92)](_0x1be98a(0x1a1), 'bold'), _0x159ef7[_0x1be98a(0xd7)](..._0x58de37[_0x1be98a(0xb2)]), _0x159ef7[_0x1be98a(0xa9)](_0x1f00d3(_0x5a57f9), _0x145cf0 - _0x118b13, _0x30b783, {
-                'align': _0x1be98a(0x178)
-            }), _0x159ef7[_0x1be98a(0x14c)](0xdc, 0xfc, 0xe7), _0x159ef7[_0x1be98a(0x1ae)](_0x244297, _0x30b783 + 0x2, _0x2b7254 - 0x3a, 2.5, 0x1, 0x1, 'F'), _0x4639e3 > 0x0 && (_0x159ef7[_0x1be98a(0x14c)](..._0x58de37[_0x1be98a(0xb2)]), _0x159ef7[_0x1be98a(0x1ae)](_0x244297, _0x30b783 + 0x2, _0x4639e3, 2.5, 0x1, 0x1, 'F')), _0x30b783 += 0xa;
-        }), _0x30b783 += 0x4);
-        if (_0x14877b[_0x4b66a2(0x1bf)][_0x4b66a2(0xec)] > 0x0) {
-            _0x3b8602(0x32), _0x492e01(_0x4b66a2(0xb8)), _0x159ef7[_0x4b66a2(0x14c)](..._0x58de37['dark']), _0x159ef7[_0x4b66a2(0xa7)](_0x244297, _0x30b783, _0x2b7254, 0x8, 'F'), _0x159ef7['setFont'](_0x4b66a2(0x1a1), 'bold'), _0x159ef7[_0x4b66a2(0xbc)](0x7), _0x159ef7[_0x4b66a2(0xd7)](..._0x58de37[_0x4b66a2(0xb2)]), _0x159ef7['text'](_0x4b66a2(0xb9), _0x244297 + 0x2, _0x30b783 + 5.5), _0x159ef7[_0x4b66a2(0xa9)](_0x4b66a2(0xcb), _0x244297 + 0x3c, _0x30b783 + 5.5), _0x159ef7[_0x4b66a2(0xa9)]('PAID', _0x244297 + 0x5c, _0x30b783 + 5.5), _0x159ef7[_0x4b66a2(0xa9)](_0x4b66a2(0x19c), _0x244297 + 0x7c, _0x30b783 + 5.5), _0x159ef7[_0x4b66a2(0xa9)](_0x4b66a2(0x9e), _0x244297 + 0x9c, _0x30b783 + 5.5), _0x30b783 += 0xa, _0x14877b['obligationReport'][_0x4b66a2(0x147)]((_0x321646, _0x31349a) => {
-                const _0x49f85a = _0x4b66a2;
-                _0x3b8602(0xa), _0x31349a % 0x2 === 0x0 && (_0x159ef7[_0x49f85a(0x14c)](0xf8, 0xfa, 0xff), _0x159ef7[_0x49f85a(0xa7)](_0x244297, _0x30b783 - 0x1, _0x2b7254, 0xa, 'F')), _0x159ef7['setFont'](_0x49f85a(0x1a1), _0x49f85a(0x151)), _0x159ef7[_0x49f85a(0xbc)](0x8), _0x159ef7[_0x49f85a(0xd7)](..._0x58de37[_0x49f85a(0xa9)]), _0x159ef7[_0x49f85a(0xa9)](_0x321646[_0x49f85a(0x1af)]['substring'](0x0, 0x1a), _0x244297 + 0x2, _0x30b783 + 0x5), _0x159ef7[_0x49f85a(0xa9)](_0x1f00d3(_0x321646['budget']), _0x244297 + 0x3c, _0x30b783 + 0x5), _0x159ef7[_0x49f85a(0xa9)](_0x1f00d3(_0x321646['paid']), _0x244297 + 0x5c, _0x30b783 + 0x5), _0x159ef7[_0x49f85a(0xd7)](..._0x321646[_0x49f85a(0x1b0)] > 0x0 ? _0x58de37['red'] : _0x321646[_0x49f85a(0x1b0)] < 0x0 ? _0x58de37[_0x49f85a(0xe2)] : _0x58de37['green']), _0x159ef7[_0x49f85a(0xa9)]((_0x321646[_0x49f85a(0x1b0)] > 0x0 ? '+' : '') + _0x1f00d3(_0x321646['variance']), _0x244297 + 0x7c, _0x30b783 + 0x5), _0x159ef7['setFillColor'](..._0x321646[_0x49f85a(0x1aa)] ? _0x58de37[_0x49f85a(0xb2)] : _0x58de37[_0x49f85a(0xd9)]), _0x159ef7[_0x49f85a(0x1ae)](_0x244297 + 0x9a, _0x30b783 + 0x1, 0x1a, 0x7, 0x2, 0x2, 'F'), _0x159ef7[_0x49f85a(0x92)](_0x49f85a(0x1a1), 'bold'), _0x159ef7[_0x49f85a(0xbc)](6.5), _0x159ef7[_0x49f85a(0xd7)](..._0x58de37[_0x49f85a(0x182)]), _0x159ef7[_0x49f85a(0xa9)](_0x321646['met'] ? _0x49f85a(0x136) : _0x49f85a(0x124), _0x244297 + 0xa7, _0x30b783 + 0x6, {
-                    'align': 'center'
-                }), _0x30b783 += 0xb;
-            }), _0x3b8602(0xa);
-            const _0x85f1f4 = Math[_0x4b66a2(0xb0)](_0x14877b[_0x4b66a2(0x13e)] / Math[_0x4b66a2(0xfc)](_0x14877b['obligationsTotal'], 0x1) * 0x64);
-            _0x159ef7['setFillColor'](..._0x58de37[_0x4b66a2(0x182)]), _0x159ef7[_0x4b66a2(0xa7)](_0x244297, _0x30b783, _0x2b7254, 0x8, 'F'), _0x159ef7[_0x4b66a2(0x92)]('helvetica', _0x4b66a2(0xd3)), _0x159ef7[_0x4b66a2(0xbc)](0x8), _0x159ef7[_0x4b66a2(0xd7)](..._0x58de37['green']), _0x159ef7[_0x4b66a2(0xa9)](_0x14877b[_0x4b66a2(0x13e)] + '\x20of\x20' + _0x14877b[_0x4b66a2(0x1b1)] + _0x4b66a2(0x156) + _0x85f1f4 + '%', _0x244297 + 0x4, _0x30b783 + 5.5), _0x30b783 += 0xe;
-        }
-        _0x3b8602(0x28), _0x492e01(_0x4b66a2(0x95)), _0x14877b[_0x4b66a2(0x17b)][_0x4b66a2(0x147)]((_0x4ddc32, _0x45464f) => {
-            const _0xca042a = _0x4b66a2;
-            _0x3b8602(0x20);
-            const _0x3f077b = _0x4ddc32['priority'] === _0xca042a(0x157) ? _0x58de37['red'] : _0x4ddc32[_0xca042a(0x10e)] === _0xca042a(0x12f) ? _0x58de37[_0xca042a(0x145)] : _0x4ddc32['priority'] === _0xca042a(0x1c1) ? _0x58de37[_0xca042a(0xb2)] : _0x58de37['blue'];
-            _0x159ef7[_0xca042a(0x14c)](..._0x3f077b), _0x159ef7[_0xca042a(0x1ae)](_0x244297, _0x30b783, 0x1e, 6.5, 0x2, 0x2, 'F'), _0x159ef7[_0xca042a(0x92)](_0xca042a(0x1a1), _0xca042a(0xd3)), _0x159ef7[_0xca042a(0xbc)](0x6), _0x159ef7[_0xca042a(0xd7)](..._0x58de37['dark']), _0x159ef7['text'](_0x4ddc32[_0xca042a(0x10e)], _0x244297 + 0xf, _0x30b783 + 4.5, {
-                'align': _0xca042a(0x1a4)
-            }), _0x159ef7[_0xca042a(0x92)]('helvetica', _0xca042a(0xd3)), _0x159ef7[_0xca042a(0xbc)](9.5), _0x159ef7[_0xca042a(0xd7)](..._0x58de37[_0xca042a(0xa9)]), _0x159ef7['text'](_0x4ddc32[_0xca042a(0x16d)], _0x244297 + 0x22, _0x30b783 + 4.5), _0x30b783 += 0xa, _0x159ef7[_0xca042a(0x92)]('helvetica', _0xca042a(0x151)), _0x159ef7[_0xca042a(0xbc)](8.5), _0x159ef7[_0xca042a(0xd7)](..._0x58de37['sub']), _0x159ef7[_0xca042a(0xd5)](_0x4ddc32[_0xca042a(0xa4)], _0x2b7254 - 0x4)[_0xca042a(0x147)](_0x16d5b0 => {
-                const _0x2cef44 = _0xca042a;
-                _0x3b8602(0x7), _0x159ef7[_0x2cef44(0xa9)](_0x16d5b0, _0x244297 + 0x2, _0x30b783), _0x30b783 += 5.5;
-            }), _0x45464f < _0x14877b['recommendations'][_0xca042a(0xec)] - 0x1 ? (_0x3b8602(0x5), _0x159ef7['setDrawColor'](..._0x58de37[_0xca042a(0x144)]), _0x159ef7[_0xca042a(0x167)](_0x244297, _0x30b783 + 0x3, _0x145cf0 - _0x118b13, _0x30b783 + 0x3), _0x30b783 += 0x9) : _0x30b783 += 0x5;
-        });
-        const _0x50f34d = _0x159ef7['getNumberOfPages']();
-        for (let _0xbb74 = 0x1; _0xbb74 <= _0x50f34d; _0xbb74++) {
-            _0x159ef7[_0x4b66a2(0x188)](_0xbb74), _0x159ef7[_0x4b66a2(0x14c)](..._0x58de37[_0x4b66a2(0x182)]), _0x159ef7['rect'](0x0, _0x1e2c8e - 0xa, _0x145cf0, 0xa, 'F'), _0x159ef7['setFont'](_0x4b66a2(0x1a1), _0x4b66a2(0x151)), _0x159ef7[_0x4b66a2(0xbc)](0x7), _0x159ef7[_0x4b66a2(0xd7)](..._0x58de37[_0x4b66a2(0xe2)]), _0x159ef7[_0x4b66a2(0xa9)](_0x4b66a2(0x12c) + _0x14877b['month'], _0x244297, _0x1e2c8e - 0x4), _0x159ef7['text'](_0x4b66a2(0x10c) + _0xbb74 + _0x4b66a2(0x1a0) + _0x50f34d, _0x145cf0 - _0x118b13, _0x1e2c8e - 0x4, {
-                'align': _0x4b66a2(0x178)
-            });
-        }
-        return _0x159ef7;
-    }
-    async function _0x13efaf(_0x3ced77, _0x17db47) {
-        const _0x5ba099 = _0x4a3a62,
-            _0x5e05d4 = _0x3ced77['output'](_0x5ba099(0x13d));
-        if (window[_0x5ba099(0x98)]) try {
-            const _0x13e0ee = await window[_0x5ba099(0x98)]({
-                    'suggestedName': _0x17db47,
-                    'types': [{
-                        'description': 'PDF',
-                        'accept': {
-                            'application/pdf': ['.pdf']
-                        }
-                    }],
-                    'startIn': 'documents'
-                }),
-                _0x5a2200 = await _0x13e0ee[_0x5ba099(0x112)]();
-            return await _0x5a2200['write'](_0x5e05d4), await _0x5a2200[_0x5ba099(0xc5)](), {
-                'method': _0x5ba099(0x18e)
-            };
-        } catch (_0x96ec7e) {
-            if (_0x96ec7e[_0x5ba099(0x9f)] === _0x5ba099(0xba)) return {
-                'method': 'cancelled'
-            };
-        }
-        const _0x225853 = URL[_0x5ba099(0x1b8)](_0x5e05d4),
-            _0x5291ae = document[_0x5ba099(0xe6)]('a');
-        return _0x5291ae[_0x5ba099(0x1a7)] = _0x225853, _0x5291ae[_0x5ba099(0x1c7)] = _0x17db47, document['body']['appendChild'](_0x5291ae), _0x5291ae[_0x5ba099(0x1b9)](), setTimeout(() => {
-            const _0x457d21 = _0x5ba099;
-            document['body'][_0x457d21(0x19a)](_0x5291ae), URL[_0x457d21(0x183)](_0x225853);
-        }, 0x7d0), {
-            'method': _0x5ba099(0x1c7)
-        };
-    }
-    async function _0x2e3c35() {
-        const _0x39bc0d = _0x4a3a62;
-        if (document[_0x39bc0d(0x9c)](_0x39bc0d(0x172))) return;
-        const _0x219b03 = new Date(),
-            _0x2f24df = _0xfc3269(_0x219b03['getMonth']()) + '\x20' + _0x219b03[_0x39bc0d(0x93)](),
-            _0xd89797 = document['createElement'](_0x39bc0d(0x1bc));
-        _0xd89797['id'] = _0x39bc0d(0x172), _0xd89797[_0x39bc0d(0x108)][_0x39bc0d(0x137)] = _0x39bc0d(0xdb), _0xd89797[_0x39bc0d(0x148)] = '\x0a\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#0f172a;border:2px\x20solid\x20#4ade80;box-shadow:0\x200\x2050px\x20rgba(74,222,128,0.2);border-radius:16px;max-width:500px;width:100%;overflow:hidden;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:linear-gradient(135deg,#020617,#0f172a);padding:28px\x2028px\x2020px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:14px;margin-bottom:12px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22width:48px;height:48px;background:#4ade80;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;\x22>📊</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:#4ade80;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;\x22>End-of-Month\x20Audit</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:#f8fafc;font-size:20px;font-weight:800;line-height:1.2;\x22>' + _0x2f24df + _0x39bc0d(0x149), document[_0x39bc0d(0x15b)]['appendChild'](_0xd89797);
-        try {
-            const _0x557570 = await _0x5f3ea5(),
-                _0x153bb5 = _0x688423(_0x557570);
-            document['getElementById'](_0x39bc0d(0xe7))[_0x39bc0d(0x17c)] = _0x153bb5[_0x39bc0d(0x170)];
-            const _0x2be01a = document[_0x39bc0d(0x9c)](_0x39bc0d(0xf8));
-            _0x2be01a[_0x39bc0d(0x17c)] = (_0x153bb5[_0x39bc0d(0x13a)] >= 0x0 ? '+' : '-') + _0x1f00d3(_0x153bb5[_0x39bc0d(0x13a)]), _0x2be01a['style']['color'] = _0x153bb5['netPosition'] >= 0x0 ? _0x39bc0d(0x10b) : '#ef4444';
-            const _0x15e1e7 = document[_0x39bc0d(0x9c)]('akpi-score');
-            _0x15e1e7['textContent'] = _0x153bb5[_0x39bc0d(0x13f)] + _0x39bc0d(0x180), _0x15e1e7[_0x39bc0d(0x108)][_0x39bc0d(0xc8)] = _0x153bb5[_0x39bc0d(0x13f)] >= 0x41 ? _0x39bc0d(0x10b) : _0x153bb5[_0x39bc0d(0x13f)] >= 0x2d ? _0x39bc0d(0x1a3) : _0x39bc0d(0x184);
-        } catch (_0x264bcd) {
-            document['getElementById']('akpi-tx')['textContent'] = '?';
-        }
-        document[_0x39bc0d(0x9c)](_0x39bc0d(0xd8))[_0x39bc0d(0x133)] = async () => {
-            const _0x34f55a = _0x39bc0d,
-                _0x4b5516 = document[_0x34f55a(0x9c)](_0x34f55a(0xd8)),
-                _0x329c43 = document[_0x34f55a(0x9c)](_0x34f55a(0x12b)),
-                _0x252a01 = document[_0x34f55a(0x9c)](_0x34f55a(0x199));
-            _0x4b5516[_0x34f55a(0xd0)] = !![], _0x4b5516[_0x34f55a(0x17c)] = 'Generating…', document[_0x34f55a(0x9c)](_0x34f55a(0xae))[_0x34f55a(0x108)][_0x34f55a(0x107)] = _0x34f55a(0x15a);
-            try {
-                _0x329c43['style'][_0x34f55a(0x165)] = '15%', _0x252a01[_0x34f55a(0x17c)] = 'Opening\x20database…', await new Promise(_0x302278 => setTimeout(_0x302278, 0xb4)), _0x329c43[_0x34f55a(0x108)][_0x34f55a(0x165)] = _0x34f55a(0x171), _0x252a01[_0x34f55a(0x17c)] = _0x34f55a(0x134), await new Promise(_0x3e65b6 => setTimeout(_0x3e65b6, 0xb4));
-                const _0x88e13a = await _0x5f3ea5(),
-                    _0x2c87e9 = _0x88e13a[_0x34f55a(0x125)][_0x34f55a(0x1c5)](_0x20b568 => {
-                        const _0x21ca7f = _0x34f55a,
-                            _0x1327da = new Date(Number(_0x20b568['id'])),
-                            _0x2283b2 = new Date();
-                        return _0x1327da[_0x21ca7f(0x93)]() === _0x2283b2[_0x21ca7f(0x93)]() && _0x1327da[_0x21ca7f(0xf6)]() === _0x2283b2['getMonth']();
-                    })[_0x34f55a(0xec)];
-                _0x329c43['style'][_0x34f55a(0x165)] = _0x34f55a(0xe5), _0x252a01[_0x34f55a(0x17c)] = _0x34f55a(0x11e) + _0x2c87e9 + _0x34f55a(0x121), await new Promise(_0x258999 => setTimeout(_0x258999, 0xb4));
-                const _0x148dc9 = _0x688423(_0x88e13a);
-                _0x329c43[_0x34f55a(0x108)][_0x34f55a(0x165)] = _0x34f55a(0x97), _0x252a01[_0x34f55a(0x17c)] = _0x34f55a(0x15d), await new Promise(_0x562390 => setTimeout(_0x562390, 0xb4)), _0x329c43['style'][_0x34f55a(0x165)] = _0x34f55a(0x1c3), _0x252a01[_0x34f55a(0x17c)] = _0x34f55a(0xe1), await new Promise(_0x1aa903 => setTimeout(_0x1aa903, 0xb4));
-                const _0x5bfe75 = await _0x17525f(_0x148dc9);
-                _0x329c43[_0x34f55a(0x108)][_0x34f55a(0x165)] = '97%', _0x252a01[_0x34f55a(0x17c)] = _0x34f55a(0x13b), await new Promise(_0x550008 => setTimeout(_0x550008, 0x96));
-                const _0x31aaa0 = new Date(),
-                    _0x546d10 = _0x34f55a(0x13c) + _0xfc3269(_0x31aaa0[_0x34f55a(0xf6)]()) + '-' + _0x31aaa0['getFullYear']() + _0x34f55a(0x111),
-                    _0x5d1388 = await _0x13efaf(_0x5bfe75, _0x546d10);
-                _0x329c43['style'][_0x34f55a(0x165)] = _0x34f55a(0xc4);
-                if (_0x5d1388[_0x34f55a(0x1c2)] === _0x34f55a(0x14d)) {
-                    _0x252a01[_0x34f55a(0x17c)] = _0x34f55a(0x1bd), _0x4b5516['disabled'] = ![], _0x4b5516['textContent'] = _0x34f55a(0x9d), _0x329c43['style'][_0x34f55a(0x165)] = '0%';
-                    return;
-                }
-                _0x329c43['style'][_0x34f55a(0x1ca)] = _0x34f55a(0x10b), _0x252a01[_0x34f55a(0x17c)] = _0x34f55a(0xd1) + _0x148dc9[_0x34f55a(0x170)] + _0x34f55a(0x9a) + _0x1f00d3(_0x148dc9[_0x34f55a(0x14e)]) + _0x34f55a(0x110) + _0x1f00d3(_0x148dc9[_0x34f55a(0x17e)]) + _0x34f55a(0x1ad);
-                try {
-                    localStorage[_0x34f55a(0x12d)](_0x34f55a(0x122), _0x31aaa0[_0x34f55a(0x93)]() + '-' + _0x31aaa0[_0x34f55a(0xf6)]());
-                } catch (_0x25baaf) {}
-                setTimeout(() => _0xd89797[_0x34f55a(0xde)](), 0xbb8);
-            } catch (_0x464a97) {
-                _0x329c43[_0x34f55a(0x108)][_0x34f55a(0x1ca)] = _0x34f55a(0x184), _0x252a01[_0x34f55a(0x17c)] = _0x34f55a(0x177) + (_0x464a97['message'] || _0x34f55a(0x155)), console[_0x34f55a(0x18c)](_0x34f55a(0x1b5), _0x464a97), _0x4b5516['disabled'] = ![], _0x4b5516[_0x34f55a(0x17c)] = '📄\x20Try\x20Again';
-            }
-        }, document['getElementById']('audit-skip-btn')[_0x39bc0d(0x133)] = () => {
-            const _0x4b15c3 = _0x39bc0d;
-            _0xd89797[_0x4b15c3(0xde)](), setTimeout(_0x3a8732, 0x3c * 0x3c * 0x3e8);
-        };
-    }
-
-    function _0x3a8732() {
-        const _0x40f9e9 = _0x4a3a62,
-            _0x5ea5c6 = new Date(),
-            _0x2a3b82 = _0x5ea5c6[_0x40f9e9(0x93)](),
-            _0x2a0536 = _0x5ea5c6[_0x40f9e9(0xf6)](),
-            _0x53e869 = _0x5ea5c6['getDate'](),
-            _0x38f731 = _0x5ea5c6['getHours'](),
-            _0x20803d = _0x5ea5c6[_0x40f9e9(0x8d)]();
-        if (_0x53e869 !== _0xe8265f()) return;
-        if (!(_0x38f731 > 0xd || _0x38f731 === 0xd && _0x20803d >= 0x1e)) return;
-        try {
-            if (localStorage['getItem'](_0x40f9e9(0x122)) === _0x2a3b82 + '-' + _0x2a0536) return;
-        } catch (_0x3c9720) {}
-        _0x2e3c35();
-    }
-    window['travisAudit'] = {
-        'showNow': _0x2e3c35,
-        'buildAudit': async () => {
-            const _0x5ef386 = await _0x5f3ea5();
-            return _0x688423(_0x5ef386);
-        },
-        'generateAndSave': async () => {
-            const _0x27fb92 = _0x4a3a62,
-                _0x20ba41 = await _0x5f3ea5(),
-                _0x155bdd = _0x688423(_0x20ba41),
-                _0x5d731b = await _0x17525f(_0x155bdd),
-                _0x3d305f = new Date();
-            await _0x13efaf(_0x5d731b, 'Travis-Audit-' + _0xfc3269(_0x3d305f[_0x27fb92(0xf6)]()) + '-' + _0x3d305f[_0x27fb92(0x93)]() + _0x27fb92(0x111));
-        }
-    };
-    async function _0x53a412(_0xf04d5e) {
-        const _0x46016e = _0x4a3a62;
-        if (_0xf04d5e > 0x14) return;
-        try {
-            const _0x3484be = await _0x4ee88e(),
-                _0x41a031 = await _0x57cc8b(_0x3484be, _0x46016e(0xa0), _0x46016e(0x1a8));
-            _0x3484be[_0x46016e(0xc5)](), _0x41a031 && _0x41a031[_0x46016e(0x1b6)] ? (_0x3a8732(), setInterval(_0x3a8732, 0x3c * 0x3e8)) : setTimeout(() => _0x53a412(_0xf04d5e + 0x1), 0x320);
-        } catch (_0x39abb3) {
-            setTimeout(() => _0x53a412(_0xf04d5e + 0x1), 0x320);
-        }
-    }
-    document['readyState'] === 'loading' ? document[_0x4a3a62(0x105)]('DOMContentLoaded', () => setTimeout(() => _0x53a412(0x0), 0x5dc)) : setTimeout(() => _0x53a412(0x0), 0x5dc);
-}()));
-
-function _0xbcfa(_0x2490dd, _0x3f0079) {
-    _0x2490dd = _0x2490dd - 0x8d;
-    const _0x33a995 = _0x33a9();
-    let _0xbcfa1f = _0x33a995[_0x2490dd];
-    return _0xbcfa1f;
+    });
 }
 
-function _0x33a9() {
-    const _0x2e7179 = ['width', '\x20transaction', 'line', 'Necessary', '\x20settled\x20within\x20budget.', 'PERSONAL', 'TRANSACTION\x20LOG\x20—\x20', '30hkiHVS', 'area', '128pTcYSc', '\x20data\x20foundation.', 'txCount', '35%', 'travis-audit-overlay', 'amount', '\x20in\x20—\x20a\x20shortfall\x20of\x20', 'Savings\x20Discipline', '%\x20leaves\x20no\x20cushion.\x20Target\x2010%\x20next\x20month\x20by\x20cutting\x20the\x20lowest-value\x20discretionary\x20spend\x20first.', 'Error:\x20', 'right', 'DISCIPLINE', 'KSh\x20', 'recommendations', 'textContent', 'unknown', 'totalOutflow', 'liquid_asset', '/100', 'The\x20month\x20broke\x20exactly\x20even\x20at\x20', 'dark', 'revokeObjectURL', '#ef4444', 's\x20were', 'Savings\x20Rate', '.\x20A\x2015%\x20reduction\x20here\x20would\x20materially\x20improve\x20your\x20net\x20position.', 'setPage', 'Savings\x20rate\x20of\x20', 'AMOUNT', 'short', 'error', 'toUpperCase', 'picker', '%\x20was\x20achieved\x20—\x20well\x20above\x20the\x2015%\x20healthy\x20floor.', 'Other\x20Expense', 'Strong\x20month.\x20Move\x20surplus\x20into\x20a\x20money\x20market\x20fund\x20or\x20SACCO\x20where\x20it\x20earns\x20interest.', '%\x20of\x20spending\x20at\x20', 'MONTHLY\x20FINANCIAL\x20AUDIT\x20REPORT', 'Transactions\x20this\x20month:\x20', 'onload', 'SCORE', '.\x20Pay\x20these\x20first\x20next\x20month\x20before\x20any\x20discretionary\x20spending.', 'entries', 'audit-prog-txt', 'removeChild', 'target', 'VARIANCE', 'all', '\x20obligations\x20were\x20not\x20fully\x20settled.', 'Non-essential\x20spending\x20was\x20', '\x20of\x20', 'helvetica', 'June', '#eab308', 'center', 'result', '\x20ENTRIES\x20THIS\x20MONTH', 'href', 'config', 'November', 'met', '\x20\x20|\x20\x20Source:\x20IndexedDB\x20(TravisGuardian_v1.0)', 'Discretionary', '\x20outflow', 'roundedRect', 'label', 'variance', 'obligationsTotal', 'jsPDF', 'discretionary_expense', 'TRAVIS\x20GUARDIAN\x20\x20·\x20\x20MONTHLY\x20FINANCIAL\x20AUDIT', '[TravisAudit]', 'user', 'en-KE', 'createObjectURL', 'click', 'objectStoreNames', 'outflow', 'div', 'Save\x20cancelled.\x20Click\x20to\x20try\x20again.', 'TRAVIS', 'obligationReport', 'toLocaleString', 'KEEP\x20UP', 'method', '88%', 'Transaction\x20Logging', 'filter', 'head', 'download', 'blue', 'No\x20description', 'background', 'getMinutes', ',\x20spent\x20', 'Net\x20Position', ').\x20Set\x20a\x20ceiling\x20before\x20next\x20month\x20starts.', '\x20at\x20', 'setFont', 'getFullYear', '\x22\x20exceeded\x20budget\x20by\x20', 'RECOMMENDATIONS\x20FOR\x20NEXT\x20MONTH', 'join', '72%', 'showSaveFilePicker', '77anUsFp', '\x20transactions\x20·\x20', 'readonly', 'getElementById', '📄\x20Generate\x20&\x20Save\x20Report', 'STATUS', 'name', 'meta', 'TravisGuardian_v1.0', 'desc', 'DESCRIPTION', 'advice', 'Wealth\x20Building', 'May', 'rect', 'bar', 'text', 'value', 'Total\x20Outflow', '\x20transactions\x20recorded.\x20Log\x20every\x20movement\x20on\x20the\x20same\x20day\x20it\x20happens.', '%\x20of\x20outflows\x20—\x20very\x20well\x20controlled.\x20Maintain\x20this.', 'audit-progress', 'Second\x20largest:\x20', 'round', '\x20mandatory\x20obligation', 'green', 'AUDITOR\x27S\x20NARRATIVE', '\x20on\x20', 'white', 'get', 'asset', 'MANDATORY\x20OBLIGATIONS\x20COMPLIANCE', 'OBLIGATION', 'AbortError', 'solid', 'setFontSize', 'slice', 'month', 'cat', '\x20/\x20', 'savingsRate', 'DEBIT\x20(TO)', 'onerror', '100%', 'close', 'The\x20month\x20ended\x20with\x20a\x20positive\x20net\x20position\x20of\x20', '19686PGQoLJ', 'color', 'The\x20month\x20closed\x20in\x20deficit:\x20', 'Discretionary\x20spending\x20at\x20only\x20', 'BUDGETED', 'Only\x20', 'getDate', ').\x20Fix\x20the\x20ceiling\x20or\x20the\x20budget.', 'addPage', 'disabled', '✓\x20Done\x20—\x20', '%\x20means\x20nearly\x20all\x20income\x20was\x20consumed\x20by\x20outflows.', 'bold', '\x20more\x20than\x20you\x20earned.\x20Identify\x20one\x20expense\x20to\x20cut\x2020%\x20and\x20one\x20income\x20channel\x20to\x20increase\x20before\x20next\x20month.', 'splitTextToSize', 'substring', 'setTextColor', 'audit-gen-btn', 'red', 'contains', 'position:fixed;inset:0;background:rgba(2,6,23,0.93);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;z-index:99999;font-family:system-ui,sans-serif;padding:16px;', 'map', '1896912TyXhsw', 'remove', 'narrative', '\x20produces\x20a\x20discipline\x20score\x20of\x20', 'Rendering\x20PDF\x20pages…', 'slate', 'push', '101270dafAPo', '55%', 'createElement', 'akpi-tx', ')\x20—\x20first\x20place\x20to\x20cut\x20if\x20position\x20tightens.', '27XMjlZt', '\x20more\x20transactions\x20—\x20view\x20full\x20ledger\x20in\x20the\x20app.', 'business', 'length', '\x20\x20(', 'transaction', 'EXCELLENT', 'No\x20income\x20was\x20recorded\x20this\x20month\x20—\x20a\x20critical\x20record-keeping\x20gap.', 'open', 'objectStore', 'inflow', '31802EYxRrp', 'obligations', 'getMonth', 'debit', 'akpi-net', 'A\x20savings\x20rate\x20of\x20', 'GOOD', 'script', 'max', 'toLowerCase', '5728836JdcTEj', '%\x20of\x20outflows\x20(', 'overBudget', '\x20absorbed\x20', 'sortedIncome', '\x20was', 'src', 'addEventListener', 'sort', 'display', 'style', 'Strong\x20month.\x20Allocate\x20surplus\x20toward\x20inventory\x20or\x20marketing\x20with\x20a\x20clear\x20return\x20within\x2060\x20days.', 'January', '#4ade80', 'Page\x20', 'scoreLabel', 'priority', 'NEEDS\x20ATTENTION', '\x20inflow\x20·\x20', '.pdf', 'createWritable', 'flow', 'reasonable', 'createObjectStore', 'discretionaryTotal', ',\x20meaning\x20more\x20money\x20came\x20in\x20than\x20went\x20out.', 'Discretionary\x20Spending', 'Internal\x20Transfer', 'liability', 'The\x20savings\x20rate\x20of\x20', '\x20\x20·\x20\x20', 'type', 'Classifying\x20', 'July', '\x27s\x20financial\x20audit\x20for\x20', '\x20entries\x20this\x20month…', 'travis_audit_done', 'toLocaleDateString', 'UNPAID', 'transactions', 'onupgradeneeded', 'liabilityTotal', '791mZnJNi', 'February', '%,\x20confirming\x20spending\x20exceeded\x20income.', 'audit-bar', 'Travis\x20Guardian\x20\x20·\x20\x20Confidential\x20Financial\x20Audit\x20\x20·\x20\x20', 'setItem', 'sortedSpend', 'HIGH', '/100\x20—\x20rated\x20', '7896490QpPYbT', 'jsPDF\x20failed\x20to\x20load', 'onclick', 'Reading\x20all\x20transactions\x20from\x20IndexedDB…', 'OPPORTUNITY', 'SETTLED', 'cssText', 'val', 'A\x20savings\x20rate\x20of\x20only\x20', 'netPosition', 'Saving…', 'Travis-Audit-', 'blob', 'obligationsMet', 'score', 'worstDay', '\x20recorded\x20—\x20sparse\x20logging\x20reduces\x20audit\x20accuracy.', 'Discretionary\x20spending\x20was\x20well-contained\x20at\x20', 'jspdf.umd.min.js', 'border', 'yellow', 'credit', 'forEach', 'innerHTML', '\x20Report\x20Ready</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20style=\x22color:#94a3b8;font-size:13px;line-height:1.65;margin:0;\x22>Travis\x20reads\x20directly\x20from\x20your\x20secure\x20on-device\x20database\x20—\x20no\x20intermediate\x20state,\x20no\x20guesswork.</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22padding:20px\x2028px\x2028px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#1e293b;border-radius:10px;padding:14px\x2010px;text-align:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22akpi-tx\x22\x20style=\x22color:#94a3b8;font-weight:700;font-size:17px;\x22>…</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:#475569;font-size:10px;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;\x22>Transactions</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#1e293b;border-radius:10px;padding:14px\x2010px;text-align:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22akpi-net\x22\x20style=\x22font-weight:700;font-size:13px;color:#94a3b8;\x22>…</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:#475569;font-size:10px;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;\x22>Net\x20Position</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#1e293b;border-radius:10px;padding:14px\x2010px;text-align:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22akpi-score\x22\x20style=\x22font-weight:700;font-size:17px;color:#94a3b8;\x22>…</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:#475569;font-size:10px;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;\x22>Score</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20id=\x22audit-gen-btn\x22\x20style=\x22width:100%;background:#4ade80;color:#020617;border:none;padding:17px;font-size:15px;font-weight:800;border-radius:10px;cursor:pointer;letter-spacing:0.04em;text-transform:uppercase;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20📄\x20Generate\x20&amp;\x20Save\x20Report\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22audit-progress\x22\x20style=\x22margin-top:14px;display:none;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22height:5px;background:#1e293b;border-radius:3px;overflow:hidden;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22audit-bar\x22\x20style=\x22height:100%;width:0%;background:#4ade80;border-radius:3px;transition:width\x200.4s\x20ease;\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20id=\x22audit-prog-txt\x22\x20style=\x22color:#94a3b8;font-size:12px;margin-top:8px;text-align:center;\x22>Preparing…</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20id=\x22audit-skip-btn\x22\x20style=\x22width:100%;background:transparent;color:#475569;border:none;padding:13px;font-size:13px;cursor:pointer;margin-top:6px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Remind\x20me\x20in\x201\x20hour\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20</div>', '%\x20of\x20total\x20spending.', 'monthTx', 'setFillColor', 'cancelled', 'totalInflow', 'All\x20', 'necessary_expense', 'normal', 'August', 'Highest\x20single-day\x20outflow:\x20', 'Your\x20', 'Unknown\x20error', '\x20settled\x20\x20·\x20\x20Compliance:\x20', 'CRITICAL', 'Unpaid\x20Obligations', 'jspdf', 'block', 'body', 'April', 'Writing\x20narrative\x20&\x20recommendations…', 'September', 'abs', 'income', '2536950rdoxTI', 'Generated:\x20', 'Other\x20Income', 'Cash\x20Flow'];
-    _0x33a9 = function() {
-        return _0x2e7179;
+function getAllFromStore(db, storeName) {
+    return new Promise((resolve) => {
+        try {
+            const tx      = db.transaction(storeName, 'readonly');
+            const store   = tx.objectStore(storeName);
+            const request = store.getAll();
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror   = () => resolve([]);
+        } catch (e) {
+            resolve([]);
+        }
+    });
+}
+
+function getFromStore(db, storeName, key) {
+    return new Promise((resolve) => {
+        try {
+            const tx      = db.transaction(storeName, 'readonly');
+            const store   = tx.objectStore(storeName);
+            const request = store.get(key);
+            request.onsuccess = () => resolve(request.result || null);
+            request.onerror   = () => resolve(null);
+        } catch (e) {
+            resolve(null);
+        }
+    });
+}
+
+async function loadAllData() {
+    const db = await openDatabase();
+    const [transactions, config] = await Promise.all([
+        getAllFromStore(db, 'tx'),
+        getFromStore(db, 'meta', 'config')
+    ]);
+    db.close();
+    return {
+        transactions: transactions.sort((a, b) => b.id - a.id),
+        user:         config?.user        || {},
+        obligations:  config?.obligations || []
     };
-    return _0x33a9();
+}
+
+// ─────────────────────────────────────────────
+// 2. CATEGORY MAPS
+// ─────────────────────────────────────────────
+
+const CATEGORY_TYPES = {
+    'Cash':                             'liquid_asset',
+    'M-Pesa':                           'liquid_asset',
+    'Bank Account':                     'liquid_asset',
+    'Savings':                          'liquid_asset',
+    'Bank / M-Pesa':                    'liquid_asset',
+    'Petty Cash':                       'liquid_asset',
+    'Accounts Receivable':              'liquid_asset',
+    'Inventory':                        'asset',
+    'Fixed Assets':                     'asset',
+    'Salary':                           'income',
+    'Side Hustle':                      'income',
+    'Allowance':                        'income',
+    'Dividends':                        'income',
+    'Other Income':                     'income',
+    'Sales Revenue':                    'income',
+    'Service Revenue':                  'income',
+    'Other Revenue':                    'income',
+    'Food & Groceries':                 'necessary_expense',
+    'Rent':                             'necessary_expense',
+    'Bills':                            'necessary_expense',
+    'Transport':                        'necessary_expense',
+    'Medical':                          'necessary_expense',
+    'School':                           'necessary_expense',
+    'Payroll':                          'necessary_expense',
+    'Utilities':                        'necessary_expense',
+    'Cost of Goods Sold':               'necessary_expense',
+    'Tax':                              'necessary_expense',
+    'Office Supplies':                  'necessary_expense',
+    'Entertainment':                    'discretionary_expense',
+    'Clothes':                          'discretionary_expense',
+    'Travel (fun)':                     'discretionary_expense',
+    'Other Fun Spending':               'discretionary_expense',
+    'Marketing':                        'discretionary_expense',
+    'Travel & Entertainment':           'discretionary_expense',
+    'Professional Fees (if not critical)': 'discretionary_expense',
+    'Loan Repayment':                   'liability',
+    'Credit':                           'liability',
+    'Accounts Payable':                 'liability',
+    'Loans Payable':                    'liability'
+};
+
+const getCategoryType    = (cat) => CATEGORY_TYPES[cat] || 'unknown';
+const isLiquidAsset      = (cat) => getCategoryType(cat) === 'liquid_asset';
+const isIncome           = (cat) => getCategoryType(cat) === 'income';
+const isExpense          = (cat) => getCategoryType(cat) === 'necessary_expense' || getCategoryType(cat) === 'discretionary_expense';
+const isLiability        = (cat) => getCategoryType(cat) === 'liability';
+
+// ─────────────────────────────────────────────
+// 3. TRANSACTION FLOW CLASSIFIER
+// ─────────────────────────────────────────────
+
+function classifyTransaction(tx) {
+    // Money received: liquid asset debited, income credited
+    if (isLiquidAsset(tx.debit) && isIncome(tx.credit)) {
+        return { flow: 'inflow', cat: tx.credit };
+    }
+    // Income realised into liquid asset
+    if (isIncome(tx.debit) && isLiquidAsset(tx.credit)) {
+        return { flow: 'inflow', cat: tx.debit };
+    }
+    // Transfer between liquid accounts
+    if (isLiquidAsset(tx.debit) && isLiquidAsset(tx.credit)) {
+        return { flow: 'transfer', cat: 'Internal Transfer' };
+    }
+    // Expense paid from liquid asset
+    if (isExpense(tx.debit) && isLiquidAsset(tx.credit)) {
+        return { flow: 'outflow', cat: tx.debit };
+    }
+    // Liability paid from liquid asset
+    if (isLiability(tx.debit) && isLiquidAsset(tx.credit)) {
+        return { flow: 'outflow', cat: tx.debit };
+    }
+    // Asset purchase from liquid asset
+    if (getCategoryType(tx.debit) === 'asset' && isLiquidAsset(tx.credit)) {
+        return { flow: 'outflow', cat: tx.debit };
+    }
+    // Liquid debited, expense credited (reverse entry)
+    if (isLiquidAsset(tx.debit) && isExpense(tx.credit)) {
+        return { flow: 'outflow', cat: tx.credit };
+    }
+    // Liquid credited, non-liquid debited
+    if (isLiquidAsset(tx.credit) && !isLiquidAsset(tx.debit)) {
+        return { flow: 'outflow', cat: tx.debit || 'Other Expense' };
+    }
+    // Liquid debited, non-liquid credited
+    if (isLiquidAsset(tx.debit) && !isLiquidAsset(tx.credit)) {
+        return { flow: 'inflow', cat: tx.credit || 'Other Income' };
+    }
+    return { flow: 'unknown', cat: (tx.debit || '') + ' / ' + (tx.credit || '') };
+}
+
+// ─────────────────────────────────────────────
+// 4. FORMATTING HELPERS
+// ─────────────────────────────────────────────
+
+function formatKsh(amount) {
+    return 'KSh ' + Math.abs(amount).toLocaleString('en-KE');
+}
+
+function getMonthName(monthIndex) {
+    return ['January','February','March','April','May','June',
+            'July','August','September','October','November','December'][monthIndex];
+}
+
+function getLastDayOfCurrentMonth() {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+}
+
+// ─────────────────────────────────────────────
+// 5. AUDIT COMPUTATION ENGINE
+// ─────────────────────────────────────────────
+
+function computeAudit(data) {
+    const { transactions, user, obligations } = data;
+    const now          = new Date();
+    const currentYear  = now.getFullYear();
+    const currentMonth = now.getMonth();
+
+    // Filter to this month's transactions only
+    const monthTx = transactions.filter((tx) => {
+        const d = new Date(Number(tx.id));
+        return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
+    });
+
+    let totalInflow  = 0;
+    let totalOutflow = 0;
+
+    const spendByCategory  = {};   // outflow categories
+    const incomeByCategory = {};   // inflow categories
+    const outflowByDay     = {};   // daily outflow totals
+    const inflowByDay      = {};   // daily inflow totals
+
+    let necessaryTotal    = 0;
+    let discretionaryTotal = 0;
+    let liabilityTotal    = 0;
+
+    monthTx.forEach((tx) => {
+        const classified = classifyTransaction(tx);
+        const dateLabel  = new Date(Number(tx.id)).toLocaleDateString('en-KE');
+
+        if (classified.flow === 'inflow') {
+            totalInflow += tx.amount;
+            incomeByCategory[classified.cat] = (incomeByCategory[classified.cat] || 0) + tx.amount;
+            inflowByDay[dateLabel] = (inflowByDay[dateLabel] || 0) + tx.amount;
+        }
+
+        if (classified.flow === 'outflow') {
+            totalOutflow += tx.amount;
+            spendByCategory[classified.cat] = (spendByCategory[classified.cat] || 0) + tx.amount;
+            outflowByDay[dateLabel] = (outflowByDay[dateLabel] || 0) + tx.amount;
+
+            // Sub-classify outflow type
+            const subType = getCategoryType(tx.debit) !== 'unknown'
+                ? getCategoryType(tx.debit)
+                : getCategoryType(tx.credit);
+
+            if (subType === 'necessary_expense')    necessaryTotal     += tx.amount;
+            else if (subType === 'discretionary_expense') discretionaryTotal += tx.amount;
+            else if (subType === 'liability')        liabilityTotal     += tx.amount;
+        }
+    });
+
+    const netPosition  = totalInflow - totalOutflow;
+    const savingsRate  = totalInflow > 0 ? Math.round(netPosition / totalInflow * 100) : 0;
+
+    const sortedSpend  = Object.entries(spendByCategory).sort((a, b) => b[1] - a[1]);
+    const sortedIncome = Object.entries(incomeByCategory).sort((a, b) => b[1] - a[1]);
+    const worstDay     = Object.entries(outflowByDay).sort((a, b) => b[1] - a[1])[0] || ['—', 0];
+    const bestDay      = Object.entries(inflowByDay).sort((a, b) => b[1] - a[1])[0]  || ['—', 0];
+
+    // Obligations compliance
+    const obligationReport = (obligations || []).map((ob) => {
+        let paid = 0;
+        monthTx.forEach((tx) => {
+            if (
+                (tx.desc && tx.desc.toLowerCase().includes(ob.label.toLowerCase())) ||
+                tx.debit === ob.label ||
+                tx.credit === ob.label
+            ) {
+                paid += tx.amount;
+            }
+        });
+        return {
+            label:    ob.label,
+            budget:   ob.amount,
+            paid:     paid,
+            variance: paid - ob.amount,
+            met:      paid >= ob.amount
+        };
+    });
+
+    const obligationsMet   = obligationReport.filter((o) => o.met).length;
+    const obligationsTotal = obligationReport.length;
+    const overBudget       = obligationReport.filter((o) => o.variance > 0);
+
+    // ── DISCIPLINE SCORE ──
+    let score = 50; // base
+
+    // Savings rate contribution
+    if      (savingsRate >= 20) score += 25;
+    else if (savingsRate >= 15) score += 20;
+    else if (savingsRate >= 10) score += 12;
+    else if (savingsRate >= 5)  score += 6;
+    else if (savingsRate < 0)   score -= 20;
+
+    // Obligations contribution
+    score += obligationsTotal > 0
+        ? Math.round(obligationsMet / obligationsTotal * 20)
+        : 10;
+    score -= overBudget.length * 5;
+
+    // Discretionary ratio penalty
+    if (totalOutflow > 0) {
+        const discRatio = discretionaryTotal / totalOutflow;
+        if      (discRatio > 0.5) score -= 10;
+        else if (discRatio > 0.3) score -= 5;
+    }
+
+    // Transaction logging bonus/penalty
+    if      (monthTx.length >= 10) score += 5;
+    else if (monthTx.length === 0)  score -= 10;
+
+    score = Math.max(0, Math.min(100, score));
+
+    const scoreLabel = score >= 80 ? 'EXCELLENT'
+                     : score >= 65 ? 'GOOD'
+                     : score >= 45 ? 'NEEDS ATTENTION'
+                     : 'CRITICAL';
+
+    const auditCore = {
+        user, netPosition, totalInflow, totalOutflow,
+        savingsRate, score, scoreLabel,
+        sortedSpend, sortedIncome,
+        obligationsMet, obligationsTotal,
+        overBudget, obligationReport,
+        worstDay, bestDay, monthTx,
+        m: currentMonth, y: currentYear,
+        necessaryTotal, discretionaryTotal, liabilityTotal
+    };
+
+    return {
+        month:              getMonthName(currentMonth) + ' ' + currentYear,
+        user,
+        totalInflow,
+        totalOutflow,
+        netPosition,
+        savingsRate,
+        score,
+        scoreLabel,
+        txCount:            monthTx.length,
+        monthTx,
+        sortedSpend,
+        sortedIncome,
+        obligationReport,
+        obligationsMet,
+        obligationsTotal,
+        overBudget,
+        worstDay,
+        bestDay,
+        necessaryTotal,
+        discretionaryTotal,
+        liabilityTotal,
+        narrative:          buildNarrative(auditCore),
+        recommendations:    buildRecommendations(auditCore)
+    };
+}
+
+// ─────────────────────────────────────────────
+// 6. NARRATIVE BUILDER
+// ─────────────────────────────────────────────
+
+function buildNarrative(d) {
+    const parts      = [];
+    const clientName = d.user?.name || 'Client';
+    const monthLabel = getMonthName(d.m) + ' ' + d.y;
+
+    parts.push(clientName + "'s financial audit for " + monthLabel +
+               " produces a discipline score of " + d.score + "/100 — rated " + d.scoreLabel + '.');
+
+    if (d.netPosition > 0) {
+        parts.push('The month ended with a positive net position of ' + formatKsh(d.netPosition) +
+                   ', meaning more money came in than went out.');
+    } else if (d.netPosition === 0) {
+        parts.push('The month broke exactly even at ' + formatKsh(d.totalInflow) + '.');
+    } else {
+        parts.push('The month closed in deficit: ' + formatKsh(d.totalOutflow) +
+                   ' went out against ' + formatKsh(d.totalInflow) +
+                   ' in — a shortfall of ' + formatKsh(Math.abs(d.netPosition)) + '.');
+    }
+
+    if (d.totalInflow === 0) {
+        parts.push('No income was recorded this month — a critical record-keeping gap.');
+    } else if (d.savingsRate >= 20) {
+        parts.push('A savings rate of ' + d.savingsRate + '% was achieved — well above the 15% healthy floor.');
+    } else if (d.savingsRate >= 10) {
+        parts.push('The savings rate of ' + d.savingsRate + '% is acceptable, though there is room to push toward 15-20%.');
+    } else if (d.savingsRate >= 0) {
+        parts.push('A savings rate of only ' + d.savingsRate + '% leaves no cushion. Target 10% next month by cutting the lowest-value discretionary spend first.');
+    } else {
+        parts.push('The savings rate was negative at ' + d.savingsRate + '%, confirming spending exceeded income.');
+    }
+
+    if (d.sortedSpend.length > 0) {
+        const [topCat, topAmt] = d.sortedSpend[0];
+        const pct = d.totalOutflow > 0 ? Math.round(topAmt / d.totalOutflow * 100) : 0;
+        parts.push('The largest outflow category was ' + topCat + ' at ' + formatKsh(topAmt) +
+                   ', representing ' + pct + '% of total spending.');
+        if (d.sortedSpend.length > 1) {
+            parts.push('Second largest: ' + d.sortedSpend[1][0] + ' at ' + formatKsh(d.sortedSpend[1][1]) + '.');
+        }
+    }
+
+    if (d.totalOutflow > 0 && d.discretionaryTotal > 0) {
+        const discPct = Math.round(d.discretionaryTotal / d.totalOutflow * 100);
+        parts.push(
+            discPct > 30
+                ? 'Discretionary spending was ' + discPct + '% of outflows (' + formatKsh(d.discretionaryTotal) + ') — first place to cut if position tightens.'
+                : 'Discretionary spending was well-contained at ' + discPct + '% of outflows (' + formatKsh(d.discretionaryTotal) + ').'
+        );
+    }
+
+    if (d.obligationsTotal > 0) {
+        if (d.obligationsMet === d.obligationsTotal && d.overBudget.length === 0) {
+            parts.push('All ' + d.obligationsTotal + ' mandatory obligation' +
+                       (d.obligationsTotal > 1 ? 's were' : ' was') + ' settled within budget.');
+        } else if (d.overBudget.length > 0) {
+            const worst = [...d.overBudget].sort((a, b) => b.variance - a.variance)[0];
+            parts.push('"' + worst.label + '" ran ' + formatKsh(worst.variance) +
+                       ' over budget — the most significant variance this month.');
+        } else if (d.obligationsMet < d.obligationsTotal) {
+            parts.push((d.obligationsTotal - d.obligationsMet) +
+                       ' of ' + d.obligationsTotal + ' obligations were not fully settled.');
+        }
+    }
+
+    if (d.worstDay[1] > 0) {
+        parts.push('Highest single-day outflow: ' + formatKsh(d.worstDay[1]) + ' on ' + d.worstDay[0] + '.');
+    }
+
+    parts.push(
+        d.monthTx.length < 5
+            ? 'Only ' + d.monthTx.length + ' transaction' +
+              (d.monthTx.length !== 1 ? 's' : '') + ' recorded — sparse logging reduces audit accuracy.'
+            : d.monthTx.length + ' transactions recorded — ' +
+              (d.monthTx.length >= 10 ? 'solid' : 'reasonable') + ' data foundation.'
+    );
+
+    return parts.join(' ');
+}
+
+// ─────────────────────────────────────────────
+// 7. RECOMMENDATIONS BUILDER
+// ─────────────────────────────────────────────
+
+function buildRecommendations(d) {
+    const recs         = [];
+    const isBusiness   = d.user?.type === 'business';
+
+    // Net position
+    if (d.netPosition < 0) {
+        recs.push({
+            priority: 'CRITICAL',
+            area:     'Cash Flow',
+            advice:   'You spent ' + formatKsh(Math.abs(d.netPosition)) +
+                      ' more than you earned. Identify one expense to cut 20% and one income channel to increase before next month.'
+        });
+    } else if (d.savingsRate < 5 && d.totalInflow > 0) {
+        recs.push({
+            priority: 'HIGH',
+            area:     'Savings Buffer',
+            advice:   'Savings rate of ' + d.savingsRate + '% leaves no cushion. Target 10% next month by cutting the lowest-value discretionary spend first.'
+        });
+    } else if (d.savingsRate >= 15) {
+        recs.push({
+            priority: 'KEEP UP',
+            area:     'Savings Discipline',
+            advice:   'Your ' + d.savingsRate + '% savings rate is above the healthy threshold. Pay yourself first — transfer savings on the day income arrives.'
+        });
+    }
+
+    // Top spend category
+    if (d.sortedSpend.length > 0) {
+        const [topCat, topAmt] = d.sortedSpend[0];
+        const pct = d.totalOutflow > 0 ? Math.round(topAmt / d.totalOutflow * 100) : 0;
+        if (pct >= 35) {
+            recs.push({
+                priority: 'HIGH',
+                area:     topCat,
+                advice:   topCat + ' absorbed ' + pct + '% of spending at ' + formatKsh(topAmt) +
+                          '. A 15% reduction here would materially improve your net position.'
+            });
+        }
+    }
+
+    // Discretionary ratio
+    if (d.totalOutflow > 0) {
+        const discPct = Math.round(d.discretionaryTotal / d.totalOutflow * 100);
+        if (discPct > 30) {
+            recs.push({
+                priority: 'HIGH',
+                area:     'Discretionary Spending',
+                advice:   'Non-essential spending was ' + discPct + '% of outflows (' +
+                          formatKsh(d.discretionaryTotal) + '). Set a ceiling before next month starts.'
+            });
+        } else if (discPct <= 15 && d.discretionaryTotal > 0) {
+            recs.push({
+                priority: 'KEEP UP',
+                area:     'Discretionary Control',
+                advice:   'Discretionary spending at only ' + discPct + '% of outflows — very well controlled. Maintain this.'
+            });
+        }
+    }
+
+    // Over-budget obligations
+    d.overBudget.forEach((ob) => {
+        recs.push({
+            priority: 'HIGH',
+            area:     ob.label,
+            advice:   '"' + ob.label + '" exceeded budget by ' + formatKsh(ob.variance) +
+                      ' (budgeted ' + formatKsh(ob.budget) + ', spent ' + formatKsh(ob.paid) +
+                      '). Fix the ceiling or the budget.'
+        });
+    });
+
+    // Unsettled obligations
+    if (d.obligationsMet < d.obligationsTotal) {
+        const unsettled = d.obligationReport.filter((o) => !o.met);
+        recs.push({
+            priority: 'CRITICAL',
+            area:     'Unpaid Obligations',
+            advice:   'Unsettled: ' +
+                      unsettled.map((o) => o.label + ' (short ' + formatKsh(o.budget - o.paid) + ')').join(', ') +
+                      '. Pay these first next month before any discretionary spending.'
+        });
+    }
+
+    // No income
+    if (d.totalInflow === 0) {
+        recs.push({
+            priority: 'CRITICAL',
+            area:     'Income Logging',
+            advice:   'No income recorded. Log every transaction the same day it happens. If genuinely zero, an urgent recovery plan is needed.'
+        });
+    }
+
+    // Wealth building opportunity
+    if (d.savingsRate > 20 && d.netPosition > 0 && d.obligationsMet === d.obligationsTotal) {
+        recs.push({
+            priority: 'OPPORTUNITY',
+            area:     isBusiness ? 'Reinvestment' : 'Wealth Building',
+            advice:   isBusiness
+                ? 'Strong month. Allocate surplus toward inventory or marketing with a clear return within 60 days.'
+                : 'Strong month. Move surplus into a money market fund or SACCO where it earns interest.'
+        });
+    }
+
+    // Sparse logging
+    if (d.monthTx.length < 5 && d.monthTx.length > 0) {
+        recs.push({
+            priority: 'HIGH',
+            area:     'Transaction Logging',
+            advice:   'Only ' + d.monthTx.length + ' transactions recorded — sparse logging reduces audit accuracy.'
+        });
+    }
+
+    return recs;
+}
+
+// ─────────────────────────────────────────────
+// 8. LOAD jsPDF
+// ─────────────────────────────────────────────
+
+async function loadJsPDF() {
+    if (window.jspdf && window.jspdf.jsPDF) return window.jspdf.jsPDF;
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src   = 'jspdf.umd.min.js';
+        script.onload = () => resolve(window.jspdf.jsPDF);
+        script.onerror = () => reject(new Error('jsPDF failed to load'));
+        document.head.appendChild(script);
+    });
+}
+
+// ─────────────────────────────────────────────
+// 9. PDF GENERATOR
+// ─────────────────────────────────────────────
+
+async function generatePDF(audit) {
+    const JsPDF   = await loadJsPDF();
+    const doc     = new JsPDF({ unit: 'mm', format: 'a4' });
+
+    const PAGE_W  = 210;
+    const PAGE_H  = 297;
+    const MARGIN_L = 16;
+    const MARGIN_R = 16;
+    const CONTENT_W = PAGE_W - MARGIN_L - MARGIN_R;
+
+    let y = 18; // current Y cursor
+
+    // Colour palette
+    const C = {
+        dark:    [2,   6,   23],
+        green:   [74,  222, 128],
+        white:   [255, 255, 255],
+        slate:   [100, 116, 139],
+        red:     [239, 68,  68],
+        yellow:  [234, 179, 8],
+        blue:    [59,  130, 246],
+        bgLight: [245, 248, 255],
+        border:  [220, 226, 236],
+        text:    [30,  40,  60],
+        sub:     [80,  90,  110]
+    };
+
+    // ── Page-break guard ──
+    function checkPageBreak(neededHeight) {
+        if (y + (neededHeight || 20) > PAGE_H - 14) {
+            doc.addPage();
+            y = 18;
+            drawPageHeader();
+        }
+    }
+
+    // ── Repeating page header ──
+    function drawPageHeader() {
+        doc.setFillColor(...C.dark);
+        doc.rect(0, 0, PAGE_W, 10, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(...C.white);
+        doc.text('TRAVIS GUARDIAN  ·  MONTHLY FINANCIAL AUDIT', MARGIN_L, 7);
+        doc.setTextColor(...C.text);
+        doc.text(
+            audit.month.toUpperCase() + '  ·  ' + (audit.user?.name || '').toUpperCase(),
+            PAGE_W - MARGIN_R, 7,
+            { align: 'right' }
+        );
+    }
+
+    // ── Section heading ──
+    function drawSectionHeading(title) {
+        checkPageBreak(14);
+        doc.setFillColor(...C.dark);
+        doc.roundedRect(MARGIN_L, y, CONTENT_W, 8, 2, 2, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.5);
+        doc.setTextColor(...C.white);
+        doc.text(title, MARGIN_L + 4, y + 5.5);
+        y += 13;
+    }
+
+    // ══════════════════════════════════════════
+    // COVER / HEADER BLOCK
+    // ══════════════════════════════════════════
+    doc.setFillColor(...C.dark);
+    doc.rect(0, 0, PAGE_W, 55, 'F');
+    doc.setFillColor(...C.white);
+    doc.rect(0, 55, PAGE_W, 2, 'F');
+
+    // Logo text
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(32);
+    doc.setTextColor(...C.white);
+    doc.text('TRAVIS', MARGIN_L, 26);
+    doc.setTextColor(...C.green);        // "GUARDIAN" in green
+    doc.text('GUARDIAN', MARGIN_L + 52, 26);
+
+    // Subtitle lines
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(160, 180, 210);
+    doc.text('MONTHLY FINANCIAL AUDIT REPORT', MARGIN_L, 35);
+    doc.text(
+        audit.month.toUpperCase() + '  ·  ' +
+        (audit.user?.name || '').toUpperCase() + '  ·  ' +
+        (audit.user?.type || 'PERSONAL').toUpperCase(),
+        MARGIN_L, 43
+    );
+    doc.text('Generated: ' + new Date().toLocaleString('en-KE'), MARGIN_L, 49);
+
+    // Transaction count teaser (green)
+    doc.setFontSize(7.5);
+    doc.setTextColor(...C.green);
+    doc.text('Transactions this month: ' + audit.txCount + '  |  Source: IndexedDB (TravisGuardian_v1.0)', MARGIN_L, 55);
+
+    // ── Score badge (top-right) ──
+    const badgeColor = audit.score >= 80 ? C.green : audit.score >= 65 ? C.yellow : C.red;
+    doc.setFillColor(...badgeColor);
+    doc.roundedRect(PAGE_W - MARGIN_R - 40, 14, 40, 32, 3, 3, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(26);
+    doc.setTextColor(...C.dark);
+    doc.text(String(audit.score), PAGE_W - MARGIN_R - 20, 34, { align: 'center' });
+    doc.setFontSize(6.5);
+    doc.text('DISCIPLINE', PAGE_W - MARGIN_R - 20, 40, { align: 'center' });
+    doc.text('SCORE',      PAGE_W - MARGIN_R - 20, 44, { align: 'center' });
+    doc.text(audit.scoreLabel, PAGE_W - MARGIN_R - 20, 49, { align: 'center' });
+
+    y = 67;
+    drawPageHeader();
+
+    // ══════════════════════════════════════════
+    // KPI CARDS ROW  (Inflow / Outflow / Net / Savings)
+    // ══════════════════════════════════════════
+    const kpiCards = [
+        { label: 'Total Inflow',   value: formatKsh(audit.totalInflow),   bar: C.green },
+        { label: 'Total Outflow',  value: formatKsh(audit.totalOutflow),  bar: C.red   },
+        {
+            label: 'Net Position',
+            value: (audit.netPosition >= 0 ? '+' : '-') + formatKsh(audit.netPosition),
+            bar:   audit.netPosition >= 0 ? C.green : C.red
+        },
+        {
+            label: 'Savings Rate',
+            value: audit.savingsRate + '%',
+            bar:   audit.savingsRate >= 10 ? C.green : C.red
+        }
+    ];
+
+    const cardW = (CONTENT_W - 9) / 4;
+    kpiCards.forEach((card, i) => {
+        const x = MARGIN_L + i * (cardW + 3);
+        doc.setFillColor(...C.bgLight);
+        doc.roundedRect(x, y, cardW, 20, 2, 2, 'F');
+        doc.setFillColor(...card.bar);
+        doc.roundedRect(x, y, cardW, 2.5, 1, 1, 'F');
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(...C.slate);
+        doc.text(card.label.toUpperCase(), x + cardW / 2, y + 9, { align: 'center' });
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.5);
+        doc.setTextColor(...C.text);
+        doc.text(card.value, x + cardW / 2, y + 16, { align: 'center' });
+    });
+    y += 28;
+
+    // ══════════════════════════════════════════
+    // EXPENSE BREAKDOWN BY TYPE
+    // ══════════════════════════════════════════
+    if (audit.totalOutflow > 0) {
+        checkPageBreak(18);
+        const expBreakdown = [
+            { label: 'Necessary',     val: audit.necessaryTotal,     col: C.blue   },
+            { label: 'Discretionary', val: audit.discretionaryTotal, col: C.yellow },
+            { label: 'Liabilities',   val: audit.liabilityTotal,     col: C.red    }
+        ];
+        const segW = (CONTENT_W - 6) / 3;
+        expBreakdown.forEach((seg, i) => {
+            const x   = MARGIN_L + i * (segW + 3);
+            const pct = Math.round(seg.val / audit.totalOutflow * 100);
+            doc.setFillColor(248, 250, 255);
+            doc.roundedRect(x, y, segW, 14, 2, 2, 'F');
+            doc.setFillColor(...seg.col);
+            doc.roundedRect(x, y, Math.max(segW * (pct / 100), 0.5), 2, 1, 1, 'F');
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(6.5);
+            doc.setTextColor(...C.text);
+            doc.text(seg.label.toUpperCase() + ' EXPENSES', x + 4, y + 7);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8);
+            doc.setTextColor(...C.text);
+            doc.text(formatKsh(seg.val) + '  (' + pct + '%)', x + 4, y + 12);
+        });
+        y += 20;
+    }
+
+    // ══════════════════════════════════════════
+    // AUDITOR'S NARRATIVE
+    // ══════════════════════════════════════════
+    checkPageBreak(35);
+    drawSectionHeading("AUDITOR'S NARRATIVE");
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...C.sub);
+    doc.splitTextToSize(audit.narrative, CONTENT_W).forEach((line) => {
+        checkPageBreak(7);
+        doc.text(line, MARGIN_L, y);
+        y += 5.5;
+    });
+    y += 6;
+
+    // ══════════════════════════════════════════
+    // TRANSACTION LOG
+    // ══════════════════════════════════════════
+    if (audit.txCount > 0) {
+        checkPageBreak(40);
+        drawSectionHeading('TRANSACTION LOG — ' + audit.txCount + ' ENTRIES THIS MONTH');
+
+        // Table header
+        doc.setFillColor(...C.dark);
+        doc.rect(MARGIN_L, y, CONTENT_W, 8, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(...C.green);
+        doc.text('DATE',          MARGIN_L + 2,   y + 5.5);
+        doc.text('DESCRIPTION',   MARGIN_L + 26,  y + 5.5);
+        doc.text('CREDIT (FROM)', MARGIN_L + 88,  y + 5.5);
+        doc.text('DEBIT (TO)',    MARGIN_L + 130,  y + 5.5);
+        doc.text('AMOUNT',        PAGE_W - MARGIN_R - 2, y + 5.5, { align: 'right' });
+        y += 10;
+
+        const displayTx = audit.monthTx.slice(0, 50);
+        displayTx.forEach((tx, idx) => {
+            checkPageBreak(10);
+
+            // Alternating row background
+            if (idx % 2 === 0) {
+                doc.setFillColor(248, 250, 255);
+                doc.rect(MARGIN_L, y - 1, CONTENT_W, 9, 'F');
+            }
+
+            const classified = classifyTransaction(tx);
+            const dateStr    = new Date(Number(tx.id)).toLocaleDateString('en-KE', { day: '2-digit', month: 'short' });
+            const amtColor   = classified.flow === 'inflow'  ? C.green
+                             : classified.flow === 'outflow' ? C.red
+                             : C.slate;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(7.5);
+            doc.setTextColor(...C.text);
+            doc.text(dateStr,                               MARGIN_L + 2,  y + 5);
+            doc.setTextColor(...C.text);
+            doc.text((tx.desc || 'No description').substring(0, 26), MARGIN_L + 26, y + 5);
+            doc.setTextColor(...C.text);
+            doc.text((tx.credit || '').substring(0, 18),  MARGIN_L + 88, y + 5);
+            doc.text((tx.debit  || '').substring(0, 16),  MARGIN_L + 130, y + 5);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...amtColor);
+            doc.text(formatKsh(tx.amount), PAGE_W - MARGIN_R - 2, y + 5, { align: 'right' });
+            y += 9;
+        });
+
+        if (audit.txCount > 50) {
+            checkPageBreak(8);
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(7.5);
+            doc.setTextColor(...C.slate);
+            doc.text('… ' + (audit.txCount - 50) + ' more transactions — view full ledger in the app.', MARGIN_L + 2, y + 4);
+            y += 10;
+        }
+        y += 6;
+    }
+
+    // ══════════════════════════════════════════
+    // SPENDING BREAKDOWN
+    // ══════════════════════════════════════════
+    if (audit.sortedSpend.length > 0) {
+        checkPageBreak(40);
+        drawSectionHeading('SPENDING BREAKDOWN');
+        const maxSpend = audit.sortedSpend[0][1];
+
+        audit.sortedSpend.forEach(([cat, amt]) => {
+            checkPageBreak(14);
+            const pct    = audit.totalOutflow > 0 ? Math.round(amt / audit.totalOutflow * 100) : 0;
+            const barW   = maxSpend > 0 ? (amt / maxSpend) * (CONTENT_W - 58) : 0;
+            const barCol = pct > 40 ? C.red : pct > 20 ? C.yellow : C.blue;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8.5);
+            doc.setTextColor(...C.text);
+            doc.text(cat, MARGIN_L, y + 4);
+            doc.setTextColor(...C.slate);
+            doc.text(pct + '%', PAGE_W - MARGIN_R - 24, y + 4, { align: 'right' });
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...C.text);
+            doc.text(formatKsh(amt), PAGE_W - MARGIN_R, y + 4, { align: 'right' });
+
+            // Bar (background then filled)
+            doc.setFillColor(...C.border);
+            doc.roundedRect(MARGIN_L, y + 6, CONTENT_W - 58, 3.5, 1, 1, 'F');
+            if (barW > 0) {
+                doc.setFillColor(...barCol);
+                doc.roundedRect(MARGIN_L, y + 6, barW, 3.5, 1, 1, 'F');
+            }
+            y += 14;
+        });
+        y += 4;
+    }
+
+    // ══════════════════════════════════════════
+    // INCOME SOURCES
+    // ══════════════════════════════════════════
+    if (audit.sortedIncome.length > 0) {
+        checkPageBreak(30);
+        drawSectionHeading('INCOME SOURCES');
+        audit.sortedIncome.forEach(([src, amt]) => {
+            checkPageBreak(10);
+            const pct  = audit.totalInflow > 0 ? Math.round(amt / audit.totalInflow * 100) : 0;
+            const barW = audit.totalInflow > 0 ? (amt / audit.totalInflow) * (CONTENT_W - 58) : 0;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8.5);
+            doc.setTextColor(...C.text);
+            doc.text(src, MARGIN_L, y);
+            doc.setTextColor(...C.slate);
+            doc.text(pct + '%', PAGE_W - MARGIN_R - 24, y, { align: 'right' });
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...C.green);
+            doc.text(formatKsh(amt), PAGE_W - MARGIN_R, y, { align: 'right' });
+
+            doc.setFillColor(220, 252, 231);
+            doc.roundedRect(MARGIN_L, y + 2, CONTENT_W - 58, 2.5, 1, 1, 'F');
+            if (barW > 0) {
+                doc.setFillColor(...C.green);
+                doc.roundedRect(MARGIN_L, y + 2, barW, 2.5, 1, 1, 'F');
+            }
+            y += 10;
+        });
+        y += 4;
+    }
+
+    // ══════════════════════════════════════════
+    // MANDATORY OBLIGATIONS COMPLIANCE
+    // ══════════════════════════════════════════
+    if (audit.obligationReport.length > 0) {
+        checkPageBreak(50);
+        drawSectionHeading('MANDATORY OBLIGATIONS COMPLIANCE');
+
+        // Table header
+        doc.setFillColor(...C.dark);
+        doc.rect(MARGIN_L, y, CONTENT_W, 8, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(...C.white);
+        doc.text('OBLIGATION', MARGIN_L + 2,   y + 5.5);
+        doc.text('BUDGETED',   MARGIN_L + 60,  y + 5.5);
+        doc.text('PAID',       MARGIN_L + 92,  y + 5.5);
+        doc.text('VARIANCE',   MARGIN_L + 124, y + 5.5);
+        doc.text('STATUS',     MARGIN_L + 156, y + 5.5);
+        y += 10;
+
+        audit.obligationReport.forEach((ob, idx) => {
+            checkPageBreak(10);
+            if (idx % 2 === 0) {
+                doc.setFillColor(248, 250, 255);
+                doc.rect(MARGIN_L, y - 1, CONTENT_W, 10, 'F');
+            }
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(...C.text);
+            doc.text(ob.label.substring(0, 26),   MARGIN_L + 2,   y + 5);
+            doc.text(formatKsh(ob.budget),          MARGIN_L + 60,  y + 5);
+            doc.text(formatKsh(ob.paid),            MARGIN_L + 92,  y + 5);
+
+            // Variance colour
+            doc.setTextColor(...(ob.variance > 0 ? C.red : ob.variance < 0 ? C.text : C.green));
+            doc.text((ob.variance > 0 ? '+' : '') + formatKsh(ob.variance), MARGIN_L + 124, y + 5);
+
+            // Status badge
+            doc.setFillColor(...(ob.met ? C.green : C.red));
+            doc.roundedRect(MARGIN_L + 154, y + 1, 26, 7, 2, 2, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(6.5);
+            doc.setTextColor(...C.dark);
+            doc.text(ob.met ? 'SETTLED' : 'UNPAID', MARGIN_L + 167, y + 6, { align: 'center' });
+            y += 11;
+        });
+
+        checkPageBreak(10);
+        const compliancePct = Math.round(audit.obligationsMet / Math.max(audit.obligationsTotal, 1) * 100);
+        doc.setFillColor(...C.dark);
+        doc.rect(MARGIN_L, y, CONTENT_W, 8, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8);
+        doc.setTextColor(...C.green);
+        doc.text(
+            audit.obligationsMet + ' of ' + audit.obligationsTotal +
+            ' settled  ·  Compliance: ' + compliancePct + '%',
+            MARGIN_L + 4, y + 5.5
+        );
+        y += 14;
+    }
+
+    // ══════════════════════════════════════════
+    // RECOMMENDATIONS
+    // ══════════════════════════════════════════
+    checkPageBreak(40);
+    drawSectionHeading('RECOMMENDATIONS FOR NEXT MONTH');
+
+    audit.recommendations.forEach((rec, idx) => {
+        checkPageBreak(32);
+        const priorityColor = rec.priority === 'CRITICAL'    ? C.red
+                            : rec.priority === 'HIGH'        ? C.yellow
+                            : rec.priority === 'KEEP UP'     ? C.green
+                            : C.blue;
+
+        // Priority badge
+        doc.setFillColor(...priorityColor);
+        doc.roundedRect(MARGIN_L, y, 30, 6.5, 2, 2, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6);
+        doc.setTextColor(...C.dark);
+        doc.text(rec.priority, MARGIN_L + 15, y + 4.5, { align: 'center' });
+
+        // Area label
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9.5);
+        doc.setTextColor(...C.text);
+        doc.text(rec.area, MARGIN_L + 34, y + 4.5);
+        y += 10;
+
+        // Advice text (word-wrapped)
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.setTextColor(...C.sub);
+        doc.splitTextToSize(rec.advice, CONTENT_W - 4).forEach((line) => {
+            checkPageBreak(7);
+            doc.text(line, MARGIN_L + 2, y);
+            y += 5.5;
+        });
+
+        // Divider between items
+        if (idx < audit.recommendations.length - 1) {
+            checkPageBreak(5);
+            doc.setDrawColor(...C.border);
+            doc.line(MARGIN_L, y + 3, PAGE_W - MARGIN_R, y + 3);
+            y += 9;
+        } else {
+            y += 5;
+        }
+    });
+
+    // ── Page footers ──
+    const totalPages = doc.getNumberOfPages();
+    for (let p = 1; p <= totalPages; p++) {
+        doc.setPage(p);
+        doc.setFillColor(...C.dark);
+        doc.rect(0, PAGE_H - 10, PAGE_W, 10, 'F');
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(...C.text);
+        doc.text('Travis Guardian  ·  Confidential Financial Audit  ·  ' + audit.month, MARGIN_L, PAGE_H - 4);
+        doc.text('Page ' + p + ' of ' + totalPages, PAGE_W - MARGIN_R, PAGE_H - 4, { align: 'right' });
+    }
+
+    return doc;
+}
+
+// ─────────────────────────────────────────────
+// 10. SAVE PDF (File System API → fallback link)
+// ─────────────────────────────────────────────
+
+async function savePDF(doc, filename) {
+    const blob = doc.output('blob');
+
+    if (window.showSaveFilePicker) {
+        try {
+            const handle      = await window.showSaveFilePicker({
+                suggestedName: filename,
+                types: [{ description: 'PDF', accept: { 'application/pdf': ['.pdf'] } }],
+                startIn: 'documents'
+            });
+            const writable = await handle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+            return { method: 'picker' };
+        } catch (err) {
+            if (err.name === 'AbortError') return { method: 'cancelled' };
+        }
+    }
+
+    // Fallback: auto-download via <a>
+    const url = URL.createObjectURL(blob);
+    const a   = document.createElement('a');
+    a.href     = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }, 2000);
+    return { method: 'download' };
+}
+
+// ─────────────────────────────────────────────
+// 11. AUDIT MODAL (UI overlay)
+// ─────────────────────────────────────────────
+
+async function showAuditModal() {
+    // Only one modal at a time
+    if (document.getElementById('travis-audit-overlay')) return;
+
+    const now       = new Date();
+    const monthLabel = getMonthName(now.getMonth()) + ' ' + now.getFullYear();
+
+    const overlay   = document.createElement('div');
+    overlay.id      = 'travis-audit-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(2,6,23,0.93);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;z-index:99999;font-family:system-ui,sans-serif;padding:16px;';
+
+    overlay.innerHTML = `
+      <div style="background:#0f172a;border:2px solid #4ade80;box-shadow:0 0 50px rgba(74,222,128,0.2);border-radius:16px;max-width:500px;width:100%;overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#020617,#0f172a);padding:28px 28px 20px;">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
+            <div style="width:48px;height:48px;background:#4ade80;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">📊</div>
+            <div>
+              <div style="color:#4ade80;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;">End-of-Month Audit</div>
+              <div style="color:#f8fafc;font-size:20px;font-weight:800;line-height:1.2;">${monthLabel} Report Ready</div>
+            </div>
+          </div>
+          <p style="color:#94a3b8;font-size:13px;line-height:1.65;margin:0;">Travis reads directly from your secure on-device database — no intermediate state, no guesswork.</p>
+        </div>
+        <div style="padding:20px 28px 28px;">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
+            <div style="background:#1e293b;border-radius:10px;padding:14px 10px;text-align:center;">
+              <div id="akpi-tx"    style="color:#94a3b8;font-weight:700;font-size:17px;">…</div>
+              <div style="color:#475569;font-size:10px;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Transactions</div>
+            </div>
+            <div style="background:#1e293b;border-radius:10px;padding:14px 10px;text-align:center;">
+              <div id="akpi-net"   style="font-weight:700;font-size:13px;color:#94a3b8;">…</div>
+              <div style="color:#475569;font-size:10px;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Net Position</div>
+            </div>
+            <div style="background:#1e293b;border-radius:10px;padding:14px 10px;text-align:center;">
+              <div id="akpi-score" style="font-weight:700;font-size:17px;color:#94a3b8;">…</div>
+              <div style="color:#475569;font-size:10px;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Score</div>
+            </div>
+          </div>
+          <button id="audit-gen-btn" style="width:100%;background:#4ade80;color:#020617;border:none;padding:17px;font-size:15px;font-weight:800;border-radius:10px;cursor:pointer;letter-spacing:0.04em;text-transform:uppercase;">
+            📄 Generate &amp; Save Report
+          </button>
+          <div id="audit-progress" style="margin-top:14px;display:none;">
+            <div style="height:5px;background:#1e293b;border-radius:3px;overflow:hidden;">
+              <div id="audit-bar" style="height:100%;width:0%;background:#4ade80;border-radius:3px;transition:width 0.4s ease;"></div>
+            </div>
+            <p id="audit-prog-txt" style="color:#94a3b8;font-size:12px;margin-top:8px;text-align:center;">Preparing…</p>
+          </div>
+          <button id="audit-skip-btn" style="width:100%;background:transparent;color:#475569;border:none;padding:13px;font-size:13px;cursor:pointer;margin-top:6px;">
+            Remind me in 1 hour
+          </button>
+        </div>
+      </div>`;
+
+    document.body.appendChild(overlay);
+
+    // ── Pre-load KPI preview ──
+    try {
+        const data  = await loadAllData();
+        const audit = computeAudit(data);
+
+        document.getElementById('akpi-tx').textContent    = audit.txCount;
+
+        const netEl = document.getElementById('akpi-net');
+        netEl.textContent = (audit.netPosition >= 0 ? '+' : '-') + formatKsh(audit.netPosition);
+        netEl.style.color = audit.netPosition >= 0 ? '#4ade80' : '#ef4444';
+
+        const scoreEl = document.getElementById('akpi-score');
+        scoreEl.textContent = audit.score + '/100';
+        scoreEl.style.color = audit.score >= 65 ? '#4ade80' : audit.score >= 45 ? '#eab308' : '#ef4444';
+    } catch (e) {
+        document.getElementById('akpi-tx').textContent = '?';
+    }
+
+    // ── Generate button ──
+    document.getElementById('audit-gen-btn').onclick = async () => {
+        const genBtn   = document.getElementById('audit-gen-btn');
+        const progBar  = document.getElementById('audit-bar');
+        const progTxt  = document.getElementById('audit-prog-txt');
+
+        genBtn.disabled    = true;
+        genBtn.textContent = 'Generating…';
+        document.getElementById('audit-progress').style.display = 'block';
+
+        try {
+            progBar.style.width = '15%';
+            progTxt.textContent = 'Opening database…';
+            await new Promise(r => setTimeout(r, 180));
+
+            progBar.style.width = '35%';
+            progTxt.textContent = 'Reading all transactions from IndexedDB…';
+            await new Promise(r => setTimeout(r, 180));
+
+            const data    = await loadAllData();
+            const txCount = data.transactions.filter((tx) => {
+                const d = new Date(Number(tx.id));
+                const n = new Date();
+                return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth();
+            }).length;
+
+            progBar.style.width = '55%';
+            progTxt.textContent = 'Classifying ' + txCount + ' entries this month…';
+            await new Promise(r => setTimeout(r, 180));
+
+            const audit = computeAudit(data);
+
+            progBar.style.width = '72%';
+            progTxt.textContent = 'Writing narrative & recommendations…';
+            await new Promise(r => setTimeout(r, 180));
+
+            progBar.style.width = '88%';
+            progTxt.textContent = 'Rendering PDF pages…';
+            await new Promise(r => setTimeout(r, 180));
+
+            const doc = await generatePDF(audit);
+
+            progBar.style.width = '97%';
+            progTxt.textContent = 'Saving…';
+            await new Promise(r => setTimeout(r, 150));
+
+            const now      = new Date();
+            const filename = 'Travis-Audit-' + getMonthName(now.getMonth()) + '-' + now.getFullYear() + '.pdf';
+            const result   = await savePDF(doc, filename);
+
+            progBar.style.width = '100%';
+
+            if (result.method === 'cancelled') {
+                progTxt.textContent      = 'Save cancelled. Click to try again.';
+                genBtn.disabled          = false;
+                genBtn.textContent       = '📄 Generate & Save Report';
+                progBar.style.width      = '0%';
+                return;
+            }
+
+            progBar.style.background = '#4ade80';
+            progTxt.textContent =
+                '✓ Done — ' + audit.txCount + ' transactions · ' +
+                formatKsh(audit.totalInflow) + ' inflow · ' +
+                formatKsh(audit.totalOutflow) + ' outflow';
+
+            try { localStorage.setItem('travis_audit_done', now.getFullYear() + '-' + now.getMonth()); } catch(e) {}
+
+            setTimeout(() => overlay.remove(), 3000);
+
+        } catch (err) {
+            progBar.style.background = '#ef4444';
+            progTxt.textContent      = 'Error: ' + (err.message || 'Unknown error');
+            console.error('[TravisAudit]', err);
+            genBtn.disabled    = false;
+            genBtn.textContent = '📄 Try Again';
+        }
+    };
+
+    // ── Skip button ──
+    document.getElementById('audit-skip-btn').onclick = () => {
+        overlay.remove();
+        setTimeout(checkAndTriggerAudit, 60 * 60 * 1000); // remind in 1 hour
+    };
+}
+
+// ─────────────────────────────────────────────
+// 12. AUTO-TRIGGER LOGIC
+// (last day of month, after 13:30)
+// ─────────────────────────────────────────────
+
+function checkAndTriggerAudit() {
+    const now     = new Date();
+    const year    = now.getFullYear();
+    const month   = now.getMonth();
+    const day     = now.getDate();
+    const hours   = now.getHours();
+    const minutes = now.getMinutes();
+
+    // Must be the last day of the month
+    if (day !== getLastDayOfCurrentMonth()) return;
+
+    // Must be after 13:30
+    if (!(hours > 13 || (hours === 13 && minutes >= 30))) return;
+
+    // Don't show if already done this month
+    try {
+        if (localStorage.getItem('travis_audit_done') === year + '-' + month) return;
+    } catch(e) {}
+
+    showAuditModal();
+}
+
+// ─────────────────────────────────────────────
+// 13. PUBLIC API  (window.travisAudit)
+// ─────────────────────────────────────────────
+
+window.travisAudit = {
+    showNow: showAuditModal,
+
+    buildAudit: async () => {
+        const data = await loadAllData();
+        return computeAudit(data);
+    },
+
+    generateAndSave: async () => {
+        const data     = await loadAllData();
+        const audit    = computeAudit(data);
+        const doc      = await generatePDF(audit);
+        const now      = new Date();
+        await savePDF(doc, 'Travis-Audit-' + getMonthName(now.getMonth()) + '-' + now.getFullYear() + '.pdf');
+    }
+};
+
+// ─────────────────────────────────────────────
+// 14. BOOT — wait for user data to be ready
+//     (polls IndexedDB up to 20 times, 800ms apart)
+// ─────────────────────────────────────────────
+
+async function bootWithRetry(attempt) {
+    if (attempt > 20) return;
+    try {
+        const db     = await openDatabase();
+        const config = await getFromStore(db, 'meta', 'config');
+        db.close();
+
+        if (config && config.user) {
+            // User data exists — start the hourly trigger check
+            checkAndTriggerAudit();
+            setInterval(checkAndTriggerAudit, 60 * 1000);
+        } else {
+            // Not ready yet — retry
+            setTimeout(() => bootWithRetry(attempt + 1), 800);
+        }
+    } catch(e) {
+        setTimeout(() => bootWithRetry(attempt + 1), 800);
+    }
+}
+
+// Entry point — wait 1.5 s after DOM ready before first check
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(() => bootWithRetry(0), 1500));
+} else {
+    setTimeout(() => bootWithRetry(0), 1500);
 }
