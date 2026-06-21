@@ -1,21 +1,35 @@
 const travisNotif = (() => {
 
+  // ─────────────────────────────────────────────────────────────
+  // Called by your app whenever the user saves a transaction.
+  // Tells the SW to mark today as acknowledged so the 8 PM
+  // follow-up stays silent (they recorded — mission accomplished).
+  // ─────────────────────────────────────────────────────────────
   async function markTodayRecorded() {
     try {
-      await saveData("meta", {
-        id:   "notif-recorded",
-        date: new Date().toDateString()
-      });
-      const reg = await navigator.serviceWorker.ready;
-      if (reg.active) reg.active.postMessage({ type: 'RESCHEDULE' });
+      // Tell the service worker directly
+      if ('serviceWorker' in navigator) {
+        const reg = await navigator.serviceWorker.ready;
+        if (reg.active) reg.active.postMessage({ type: 'USER_RECORDED' });
+      }
     } catch (e) {
       console.warn('Travis: could not mark today as recorded', e);
     }
   }
 
+  // ─────────────────────────────────────────────────────────────
+  // Permission banner — shown once, 8 seconds after page load,
+  // only if permission is still 'default' (never asked before).
+  // ─────────────────────────────────────────────────────────────
   function showBanner() {
-    if (Notification.permission !== 'default') return;
+    // Already granted or denied — no point showing the banner
+    if (Notification.permission !== 'default') {
+      // If already granted, make sure the SW schedule is running
+      if (Notification.permission === 'granted') ensureSWScheduled();
+      return;
+    }
 
+    // User dismissed this banner recently — respect the snooze
     const skipUntil = localStorage.getItem('travis-notif-skip');
     if (skipUntil && Date.now() < parseInt(skipUntil)) return;
 
@@ -27,7 +41,7 @@ const travisNotif = (() => {
       left: 50%;
       transform: translateX(-50%);
       width: calc(100% - 40px);
-      max-width: 400px;
+      max-width: 420px;
       background: #0f172a;
       border: 1px solid #1e293b;
       border-radius: 14px;
@@ -38,11 +52,12 @@ const travisNotif = (() => {
     `;
     banner.innerHTML = `
       <p style="font-size:14px;font-weight:700;color:#f1f5f9;margin:0 0 6px 0;letter-spacing:0.02em;">
-        Never forget to update your ledger
+        🔔 Never forget to update your ledger
       </p>
       <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:0 0 16px 0;">
-        Travis will remind you at 7:00 PM every day to record
-        your transactions — so your advice stays accurate.
+        Travis will remind you at <strong style="color:#4ade80;">7:00 PM</strong> every day to record
+        your transactions — with a follow-up at <strong style="color:#4ade80;">8:00 PM</strong> if
+        you haven't logged in yet. Your advice stays accurate only when your ledger is current.
       </p>
       <div style="display:flex;gap:10px;justify-content:flex-end;">
         <button id="tn-skip" style="
@@ -53,8 +68,8 @@ const travisNotif = (() => {
         </button>
         <button id="tn-allow" style="
           font-size:13px;padding:8px 16px;border-radius:8px;
-          border:1px solid #4ade80;background:transparent;
-          color:#4ade80;font-weight:700;cursor:pointer;font-family:inherit;">
+          border:none;background:#4ade80;
+          color:#020617;font-weight:700;cursor:pointer;font-family:inherit;">
           Allow reminders
         </button>
       </div>
@@ -65,20 +80,39 @@ const travisNotif = (() => {
     document.getElementById('tn-allow').onclick = async () => {
       banner.remove();
       const result = await Notification.requestPermission();
-      if (result === 'granted') {  
-        await navigator.serviceWorker.ready;
-        showToast('Reminders set — Travis will check in at 7:00 PM daily');
+      if (result === 'granted') {
+        await ensureSWScheduled();
+        showToast('✅ Reminders set — Travis will check in at 7:00 PM daily');
       } else {
-        showToast('Reminders blocked. You can enable them in browser settings.');
+        showToast('Reminders blocked. Enable them in your browser or phone settings.');
       }
     };
 
     document.getElementById('tn-skip').onclick = () => {
       banner.remove();
+      // Snooze for 3 days before asking again
       localStorage.setItem('travis-notif-skip', Date.now() + 3 * 24 * 60 * 60 * 1000);
     };
   }
 
+  // ─────────────────────────────────────────────────────────────
+  // Make sure the SW is registered and its schedule is running.
+  // Safe to call multiple times.
+  // ─────────────────────────────────────────────────────────────
+  async function ensureSWScheduled() {
+    if (!('serviceWorker' in navigator)) return;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      // Send RESCHEDULE so the SW re-arms all timers immediately
+      if (reg.active) reg.active.postMessage({ type: 'RESCHEDULE' });
+    } catch (e) {
+      console.warn('Travis: could not reach service worker', e);
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // Toast helper
+  // ─────────────────────────────────────────────────────────────
   function showToast(msg) {
     const t = document.createElement('div');
     t.style.cssText = `
@@ -95,6 +129,7 @@ const travisNotif = (() => {
       font-family: system-ui, sans-serif;
       z-index: 9999;
       white-space: nowrap;
+      opacity: 1;
       transition: opacity 0.4s;
     `;
     t.textContent = msg;
@@ -102,23 +137,37 @@ const travisNotif = (() => {
     setTimeout(() => {
       t.style.opacity = '0';
       setTimeout(() => t.remove(), 400);
-    }, 3000);
+    }, 3500);
   }
 
+  // ─────────────────────────────────────────────────────────────
+  // Listen for SW → app messages
+  // ─────────────────────────────────────────────────────────────
   function listenForSW() {
     if (!('serviceWorker' in navigator)) return;
     navigator.serviceWorker.addEventListener('message', e => {
       if (e.data && e.data.type === 'OPEN_LEDGER') {
-        nav('book'); 
+        // Route to the ledger tab — hook this into your nav function
+        if (typeof nav === 'function') nav('book');
       }
     });
   }
 
+  // ─────────────────────────────────────────────────────────────
+  // INIT — call once on page load
+  // ─────────────────────────────────────────────────────────────
   function init() {
     listenForSW();
+
+    // If permission is already granted, ensure the schedule is live
+    // (covers the case where user cleared data but SW is still active)
+    if (Notification.permission === 'granted') {
+      ensureSWScheduled();
+    }
+
+    // Show the permission banner after 8 s so it doesn't interrupt load
     setTimeout(showBanner, 8000);
   }
 
   return { init, markTodayRecorded };
-
 })();
