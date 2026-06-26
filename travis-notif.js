@@ -1,35 +1,60 @@
 const travisNotif = (() => {
 
   // ─────────────────────────────────────────────────────────────
-  // Called by your app whenever the user saves a transaction.
-  // Tells the SW to mark today as acknowledged so the 8 PM
-  // follow-up stays silent (they recorded — mission accomplished).
+  // Called every time the user saves a transaction.
+  // Tells SW to suppress tonight's 8 PM follow-up.
   // ─────────────────────────────────────────────────────────────
   async function markTodayRecorded() {
     try {
-      // Tell the service worker directly
       if ('serviceWorker' in navigator) {
         const reg = await navigator.serviceWorker.ready;
         if (reg.active) reg.active.postMessage({ type: 'USER_RECORDED' });
       }
-    } catch (e) {
+    } catch(e) {
       console.warn('Travis: could not mark today as recorded', e);
     }
   }
 
   // ─────────────────────────────────────────────────────────────
-  // Permission banner — shown once, 8 seconds after page load,
-  // only if permission is still 'default' (never asked before).
+  // Core: request permission then schedule notifications via SW.
+  // Called on permission grant AND on every page load (to keep
+  // the schedule fresh — Trigger API schedules day by day).
+  // ─────────────────────────────────────────────────────────────
+  async function scheduleReminders() {
+    if (!('serviceWorker' in navigator)) return;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      if (reg.active) {
+        reg.active.postMessage({ type: 'SCHEDULE_REMINDERS' });
+      }
+
+      // Also register periodic background sync as a fallback
+      // (Chrome asks for permission automatically alongside notifs)
+      if ('periodicSync' in reg) {
+        try {
+          const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
+          if (status.state === 'granted') {
+            await reg.periodicSync.register('travis-reminder-check', {
+              minInterval: 30 * 60 * 1000
+            });
+          }
+        } catch(e) { /* not supported on this browser, that's fine */ }
+      }
+    } catch(e) {
+      console.warn('Travis: could not schedule reminders', e);
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // Permission banner
   // ─────────────────────────────────────────────────────────────
   function showBanner() {
-    // Already granted or denied — no point showing the banner
     if (Notification.permission !== 'default') {
-      // If already granted, make sure the SW schedule is running
-      if (Notification.permission === 'granted') ensureSWScheduled();
+      // Already granted — just make sure schedule is live
+      if (Notification.permission === 'granted') scheduleReminders();
       return;
     }
 
-    // User dismissed this banner recently — respect the snooze
     const skipUntil = localStorage.getItem('travis-notif-skip');
     if (skipUntil && Date.now() < parseInt(skipUntil)) return;
 
@@ -54,10 +79,14 @@ const travisNotif = (() => {
       <p style="font-size:14px;font-weight:700;color:#f1f5f9;margin:0 0 6px 0;letter-spacing:0.02em;">
         🔔 Never forget to update your ledger
       </p>
-      <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:0 0 16px 0;">
-        Travis will remind you at <strong style="color:#4ade80;">7:00 PM</strong> every day to record
-        your transactions — with a follow-up at <strong style="color:#4ade80;">8:00 PM</strong> if
-        you haven't logged in yet. Your advice stays accurate only when your ledger is current.
+      <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:0 0 4px 0;">
+        Travis will remind you at <strong style="color:#4ade80;">7:00 PM</strong> every day
+        to record your transactions, with a follow-up at
+        <strong style="color:#4ade80;">8:00 PM</strong> if needed.
+      </p>
+      <p style="font-size:12px;color:#475569;line-height:1.5;margin:0 0 16px 0;">
+        These fire even when your phone is locked or the app is closed —
+        like an alarm. Your advice stays accurate only when your ledger is current.
       </p>
       <div style="display:flex;gap:10px;justify-content:flex-end;">
         <button id="tn-skip" style="
@@ -81,63 +110,37 @@ const travisNotif = (() => {
       banner.remove();
       const result = await Notification.requestPermission();
       if (result === 'granted') {
-        await ensureSWScheduled();
-        showToast('✅ Reminders set — Travis will check in at 7:00 PM daily');
+        await scheduleReminders();
+        showToast('✅ Reminders set — Travis will alert you at 7 PM and 8 PM daily');
       } else {
-        showToast('Reminders blocked. Enable them in your browser or phone settings.');
+        showToast('Reminders blocked. Go to phone Settings → Apps → Chrome → Notifications to enable.');
       }
     };
 
     document.getElementById('tn-skip').onclick = () => {
       banner.remove();
-      // Snooze for 3 days before asking again
       localStorage.setItem('travis-notif-skip', Date.now() + 3 * 24 * 60 * 60 * 1000);
     };
   }
 
   // ─────────────────────────────────────────────────────────────
-  // Make sure the SW is registered and its schedule is running.
-  // Safe to call multiple times.
-  // ─────────────────────────────────────────────────────────────
-  async function ensureSWScheduled() {
-    if (!('serviceWorker' in navigator)) return;
-    try {
-      const reg = await navigator.serviceWorker.ready;
-      // Send RESCHEDULE so the SW re-arms all timers immediately
-      if (reg.active) reg.active.postMessage({ type: 'RESCHEDULE' });
-    } catch (e) {
-      console.warn('Travis: could not reach service worker', e);
-    }
-  }
-
-  // ─────────────────────────────────────────────────────────────
-  // Toast helper
+  // Toast
   // ─────────────────────────────────────────────────────────────
   function showToast(msg) {
     const t = document.createElement('div');
     t.style.cssText = `
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
+      position: fixed; bottom: 24px; left: 50%;
       transform: translateX(-50%);
-      background: #1e293b;
-      color: #f1f5f9;
-      border: 1px solid #334155;
-      border-radius: 10px;
-      padding: 10px 20px;
-      font-size: 13px;
+      background: #1e293b; color: #f1f5f9;
+      border: 1px solid #334155; border-radius: 10px;
+      padding: 10px 20px; font-size: 13px;
       font-family: system-ui, sans-serif;
-      z-index: 9999;
-      white-space: nowrap;
-      opacity: 1;
-      transition: opacity 0.4s;
+      z-index: 9999; white-space: nowrap;
+      opacity: 1; transition: opacity 0.4s;
     `;
     t.textContent = msg;
     document.body.appendChild(t);
-    setTimeout(() => {
-      t.style.opacity = '0';
-      setTimeout(() => t.remove(), 400);
-    }, 3500);
+    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 400); }, 3500);
   }
 
   // ─────────────────────────────────────────────────────────────
@@ -147,25 +150,24 @@ const travisNotif = (() => {
     if (!('serviceWorker' in navigator)) return;
     navigator.serviceWorker.addEventListener('message', e => {
       if (e.data && e.data.type === 'OPEN_LEDGER') {
-        // Route to the ledger tab — hook this into your nav function
         if (typeof nav === 'function') nav('book');
       }
     });
   }
 
   // ─────────────────────────────────────────────────────────────
-  // INIT — call once on page load
+  // INIT — call once on every page load
   // ─────────────────────────────────────────────────────────────
   function init() {
     listenForSW();
 
-    // If permission is already granted, ensure the schedule is live
-    // (covers the case where user cleared data but SW is still active)
     if (Notification.permission === 'granted') {
-      ensureSWScheduled();
+      // Permission already exists — refresh the schedule
+      // (this is what keeps it working after clearing browser data)
+      scheduleReminders();
     }
 
-    // Show the permission banner after 8 s so it doesn't interrupt load
+    // Show banner after 8 s to not interrupt page load
     setTimeout(showBanner, 8000);
   }
 
