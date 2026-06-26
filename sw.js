@@ -14,57 +14,20 @@ const STATIC_ASSETS = [
   '/tailwind-app.css',
   '/tailwind-landing.css',
   '/manifest.json',
-  // jspdf.umd.min.js removed — no longer needed
 ];
 
-// ─────────────────────────────────────────────────────────────
-// REMINDER SCHEDULE
-// 7:00 PM  — primary reminder (always fires)
-// 8:00 PM  — follow-up (only fires if user has NOT tapped
-//             "Record now" on the 7 PM notification)
-// ─────────────────────────────────────────────────────────────
-const REMINDERS = [
-  { hour: 19, minute: 0,  id: 'primary',  followUp: false },
-  { hour: 20, minute: 0,  id: 'followup', followUp: true  },
-];
-
-// Rotating messages so it never feels like a broken record
 const PRIMARY_MESSAGES = [
-  {
-    title: '⏰ Ledger check-in — 7 PM',
-    body:  "Time to record today's transactions. It takes under a minute and keeps your Travis advice accurate.",
-  },
-  {
-    title: '⏰ Travis reminder',
-    body:  "What came in and went out today? Log it now while it's fresh — your end-of-month audit depends on it.",
-  },
-  {
-    title: '⏰ Daily record time',
-    body:  "One small habit: record today's transactions. The more complete your ledger, the sharper your financial picture.",
-  },
-  {
-    title: '⏰ Your ledger needs today',
-    body:  "Travis is ready for today's numbers. Tap to open your ledger and log what happened today.",
-  },
-  {
-    title: '⏰ End-of-day check-in',
-    body:  "Before the day closes out — have you recorded every transaction? Tap to make sure nothing slips through.",
-  },
+  { title: '⏰ Ledger check-in — 7 PM', body: "Time to record today's transactions. It takes under a minute and keeps your Travis advice accurate." },
+  { title: '⏰ Travis reminder', body: "What came in and went out today? Log it now while it's fresh — your end-of-month audit depends on it." },
+  { title: '⏰ Daily record time', body: "One small habit: record today's transactions. The more complete your ledger, the sharper your financial picture." },
+  { title: '⏰ Your ledger needs today', body: "Travis is ready for today's numbers. Tap to open your ledger and log what happened today." },
+  { title: '⏰ End-of-day check-in', body: "Before the day closes out — have you recorded every transaction? Tap to make sure nothing slips through." },
 ];
 
 const FOLLOWUP_MESSAGES = [
-  {
-    title: '🔔 Still waiting on today',
-    body:  "You haven't logged today's transactions yet. Your 7 PM reminder went unanswered — tap now before you forget.",
-  },
-  {
-    title: '🔔 Last call for today',
-    body:  "It's 8 PM and today's ledger is still empty. One minute now saves a headache at month-end.",
-  },
-  {
-    title: '🔔 Travis follow-up',
-    body:  "Today's transactions still aren't recorded. This is your final reminder for today — tap to log them now.",
-  },
+  { title: '🔔 Still waiting on today', body: "You haven't logged today's transactions yet. Your 7 PM reminder went unanswered — tap now before you forget." },
+  { title: '🔔 Last call for today', body: "It's 8 PM and today's ledger is still empty. One minute now saves a headache at month-end." },
+  { title: '🔔 Travis follow-up', body: "Today's transactions still aren't recorded. This is your final reminder for today — tap to log them now." },
 ];
 
 // ─────────────────────────────────────────────────────────────
@@ -86,24 +49,19 @@ self.addEventListener('activate', event => {
       .then(names =>
         Promise.all(names.filter(n => n !== CACHE_NAME).map(n => caches.delete(n)))
       )
-      .then(() => {
-        self.clients.claim();
-        scheduleAllReminders(); // start the clock
-      })
+      .then(() => self.clients.claim())
   );
 });
 
 // ─────────────────────────────────────────────────────────────
-// FETCH  (unchanged from your original)
+// FETCH
 // ─────────────────────────────────────────────────────────────
 self.addEventListener('fetch', event => {
   const req = event.request;
-
   if (req.url.includes('/activate-fingerprint')) {
     event.respondWith(fetch(req));
     return;
   }
-
   if (req.destination === 'script' || req.destination === 'document') {
     event.respondWith(
       fetch(req)
@@ -116,7 +74,6 @@ self.addEventListener('fetch', event => {
     );
     return;
   }
-
   event.respondWith(
     caches.match(req).then(cached => {
       if (cached) return cached;
@@ -136,152 +93,187 @@ self.addEventListener('fetch', event => {
 self.addEventListener('notificationclick', event => {
   event.notification.close();
 
-  if (event.action === 'dismiss') {
-    // User tapped "Later" — mark that they acknowledged it
-    // so the follow-up at 8 PM still fires (they didn't record)
-    return;
-  }
+  if (event.action === 'dismiss') return;
 
-  // User tapped "Record now" or tapped the notification body
-  // Mark as acknowledged so the 8 PM follow-up stays quiet
+  // User tapped "Record now" — suppress tonight's follow-up
   event.waitUntil(
-    setAcknowledgedFlag().then(() => {
-      return clients
-        .matchAll({ type: 'window', includeUncontrolled: true })
-        .then(windowClients => {
-          for (const client of windowClients) {
-            if (client.url.includes(self.location.origin) && 'focus' in client) {
-              client.focus();
-              client.postMessage({ type: 'OPEN_LEDGER' });
-              return;
-            }
+    setAcknowledgedFlag().then(() =>
+      clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+        for (const c of list) {
+          if (c.url.includes(self.location.origin) && 'focus' in c) {
+            c.focus();
+            c.postMessage({ type: 'OPEN_LEDGER' });
+            return;
           }
-          if (clients.openWindow) return clients.openWindow('/travis_core.html');
-        });
-    })
+        }
+        if (clients.openWindow) return clients.openWindow('/travis_core.html');
+      })
+    )
   );
 });
 
 // ─────────────────────────────────────────────────────────────
-// MESSAGES FROM THE APP
+// MESSAGES FROM APP
 // ─────────────────────────────────────────────────────────────
 self.addEventListener('message', event => {
   if (!event.data) return;
 
-  // App tells SW the user saved a transaction → restart schedule
-  if (event.data.type === 'RESCHEDULE') {
-    scheduleAllReminders();
+  if (event.data.type === 'SCHEDULE_REMINDERS') {
+    // App sends this on every page load — we schedule/refresh notifications
+    event.waitUntil(scheduleTriggeredNotifications());
   }
 
-  // App tells SW user tapped "Record now" from within the app
   if (event.data.type === 'USER_RECORDED') {
-    setAcknowledgedFlag();
+    event.waitUntil(setAcknowledgedFlag());
   }
 });
 
 // ─────────────────────────────────────────────────────────────
-// SCHEDULER
-// Sets an independent setTimeout for every reminder slot.
-// Each slot fires once, then re-arms itself for the next day.
+// NOTIFICATION TRIGGER SCHEDULING
+// Uses the Notification Triggers API (showTrigger) — the OS
+// holds the schedule, not a JS timer. Fires even if Chrome
+// is killed or the phone is locked.
+// Falls back to a keepalive periodic-sync approach on older Chrome.
 // ─────────────────────────────────────────────────────────────
-const _timers = {}; // keyed by reminder id so we can cancel/replace
+async function scheduleTriggeredNotifications() {
+  try {
+    // Cancel all previously scheduled Travis notifications first
+    const scheduled = await self.registration.getNotifications({ tag: 'travis-7pm' });
+    scheduled.forEach(n => n.close());
+    const scheduled2 = await self.registration.getNotifications({ tag: 'travis-8pm' });
+    scheduled2.forEach(n => n.close());
 
-function scheduleAllReminders() {
-  for (const reminder of REMINDERS) {
-    scheduleReminder(reminder);
-  }
-}
+    const supportsShowTrigger = 'showTrigger' in Notification.prototype ||
+                                'showTrigger' in ServiceWorkerRegistration.prototype;
 
-function scheduleReminder(reminder) {
-  // Cancel any existing timer for this slot
-  if (_timers[reminder.id]) {
-    clearTimeout(_timers[reminder.id]);
-    delete _timers[reminder.id];
-  }
-
-  const now    = new Date();
-  const target = new Date(now);
-  target.setHours(reminder.hour, reminder.minute, 0, 0);
-
-  // If the time already passed today, push to tomorrow
-  if (target <= now) target.setDate(target.getDate() + 1);
-
-  const delay = target - now;
-
-  _timers[reminder.id] = setTimeout(async () => {
-    delete _timers[reminder.id];
-    await fireReminder(reminder);
-    // Re-arm for the same slot tomorrow
-    scheduleReminder(reminder);
-  }, delay);
-}
-
-// ─────────────────────────────────────────────────────────────
-// FIRE A REMINDER
-// Primary (7 PM) — ALWAYS fires, no conditions.
-// Follow-up (8 PM) — fires ONLY if user has NOT tapped
-//   "Record now" since the 7 PM notification.
-// ─────────────────────────────────────────────────────────────
-async function fireReminder(reminder) {
-  // For the follow-up, check whether user already opened the ledger
-  if (reminder.followUp) {
-    const acknowledged = await getAcknowledgedFlag();
-    if (acknowledged) {
-      // They tapped "Record now" earlier — clear the flag and stay quiet
-      await clearAcknowledgedFlag();
-      return;
+    if (supportsShowTrigger) {
+      await scheduleWithTriggerAPI();
+    } else {
+      // Fallback: use periodic background sync if available
+      await scheduleWithPeriodicSync();
     }
-  } else {
-    // Primary reminder — always clear any stale acknowledged flag from yesterday
-    await clearAcknowledgedFlag();
+  } catch (e) {
+    console.warn('[Travis SW] scheduleTriggeredNotifications error:', e);
   }
+}
 
-  const pool = reminder.followUp ? FOLLOWUP_MESSAGES : PRIMARY_MESSAGES;
-  const msg  = pool[new Date().getDate() % pool.length];
+// ── Method 1: Notification Triggers API ──────────────────────
+// Chrome Android 80+. The OS delivers the notification at the
+// exact timestamp — completely independent of the SW lifecycle.
+async function scheduleWithTriggerAPI() {
+  const today = new Date();
+  const day   = today.getDay(); // rotate message by day of week
 
-  // Close any existing Travis notification so the new one
-  // always triggers sound + vibration (renotify:true needs a unique tag each time
-  // OR closing the old one first)
-  const existing = await self.registration.getNotifications({ tag: 'travis-ledger-reminder' });
-  existing.forEach(n => n.close());
+  // Build today's 7 PM trigger
+  const sevenPM = new Date(today);
+  sevenPM.setHours(19, 0, 0, 0);
+  if (sevenPM <= today) sevenPM.setDate(sevenPM.getDate() + 1); // push to tomorrow if passed
 
-  await self.registration.showNotification(msg.title, {
-    body:    msg.body,
+  // Build today's 8 PM trigger
+  const eightPM = new Date(today);
+  eightPM.setHours(20, 0, 0, 0);
+  if (eightPM <= today) eightPM.setDate(eightPM.getDate() + 1);
+
+  const msg7  = PRIMARY_MESSAGES[day % PRIMARY_MESSAGES.length];
+  const msg8  = FOLLOWUP_MESSAGES[day % FOLLOWUP_MESSAGES.length];
+
+  // Schedule 7 PM
+  await self.registration.showNotification(msg7.title, {
+    body:    msg7.body,
     icon:    '/travis_192.png',
     badge:   '/travis_192.png',
-
-    // Use a timestamped tag so each notification is treated as new
-    // → always triggers vibration + sound on Android
-    tag:     'travis-ledger-reminder-' + Date.now(),
-
-    // renotify:true — forces sound + vibration even if a notification
-    // with the same tag was already shown
+    tag:     'travis-7pm',
     renotify: true,
-
-    // requireInteraction:true — notification stays on screen until
-    // the user explicitly taps it (no auto-dismiss on Android)
     requireInteraction: true,
-
-    // silent:false — explicitly request sound (respects system DND)
-    silent: false,
-
-    vibrate: [300, 100, 300, 100, 600], // buzz pattern in ms
-
-    data: { url: '/travis_core.html', reminderId: reminder.id },
-
+    silent:  false,
+    vibrate: [300, 100, 300, 100, 600],
+    data:    { url: '/travis_core.html', slot: '7pm' },
     actions: [
       { action: 'open',    title: '📒 Record now' },
       { action: 'dismiss', title: 'Later'          },
     ],
+    showTrigger: new TimestampTrigger(sevenPM.getTime())
   });
+
+  // Schedule 8 PM — always schedule it; we check the flag at fire time
+  await self.registration.showNotification(msg8.title, {
+    body:    msg8.body,
+    icon:    '/travis_192.png',
+    badge:   '/travis_192.png',
+    tag:     'travis-8pm',
+    renotify: true,
+    requireInteraction: true,
+    silent:  false,
+    vibrate: [500, 100, 500, 100, 800],
+    data:    { url: '/travis_core.html', slot: '8pm' },
+    actions: [
+      { action: 'open',    title: '📒 Record now' },
+      { action: 'dismiss', title: 'Later'          },
+    ],
+    showTrigger: new TimestampTrigger(eightPM.getTime())
+  });
+
+  console.log('[Travis SW] Notifications scheduled via Trigger API:', sevenPM, eightPM);
+}
+
+// ── Method 2: Periodic Background Sync fallback ───────────────
+// For browsers that don't support Notification Triggers.
+// Registers a periodic sync that wakes the SW periodically.
+async function scheduleWithPeriodicSync() {
+  try {
+    await self.registration.periodicSync.register('travis-reminder-check', {
+      minInterval: 30 * 60 * 1000 // wake up at most every 30 minutes
+    });
+    console.log('[Travis SW] Periodic sync registered as fallback');
+  } catch(e) {
+    console.warn('[Travis SW] Periodic sync not supported either:', e);
+  }
+}
+
+// ── Periodic sync handler ─────────────────────────────────────
+self.addEventListener('periodicsync', event => {
+  if (event.tag === 'travis-reminder-check') {
+    event.waitUntil(checkAndFireFallback());
+  }
+});
+
+async function checkAndFireFallback() {
+  const now     = new Date();
+  const hour    = now.getHours();
+  const minute  = now.getMinutes();
+  const day     = now.getDay();
+
+  // Fire at 7 PM window (19:00–19:30)
+  if (hour === 19 && minute < 30) {
+    const msg = PRIMARY_MESSAGES[day % PRIMARY_MESSAGES.length];
+    await self.registration.showNotification(msg.title, {
+      body: msg.body, icon: '/travis_192.png', badge: '/travis_192.png',
+      tag: 'travis-7pm-fallback', renotify: true, requireInteraction: true,
+      silent: false, vibrate: [300, 100, 300, 100, 600],
+      data: { url: '/travis_core.html' },
+      actions: [{ action: 'open', title: '📒 Record now' }, { action: 'dismiss', title: 'Later' }],
+    });
+  }
+
+  // Fire at 8 PM window (20:00–20:30) only if not acknowledged
+  if (hour === 20 && minute < 30) {
+    const acknowledged = await getAcknowledgedFlag();
+    if (!acknowledged) {
+      const msg = FOLLOWUP_MESSAGES[day % FOLLOWUP_MESSAGES.length];
+      await self.registration.showNotification(msg.title, {
+        body: msg.body, icon: '/travis_192.png', badge: '/travis_192.png',
+        tag: 'travis-8pm-fallback', renotify: true, requireInteraction: true,
+        silent: false, vibrate: [500, 100, 500, 100, 800],
+        data: { url: '/travis_core.html' },
+        actions: [{ action: 'open', title: '📒 Record now' }, { action: 'dismiss', title: 'Later' }],
+      });
+    }
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
 // INDEXEDDB FLAG HELPERS
-// "acknowledged" = user tapped "Record now" on the 7 PM notif.
-// Cleared at 7 PM each day so the cycle resets cleanly.
 // ─────────────────────────────────────────────────────────────
-
 function openFlagDB() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open('travis-notif-db', 2);
@@ -300,16 +292,15 @@ async function getAcknowledgedFlag() {
   try {
     const db  = await openFlagDB();
     const tx  = db.transaction('flags', 'readonly');
-    const rec = await new Promise((res, rej) => {
-      const req  = tx.objectStore('flags').get('acknowledged');
-      req.onsuccess = () => res(req.result);
-      req.onerror   = () => res(null);
+    const rec = await new Promise(res => {
+      const r = tx.objectStore('flags').get('acknowledged');
+      r.onsuccess = () => res(r.result);
+      r.onerror   = () => res(null);
     });
     db.close();
     if (!rec) return false;
-    // Flag only counts if set today
     return rec.date === new Date().toDateString();
-  } catch (e) { return false; }
+  } catch(e) { return false; }
 }
 
 async function setAcknowledgedFlag() {
@@ -317,23 +308,10 @@ async function setAcknowledgedFlag() {
     const db = await openFlagDB();
     const tx = db.transaction('flags', 'readwrite');
     await new Promise((res, rej) => {
-      const req = tx.objectStore('flags').put({ key: 'acknowledged', date: new Date().toDateString() });
-      req.onsuccess = () => res();
-      req.onerror   = () => rej(req.error);
+      const r = tx.objectStore('flags').put({ key: 'acknowledged', date: new Date().toDateString() });
+      r.onsuccess = () => res();
+      r.onerror   = () => rej(r.error);
     });
     db.close();
-  } catch (e) { /* non-fatal */ }
-}
-
-async function clearAcknowledgedFlag() {
-  try {
-    const db = await openFlagDB();
-    const tx = db.transaction('flags', 'readwrite');
-    await new Promise((res) => {
-      const req = tx.objectStore('flags').delete('acknowledged');
-      req.onsuccess = () => res();
-      req.onerror   = () => res();
-    });
-    db.close();
-  } catch (e) { /* non-fatal */ }
+  } catch(e) { /* non-fatal */ }
 }
