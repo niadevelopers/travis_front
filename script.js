@@ -1063,11 +1063,11 @@ async function commitTransaction() {
     
     if (_0x266bcf === _0x1e752d || isNaN(_0x45fc82) || _0x45fc82 <= 0x0) return showCustomAlert('Error: Transaction must move money between two different accounts.');
     
-    // Find the button dynamically
+    // Immediate feedback
     const commitButton = document.querySelector('button[onclick*="commitTransaction"]');
     if (commitButton) {
         commitButton.disabled = true;
-        commitButton.innerHTML = '⌛ Processing...';
+        commitButton.innerHTML = '⌛ Recording...';
     }
 
     const _0x1e04d7 = {
@@ -1078,6 +1078,7 @@ async function commitTransaction() {
         'desc': _0x1ce6e4
     };
     
+    // Save the data
     state[_0x3d76ba(0x26b)][_0x3d76ba(0x3e6)](_0x1e04d7);
     await saveData('tx', _0x1e04d7);
     
@@ -1088,18 +1089,8 @@ async function commitTransaction() {
         if (!backupDirHandle) await setupBackupFolder();
     }
     
-    // 1. Close the modal
-    closeTxModal();
-    
-    // 2. Refresh the UI
-    await nav('dash');
-    
-    // 3. Reset button and show success
-    if (commitButton) {
-        commitButton.disabled = false;
-        commitButton.innerHTML = 'Post to Ledger';
-    }
-    showCustomAlert('Transaction recorded successfully!');
+    // The "Nuclear" fix: Forcefully reload the entire page to reset everything
+    location.reload();
 }
 
 function closeTxModal() {
