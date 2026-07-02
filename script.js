@@ -1063,7 +1063,7 @@ async function commitTransaction() {
     
     if (_0x266bcf === _0x1e752d || isNaN(_0x45fc82) || _0x45fc82 <= 0x0) return showCustomAlert('Error: Transaction must move money between two different accounts.');
     
-    // Find the button that was clicked
+    // Find the button dynamically
     const commitButton = document.querySelector('button[onclick*="commitTransaction"]');
     if (commitButton) {
         commitButton.disabled = true;
@@ -1100,28 +1100,6 @@ async function commitTransaction() {
         commitButton.innerHTML = 'Post to Ledger';
     }
     showCustomAlert('Transaction recorded successfully!');
-};
-    state[_0x3d76ba(0x26b)][_0x3d76ba(0x3e6)](_0x1e04d7), await saveData('tx', _0x1e04d7);
-    if (typeof travisNotif !== _0x3d76ba(0x3a2)) travisNotif[_0x3d76ba(0x3c5)]();
-    if (typeof saveBackup === _0x3d76ba(0x257)) {
-        await saveBackup();
-        if (!backupDirHandle) await setupBackupFolder();
-    }
-    closeTxModal();
-    // Prevent double-clicking by disabling the button temporarily
-    const commitButton = document.getElementById('commit-transaction-button');
-    if (commitButton) {
-        commitButton.disabled = true;
-        commitButton.textContent = 'Processing...';
-    }
-    // Ensure UI is fully updated after transaction and re-enable button
-    await nav('dash');
-    if (commitButton) {
-        commitButton.disabled = false;
-        commitButton.textContent = 'Commit Transaction';
-    }
-    // Optionally, provide a visual cue for success
-    showCustomAlert('Transaction committed successfully!');
 }
 
 function closeTxModal() {
@@ -1440,3 +1418,4 @@ function _0x5258() {
     return _0x5258();
 }
 document[_0x1e67ff(0x1f6)]('install-btn')?.[_0x1e67ff(0x1d3)]('click', triggerInstall), window[_0x1e67ff(0x1d5)] = boot;
+travisNotif.init();
