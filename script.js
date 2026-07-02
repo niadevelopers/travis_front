@@ -1054,22 +1054,21 @@ function showTxModal() {
     }
     document['getElementById'](_0x444f3e(0x2ec))[_0x444f3e(0x25f)]['add'](_0x444f3e(0x311)), updateLiveHud();
 }
- 
 async function commitTransaction() {
     const _0x3d76ba = _0x1e67ff,
         _0x45fc82 = parseFloat(document[_0x3d76ba(0x1f6)](_0x3d76ba(0x3de))[_0x3d76ba(0x27f)]),
         _0x266bcf = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x1ba))[_0x3d76ba(0x27f)],
         _0x1e752d = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x32d))[_0x3d76ba(0x27f)],
-        _0x1ce6e4 = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x35d))["value"] || "Market\x20Exchange";
-    if (_0x266bcf === _0x1e752d || isNaN(_0x45fc82) || _0x45fc82 <= 0x0) return showCustomAlert("Error:\x20Transaction\x20must\x20move\x20money\x20between\x20two\x20different\x20accounts.");
+        _0x1ce6e4 = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x35d))['value'] || 'Market\x20Exchange';
+    if (_0x266bcf === _0x1e752d || isNaN(_0x45fc82) || _0x45fc82 <= 0x0) return showCustomAlert('Error:\x20Transaction\x20must\x20move\x20money\x20between\x20two\x20different\x20accounts.');
     const _0x1e04d7 = {
-        "id": Date[_0x3d76ba(0x354)](),
-        "debit": _0x266bcf,
-        "credit": _0x1e752d,
-        "amount": _0x45fc82,
-        "desc": _0x1ce6e4
+        'id': Date[_0x3d76ba(0x354)](),
+        'debit': _0x266bcf,
+        'credit': _0x1e752d,
+        'amount': _0x45fc82,
+        'desc': _0x1ce6e4
     };
-    state[_0x3d76ba(0x26b)][_0x3d76ba(0x3e6)](_0x1e04d7), await saveData("tx", _0x1e04d7);
+    state[_0x3d76ba(0x26b)][_0x3d76ba(0x3e6)](_0x1e04d7), await saveData('tx', _0x1e04d7);
     if (typeof travisNotif !== _0x3d76ba(0x3a2)) travisNotif[_0x3d76ba(0x3c5)]();
     if (typeof saveBackup === _0x3d76ba(0x257)) {
         await saveBackup();
@@ -1091,7 +1090,6 @@ async function commitTransaction() {
     // Optionally, provide a visual cue for success
     showCustomAlert('Transaction committed successfully!');
 }
-
 
 function closeTxModal() {
     const _0x2d2dde = _0x1e67ff;
@@ -1409,4 +1407,3 @@ function _0x5258() {
     return _0x5258();
 }
 document[_0x1e67ff(0x1f6)]('install-btn')?.[_0x1e67ff(0x1d3)]('click', triggerInstall), window[_0x1e67ff(0x1d5)] = boot;
-travisNotif.init();
