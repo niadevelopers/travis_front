@@ -1059,8 +1059,17 @@ async function commitTransaction() {
         _0x45fc82 = parseFloat(document[_0x3d76ba(0x1f6)](_0x3d76ba(0x3de))[_0x3d76ba(0x27f)]),
         _0x266bcf = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x1ba))[_0x3d76ba(0x27f)],
         _0x1e752d = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x32d))[_0x3d76ba(0x27f)],
-        _0x1ce6e4 = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x35d))['value'] || 'Market\x20Exchange';
-    if (_0x266bcf === _0x1e752d || isNaN(_0x45fc82) || _0x45fc82 <= 0x0) return showCustomAlert('Error:\x20Transaction\x20must\x20move\x20money\x20between\x20two\x20different\x20accounts.');
+        _0x1ce6e4 = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x35d))['value'] || 'Market Exchange';
+    
+    if (_0x266bcf === _0x1e752d || isNaN(_0x45fc82) || _0x45fc82 <= 0x0) return showCustomAlert('Error: Transaction must move money between two different accounts.');
+    
+    // Find the button that was clicked
+    const commitButton = document.querySelector('button[onclick*="commitTransaction"]');
+    if (commitButton) {
+        commitButton.disabled = true;
+        commitButton.innerHTML = '⌛ Processing...';
+    }
+
     const _0x1e04d7 = {
         'id': Date[_0x3d76ba(0x354)](),
         'debit': _0x266bcf,
@@ -1068,6 +1077,30 @@ async function commitTransaction() {
         'amount': _0x45fc82,
         'desc': _0x1ce6e4
     };
+    
+    state[_0x3d76ba(0x26b)][_0x3d76ba(0x3e6)](_0x1e04d7);
+    await saveData('tx', _0x1e04d7);
+    
+    if (typeof travisNotif !== _0x3d76ba(0x3a2)) travisNotif[_0x3d76ba(0x3c5)]();
+    
+    if (typeof saveBackup === _0x3d76ba(0x257)) {
+        await saveBackup();
+        if (!backupDirHandle) await setupBackupFolder();
+    }
+    
+    // 1. Close the modal
+    closeTxModal();
+    
+    // 2. Refresh the UI
+    await nav('dash');
+    
+    // 3. Reset button and show success
+    if (commitButton) {
+        commitButton.disabled = false;
+        commitButton.innerHTML = 'Post to Ledger';
+    }
+    showCustomAlert('Transaction recorded successfully!');
+};
     state[_0x3d76ba(0x26b)][_0x3d76ba(0x3e6)](_0x1e04d7), await saveData('tx', _0x1e04d7);
     if (typeof travisNotif !== _0x3d76ba(0x3a2)) travisNotif[_0x3d76ba(0x3c5)]();
     if (typeof saveBackup === _0x3d76ba(0x257)) {
