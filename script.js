@@ -1054,53 +1054,74 @@ function showTxModal() {
     }
     document['getElementById'](_0x444f3e(0x2ec))[_0x444f3e(0x25f)]['add'](_0x444f3e(0x311)), updateLiveHud();
 }
+
 async function commitTransaction() {
-    const _0x3d76ba = _0x1e67ff,
-        _0x45fc82 = parseFloat(document[_0x3d76ba(0x1f6)](_0x3d76ba(0x3de))[_0x3d76ba(0x27f)]),
-        _0x266bcf = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x1ba))[_0x3d76ba(0x27f)],
-        _0x1e752d = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x32d))[_0x3d76ba(0x27f)],
-        _0x1ce6e4 = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x35d))['value'] || 'Market Exchange';
+    const _0x3d76ba = _0x1e67ff;
+    const _0x45fc82 = parseFloat(document[_0x3d76ba(0x1f6)](_0x3d76ba(0x3de))[_0x3d76ba(0x27f)]);
+    const _0x266bcf = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x1ba))[_0x3d76ba(0x27f)];
+    const _0x1e752d = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x32d))[_0x3d76ba(0x27f)];
+    const _0x1ce6e4 = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x35d))['value'] || 'Market Exchange';
     
-    if (_0x266bcf === _0x1e752d || isNaN(_0x45fc82) || _0x45fc82 <= 0x0) return showCustomAlert('Error: Transaction must move money between two different accounts.');
+    if (_0x266bcf === _0x1e752d || isNaN(_0x45fc82) || _0x45fc82 <= 0x0) {
+        showCustomAlert('Error: Transaction must move money between two different accounts.');
+        return;
+    }
     
+    // Immediate feedback
     const commitButton = document.querySelector('button[onclick*="commitTransaction"]');
     if (commitButton) {
         commitButton.disabled = true;
-        commitButton.innerHTML = '⌛ Recording...';
+        commitButton.innerHTML = 'Recording...';
     }
 
-    try {
-        const _0x1e04d7 = {
-            'id': Date[_0x3d76ba(0x354)](),
-            'debit': _0x266bcf,
-            'credit': _0x1e752d,
-            'amount': _0x45fc82,
-            'desc': _0x1ce6e4
-        };
-        
-        state[_0x3d76ba(0x26b)][_0x3d76ba(0x3e6)](_0x1e04d7);
-        await saveData('tx', _0x1e04d7);
-        
-        if (typeof travisNotif !== _0x3d76ba(0x3a2)) travisNotif[_0x3d76ba(0x3c5)]();
-        
-        // Run backup in background to avoid blocking UI
-        if (typeof saveBackup === _0x3d76ba(0x257)) {
-            saveBackup().catch(e => console.warn('Background backup failed:', e));
-        }
-        
-        // Auto-close modal and refresh UI
-        closeTxModal();
-        nav('dash'); // Refresh dashboard to show updated transactions
-        
-    } catch (error) {
-        console.error('Transaction error:', error);
-        showCustomAlert('Failed to record transaction. Please try again.');
-        if (commitButton) {
-            commitButton.disabled = false;
-            commitButton.innerHTML = 'Post to Ledger';
-        }
+    const _0x1e04d7 = {
+        'id': Date[_0x3d76ba(0x354)](),
+        'debit': _0x266bcf,
+        'credit': _0x1e752d,
+        'amount': _0x45fc82,
+        'desc': _0x1ce6e4
+    };
+    
+    // Save the data
+    state[_0x3d76ba(0x26b)][_0x3d76ba(0x3e6)](_0x1e04d7);
+    await saveData('tx', _0x1e04d7);
+    
+    if (typeof travisNotif !== _0x3d76ba(0x3a2)) travisNotif[_0x3d76ba(0x3c5)]();
+    
+    if (typeof saveBackup === _0x3d76ba(0x257)) {
+        await saveBackup();
+        if (!backupDirHandle) await setupBackupFolder();
     }
+    
+    // FIX: Close the modal first
+    closeTxModal();
+    
+    // FIX: Update the UI without page reload
+    const _0x6c7755 = getFin();
+    updateHeader(_0x6c7755);
+    
+    // FIX: Re-render the current view
+    const activeNav = document.querySelector('.nav-item.active');
+    if (activeNav) {
+        const navId = activeNav.id.replace('nav-', '');
+        nav(navId);
+    } else {
+        nav('dash');
+    }
+    
+    // FIX: Reset the commit button
+    if (commitButton) {
+        commitButton.disabled = false;
+        commitButton.innerHTML = 'Post to Ledger';
+    }
+    
+    // FIX: Show success feedback
+    showCustomAlert('Transaction recorded successfully!');
+    
+    // FIX: Clear the amount field for next transaction
+    document[_0x3d76ba(0x1f6)](_0x3d76ba(0x3de))['value'] = '';
 }
+
 
 function closeTxModal() {
     const _0x2d2dde = _0x1e67ff;
