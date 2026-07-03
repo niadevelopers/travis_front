@@ -1026,7 +1026,7 @@ function updateHeader(_0x5a58f5) {
     }
 }
 
-function showTxModal() {
+function showxModal() {
     const _0x444f3e = _0x1e67ff,
         _0x41731d = document['getElementById'](_0x444f3e(0x1ba)),
         _0x57f376 = document['getElementById'](_0x444f3e(0x32d));
@@ -1057,7 +1057,7 @@ function showTxModal() {
 
 
 
-async function commitTransaction() {
+async function commitransaction() {
     const _0x3d76ba = _0x1e67ff;
     
     // Get form values
@@ -1135,11 +1135,286 @@ async function commitTransaction() {
     // Show success
     showCustomAlert('✅ Transaction recorded!');
 }
-function closeTxModal() {
+function closexModal() {
     const _0x2d2dde = _0x1e67ff;
     document['getElementById'](_0x2d2dde(0x2ec))[_0x2d2dde(0x25f)][_0x2d2dde(0x38e)](_0x2d2dde(0x311)), document[_0x2d2dde(0x1f6)](_0x2d2dde(0x3de))['value'] = '';
 }
 
+
+// ============================================================
+// NEW CUSTOM MODAL SYSTEM - No bugs, fully controlled
+// ============================================================
+
+// Function to show our custom transaction modal
+function showTxModal() {
+    // Check if modal already exists, remove it
+    const existingModal = document.getElementById('custom-tx-modal');
+    if (existingModal) {
+        existingModal.parentNode.removeChild(existingModal);
+    }
+    
+    // Get user type
+    const isBusiness = state.user?.type === 'business';
+    
+    // Build account options based on user type
+    let debitOptions = '';
+    let creditOptions = '';
+    
+    if (isBusiness) {
+        debitOptions = `
+            <optgroup label="ASSETS">
+                <option value="Cash">Cash</option>
+                <option value="Bank / M-Pesa">Bank / M-Pesa</option>
+                <option value="Accounts Receivable">Accounts Receivable</option>
+                <option value="Inventory">Inventory</option>
+                <option value="Fixed Assets">Fixed Assets</option>
+            </optgroup>
+            <optgroup label="REVENUE">
+                <option value="Sales Revenue">Sales Revenue</option>
+                <option value="Service Revenue">Service Revenue</option>
+                <option value="Other Revenue">Other Revenue</option>
+            </optgroup>
+            <optgroup label="OPERATING EXPENSES">
+                <option value="Rent">Rent</option>
+                <option value="Payroll">Payroll</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Office Supplies">Office Supplies</option>
+                <option value="Tax">Tax</option>
+                <option value="Insurance">Insurance</option>
+            </optgroup>
+            <optgroup label="DISCRETIONARY EXPENSES">
+                <option value="Marketing">Marketing</option>
+                <option value="Travel">Travel</option>
+                <option value="Professional Fees">Professional Fees</option>
+            </optgroup>
+            <optgroup label="LIABILITIES">
+                <option value="Loan Repayment">Loan Repayment</option>
+                <option value="Accounts Payable">Accounts Payable</option>
+            </optgroup>
+        `;
+        creditOptions = debitOptions;
+    } else {
+        debitOptions = `
+            <optgroup label="INCOME">
+                <option value="Salary">Salary</option>
+                <option value="M-Pesa">M-Pesa</option>
+                <option value="Cash">Cash</option>
+                <option value="Bank Account">Bank Account</option>
+            </optgroup>
+            <optgroup label="NECESSARY EXPENSES">
+                <option value="Food & Groceries">Food & Groceries</option>
+                <option value="Rent">Rent</option>
+                <option value="Transport">Transport</option>
+                <option value="School">School</option>
+                <option value="Medical">Medical</option>
+                <option value="Utilities">Utilities</option>
+            </optgroup>
+            <optgroup label="DISCRETIONARY">
+                <option value="Travel & Entertainment">Travel & Entertainment</option>
+                <option value="Clothes">Clothes</option>
+                <option value="Other Fun Spending">Other Fun Spending</option>
+            </optgroup>
+            <optgroup label="LIABILITIES">
+                <option value="Loan Repayment">Loan Repayment</option>
+                <option value="Savings">Savings</option>
+            </optgroup>
+        `;
+        creditOptions = debitOptions;
+    }
+    
+    // Create the modal HTML
+    const modalHTML = `
+        <div id="custom-tx-modal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:99999;animation:fadeIn 0.2s ease;">
+            <div style="background:white;border-radius:16px;max-width:500px;width:95%;max-height:90vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,0.3);padding:0;animation:slideUp 0.3s ease;">
+                <!-- Header -->
+                <div style="background:linear-gradient(135deg,#0078D4,#005A9E);padding:20px 24px;border-radius:16px 16px 0 0;display:flex;justify-content:space-between;align-items:center;">
+                    <h3 style="margin:0;color:white;font-size:18px;font-weight:600;">💰 New Transaction</h3>
+                    <button onclick="closeCustomTxModal()" style="background:rgba(255,255,255,0.2);border:none;color:white;font-size:24px;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕</button>
+                </div>
+                
+                <!-- Body -->
+                <div style="padding:24px;">
+                    <!-- Debit (From) -->
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:4px;">From (Debit)</label>
+                        <select id="custom-tx-debit" style="width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;font-family:inherit;background:white;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#0078D4'" onblur="this.style.borderColor='#e0e0e0'">
+                            ${debitOptions}
+                        </select>
+                    </div>
+                    
+                    <!-- Credit (To) -->
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:4px;">To (Credit)</label>
+                        <select id="custom-tx-credit" style="width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;font-family:inherit;background:white;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#0078D4'" onblur="this.style.borderColor='#e0e0e0'">
+                            ${creditOptions}
+                        </select>
+                    </div>
+                    
+                    <!-- Amount -->
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:4px;">Amount (KSh)</label>
+                        <input id="custom-tx-amount" type="number" step="1" min="1" placeholder="Enter amount..." style="width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:16px;font-family:inherit;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#0078D4'" onblur="this.style.borderColor='#e0e0e0'">
+                    </div>
+                    
+                    <!-- Description -->
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:4px;">Description (optional)</label>
+                        <input id="custom-tx-desc" type="text" placeholder="e.g., Market shopping, Rent payment..." style="width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;font-family:inherit;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#0078D4'" onblur="this.style.borderColor='#e0e0e0'">
+                    </div>
+                    
+                    <!-- Buttons -->
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="closeCustomTxModal()" style="flex:1;padding:12px;border:2px solid #e0e0e0;border-radius:8px;background:white;color:#555;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='white'">Cancel</button>
+                        <button id="custom-tx-submit" onclick="submitCustomTx()" style="flex:2;padding:12px;border:none;border-radius:8px;background:linear-gradient(135deg,#0078D4,#005A9E);color:white;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">📝 Post to Ledger</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add modal to page
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = modalHTML;
+    document.body.appendChild(wrapper.firstElementChild);
+    
+    // Focus on amount field
+    setTimeout(() => {
+        const amountField = document.getElementById('custom-tx-amount');
+        if (amountField) amountField.focus();
+    }, 100);
+    
+    // Allow Enter key to submit
+    document.getElementById('custom-tx-amount').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') submitCustomTx();
+    });
+    document.getElementById('custom-tx-desc').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') submitCustomTx();
+    });
+}
+
+// Function to close our custom modal
+function closeCustomTxModal() {
+    const modal = document.getElementById('custom-tx-modal');
+    if (modal) {
+        modal.style.animation = 'fadeOut 0.2s ease';
+        setTimeout(() => {
+            if (modal.parentNode) {
+                modal.parentNode.removeChild(modal);
+            }
+        }, 200);
+    }
+}
+
+// Function to submit transaction from our custom modal
+async function submitCustomTx() {
+    const amount = parseFloat(document.getElementById('custom-tx-amount').value);
+    const debit = document.getElementById('custom-tx-debit').value;
+    const credit = document.getElementById('custom-tx-credit').value;
+    const desc = document.getElementById('custom-tx-desc').value || 'Transaction';
+    
+    // Validate
+    if (debit === credit) {
+        showCustomAlert('❌ Error: From and To accounts must be different.');
+        return;
+    }
+    
+    if (isNaN(amount) || amount <= 0) {
+        showCustomAlert('❌ Error: Please enter a valid amount.');
+        return;
+    }
+    
+    // Disable submit button
+    const submitBtn = document.getElementById('custom-tx-submit');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Recording...';
+    submitBtn.style.opacity = '0.7';
+    
+    try {
+        // Create transaction
+        const transaction = {
+            'id': Date.now(),
+            'debit': debit,
+            'credit': credit,
+            'amount': amount,
+            'desc': desc
+        };
+        
+        // Save to state
+        state.transactions.push(transaction);
+        await saveData('tx', transaction);
+        
+        // Backup if available
+        if (typeof saveBackup === 'function') {
+            await saveBackup();
+            if (!backupDirHandle) await setupBackupFolder();
+        }
+        
+        // Refresh notifications
+        if (typeof travisNotif !== 'undefined' && travisNotif.refresh) {
+            travisNotif.refresh();
+        }
+        
+        // CLOSE MODAL - This is the key part
+        closeCustomTxModal();
+        
+        // Reset button (in case of any issue)
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+        submitBtn.style.opacity = '1';
+        
+        // Refresh the UI without reloading
+        const finance = getFin();
+        updateHeader(finance);
+        
+        const activeNav = document.querySelector('.nav-item.active');
+        if (activeNav) {
+            const navId = activeNav.id.replace('nav-', '');
+            nav(navId);
+        } else {
+            nav('dash');
+        }
+        
+        // Show success
+        showCustomAlert('✅ Transaction recorded successfully!');
+        
+    } catch (error) {
+        console.error('Transaction error:', error);
+        showCustomAlert('❌ Error: Could not save transaction. Please try again.');
+        
+        // Reset button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+        submitBtn.style.opacity = '1';
+    }
+}
+
+// Add CSS animations
+const styleSheet = document.createElement('style');
+styleSheet.textContent = `
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+    @keyframes slideUp {
+        from { transform: translateY(30px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    #custom-tx-modal select:focus,
+    #custom-tx-modal input:focus {
+        border-color: #0078D4 !important;
+        box-shadow: 0 0 0 3px rgba(0,120,212,0.1);
+    }
+`;
+document.head.appendChild(styleSheet);
+
+// Override the original showTxModal to use our new one
+const originalShowTxModal = window.showTxModal;
+window.showTxModal = showTxModal;
 function addObligationRow(_0x19dd2a = '', _0x206219 = '') {
     const _0x91983e = _0x1e67ff,
         _0x3d5670 = document['createElement'](_0x91983e(0x36f));
