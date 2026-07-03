@@ -1055,6 +1055,7 @@ function showTxModal() {
     document['getElementById'](_0x444f3e(0x2ec))[_0x444f3e(0x25f)]['add'](_0x444f3e(0x311)), updateLiveHud();
 }
 
+
 async function commitTransaction() {
     const _0x3d76ba = _0x1e67ff;
     const _0x45fc82 = parseFloat(document[_0x3d76ba(0x1f6)](_0x3d76ba(0x3de))[_0x3d76ba(0x27f)]);
@@ -1067,11 +1068,11 @@ async function commitTransaction() {
         return;
     }
     
-    // Immediate feedback
+    // Get the commit button
     const commitButton = document.querySelector('button[onclick*="commitTransaction"]');
     if (commitButton) {
         commitButton.disabled = true;
-        commitButton.innerHTML = 'Recording...';
+        commitButton.innerHTML = '⌛ Recording...';
     }
 
     const _0x1e04d7 = {
@@ -1093,14 +1094,36 @@ async function commitTransaction() {
         if (!backupDirHandle) await setupBackupFolder();
     }
     
-    // FIX: Close the modal first
-    closeTxModal();
+    // FIX 1: Close modal using multiple methods to ensure it closes
+    const modal = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x2ec));
+    if (modal) {
+        modal[_0x3d76ba(0x25f)][_0x3d76ba(0x38e)](_0x3d76ba(0x311));
+        modal[_0x3d76ba(0x2cd)][_0x3d76ba(0x31d)] = 'none'; // Force hide
+    }
     
-    // FIX: Update the UI without page reload
+    // FIX 2: Also remove any backdrop elements
+    const backdrops = document.querySelectorAll('.modal-backdrop, .backdrop');
+    backdrops.forEach(function(backdrop) {
+        backdrop[_0x3d76ba(0x2cd)][_0x3d76ba(0x31d)] = 'none';
+        if (backdrop.parentNode) {
+            backdrop.parentNode.removeChild(backdrop);
+        }
+    });
+    
+    // FIX 3: Clear form fields
+    document[_0x3d76ba(0x1f6)](_0x3d76ba(0x3de))['value'] = '';
+    
+    // FIX 4: Reset commit button
+    if (commitButton) {
+        commitButton.disabled = false;
+        commitButton.innerHTML = 'Post to Ledger';
+    }
+    
+    // FIX 5: Update the UI without reload
     const _0x6c7755 = getFin();
     updateHeader(_0x6c7755);
     
-    // FIX: Re-render the current view
+    // FIX 6: Re-render current view
     const activeNav = document.querySelector('.nav-item.active');
     if (activeNav) {
         const navId = activeNav.id.replace('nav-', '');
@@ -1109,19 +1132,17 @@ async function commitTransaction() {
         nav('dash');
     }
     
-    // FIX: Reset the commit button
-    if (commitButton) {
-        commitButton.disabled = false;
-        commitButton.innerHTML = 'Post to Ledger';
-    }
-    
-    // FIX: Show success feedback
-    showCustomAlert('Transaction recorded successfully!');
-    
-    // FIX: Clear the amount field for next transaction
-    document[_0x3d76ba(0x1f6)](_0x3d76ba(0x3de))['value'] = '';
+    // FIX 7: Show success message briefly
+    const _0x5258e7 = document[_0x3d76ba(0x30e)](_0x3d76ba(0x36f));
+    _0x5258e7[_0x3d76ba(0x2cd)][_0x3d76ba(0x276)] = 'fixed;top:10px;right:10px;background:#107C10;color:white;padding:12px 20px;border-radius:8px;z-index:99999;font-family:Segoe UI,sans-serif;box-shadow:0 4px 12px rgba(0,0,0,0.15);animation:slideIn 0.3s ease;';
+    _0x5258e7[_0x3d76ba(0x38d)] = '✅ Transaction recorded!';
+    document[_0x3d76ba(0x22a)][_0x3d76ba(0x26d)](_0x5258e7);
+    setTimeout(function() {
+        if (_0x5258e7.parentNode) {
+            _0x5258e7.parentNode.removeChild(_0x5258e7);
+        }
+    }, 2000);
 }
-
 
 function closeTxModal() {
     const _0x2d2dde = _0x1e67ff;
