@@ -1056,74 +1056,74 @@ function showTxModal() {
 }
 
 
+
 async function commitTransaction() {
     const _0x3d76ba = _0x1e67ff;
-    const _0x45fc82 = parseFloat(document[_0x3d76ba(0x1f6)](_0x3d76ba(0x3de))[_0x3d76ba(0x27f)]);
-    const _0x266bcf = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x1ba))[_0x3d76ba(0x27f)];
-    const _0x1e752d = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x32d))[_0x3d76ba(0x27f)];
-    const _0x1ce6e4 = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x35d))['value'] || 'Market Exchange';
     
-    if (_0x266bcf === _0x1e752d || isNaN(_0x45fc82) || _0x45fc82 <= 0x0) {
+    // Get form values
+    const amount = parseFloat(document.getElementById('tx-amount').value);
+    const debit = document.getElementById('tx-debit').value;
+    const credit = document.getElementById('tx-credit').value;
+    const desc = document.getElementById('tx-desc').value || 'Market Exchange';
+    
+    // Validate
+    if (debit === credit || isNaN(amount) || amount <= 0) {
         showCustomAlert('Error: Transaction must move money between two different accounts.');
         return;
     }
     
-    // Get the commit button
+    // Disable button
     const commitButton = document.querySelector('button[onclick*="commitTransaction"]');
     if (commitButton) {
         commitButton.disabled = true;
         commitButton.innerHTML = '⌛ Recording...';
     }
 
-    const _0x1e04d7 = {
-        'id': Date[_0x3d76ba(0x354)](),
-        'debit': _0x266bcf,
-        'credit': _0x1e752d,
-        'amount': _0x45fc82,
-        'desc': _0x1ce6e4
+    // Create transaction
+    const transaction = {
+        'id': Date.now(),
+        'debit': debit,
+        'credit': credit,
+        'amount': amount,
+        'desc': desc
     };
     
-    // Save the data
-    state[_0x3d76ba(0x26b)][_0x3d76ba(0x3e6)](_0x1e04d7);
-    await saveData('tx', _0x1e04d7);
+    // Save
+    state.transactions.push(transaction);
+    await saveData('tx', transaction);
     
-    if (typeof travisNotif !== _0x3d76ba(0x3a2)) travisNotif[_0x3d76ba(0x3c5)]();
-    
-    if (typeof saveBackup === _0x3d76ba(0x257)) {
+    if (typeof travisNotif !== 'undefined') travisNotif.refresh();
+    if (typeof saveBackup === 'function') {
         await saveBackup();
         if (!backupDirHandle) await setupBackupFolder();
     }
     
-    // FIX 1: Close modal using multiple methods to ensure it closes
-    const modal = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x2ec));
+    // CLOSE MODAL - This is the key part
+    // Method 1: Use the existing function
+    closeTxModal();
+    
+    // Method 2: Force close by directly manipulating the DOM
+    const modal = document.getElementById('tx-modal');
     if (modal) {
-        modal[_0x3d76ba(0x25f)][_0x3d76ba(0x38e)](_0x3d76ba(0x311));
-        modal[_0x3d76ba(0x2cd)][_0x3d76ba(0x31d)] = 'none'; // Force hide
+        modal.classList.remove('show');
+        modal.style.display = 'none';
     }
     
-    // FIX 2: Also remove any backdrop elements
-    const backdrops = document.querySelectorAll('.modal-backdrop, .backdrop');
-    backdrops.forEach(function(backdrop) {
-        backdrop[_0x3d76ba(0x2cd)][_0x3d76ba(0x31d)] = 'none';
-        if (backdrop.parentNode) {
-            backdrop.parentNode.removeChild(backdrop);
-        }
+    // Remove any backdrops
+    document.querySelectorAll('.modal-backdrop, .backdrop, .overlay').forEach(el => {
+        if (el.parentNode) el.parentNode.removeChild(el);
     });
     
-    // FIX 3: Clear form fields
-    document[_0x3d76ba(0x1f6)](_0x3d76ba(0x3de))['value'] = '';
-    
-    // FIX 4: Reset commit button
+    // Reset button
     if (commitButton) {
         commitButton.disabled = false;
-        commitButton.innerHTML = 'Post to Ledger';
+        commitButton.innerHTML = '📝 Post to Ledger';
     }
     
-    // FIX 5: Update the UI without reload
-    const _0x6c7755 = getFin();
-    updateHeader(_0x6c7755);
+    // Clear form
+    document.getElementById('tx-amount').value = '';
     
-    // FIX 6: Re-render current view
+    // Refresh the current view WITHOUT reloading
     const activeNav = document.querySelector('.nav-item.active');
     if (activeNav) {
         const navId = activeNav.id.replace('nav-', '');
@@ -1132,18 +1132,9 @@ async function commitTransaction() {
         nav('dash');
     }
     
-    // FIX 7: Show success message briefly
-    const _0x5258e7 = document[_0x3d76ba(0x30e)](_0x3d76ba(0x36f));
-    _0x5258e7[_0x3d76ba(0x2cd)][_0x3d76ba(0x276)] = 'fixed;top:10px;right:10px;background:#107C10;color:white;padding:12px 20px;border-radius:8px;z-index:99999;font-family:Segoe UI,sans-serif;box-shadow:0 4px 12px rgba(0,0,0,0.15);animation:slideIn 0.3s ease;';
-    _0x5258e7[_0x3d76ba(0x38d)] = '✅ Transaction recorded!';
-    document[_0x3d76ba(0x22a)][_0x3d76ba(0x26d)](_0x5258e7);
-    setTimeout(function() {
-        if (_0x5258e7.parentNode) {
-            _0x5258e7.parentNode.removeChild(_0x5258e7);
-        }
-    }, 2000);
+    // Show success
+    showCustomAlert('✅ Transaction recorded!');
 }
-
 function closeTxModal() {
     const _0x2d2dde = _0x1e67ff;
     document['getElementById'](_0x2d2dde(0x2ec))[_0x2d2dde(0x25f)][_0x2d2dde(0x38e)](_0x2d2dde(0x311)), document[_0x2d2dde(0x1f6)](_0x2d2dde(0x3de))['value'] = '';
