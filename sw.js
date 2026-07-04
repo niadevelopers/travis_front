@@ -1,4 +1,4 @@
-const CACHE_NAME = 'Travis_guardian-v1_0';
+const CACHE_NAME = 'Travis_guardian-v1_1';
 
 const STATIC_ASSETS = [
   '/',
@@ -92,7 +92,7 @@ self.addEventListener('activate', event => {
 });
 
 // ─────────────────────────────────────────────────────────────
-// FETCH
+// FETCH - UPDATED to always fetch fresh scripts and documents
 // ─────────────────────────────────────────────────────────────
 self.addEventListener('fetch', event => {
   const req = event.request;
@@ -102,9 +102,10 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  if (req.destination === 'script' || req.destination === 'document') {
+  // Force fresh fetch for script files (always get latest)
+  if (req.destination === 'script') {
     event.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-store' })
         .then(res => {
           const clone = res.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(req, clone));
@@ -115,6 +116,21 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // Force fresh fetch for HTML documents
+  if (req.destination === 'document') {
+    event.respondWith(
+      fetch(req, { cache: 'no-store' })
+        .then(res => {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(req, clone));
+          return res;
+        })
+        .catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // For everything else (images, css, etc.), try cache first, then network
   event.respondWith(
     caches.match(req).then(cached => {
       if (cached) return cached;
