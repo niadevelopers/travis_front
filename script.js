@@ -1077,10 +1077,21 @@ async function commitTransaction() {
     closeTxModal(), nav('dash');
 }
 
+
 function closeTxModal() {
     const _0x2d2dde = _0x1e67ff;
-    document['getElementById'](_0x2d2dde(0x2ec))[_0x2d2dde(0x25f)][_0x2d2dde(0x38e)](_0x2d2dde(0x311)), document[_0x2d2dde(0x1f6)](_0x2d2dde(0x3de))['value'] = '';
+    const modal = document['getElementById'](_0x2d2dde(0x2ec)); // 'tx-modal'
+    if (modal) {
+        // Remove the 'show' class to hide the modal
+        modal['classList']['remove']('show');
+    }
+    // Clear the amount field
+    const amountInput = document['getElementById'](_0x2d2dde(0x3de)); // 'tx-amount'
+    if (amountInput) {
+        amountInput['value'] = '';
+    }
 }
+
 
 function addObligationRow(_0x19dd2a = '', _0x206219 = '') {
     const _0x91983e = _0x1e67ff,
