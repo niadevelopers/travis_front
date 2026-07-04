@@ -1070,6 +1070,7 @@ function closeTxModal() {
     if (descEl) descEl.value = '';
 }
 
+
 async function commitTransaction() {
     const amount = parseFloat(document.getElementById('tx-amount').value);
     const debit = document.getElementById('tx-debit').value;
@@ -1080,30 +1081,31 @@ async function commitTransaction() {
         return showCustomAlert('Error: Transaction must move money between two different accounts.');
     }
 
-    const tx = { id: Date.now(), debit, credit, amount, desc };
+    const tx = {
+        id: Date.now(),
+        debit: debit,
+        credit: credit,
+        amount: amount,
+        desc: desc
+    };
+
+    state.transactions.push(tx);
+    await saveData('tx', tx);
+
+    if (typeof travisNotif !== 'undefined') travisNotif.markTodayRecorded();
 
     try {
-        state.transactions.push(tx);
-        await saveData('tx', tx);
-
-        if (typeof travisNotif !== 'undefined') travisNotif.markTodayRecorded();
-
-        try {
+        if (typeof saveBackup === 'function') {
             await saveBackup();
             if (!backupDirHandle) await setupBackupFolder();
-        } catch (backupErr) {
-            console.error('Backup step failed, continuing anyway:', backupErr);
         }
-    } catch (err) {
-        console.error('Failed to commit transaction:', err);
-        showCustomAlert('Something went wrong saving that transaction, but nothing was lost — try again.');
-        return; // don't close modal if the core save actually failed
+    } catch (e) {
+        console.error('Backup step failed, transaction was still saved:', e);
     } finally {
         closeTxModal();
         nav('dash');
     }
 }
-
 
 function addObligationRow(_0x19dd2a = '', _0x206219 = '') {
     const _0x91983e = _0x1e67ff,
