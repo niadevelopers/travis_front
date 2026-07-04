@@ -1087,25 +1087,21 @@ async function commitTransaction() {
         if (!backupDirHandle) await setupBackupFolder();
     }
     
-    // CLOSE MODAL FIRST - before navigating
-    const modal = document['getElementById']('tx-modal');
-    if (modal) {
-        modal['classList']['remove']('show');
-        modal['style']['display'] = 'none';
-    }
-    document['getElementById']('tx-amount')['value'] = '';
+    // Close modal properly
+    closeTxModal(); // This should just remove the 'show' class
     
-    // Then navigate
-    nav('dash');
+    // Use setTimeout to ensure modal closes before navigation
+    setTimeout(() => {
+        nav('dash');
+    }, 100);
 }
 
 function closeTxModal() {
     const _0x2d2dde = _0x1e67ff;
     const modal = document['getElementById'](_0x2d2dde(0x2ec)); // 'tx-modal'
     if (modal) {
+        // Only remove the 'show' class
         modal['classList']['remove']('show');
-        // Force hide it completely
-        modal['style']['display'] = 'none';
     }
     document['getElementById'](_0x2d2dde(0x3de))['value'] = ''; // Clear amount
 }
