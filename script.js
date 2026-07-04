@@ -1054,57 +1054,32 @@ function showTxModal() {
     }
     document['getElementById'](_0x444f3e(0x2ec))[_0x444f3e(0x25f)]['add'](_0x444f3e(0x311)), updateLiveHud();
 }
-
-function closeTxModal() {
-    const modal = document.getElementById('tx-modal');
-    if (modal) modal.classList.remove('active');
-
-    const amountEl = document.getElementById('tx-amount');
-    if (amountEl) amountEl.value = '';
-
-    const debitEl = document.getElementById('tx-debit');
-    const creditEl = document.getElementById('tx-credit');
-    const descEl = document.getElementById('tx-desc');
-    if (debitEl) debitEl.selectedIndex = 0;
-    if (creditEl) creditEl.selectedIndex = 0;
-    if (descEl) descEl.value = '';
+async function commitTransaction() {
+    const _0x3d76ba = _0x1e67ff,
+        _0x45fc82 = parseFloat(document[_0x3d76ba(0x1f6)](_0x3d76ba(0x3de))[_0x3d76ba(0x27f)]),
+        _0x266bcf = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x1ba))[_0x3d76ba(0x27f)],
+        _0x1e752d = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x32d))[_0x3d76ba(0x27f)],
+        _0x1ce6e4 = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x35d))['value'] || 'Market\x20Exchange';
+    if (_0x266bcf === _0x1e752d || isNaN(_0x45fc82) || _0x45fc82 <= 0x0) return showCustomAlert('Error:\x20Transaction\x20must\x20move\x20money\x20between\x20two\x20different\x20accounts.');
+    const _0x1e04d7 = {
+        'id': Date[_0x3d76ba(0x354)](),
+        'debit': _0x266bcf,
+        'credit': _0x1e752d,
+        'amount': _0x45fc82,
+        'desc': _0x1ce6e4
+    };
+    state[_0x3d76ba(0x26b)][_0x3d76ba(0x3e6)](_0x1e04d7), await saveData('tx', _0x1e04d7);
+    if (typeof travisNotif !== _0x3d76ba(0x3a2)) travisNotif[_0x3d76ba(0x3c5)]();
+    if (typeof saveBackup === _0x3d76ba(0x257)) {
+        await saveBackup();
+        if (!backupDirHandle) await setupBackupFolder();
+    }
+    closeTxModal(), nav('dash');
 }
 
-
-async function commitTransaction() {
-    const amount = parseFloat(document.getElementById('tx-amount').value);
-    const debit = document.getElementById('tx-debit').value;
-    const credit = document.getElementById('tx-credit').value;
-    const desc = document.getElementById('tx-desc').value || 'Market Exchange';
-
-    if (debit === credit || isNaN(amount) || amount <= 0) {
-        return showCustomAlert('Error: Transaction must move money between two different accounts.');
-    }
-
-    const tx = {
-        id: Date.now(),
-        debit: debit,
-        credit: credit,
-        amount: amount,
-        desc: desc
-    };
-
-    state.transactions.push(tx);
-    await saveData('tx', tx);
-
-    if (typeof travisNotif !== 'undefined') travisNotif.markTodayRecorded();
-
-    try {
-        if (typeof saveBackup === 'function') {
-            await saveBackup();
-            if (!backupDirHandle) await setupBackupFolder();
-        }
-    } catch (e) {
-        console.error('Backup step failed, transaction was still saved:', e);
-    } finally {
-        closeTxModal();
-        nav('dash');
-    }
+function closeTxModal() {
+    const _0x2d2dde = _0x1e67ff;
+    document['getElementById'](_0x2d2dde(0x2ec))[_0x2d2dde(0x25f)][_0x2d2dde(0x38e)](_0x2d2dde(0x311)), document[_0x2d2dde(0x1f6)](_0x2d2dde(0x3de))['value'] = '';
 }
 
 function addObligationRow(_0x19dd2a = '', _0x206219 = '') {
@@ -1416,5 +1391,6 @@ function _0x5258() {
         return _0x21cb55;
     };
     return _0x5258();
-}
+};
+
 document[_0x1e67ff(0x1f6)]('install-btn')?.[_0x1e67ff(0x1d3)]('click', triggerInstall), window[_0x1e67ff(0x1d5)] = boot;
