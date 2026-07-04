@@ -1026,298 +1026,326 @@ function updateHeader(_0x5a58f5) {
     }
 }
 
-// ============================================================
-// NEW CUSTOM TRANSACTION MODAL - FIXED VERSION
-// ============================================================
-
 function showTxModal() {
-    // Remove any existing modal
-    const existingModal = document.getElementById('custom-tx-modal');
-    if (existingModal) {
-        existingModal.parentNode.removeChild(existingModal);
-    }
-    
-    const isBusiness = state.user?.type === 'business';
-    
-    // Build account options matching your original setup
-    let debitOptions = '';
-    let creditOptions = '';
-    
-    if (isBusiness) {
-        // Business accounts
-        debitOptions = `
-            <optgroup label="ASSETS">
-                <option value="Cash">Cash</option>
-                <option value="Bank / M-Pesa">Bank / M-Pesa</option>
-                <option value="Accounts Receivable">Accounts Receivable</option>
-                <option value="Inventory">Inventory</option>
-                <option value="Fixed Assets">Fixed Assets</option>
-            </optgroup>
-            <optgroup label="REVENUE">
-                <option value="Sales Revenue">Sales Revenue</option>
-                <option value="Service Revenue">Service Revenue</option>
-                <option value="Other Revenue">Other Revenue</option>
-            </optgroup>
-            <optgroup label="OPERATING EXPENSES">
-                <option value="Rent">Rent</option>
-                <option value="Payroll">Payroll</option>
-                <option value="Utilities">Utilities</option>
-                <option value="Office Supplies">Office Supplies</option>
-                <option value="Tax">Tax</option>
-                <option value="Insurance">Insurance</option>
-            </optgroup>
-            <optgroup label="DISCRETIONARY EXPENSES">
-                <option value="Marketing">Marketing</option>
-                <option value="Travel">Travel</option>
-                <option value="Professional Fees">Professional Fees</option>
-            </optgroup>
-            <optgroup label="LIABILITIES">
-                <option value="Loan Repayment">Loan Repayment</option>
-                <option value="Accounts Payable">Accounts Payable</option>
-            </optgroup>
-        `;
-        creditOptions = debitOptions;
-    } else {
-        // Personal accounts - matching original exactly
-        debitOptions = `
-            <optgroup label="INCOME">
-                <option value="Salary">Salary</option>
-                <option value="M-Pesa">M-Pesa</option>
-                <option value="Cash">Cash</option>
-                <option value="Bank Account">Bank Account</option>
-            </optgroup>
-            <optgroup label="NECESSARY EXPENSES">
-                <option value="Food & Groceries">Food & Groceries</option>
-                <option value="Rent">Rent</option>
-                <option value="Transport">Transport</option>
-                <option value="School">School</option>
-                <option value="Medical">Medical</option>
-                <option value="Utilities">Utilities</option>
-            </optgroup>
-            <optgroup label="DISCRETIONARY">
-                <option value="Travel & Entertainment">Travel & Entertainment</option>
-                <option value="Clothes">Clothes</option>
-                <option value="Other Fun Spending">Other Fun Spending</option>
-            </optgroup>
-            <optgroup label="LIABILITIES">
-                <option value="Loan Repayment">Loan Repayment</option>
-                <option value="Savings">Savings</option>
-            </optgroup>
-        `;
-        creditOptions = debitOptions;
-    }
-    
-    // Create modal HTML
-    const modalHTML = `
-        <div id="custom-tx-modal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:99999;animation:fadeIn 0.2s ease;">
-            <div style="background:white;border-radius:16px;max-width:520px;width:95%;max-height:90vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,0.3);padding:0;animation:slideUp 0.3s ease;">
-                <!-- Header -->
-                <div style="background:linear-gradient(135deg,#0078D4,#005A9E);padding:20px 24px;border-radius:16px 16px 0 0;display:flex;justify-content:space-between;align-items:center;">
-                    <div>
-                        <h3 style="margin:0;color:white;font-size:18px;font-weight:600;">💰 New Transaction</h3>
-                        <div style="color:rgba(255,255,255,0.7);font-size:12px;margin-top:2px;">Record income or expense</div>
-                    </div>
-                    <button onclick="closeCustomTxModal()" style="background:rgba(255,255,255,0.2);border:none;color:white;font-size:24px;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕</button>
-                </div>
-                
-                <!-- Body -->
-                <div style="padding:24px;">
-                    <!-- Debit (From) -->
-                    <div style="margin-bottom:14px;">
-                        <label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:5px;">From (Debit)</label>
-                        <select id="custom-tx-debit" style="width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;font-family:inherit;background:white;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#0078D4'" onblur="this.style.borderColor='#e0e0e0'">
-                            ${debitOptions}
-                        </select>
-                    </div>
-                    
-                    <!-- Credit (To) -->
-                    <div style="margin-bottom:14px;">
-                        <label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:5px;">To (Credit)</label>
-                        <select id="custom-tx-credit" style="width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;font-family:inherit;background:white;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#0078D4'" onblur="this.style.borderColor='#e0e0e0'">
-                            ${creditOptions}
-                        </select>
-                    </div>
-                    
-                    <!-- Amount -->
-                    <div style="margin-bottom:14px;">
-                        <label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:5px;">Amount (KSh)</label>
-                        <input id="custom-tx-amount" type="number" step="1" min="1" placeholder="Enter amount..." style="width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:16px;font-family:inherit;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#0078D4'" onblur="this.style.borderColor='#e0e0e0'">
-                    </div>
-                    
-                    <!-- Description -->
-                    <div style="margin-bottom:20px;">
-                        <label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:5px;">Description (optional)</label>
-                        <input id="custom-tx-desc" type="text" placeholder="e.g., Market shopping, Rent payment..." style="width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;font-family:inherit;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#0078D4'" onblur="this.style.borderColor='#e0e0e0'">
-                    </div>
-                    
-                    <!-- Buttons -->
-                    <div style="display:flex;gap:10px;">
-                        <button onclick="closeCustomTxModal()" style="flex:1;padding:12px;border:2px solid #e0e0e0;border-radius:8px;background:white;color:#555;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='white'">Cancel</button>
-                        <button id="custom-tx-submit" onclick="submitCustomTx()" style="flex:2;padding:12px;border:none;border-radius:8px;background:linear-gradient(135deg,#0078D4,#005A9E);color:white;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">📝 Post to Ledger</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = modalHTML;
-    document.body.appendChild(wrapper.firstElementChild);
-    
-    // Focus on amount field
-    setTimeout(() => {
-        const amountField = document.getElementById('custom-tx-amount');
-        if (amountField) amountField.focus();
-    }, 100);
-    
-    // Enter key support
-    document.getElementById('custom-tx-amount').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') submitCustomTx();
-    });
-    document.getElementById('custom-tx-desc').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') submitCustomTx();
-    });
-}
-
-function closeCustomTxModal() {
-    const modal = document.getElementById('custom-tx-modal');
-    if (modal) {
-        modal.style.animation = 'fadeOut 0.2s ease';
-        setTimeout(() => {
-            if (modal.parentNode) {
-                modal.parentNode.removeChild(modal);
-            }
-        }, 200);
-    }
-}
-
-async function submitCustomTx() {
-    const amount = parseFloat(document.getElementById('custom-tx-amount').value);
-    const debit = document.getElementById('custom-tx-debit').value;
-    const credit = document.getElementById('custom-tx-credit').value;
-    const desc = document.getElementById('custom-tx-desc').value || 'Transaction';
-    
-    // Validate
-    if (debit === credit) {
-        showCustomAlert('❌ Error: From and To accounts must be different.');
-        return;
-    }
-    
-    if (isNaN(amount) || amount <= 0) {
-        showCustomAlert('❌ Error: Please enter a valid amount.');
-        return;
-    }
-    
-    // Disable submit button
-    const submitBtn = document.getElementById('custom-tx-submit');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '⏳ Recording...';
-    submitBtn.style.opacity = '0.7';
-    
-    try {
-        // Create transaction - THIS IS THE KEY PART
-        const transaction = {
-            'id': Date.now(),
-            'debit': debit,
-            'credit': credit,
-            'amount': amount,
-            'desc': desc
+    const _0x444f3e = _0x1e67ff,
+        _0x41731d = document['getElementById'](_0x444f3e(0x1ba)),
+        _0x57f376 = document['getElementById'](_0x444f3e(0x32d));
+    _0x41731d[_0x444f3e(0x3ec)] = _0x57f376[_0x444f3e(0x3ec)] = '';
+    const _0x310ed1 = state[_0x444f3e(0x2ed)][_0x444f3e(0x2a9)] === 'personal',
+        _0x1116d8 = (_0x63bd8f, _0x115972, _0x1108e1) => {
+            const _0x68ae0e = _0x444f3e,
+                _0x46eaca = document[_0x68ae0e(0x30e)](_0x68ae0e(0x3c6));
+            return _0x46eaca['label'] = '●\x20' + _0x63bd8f, _0x46eaca[_0x68ae0e(0x2cd)][_0x68ae0e(0x2d6)] = _0x115972, _0x1108e1[_0x68ae0e(0x347)](_0x5f0662 => {
+                _0x46eaca['appendChild'](new Option(_0x5f0662, _0x5f0662));
+            }), _0x46eaca;
         };
-        
-        // Save to state - this is what makes it appear in ledger
-        state.transactions.push(transaction);
-        await saveData('tx', transaction);
-        
-        // Backup if available
-        if (typeof saveBackup === 'function') {
-            await saveBackup();
-            if (!backupDirHandle) await setupBackupFolder();
-        }
-        
-        // Refresh notifications
-        if (typeof travisNotif !== 'undefined' && travisNotif.refresh) {
-            travisNotif.refresh();
-        }
-        
-        // CLOSE MODAL - This will make it disappear
-        closeCustomTxModal();
-        
-        // Reset button
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
-        submitBtn.style.opacity = '1';
-        
-        // Refresh the UI without reloading - THIS UPDATES THE LEDGER
-        const finance = getFin();
-        updateHeader(finance);
-        
-        // Find which view is active and refresh it
-        const activeNav = document.querySelector('.nav-item.active');
-        if (activeNav) {
-            const navId = activeNav.id.replace('nav-', '');
-            nav(navId);
-        } else {
-            nav('dash');
-        }
-        
-        // Show success
-        showCustomAlert('✅ Transaction recorded successfully!');
-        
-    } catch (error) {
-        console.error('Transaction error:', error);
-        showCustomAlert('❌ Error: Could not save transaction. Please try again.');
-        
-        // Reset button
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
-        submitBtn.style.opacity = '1';
+    if (_0x310ed1) {
+        const _0x143dd3 = _0x3eda0c => {
+            const _0xfc6fcb = _0x444f3e;
+            _0x3eda0c[_0xfc6fcb(0x26d)](_0x1116d8(_0xfc6fcb(0x32c), _0xfc6fcb(0x202), [_0xfc6fcb(0x2b2), _0xfc6fcb(0x369), _0xfc6fcb(0x2de), _0xfc6fcb(0x2b7)])), _0x3eda0c[_0xfc6fcb(0x26d)](_0x1116d8(_0xfc6fcb(0x272), '#107C10', [_0xfc6fcb(0x36b), _0xfc6fcb(0x1c7), _0xfc6fcb(0x1e8), _0xfc6fcb(0x368), 'Other\x20Income'])), _0x3eda0c['appendChild'](_0x1116d8('NECESSARY\x20EXPENSES', _0xfc6fcb(0x35b), [_0xfc6fcb(0x3f5), _0xfc6fcb(0x381), _0xfc6fcb(0x22b), _0xfc6fcb(0x359), _0xfc6fcb(0x252), _0xfc6fcb(0x1c2)])), _0x3eda0c[_0xfc6fcb(0x26d)](_0x1116d8('DISCRETIONARY', '#C42B1C', [_0xfc6fcb(0x1fc), 'Clothes', _0xfc6fcb(0x34c), _0xfc6fcb(0x2e9)])), _0x3eda0c[_0xfc6fcb(0x26d)](_0x1116d8(_0xfc6fcb(0x343), '#0078D4', ['Loan\x20Repayment', _0xfc6fcb(0x2c7)]));
+        };
+        _0x143dd3(_0x41731d), _0x143dd3(_0x57f376);
+    } else {
+        const _0x53dca6 = _0x4e7b75 => {
+            const _0x16a497 = _0x444f3e;
+            _0x4e7b75[_0x16a497(0x26d)](_0x1116d8('ASSETS', _0x16a497(0x202), [_0x16a497(0x210), _0x16a497(0x1d2), _0x16a497(0x3a0), _0x16a497(0x260), _0x16a497(0x27a)])), _0x4e7b75[_0x16a497(0x26d)](_0x1116d8(_0x16a497(0x223), _0x16a497(0x202), ['Sales\x20Revenue', _0x16a497(0x3e9), _0x16a497(0x21e)])), _0x4e7b75['appendChild'](_0x1116d8('OPERATING\x20EXPENSES', _0x16a497(0x35b), [_0x16a497(0x381), _0x16a497(0x33a), 'Utilities', _0x16a497(0x22d), 'Tax', _0x16a497(0x29f)])), _0x4e7b75[_0x16a497(0x26d)](_0x1116d8(_0x16a497(0x33e), _0x16a497(0x275), ['Marketing', _0x16a497(0x278), 'Professional\x20Fees'])), _0x4e7b75[_0x16a497(0x26d)](_0x1116d8(_0x16a497(0x343), '#0078D4', [_0x16a497(0x1c8), _0x16a497(0x309)]));
+        };
+        _0x53dca6(_0x41731d), _0x53dca6(_0x57f376);
     }
+    document['getElementById'](_0x444f3e(0x2ec))[_0x444f3e(0x25f)]['add'](_0x444f3e(0x311)), updateLiveHud();
 }
-
-// Add CSS animations
-const styleSheet = document.createElement('style');
-styleSheet.textContent = `
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+async function commitTransaction() {
+    const _0x3d76ba = _0x1e67ff,
+        _0x45fc82 = parseFloat(document[_0x3d76ba(0x1f6)](_0x3d76ba(0x3de))[_0x3d76ba(0x27f)]),
+        _0x266bcf = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x1ba))[_0x3d76ba(0x27f)],
+        _0x1e752d = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x32d))[_0x3d76ba(0x27f)],
+        _0x1ce6e4 = document[_0x3d76ba(0x1f6)](_0x3d76ba(0x35d))['value'] || 'Market\x20Exchange';
+    if (_0x266bcf === _0x1e752d || isNaN(_0x45fc82) || _0x45fc82 <= 0x0) return showCustomAlert('Error:\x20Transaction\x20must\x20move\x20money\x20between\x20two\x20different\x20accounts.');
+    const _0x1e04d7 = {
+        'id': Date[_0x3d76ba(0x354)](),
+        'debit': _0x266bcf,
+        'credit': _0x1e752d,
+        'amount': _0x45fc82,
+        'desc': _0x1ce6e4
+    };
+    state[_0x3d76ba(0x26b)][_0x3d76ba(0x3e6)](_0x1e04d7), await saveData('tx', _0x1e04d7);
+    if (typeof travisNotif !== _0x3d76ba(0x3a2)) travisNotif[_0x3d76ba(0x3c5)]();
+    if (typeof saveBackup === _0x3d76ba(0x257)) {
+        await saveBackup();
+        if (!backupDirHandle) await setupBackupFolder();
     }
-    @keyframes fadeOut {
-        from { opacity: 1; }
-        to { opacity: 0; }
-    }
-    @keyframes slideUp {
-        from { transform: translateY(30px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-    #custom-tx-modal select:focus,
-    #custom-tx-modal input:focus {
-        border-color: #0078D4 !important;
-        box-shadow: 0 0 0 3px rgba(0,120,212,0.1);
-    }
-`;
-document.head.appendChild(styleSheet);
-
-// ============================================================
-// ORIGINAL FUNCTIONS KEPT FOR COMPATIBILITY
-// ============================================================
-
-function commitTransaction() {
-    // This is now handled by submitCustomTx
-    showTxModal();
+    closeTxModal(), nav('dash');
 }
 
 function closeTxModal() {
-    closeCustomTxModal();
+    const _0x2d2dde = _0x1e67ff;
+    document['getElementById'](_0x2d2dde(0x2ec))[_0x2d2dde(0x25f)][_0x2d2dde(0x38e)](_0x2d2dde(0x311)), document[_0x2d2dde(0x1f6)](_0x2d2dde(0x3de))['value'] = '';
 }
 
-function updateLiveHud() {
-    // Keep original function
+function addObligationRow(_0x19dd2a = '', _0x206219 = '') {
+    const _0x91983e = _0x1e67ff,
+        _0x3d5670 = document['createElement'](_0x91983e(0x36f));
+    _0x3d5670['style'][_0x91983e(0x276)] = _0x91983e(0x2c6), _0x3d5670[_0x91983e(0x3ec)] = '<input\x20type=\x22text\x22\x20placeholder=\x22e.g.\x20Rent\x22\x20value=\x22' + _0x19dd2a + '\x22\x20class=\x22win-input\x22\x20style=\x22flex:1;\x22><input\x20type=\x22number\x22\x20placeholder=\x22Amount\x22\x20value=\x22' + _0x206219 + _0x91983e(0x401), document[_0x91983e(0x1f6)](_0x91983e(0x245))['appendChild'](_0x3d5670);
 }
 
-// ============================================================
-// EXISTING FUNCTIONS CONTINUE...
-// ============================================================
+function setUserType(_0x513f3e) {
+    const _0x2ca396 = _0x1e67ff;
+    state[_0x2ca396(0x355)] = _0x513f3e, document[_0x2ca396(0x1f6)](_0x2ca396(0x220))[_0x2ca396(0x2f9)] = _0x2ca396(0x2ef) + (_0x513f3e === _0x2ca396(0x2c0) ? _0x2ca396(0x357) : ''), document[_0x2ca396(0x1f6)](_0x2ca396(0x37c))[_0x2ca396(0x2f9)] = _0x2ca396(0x2ef) + (_0x513f3e === _0x2ca396(0x310) ? _0x2ca396(0x357) : '');
+}
+async function finalizeSetup() {
+    const _0x5f48df = _0x1e67ff,
+        _0x5be8aa = document['getElementById']('user-name')[_0x5f48df(0x27f)],
+        _0x4b6d45 = Array['from'](document['querySelectorAll'](_0x5f48df(0x1f8)))[_0x5f48df(0x2b8)](_0x416d18 => ({
+            'label': _0x416d18[_0x5f48df(0x3c7)](_0x5f48df(0x247))[0x0][_0x5f48df(0x27f)],
+            'amount': parseFloat(_0x416d18[_0x5f48df(0x3c7)]('input')[0x1]['value']) || 0x0
+        }))[_0x5f48df(0x225)](_0x1900eb => _0x1900eb[_0x5f48df(0x203)]);
+    if (!_0x5be8aa || !state['tempType']) return showCustomAlert('Please\x20enter\x20your\x20name\x20and\x20select\x20profile\x20type.');
+    state[_0x5f48df(0x2ed)] = {
+        'name': _0x5be8aa,
+        'type': state[_0x5f48df(0x355)]
+    }, state[_0x5f48df(0x25a)] = _0x4b6d45, await saveData(_0x5f48df(0x30f), {
+        'id': _0x5f48df(0x2c2),
+        'user': state[_0x5f48df(0x2ed)],
+        'obligations': state[_0x5f48df(0x25a)]
+    });
+    if (typeof saveBackup === _0x5f48df(0x257)) await saveBackup();
+    location[_0x5f48df(0x1ea)]();
+}
+async function factoryReset() {
+    const _0x41962e = _0x1e67ff;
+    confirm(_0x41962e(0x23d)) && (indexedDB['deleteDatabase'](_0x41962e(0x2b9)), location['reload']());
+}
+
+function showHelpModal() {
+    const _0x25eacd = _0x1e67ff,
+        _0x73049f = document[_0x25eacd(0x1f6)](_0x25eacd(0x348));
+    _0x73049f[_0x25eacd(0x2cd)][_0x25eacd(0x31d)] = 'flex';
+}
+
+function closeHelpModal() {
+    const _0x1279c4 = _0x1e67ff,
+        _0x1d55e8 = document[_0x1279c4(0x1f6)](_0x1279c4(0x348));
+    _0x1d55e8[_0x1279c4(0x2cd)]['display'] = _0x1279c4(0x38c);
+}
+async function handleAsk() {
+    const _0x1e2f7a = _0x1e67ff,
+        _0x250c06 = document[_0x1e2f7a(0x1f6)](_0x1e2f7a(0x34b)),
+        _0x4cbe05 = document[_0x1e2f7a(0x1f6)](_0x1e2f7a(0x399)),
+        _0x1c411a = _0x250c06[_0x1e2f7a(0x27f)][_0x1e2f7a(0x1be)]();
+    if (!_0x1c411a) return;
+    _0x4cbe05['innerHTML'] += _0x1e2f7a(0x2b5) + escapeHtml(_0x1c411a) + _0x1e2f7a(0x221), _0x250c06[_0x1e2f7a(0x27f)] = '', _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)];
+    const _0x392027 = document[_0x1e2f7a(0x30e)](_0x1e2f7a(0x36f));
+    _0x392027['innerHTML'] = _0x1e2f7a(0x36a), _0x4cbe05[_0x1e2f7a(0x26d)](_0x392027), _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)], await new Promise(_0x1f6942 => setTimeout(_0x1f6942, 0x258 + Math[_0x1e2f7a(0x3aa)]() * 0x1f4)), _0x392027['remove']();
+    if (hasPendingClarification()) {
+        const _0xcd2970 = conversationState['pendingClarification'],
+            _0x112dfb = _0x1c411a[_0x1e2f7a(0x313)](/(\d+(?:,\d+)?(?:\s*k|\s*thousand|\s*million)?)/i);
+        let _0x1b7721 = 0x0;
+        if (_0x112dfb) {
+            let _0x118560 = _0x112dfb[0x1]['replace'](/,/g, '');
+            if (_0x118560[_0x1e2f7a(0x3ee)]()[_0x1e2f7a(0x243)]('k')) _0x118560 = parseFloat(_0x118560) * 0x3e8;
+            else {
+                if (_0x118560[_0x1e2f7a(0x3ee)]()[_0x1e2f7a(0x243)](_0x1e2f7a(0x2da))) _0x118560 = parseFloat(_0x118560) * 0xf4240;
+            }
+            _0x1b7721 = parseFloat(_0x118560);
+        }
+        if (!isNaN(_0x1b7721) && _0x1b7721 > 0x0) {
+            const _0x4b6515 = getFin(),
+                _0x17b735 = getStatusSummary(),
+                _0x70bc39 = _0x17b735['wealthTier'],
+                _0x1349ed = _0x17b735[_0x1e2f7a(0x3c3)],
+                _0x586347 = _0x17b735[_0x1e2f7a(0x2be)],
+                _0x1ab91d = _0x17b735[_0x1e2f7a(0x3e7)];
+            let _0x482ec3 = '',
+                _0x15184e = '';
+            if (_0xcd2970[_0x1e2f7a(0x1e3)] === _0x1e2f7a(0x3ed)) {
+                if (_0x70bc39[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x372)) {
+                    if (_0x1b7721 > _0x1349ed) _0x482ec3 = _0x1e2f7a(0x3ac) + _0x1b7721 + _0x1e2f7a(0x392) + _0xcd2970[_0x1e2f7a(0x1ce)] + _0x1e2f7a(0x2e2) + _0x1349ed + '\x20shillings\x20TOTAL\x20for\x20the\x20next\x20' + _0x1ab91d + _0x1e2f7a(0x303), _0x15184e = 'Do\x20not\x20buy\x20this.\x20Focus\x20only\x20on\x20food\x20and\x20rent.';
+                    else {
+                        if (_0x1b7721 > _0x586347) {
+                            const _0x4f09f1 = Math[_0x1e2f7a(0x2ba)](_0x1b7721 / _0x586347);
+                            _0x482ec3 = _0xcd2970[_0x1e2f7a(0x1ce)] + _0x1e2f7a(0x1d4) + _0x1b7721 + _0x1e2f7a(0x30c) + Math['floor'](_0x586347) + _0x1e2f7a(0x41c), _0x15184e = _0x1e2f7a(0x26e) + _0x4f09f1 + _0x1e2f7a(0x362) + (_0x4f09f1 > 0x1 ? 's' : '') + _0x1e2f7a(0x389);
+                        } else {
+                            const _0x40bd03 = _0x1349ed - _0x1b7721,
+                                _0x5007eb = _0x40bd03 / _0x1ab91d;
+                            _0x482ec3 = '\x20' + _0xcd2970[_0x1e2f7a(0x1ce)] + _0x1e2f7a(0x1d4) + _0x1b7721 + _0x1e2f7a(0x242) + _0x40bd03 + _0x1e2f7a(0x28a) + _0x1ab91d + _0x1e2f7a(0x31c), _0x15184e = _0x1e2f7a(0x3e3) + Math[_0x1e2f7a(0x3d0)](_0x5007eb) + _0x1e2f7a(0x246);
+                        }
+                    }
+                } else {
+                    if (_0x70bc39['adviceStyle'] === _0x1e2f7a(0x2f0)) {
+                        const _0x3170e2 = Math[_0x1e2f7a(0x3d8)](_0x1b7721 / _0x1349ed * 0x64);
+                        _0x3170e2 > 0x1e ? (_0x482ec3 = _0x1e2f7a(0x409) + _0xcd2970[_0x1e2f7a(0x1ce)] + _0x1e2f7a(0x1d4) + _0x1b7721 + _0x1e2f7a(0x410) + _0x3170e2 + _0x1e2f7a(0x2c9), _0x15184e = 'That\x27s\x20a\x20big\x20chunk.\x20Can\x20you\x20wait\x20a\x20few\x20days\x20or\x20find\x20a\x20cheaper\x20option?') : (_0x482ec3 = '\x20' + _0xcd2970[_0x1e2f7a(0x1ce)] + _0x1e2f7a(0x1d4) + _0x1b7721 + _0x1e2f7a(0x3e2), _0x15184e = _0x1e2f7a(0x273));
+                    } else _0x482ec3 = _0x1e2f7a(0x2f7) + _0xcd2970[_0x1e2f7a(0x1ce)] + '\x20costs\x20' + _0x1b7721 + _0x1e2f7a(0x403), _0x15184e = _0x1e2f7a(0x41b);
+                }
+            } else {
+                if (_0xcd2970[_0x1e2f7a(0x1e3)] === 'loan') {
+                    if (_0x70bc39[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x372)) _0x482ec3 = _0x1e2f7a(0x345) + _0x1b7721 + '\x20shilling\x20loan.\x20With\x20your\x20current\x20situation,\x20any\x20loan\x20is\x20dangerous.', _0x15184e = _0x1e2f7a(0x2fe);
+                    else {
+                        const _0x1139cd = Math['round'](_0x1b7721 * 0.15);
+                        _0x482ec3 = _0x1e2f7a(0x2c8) + _0x1b7721 + '\x20shilling\x20loan\x20would\x20cost\x20about\x20' + _0x1139cd + '\x20shillings\x20per\x20month\x20in\x20interest.', _0x15184e = _0x1e2f7a(0x411) + _0x1139cd + _0x1e2f7a(0x3fc);
+                    }
+                }
+            }
+            const _0x2e61c2 = _0x482ec3 + _0x1e2f7a(0x290) + _0x15184e,
+                _0x3b7db1 = _0x564ef0(_0x2e61c2, _0x70bc39, _0x586347, _0x1349ed, _0x1ab91d);
+            _0x4cbe05[_0x1e2f7a(0x3ec)] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x3b7db1 + _0x1e2f7a(0x221), _0x4cbe05['scrollTop'] = _0x4cbe05[_0x1e2f7a(0x286)], clearPendingClarification();
+            return;
+        } else {
+            const _0x5a5705 = 'I\x20need\x20the\x20amount\x20to\x20give\x20you\x20accurate\x20advice.\x20How\x20many\x20shillings\x20are\x20we\x20talking\x20about?',
+                _0x2c952f = _0x564ef0(_0x5a5705, getStatusSummary()[_0x1e2f7a(0x37e)], 0x0, 0x0, 0x0);
+            _0x4cbe05['innerHTML'] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x2c952f + _0x1e2f7a(0x221), _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)];
+            return;
+        }
+    }
+    const _0x128690 = _0x1c411a['toLowerCase']()[_0x1e2f7a(0x1be)](),
+        _0x233e85 = getFin(),
+        _0x57a6ad = getStatusSummary(),
+        _0x1b43e4 = state['user']?.[_0x1e2f7a(0x2a9)] === 'business',
+        _0xddfb89 = _0x57a6ad[_0x1e2f7a(0x37e)],
+        _0x24136c = _0x57a6ad[_0x1e2f7a(0x3c3)],
+        _0x12f9e8 = _0x57a6ad[_0x1e2f7a(0x2be)],
+        _0xa6adc0 = _0x57a6ad[_0x1e2f7a(0x3e7)];
+    let _0x3898ea = 0x0;
+    const _0x3a4eea = _0x128690[_0x1e2f7a(0x1c5)](/,/g, ''),
+        _0x1e2f98 = _0x3a4eea['match'](/(\d+(?:\.\d+)?)\s*(k|thousand|ksh|shillings|bob|million)?/i);
+    if (_0x1e2f98) {
+        _0x3898ea = parseFloat(_0x1e2f98[0x1]);
+        if (_0x1e2f98[0x2] && /k|thousand/i [_0x1e2f7a(0x20e)](_0x1e2f98[0x2])) _0x3898ea *= 0x3e8;
+        if (_0x1e2f98[0x2] && /million/i ['test'](_0x1e2f98[0x2])) _0x3898ea *= 0xf4240;
+    }
+    const _0x400464 = (..._0x46f6a4) => _0x46f6a4[_0x1e2f7a(0x32b)](_0x310753 => _0x128690[_0x1e2f7a(0x243)](_0x310753)),
+        _0x3fd775 = {
+            'spend': _0x400464(_0x1e2f7a(0x241), 'spend', _0x1e2f7a(0x1e5), _0x1e2f7a(0x1bb), _0x1e2f7a(0x404), _0x1e2f7a(0x1d1), _0x1e2f7a(0x283), _0x1e2f7a(0x337), _0x1e2f7a(0x306), 'sugar', _0x1e2f7a(0x377), _0x1e2f7a(0x20b), 'milk', _0x1e2f7a(0x258), 'chocolate', 'soda', _0x1e2f7a(0x262), _0x1e2f7a(0x1dd)),
+            'loan': _0x400464('loan', _0x1e2f7a(0x1b0), _0x1e2f7a(0x21b), 'fuliza', 'mshwari', _0x1e2f7a(0x40c), _0x1e2f7a(0x328), _0x1e2f7a(0x1f0)),
+            'status': _0x400464(_0x1e2f7a(0x38b), _0x1e2f7a(0x270), 'days\x20time', _0x1e2f7a(0x239), 'doing', _0x1e2f7a(0x407), _0x1e2f7a(0x23c), 'summary', _0x1e2f7a(0x28d)),
+            'hiring': _0x400464('hire', _0x1e2f7a(0x1af), _0x1e2f7a(0x27c), _0x1e2f7a(0x20a), _0x1e2f7a(0x383), _0x1e2f7a(0x39d), _0x1e2f7a(0x34f)),
+            'saving': _0x400464('save', _0x1e2f7a(0x2b6), 'emergency', _0x1e2f7a(0x379), 'set\x20aside'),
+            'profit': _0x400464(_0x1e2f7a(0x291), _0x1e2f7a(0x228), _0x1e2f7a(0x40f), 'allowance', _0x1e2f7a(0x34d), _0x1e2f7a(0x334), _0x1e2f7a(0x387)),
+            'habit': _0x400464(_0x1e2f7a(0x238), _0x1e2f7a(0x259), _0x1e2f7a(0x1c6))
+        };
+
+    function _0x564ef0(_0x1b9feb, _0x55922d, _0x405ead, _0x176d0e, _0x16ca77) {
+        const _0x3268c7 = _0x1e2f7a,
+            _0x258da6 = _0x55922d['color'],
+            _0x1a9f3d = _0x55922d[_0x3268c7(0x391)],
+            _0x5e9eb3 = _0x405ead > 0x0 ? _0x3268c7(0x327) + Math['floor'](_0x405ead)[_0x3268c7(0x3c9)]() : _0x3268c7(0x413),
+            _0x27c0cf = _0x176d0e > 0x0 ? 'KSh\x20' + _0x176d0e[_0x3268c7(0x3c9)]() : _0x3268c7(0x2ce),
+            _0x280e21 = '<div\x20style=\x22display:flex;flex-wrap:wrap;align-items:center;gap:6px\x2010px;padding:10px\x2012px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:14px;font-size:13px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:5px;\x22><span\x20style=\x22color:var(--color-text-secondary);\x22>Status</span><span\x20style=\x22font-weight:500;color:' + _0x258da6 + _0x3268c7(0x1d7) + _0x1a9f3d + _0x3268c7(0x1ee) + _0x5e9eb3 + _0x3268c7(0x2d5) + _0x27c0cf + '</span></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20' + (_0x16ca77 > 0x0 ? _0x3268c7(0x21f) + _0x16ca77 + _0x3268c7(0x2a6) : '') + _0x3268c7(0x1b2),
+            _0x244c13 = '<div\x20style=\x22margin-top:16px;padding:12px\x2014px;border-left:3px\x20solid\x20' + _0x258da6 + _0x3268c7(0x3d4) + _0x1b9feb + _0x3268c7(0x221);
+        return '' + _0x280e21 + _0x244c13;
+    }
+    let _0x51cada = '';
+    if (_0x3fd775[_0x1e2f7a(0x270)]) {
+        _0x51cada = humanReadableStatus(_0x24136c, _0x12f9e8, _0xa6adc0, _0xddfb89);
+        if (_0xddfb89[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x372)) _0x51cada += _0x1e2f7a(0x1b1) + _0xddfb89[_0x1e2f7a(0x3a5)];
+        else _0xddfb89['adviceStyle'] === _0x1e2f7a(0x2f0) ? _0x51cada += _0x1e2f7a(0x271) : _0x51cada += '<br><br><strong>Suggestion:</strong>\x20Consider\x20saving\x20' + Math['floor'](_0x24136c * 0.1)['toLocaleString']() + _0x1e2f7a(0x3ae);
+        const _0x4ba549 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
+        _0x4cbe05[_0x1e2f7a(0x3ec)] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x4ba549 + _0x1e2f7a(0x221), _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)];
+        return;
+    }
+    if (_0x3fd775[_0x1e2f7a(0x3ed)]) {
+        if (_0x3898ea === 0x0) {
+            const _0x4ee6f9 = _0x128690[_0x1e2f7a(0x313)](/(?:buy|get|spend on|purchase)\s+([a-z\s]+)/i),
+                _0x18c745 = _0x4ee6f9 ? _0x4ee6f9[0x1][_0x1e2f7a(0x1be)]() : _0x1e2f7a(0x3a1);
+            setPendingClarification(_0x1e2f7a(0x3ed), _0x18c745, 'amount'), _0x51cada = 'To\x20give\x20you\x20straight\x20advice,\x20I\x20need\x20to\x20know:\x20How\x20many\x20shillings\x20does\x20' + _0x18c745 + '\x20cost\x20in\x20your\x20area?';
+            const _0x63d695 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
+            _0x4cbe05[_0x1e2f7a(0x3ec)] += _0x1e2f7a(0x1c3) + _0x63d695 + _0x1e2f7a(0x221), _0x4cbe05['scrollTop'] = _0x4cbe05[_0x1e2f7a(0x286)];
+            return;
+        }
+        if (_0x24136c < 0x0) {
+            _0x51cada = _0x1e2f7a(0x353) + Math['abs'](_0x24136c)[_0x1e2f7a(0x3c9)]() + '\x20shillings.\x20You\x20cannot\x20afford\x20to\x20spend\x20ANY\x20money\x20right\x20now\x20-\x20not\x20even\x20' + _0x3898ea + _0x1e2f7a(0x23f);
+            const _0x5dad20 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
+            _0x4cbe05[_0x1e2f7a(0x3ec)] += _0x1e2f7a(0x1c3) + _0x5dad20 + _0x1e2f7a(0x221), _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05['scrollHeight'];
+            return;
+        }
+        if (_0xddfb89[_0x1e2f7a(0x1cc)] === 'survival') {
+            if (_0x3898ea > _0x24136c) _0x51cada = _0x1e2f7a(0x3cf) + _0x3898ea + _0x1e2f7a(0x3b9) + _0x24136c + _0x1e2f7a(0x342) + _0xa6adc0 + _0x1e2f7a(0x303);
+            else {
+                if (_0x3898ea > _0x12f9e8) {
+                    const _0x58fbec = Math[_0x1e2f7a(0x2ba)](_0x3898ea / _0x12f9e8);
+                    _0x51cada = _0x1e2f7a(0x236) + _0x3898ea + _0x1e2f7a(0x2b0) + Math[_0x1e2f7a(0x3d0)](_0x12f9e8) + _0x1e2f7a(0x3a7) + _0x58fbec + _0x1e2f7a(0x362) + (_0x58fbec > 0x1 ? 's' : '') + _0x1e2f7a(0x2f6);
+                } else {
+                    const _0x155b80 = _0x24136c - _0x3898ea,
+                        _0x3d2565 = _0x155b80 / _0xa6adc0;
+                    _0x51cada = _0x1e2f7a(0x31f) + _0x155b80 + _0x1e2f7a(0x28a) + _0xa6adc0 + _0x1e2f7a(0x2c4) + Math['floor'](_0x3d2565) + _0x1e2f7a(0x20d);
+                }
+            }
+        } else {
+            if (_0xddfb89[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x2f0)) {
+                const _0x305593 = Math[_0x1e2f7a(0x3d8)](_0x3898ea / _0x24136c * 0x64);
+                _0x305593 > 0x1e ? _0x51cada = _0x1e2f7a(0x236) + _0x3898ea + '\x20shillings,\x20which\x20is\x20' + _0x305593 + '%\x20of\x20your\x20savings.\x20That\x27s\x20significant.\x20Can\x20you\x20wait\x20a\x20few\x20days?' : _0x51cada = '\x20' + _0x3898ea + '\x20shillings\x20is\x20reasonable\x20for\x20your\x20situation.\x20Go\x20ahead\x20but\x20track\x20it.';
+            } else {
+                if (_0xddfb89[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x232)) {
+                    const _0x8e43bf = Math[_0x1e2f7a(0x3d8)](_0x3898ea / _0x24136c * 0x64);
+                    _0x8e43bf > 0x32 ? _0x51cada = 'This\x20costs\x20' + _0x3898ea + _0x1e2f7a(0x2a0) + _0x8e43bf + _0x1e2f7a(0x2dc) : _0x51cada = _0x1e2f7a(0x335);
+                } else _0x51cada = '💎\x20At\x20your\x20wealth\x20level,\x20' + _0x3898ea + _0x1e2f7a(0x378);
+            }
+        }
+        const _0x52605d = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
+        _0x4cbe05['innerHTML'] += _0x1e2f7a(0x1c3) + _0x52605d + '</div></div>', _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)];
+        return;
+    }
+    if (_0x3fd775['loan']) {
+        if (_0x3898ea === 0x0) {
+            setPendingClarification(_0x1e2f7a(0x240), _0x1e2f7a(0x240), _0x1e2f7a(0x1c1)), _0x51cada = _0x1e2f7a(0x3f1);
+            const _0x21770e = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
+            _0x4cbe05[_0x1e2f7a(0x3ec)] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x21770e + _0x1e2f7a(0x221), _0x4cbe05['scrollTop'] = _0x4cbe05['scrollHeight'];
+            return;
+        }
+        if (_0xddfb89[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x372)) _0x51cada = 'Do\x20not\x20borrow\x20' + _0x3898ea + _0x1e2f7a(0x25e);
+        else {
+            if (_0xddfb89[_0x1e2f7a(0x1cc)] === 'conservative') {
+                const _0x29498c = Math[_0x1e2f7a(0x3d8)](_0x3898ea * 0.15);
+                _0x51cada = _0x1e2f7a(0x349) + _0x3898ea + _0x1e2f7a(0x3d7) + _0x29498c + '\x20shillings\x20per\x20month\x20in\x20interest.\x20Only\x20borrow\x20if\x20absolutely\x20necessary.';
+            } else {
+                const _0x4efe36 = Math['round'](_0x3898ea * 0.12);
+                _0x51cada = '💎\x20A\x20' + _0x3898ea + _0x1e2f7a(0x3b4) + _0x4efe36 + _0x1e2f7a(0x375);
+            }
+        }
+        const _0x349584 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
+        _0x4cbe05[_0x1e2f7a(0x3ec)] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x349584 + '</div></div>', _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)];
+        return;
+    }
+    if (_0x3fd775[_0x1e2f7a(0x27b)]) {
+        if (_0xddfb89['adviceStyle'] === _0x1e2f7a(0x372)) _0x51cada = _0x1e2f7a(0x2f4);
+        else {
+            if (_0xddfb89[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x2f0)) {
+                const _0x497de6 = Math[_0x1e2f7a(0x3d0)](_0x24136c * 0.25);
+                _0x51cada = _0x1e2f7a(0x3fe) + _0x497de6[_0x1e2f7a(0x3c9)]() + '\x20shillings.\x20Can\x20you\x20pay\x20that\x20consistently?\x20If\x20yes,\x20consider\x20a\x20part-time\x20person\x20first.';
+            } else _0x51cada = '💎\x20At\x20your\x20wealth\x20level,\x20hiring\x20decisions\x20should\x20be\x20about\x20ROI.\x20A\x20good\x20hire\x20should\x20generate\x20at\x20least\x203x\x20their\x20salary\x20in\x20value.\x20What\x20role\x20are\x20you\x20considering?';
+        }
+        const _0x10d637 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
+        _0x4cbe05[_0x1e2f7a(0x3ec)] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x10d637 + _0x1e2f7a(0x221), _0x4cbe05['scrollTop'] = _0x4cbe05['scrollHeight'];
+        return;
+    }
+    if (_0x3fd775[_0x1e2f7a(0x2b6)]) {
+        if (_0xddfb89['adviceStyle'] === _0x1e2f7a(0x372)) _0x51cada = _0x1e2f7a(0x1ff);
+        else {
+            if (_0xddfb89[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x2f0)) {
+                const _0x2509ab = Math[_0x1e2f7a(0x3d0)](_0x24136c * 0.07);
+                _0x51cada = 'Try\x20to\x20save\x20' + _0x2509ab[_0x1e2f7a(0x3c9)]() + _0x1e2f7a(0x339);
+            } else {
+                const _0x517880 = Math[_0x1e2f7a(0x3d0)](_0x24136c * 0.15);
+                _0x51cada = _0x1e2f7a(0x2f3) + _0x517880[_0x1e2f7a(0x3c9)]() + _0x1e2f7a(0x376);
+            }
+        }
+        const _0x1b0672 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
+        _0x4cbe05[_0x1e2f7a(0x3ec)] += _0x1e2f7a(0x1c3) + _0x1b0672 + '</div></div>', _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)];
+        return;
+    }
+    if (_0x3fd775[_0x1e2f7a(0x291)] || _0x3fd775[_0x1e2f7a(0x238)]) {
+        const _0x26093c = _0x233e85[_0x1e2f7a(0x30b)]['filter'](_0x489b54 => _0x489b54[_0x1e2f7a(0x318)] > 0x0);
+        if (_0x26093c['length'] > 0x0) {
+            const _0x2373ae = _0x26093c[0x0];
+            _0x51cada = '\x20I\x20found\x20a\x20leak:\x20You\x20spent\x20' + _0x2373ae[_0x1e2f7a(0x318)][_0x1e2f7a(0x3c9)]() + _0x1e2f7a(0x2d0) + _0x2373ae[_0x1e2f7a(0x203)] + _0x1e2f7a(0x295);
+        } else _0x51cada = _0x1e2f7a(0x1b4) + (_0x233e85['obsStatus'][_0x1e2f7a(0x344)]((_0x37f1d8, _0x7dc8c3) => _0x7dc8c3[_0x1e2f7a(0x336)] - _0x37f1d8[_0x1e2f7a(0x336)])[0x0]?.[_0x1e2f7a(0x203)] || _0x1e2f7a(0x3a9)) + '\x20at\x20' + Math[_0x1e2f7a(0x249)](..._0x233e85[_0x1e2f7a(0x30b)][_0x1e2f7a(0x2b8)](_0x26b430 => _0x26b430[_0x1e2f7a(0x336)]))['toLocaleString']() + '\x20shillings.\x20Can\x20you\x20reduce\x20that\x20by\x2010%?';
+        const _0x5c1ed0 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
+        _0x4cbe05[_0x1e2f7a(0x3ec)] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x5c1ed0 + _0x1e2f7a(0x221), _0x4cbe05['scrollTop'] = _0x4cbe05[_0x1e2f7a(0x286)];
+        return;
+    }
+    _0x51cada = _0x1e2f7a(0x21d);
+    const _0xbe0eb7 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
+    _0x4cbe05[_0x1e2f7a(0x3ec)] += _0x1e2f7a(0x1c3) + _0xbe0eb7 + _0x1e2f7a(0x221), _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)];
+}
 
 function escapeHtml(_0x35ae84) {
     const _0x192cea = _0x1e67ff;
@@ -1364,5 +1392,7 @@ function _0x5258() {
     };
     return _0x5258();
 }
+
+}
+
 document[_0x1e67ff(0x1f6)]('install-btn')?.[_0x1e67ff(0x1d3)]('click', triggerInstall), window[_0x1e67ff(0x1d5)] = boot;
-travisNotif.init();
