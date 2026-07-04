@@ -1392,7 +1392,4 @@ function _0x5258() {
     };
     return _0x5258();
 }
-
-}
-
 document[_0x1e67ff(0x1f6)]('install-btn')?.[_0x1e67ff(0x1d3)]('click', triggerInstall), window[_0x1e67ff(0x1d5)] = boot;
