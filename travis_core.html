@@ -490,6 +490,119 @@
          from { transform: rotate(0deg); }
          to   { transform: rotate(360deg); }
      }
+
+
+/* ── 50/30/20 Suggestion Card ── */
+.suggestion-card {
+    background: linear-gradient(135deg, #f8f9ff, #f0f4ff);
+    border: 1px solid rgba(0,120,212,0.15);
+    border-radius: var(--win-radius-lg);
+    padding: 16px 18px;
+    margin-top: 12px;
+}
+
+.suggestion-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.suggestion-header .icon {
+    font-size: 18px;
+}
+
+.suggestion-header .title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--win-text);
+}
+
+.suggestion-header .sub {
+    font-size: 11px;
+    color: var(--win-text-3);
+    font-weight: 400;
+    margin-left: 4px;
+}
+
+.suggestion-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.suggestion-item {
+    background: white;
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+    border: 1px solid var(--win-border);
+}
+
+.suggestion-item .label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--win-text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.suggestion-item .amount {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--win-text);
+    margin: 2px 0;
+}
+
+.suggestion-item .desc {
+    font-size: 10px;
+    color: var(--win-text-3);
+    line-height: 1.3;
+}
+
+.suggestion-item.wants .amount { color: #0078D4; }
+.suggestion-item.savings .amount { color: #2E7D32; }
+.suggestion-item.buffer .amount { color: #E65100; }
+
+.suggestion-footer {
+    font-size: 11px;
+    color: var(--win-text-3);
+    text-align: center;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    margin-top: 8px;
+    line-height: 1.6;
+}
+
+.suggestion-footer .highlight {
+    font-weight: 600;
+    color: var(--win-text-2);
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+    .suggestion-grid {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+    .suggestion-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+    }
+    .suggestion-item .label {
+        font-size: 11px;
+        text-transform: none;
+    }
+    .suggestion-item .amount {
+        font-size: 16px;
+    }
+    .suggestion-item .desc {
+        display: none;
+    }
+}
         
     </style>
 </head>
