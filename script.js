@@ -790,6 +790,9 @@ function updateLiveHud() {
     document[_0x4fbb50(0x1f6)](_0x4fbb50(0x293))[_0x4fbb50(0x1de)] = _0x4fbb50(0x327) + _0x230c19[_0x4fbb50(0x3b2)](0x0), document[_0x4fbb50(0x1f6)]('hud-cover')[_0x4fbb50(0x1de)] = 'KSh\x20' + _0x1d5127[_0x4fbb50(0x30d)][_0x4fbb50(0x3c9)]() + '\x20Reserved';
     const _0x347917 = document[_0x4fbb50(0x1f6)](_0x4fbb50(0x3b7));
     isLiquid(_0x137cef) && _0x16992d > _0x1d5127['daily'] ? _0x347917[_0x4fbb50(0x2cd)][_0x4fbb50(0x31d)] = _0x4fbb50(0x2fd) : _0x347917[_0x4fbb50(0x2cd)][_0x4fbb50(0x31d)] = 'none';
+    
+    // Update 50/30/20 suggestion when HUD updates
+    updateRuleSuggestion();
 }
 
 function getFin() {
@@ -854,6 +857,45 @@ function navClick(_0x3a90ed) {
     document[_0x4fbf4e(0x3c7)](_0x4fbf4e(0x1bd))[_0x4fbf4e(0x347)](_0x37b423 => _0x37b423[_0x4fbf4e(0x25f)][_0x4fbf4e(0x38e)]('active')), document[_0x4fbf4e(0x1f6)]('nav-sidebar')['classList'][_0x4fbf4e(0x38e)](_0x4fbf4e(0x2f1)), nav(_0x3a90ed);
 }
 
+// ─────────────────────────────────────────────────────────────
+// 50/30/20 SUGGESTION - Plain language, no jargon
+// ─────────────────────────────────────────────────────────────
+function updateRuleSuggestion() {
+    const fin = getFin();
+    const remaining = fin['safeCash'];  // Money after obligations
+    
+    // Get the container
+    const container = document.getElementById('rule-suggestion-container');
+    if (!container) return;
+    
+    // Hide if no money or negative
+    if (remaining <= 0 || fin['daysRem'] <= 0) {
+        container.style.display = 'none';
+        return;
+    }
+    
+    // Show the container
+    container.style.display = 'block';
+    
+    // Calculate 50/30/20
+    const dailyLiving = remaining * 0.5;   // 50% - Wants
+    const setAside = remaining * 0.3;      // 30% - Savings
+    const justInCase = remaining * 0.2;    // 20% - Buffer
+    
+    // Update the DOM
+    document.getElementById('rule-remaining-total').textContent = 
+        Math.floor(remaining).toLocaleString();
+    document.getElementById('rule-daily-cap').textContent = 
+        Math.floor(fin['daily']).toLocaleString();
+    
+    document.getElementById('rule-wants-amount').textContent = 
+        'KSh ' + Math.floor(dailyLiving).toLocaleString();
+    document.getElementById('rule-savings-amount').textContent = 
+        'KSh ' + Math.floor(setAside).toLocaleString();
+    document.getElementById('rule-buffer-amount').textContent = 
+        'KSh ' + Math.floor(justInCase).toLocaleString();
+}
+
 function nav(_0x53a580) {
     const _0x107103 = _0x1e67ff,
         _0x2e291d = document[_0x107103(0x1f6)](_0x107103(0x2ff)),
@@ -862,7 +904,53 @@ function nav(_0x53a580) {
     if (_0x53a580 === 'dash') {
         const _0x3a57df = getUserWealthTier(_0x6c7755[_0x107103(0x21a)], _0x6c7755['safeCash']),
             _0x499b1f = _0x6c7755[_0x107103(0x30b)][_0x107103(0x225)](_0x5d9a6a => _0x5d9a6a['variance'] > 0x0);
-        _0x2e291d[_0x107103(0x3ec)] = _0x107103(0x382) + _0x3a57df[_0x107103(0x2d6)] + _0x107103(0x2ca) + _0x3a57df[_0x107103(0x2d6)] + _0x107103(0x1d7) + _0x3a57df[_0x107103(0x391)] + _0x107103(0x3b6) + _0x3a57df[_0x107103(0x23a)] + _0x107103(0x333) + _0x3a57df[_0x107103(0x3a5)] + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Leak\x20Finder</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20' + (_0x499b1f[_0x107103(0x24c)] > 0x0 ? _0x107103(0x2ab) + _0x499b1f[_0x107103(0x24c)] + '\x20leak' + (_0x499b1f[_0x107103(0x24c)] > 0x1 ? 's' : '') + _0x107103(0x2e0) : '<span\x20class=\x22chip\x20chip-green\x22>Clean</span>') + _0x107103(0x3fb) + (_0x499b1f[_0x107103(0x24c)] > 0x0 ? _0x499b1f[_0x107103(0x2b8)](_0x4f842f => '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22leak-item\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:500;\x22>' + _0x4f842f['label'] + _0x107103(0x3ca) + _0x4f842f[_0x107103(0x1c1)][_0x107103(0x3c9)]() + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:right;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:var(--win-red);font-size:13px;font-weight:700;\x22>+KSh\x20' + _0x4f842f[_0x107103(0x318)]['toLocaleString']() + _0x107103(0x1d6))[_0x107103(0x2dd)]('') : _0x107103(0x277)) + _0x107103(0x297) + _0x3a57df[_0x107103(0x391)] + _0x107103(0x3d2) + humanReadableStatus(_0x6c7755[_0x107103(0x341)], _0x6c7755[_0x107103(0x21a)], _0x6c7755[_0x107103(0x3e7)], _0x3a57df) + _0x107103(0x3dd), window[_0x107103(0x322)] < 0x384 && (_0x2e291d['querySelector'](_0x107103(0x36f))[_0x107103(0x2cd)][_0x107103(0x3f9)] = _0x107103(0x1da)), setTimeout(() => renderChart(), 0x64);
+        _0x2e291d[_0x107103(0x3ec)] = _0x107103(0x382) + _0x3a57df[_0x107103(0x2d6)] + _0x107103(0x2ca) + _0x3a57df[_0x107103(0x2d6)] + _0x107103(0x1d7) + _0x3a57df[_0x107103(0x391)] + _0x107103(0x3b6) + _0x3a57df[_0x107103(0x23a)] + _0x107103(0x333) + _0x3a57df[_0x107103(0x3a5)] + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Leak\x20Finder</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20' + (_0x499b1f[_0x107103(0x24c)] > 0x0 ? _0x107103(0x2ab) + _0x499b1f[_0x107103(0x24c)] + '\x20leak' + (_0x499b1f[_0x107103(0x24c)] > 0x1 ? 's' : '') + _0x107103(0x2e0) : '<span\x20class=\x22chip\x20chip-green\x22>Clean</span>') + _0x107103(0x3fb) + (_0x499b1f[_0x107103(0x24c)] > 0x0 ? _0x499b1f[_0x107103(0x2b8)](_0x4f842f => '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22leak-item\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:500;\x22>' + _0x4f842f['label'] + _0x107103(0x3ca) + _0x4f842f[_0x107103(0x1c1)][_0x107103(0x3c9)]() + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:right;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:var(--win-red);font-size:13px;font-weight:700;\x22>+KSh\x20' + _0x4f842f[_0x107103(0x318)]['toLocaleString']() + _0x107103(0x1d6))[_0x107103(0x2dd)]('') : _0x107103(0x277)) + _0x107103(0x297) + _0x3a57df[_0x107103(0x391)] + _0x107103(0x3d2) + humanReadableStatus(_0x6c7755[_0x107103(0x341)], _0x6c7755[_0x107103(0x21a)], _0x6c7755[_0x107103(0x3e7)], _0x3a57df) + _0x107103(0x3dd);
+        
+        // ── 50/30/20 Suggestion Card ──
+        _0x2e291d[_0x107103(0x3ec)] += `
+            <div id="rule-suggestion-container" style="display:none;">
+                <div class="suggestion-card">
+                    <div class="suggestion-header">
+                        <span class="icon">💡</span>
+                        <span class="title">Money Management Suggestion</span>
+                        <span class="sub">50/30/20 approach</span>
+                    </div>
+                    
+                    <div style="font-size:12px;color:var(--win-text-2);margin-bottom:10px;">
+                        A common way to manage KSh <span id="rule-remaining-total">0</span> is to divide it like this:
+                    </div>
+                    
+                    <div class="suggestion-grid">
+                        <div class="suggestion-item wants">
+                            <div class="label">🛍️ Daily Living</div>
+                            <div class="amount" id="rule-wants-amount">KSh 0</div>
+                            <div class="desc">Food, transport, shopping</div>
+                        </div>
+                        <div class="suggestion-item savings">
+                            <div class="label">💰 Set Aside</div>
+                            <div class="amount" id="rule-savings-amount">KSh 0</div>
+                            <div class="desc">Emergency fund, savings</div>
+                        </div>
+                        <div class="suggestion-item buffer">
+                            <div class="label">🛡️ Just in Case</div>
+                            <div class="amount" id="rule-buffer-amount">KSh 0</div>
+                            <div class="desc">Unexpected bills, overages</div>
+                        </div>
+                    </div>
+                    
+                    <div class="suggestion-footer">
+                        🔹 This is a <span class="highlight">suggestion</span>, not a rule.<br>
+                        🔹 Your daily spending remains <span class="highlight">KSh <span id="rule-daily-cap">0</span>/day</span>.
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        window[_0x107103(0x322)] < 0x384 && (_0x2e291d['querySelector'](_0x107103(0x36f))[_0x107103(0x2cd)][_0x107103(0x3f9)] = _0x107103(0x1da));
+        
+        // Update the suggestion after rendering
+        setTimeout(updateRuleSuggestion, 150);
+        setTimeout(() => renderChart(), 0x64);
     }
     if (_0x53a580 === _0x107103(0x281)) {
         let _0x24a3e0 = _0x6c7755['obsStatus'][_0x107103(0x2b8)](_0x4bdfe8 => _0x107103(0x298) + _0x4bdfe8['label'] + _0x107103(0x29c) + _0x4bdfe8[_0x107103(0x1c1)][_0x107103(0x3c9)]() + _0x107103(0x255) + _0x4bdfe8['paid'][_0x107103(0x3c9)]() + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22margin-top:6px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22progress-track\x22\x20style=\x22height:4px;width:120px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22progress-fill\x22\x20style=\x22width:' + Math[_0x107103(0x358)](0x64, _0x4bdfe8[_0x107103(0x336)] / _0x4bdfe8[_0x107103(0x1c1)] * 0x64) + _0x107103(0x1e0) + (_0x4bdfe8['pending'] <= 0x0 ? '#107C10' : _0x107103(0x227)) + ';\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:right;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20' + (_0x4bdfe8[_0x107103(0x30d)] <= 0x0 ? _0x107103(0x25d) : '<div\x20style=\x22font-size:14px;font-weight:700;color:var(--win-yellow);\x22>KSh\x20' + _0x4bdfe8['pending'][_0x107103(0x3c9)]() + _0x107103(0x2eb)) + _0x107103(0x2fc) + (_0x4bdfe8[_0x107103(0x318)] > 0x0 ? _0x107103(0x363) + _0x4bdfe8[_0x107103(0x318)][_0x107103(0x3c9)]() + _0x107103(0x3ad) : '') + _0x107103(0x1ad))[_0x107103(0x2dd)]('');
@@ -1074,12 +1162,20 @@ async function commitTransaction() {
         await saveBackup();
         if (!backupDirHandle) await setupBackupFolder();
     }
+    
+    // Update the 50/30/20 suggestion
+    updateRuleSuggestion();
+    
     closeTxModal(), nav('dash');
 }
 
 function closeTxModal() {
     const _0x2d2dde = _0x1e67ff;
-    document['getElementById'](_0x2d2dde(0x2ec))[_0x2d2dde(0x25f)][_0x2d2dde(0x38e)](_0x2d2dde(0x311)), document[_0x2d2dde(0x1f6)](_0x2d2dde(0x3de))['value'] = '';
+    const modal = document['getElementById'](_0x2d2dde(0x2ec));
+    if (modal) {
+        modal['classList']['remove'](_0x2d2dde(0x311));
+    }
+    document['getElementById'](_0x2d2dde(0x3de))['value'] = '';
 }
 
 function addObligationRow(_0x19dd2a = '', _0x206219 = '') {
