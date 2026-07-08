@@ -17,165 +17,117 @@ const _0x1e67ff = _0x6036;
     const _0x30a565 = document[_0x15a840(0x30e)](_0x15a840(0x2cd));
     _0x30a565['id'] = _0x15a840(0x2db), _0x30a565[_0x15a840(0x38d)] = _0x15a840(0x3bc), document[_0x15a840(0x22a)][_0x15a840(0x26d)](_0x30a565);
 }());
-const BACKEND_URL = 'https://travis-j1w9.onrender.com';
-
-// ============================================================
-// MONTHLY WEALTH TIERS (Income-based, not daily)
-// ============================================================
-const WEALTH_TIERS = {
-    'DESTITUTE': {
-        'minMonthlyIncome': 0,
-        'maxMonthlyIncome': 10000,
-        'label': 'DESTITUTE',
-        'displayName': '⚠️ Destitute',
-        'color': '#C42B1C',
-        'adviceStyle': 'survival',
-        'humanDescription': 'You are in a very difficult financial situation. Basic needs are a challenge.',
-        'priority': 1,
-        'monthlyCapHuman': (income) => 'Your monthly income is about KSh ' + Math.floor(income).toLocaleString() + '. Very tight.',
-        'bufferHuman': (income, expenses) => 'You earn KSh ' + income.toLocaleString() + ' and spend KSh ' + expenses.toLocaleString() + '. You need to increase income.'
+const BACKEND_URL = 'https://travis-j1w9.onrender.com',
+    WEALTH_TIERS = {
+        'DESTITUTE': {
+            'minDailyCap': 0x0,
+            'maxDailyCap': 0x64,
+            'label': _0x1e67ff(0x2bd),
+            'displayName': _0x1e67ff(0x329),
+            'color': _0x1e67ff(0x275),
+            'adviceStyle': _0x1e67ff(0x372),
+            'humanDescription': _0x1e67ff(0x3e1),
+            'priority': _0x1e67ff(0x269),
+            'dailyCapHuman': _0xd26c81 => 'You\x20have\x20about\x20' + Math[_0x1e67ff(0x3d0)](_0xd26c81) + _0x1e67ff(0x1f4),
+            'bufferHuman': (_0x4f1282, _0x5e8c15) => 'You\x20have\x20' + _0x4f1282 + _0x1e67ff(0x3e5) + _0x5e8c15 + '\x20days.\x20That\x27s\x20very\x20little.'
+        },
+        'SURVIVAL': {
+            'minDailyCap': 0x65,
+            'maxDailyCap': 0x12c,
+            'label': _0x1e67ff(0x38f),
+            'displayName': _0x1e67ff(0x2d1),
+            'color': _0x1e67ff(0x23b),
+            'adviceStyle': 'survival',
+            'humanDescription': _0x1e67ff(0x268),
+            'priority': _0x1e67ff(0x3d5),
+            'dailyCapHuman': _0x69671c => 'You\x20have\x20about\x20' + Math['floor'](_0x69671c) + _0x1e67ff(0x35a),
+            'bufferHuman': (_0x3d03f4, _0x55ea2e) => 'You\x20have\x20' + _0x3d03f4 + _0x1e67ff(0x415) + _0x55ea2e + _0x1e67ff(0x237)
+        },
+        'STRUGGLING': {
+            'minDailyCap': 0x12d,
+            'maxDailyCap': 0x320,
+            'label': _0x1e67ff(0x288),
+            'displayName': _0x1e67ff(0x3fa),
+            'color': '#F39C12',
+            'adviceStyle': _0x1e67ff(0x2f0),
+            'humanDescription': _0x1e67ff(0x3a3),
+            'priority': _0x1e67ff(0x40a),
+            'dailyCapHuman': _0x112b3d => _0x1e67ff(0x405) + Math['floor'](_0x112b3d) + _0x1e67ff(0x380),
+            'bufferHuman': (_0x3f65d6, _0xa4fd71) => 'You\x20have\x20' + _0x3f65d6 + _0x1e67ff(0x390) + _0xa4fd71 + _0x1e67ff(0x25b)
+        },
+        'STABLE': {
+            'minDailyCap': 0x321,
+            'maxDailyCap': 0xbb8,
+            'label': 'STABLE',
+            'displayName': _0x1e67ff(0x352),
+            'color': _0x1e67ff(0x1ec),
+            'adviceStyle': _0x1e67ff(0x232),
+            'humanDescription': _0x1e67ff(0x360),
+            'priority': _0x1e67ff(0x20f),
+            'dailyCapHuman': _0x1f185a => _0x1e67ff(0x405) + Math['floor'](_0x1f185a) + _0x1e67ff(0x3e0),
+            'bufferHuman': (_0x4359de, _0x8a8353) => _0x1e67ff(0x1fb) + _0x4359de + _0x1e67ff(0x2bb) + _0x8a8353 + _0x1e67ff(0x215)
+        },
+        'AFFLUENT': {
+            'minDailyCap': 0xbb9,
+            'maxDailyCap': 0x3a98,
+            'label': _0x1e67ff(0x3b8),
+            'displayName': _0x1e67ff(0x3cb),
+            'color': _0x1e67ff(0x26f),
+            'adviceStyle': _0x1e67ff(0x35f),
+            'humanDescription': _0x1e67ff(0x308),
+            'priority': _0x1e67ff(0x28b),
+            'dailyCapHuman': _0x193322 => _0x1e67ff(0x405) + Math[_0x1e67ff(0x3d0)](_0x193322) + _0x1e67ff(0x312),
+            'bufferHuman': (_0x1d7ce4, _0x1c7638) => 'You\x20have\x20' + _0x1d7ce4 + _0x1e67ff(0x1f1)
+        },
+        'WEALTHY': {
+            'minDailyCap': 0x3a99,
+            'maxDailyCap': 0xc350,
+            'label': _0x1e67ff(0x2cf),
+            'displayName': '💎\x20Wealthy',
+            'color': _0x1e67ff(0x3da),
+            'adviceStyle': 'preservation',
+            'humanDescription': _0x1e67ff(0x26c),
+            'priority': _0x1e67ff(0x385),
+            'dailyCapHuman': _0x627256 => 'You\x20have\x20' + Math[_0x1e67ff(0x3d0)](_0x627256) + _0x1e67ff(0x330),
+            'bufferHuman': (_0x154998, _0x1c41e6) => 'You\x20have\x20' + _0x154998 + '\x20shillings\x20in\x20liquid\x20assets.\x20Wealth\x20is\x20preserved.'
+        },
+        'ELITE': {
+            'minDailyCap': 0xc351,
+            'maxDailyCap': Infinity,
+            'label': _0x1e67ff(0x2b1),
+            'displayName': '👑\x20Elite',
+            'color': _0x1e67ff(0x23e),
+            'adviceStyle': _0x1e67ff(0x361),
+            'humanDescription': 'You\x20are\x20in\x20the\x20top\x20tier\x20of\x20wealth\x20in\x20Kenya.',
+            'priority': _0x1e67ff(0x315),
+            'dailyCapHuman': _0x3e73ec => _0x1e67ff(0x2a3) + Math[_0x1e67ff(0x3d0)](_0x3e73ec)['toLocaleString']() + _0x1e67ff(0x1e7),
+            'bufferHuman': (_0x5def0a, _0x3aeb0c) => _0x1e67ff(0x26a) + _0x5def0a[_0x1e67ff(0x3c9)]() + _0x1e67ff(0x266)
+        }
     },
-    'SURVIVAL': {
-        'minMonthlyIncome': 10001,
-        'maxMonthlyIncome': 30000,
-        'label': 'SURVIVAL',
-        'displayName': '🔶 Survival',
-        'color': '#F39C12',
-        'adviceStyle': 'survival',
-        'humanDescription': 'You can meet basic needs but have little left over.',
-        'priority': 2,
-        'monthlyCapHuman': (income) => 'Your monthly income is about KSh ' + Math.floor(income).toLocaleString() + '. You can cover basics.',
-        'bufferHuman': (income, expenses) => 'You earn KSh ' + income.toLocaleString() + ' and spend KSh ' + expenses.toLocaleString() + '. Look to reduce expenses.'
-    },
-    'STRUGGLING': {
-        'minMonthlyIncome': 30001,
-        'maxMonthlyIncome': 60000,
-        'label': 'STRUGGLING',
-        'displayName': '🟡 Struggling',
-        'color': '#E67E22',
-        'adviceStyle': 'conservative',
-        'humanDescription': 'You can meet your needs and save a little each month.',
-        'priority': 3,
-        'monthlyCapHuman': (income) => 'Your monthly income is about KSh ' + Math.floor(income).toLocaleString() + '. Some room to save.',
-        'bufferHuman': (income, expenses) => 'You earn KSh ' + income.toLocaleString() + ' and spend KSh ' + expenses.toLocaleString() + '. Aim to save 10-20%.'
-    },
-    'STABLE': {
-        'minMonthlyIncome': 60001,
-        'maxMonthlyIncome': 150000,
-        'label': 'STABLE',
-        'displayName': '🟢 Stable',
-        'color': '#27AE60',
-        'adviceStyle': 'balanced',
-        'humanDescription': 'You have substantial disposable income and can build wealth.',
-        'priority': 4,
-        'monthlyCapHuman': (income) => 'Your monthly income is about KSh ' + Math.floor(income).toLocaleString() + '. Strong financial position.',
-        'bufferHuman': (income, expenses) => 'You earn KSh ' + income.toLocaleString() + ' and spend KSh ' + expenses.toLocaleString() + '. Focus on investing.'
-    },
-    'AFFLUENT': {
-        'minMonthlyIncome': 150001,
-        'maxMonthlyIncome': 500000,
-        'label': 'AFFLUENT',
-        'displayName': '💎 Affluent',
-        'color': '#8E44AD',
-        'adviceStyle': 'growth',
-        'humanDescription': 'You have significant wealth and multiple income streams.',
-        'priority': 5,
-        'monthlyCapHuman': (income) => 'Your monthly income is about KSh ' + Math.floor(income).toLocaleString() + '. Excellent position.',
-        'bufferHuman': (income, expenses) => 'You earn KSh ' + income.toLocaleString() + ' and spend KSh ' + expenses.toLocaleString() + '. Focus on wealth preservation.'
-    },
-    'ELITE': {
-        'minMonthlyIncome': 500001,
-        'maxMonthlyIncome': Infinity,
-        'label': 'ELITE',
-        'displayName': '👑 Elite',
-        'color': '#9B59B6',
-        'adviceStyle': 'preservation',
-        'humanDescription': 'You are in the top tier of wealth in Kenya.',
-        'priority': 6,
-        'monthlyCapHuman': (income) => 'Your monthly income is about KSh ' + Math.floor(income).toLocaleString() + '. Elite level.',
-        'bufferHuman': (income, expenses) => 'You earn KSh ' + income.toLocaleString() + ' and spend KSh ' + expenses.toLocaleString() + '. Preserve and grow wealth.'
-    }
-};
-
-// ============================================================
-// BUSINESS REVENUE ALLOCATION FRAMEWORK
-// ============================================================
-const BUSINESS_BENCHMARKS = {
-    'RETAIL': {
-        'cogs': 0.50,
-        'operating': 0.25,
-        'ownerDraw': 0.12,
-        'taxReserve': 0.08,
-        'reinvestment': 0.05,
-        'description': 'Physical stores, kiosks, shops'
-    },
-    'SERVICES': {
-        'cogs': 0.20,
-        'operating': 0.30,
-        'ownerDraw': 0.25,
-        'taxReserve': 0.15,
-        'reinvestment': 0.10,
-        'description': 'Salons, repair shops, consulting'
-    },
-    'FOOD': {
-        'cogs': 0.35,
-        'operating': 0.30,
-        'ownerDraw': 0.18,
-        'taxReserve': 0.10,
-        'reinvestment': 0.07,
-        'description': 'Restaurants, cafes, food vendors'
-    },
-    'TRANSPORT': {
-        'cogs': 0.40,
-        'operating': 0.28,
-        'ownerDraw': 0.15,
-        'taxReserve': 0.10,
-        'reinvestment': 0.07,
-        'description': 'Logistics, delivery, matatus'
-    },
-    'FREELANCE': {
-        'cogs': 0.08,
-        'operating': 0.20,
-        'ownerDraw': 0.42,
-        'taxReserve': 0.20,
-        'reinvestment': 0.10,
-        'description': 'Freelancers, consultants, creatives'
-    },
-    'GENERAL': {
-        'cogs': 0.35,
-        'operating': 0.28,
-        'ownerDraw': 0.20,
-        'taxReserve': 0.10,
-        'reinvestment': 0.07,
-        'description': 'General business benchmark'
-    }
-};
-
-const KNBS_BENCHMARKS = {
-    'minimumWage': {
-        'urban': 30000,
-        'rural': 25000,
-        'agricultural': 22000,
-        'domestic': 18000
-    },
-    'povertyLine': {
-        'foodPoor': 5000,
-        'overallPoor': 7000,
-        'extremePoor': 4000
-    },
-    'livingWage': {
-        'urbanSingle': 48000,
-        'urbanFamily': 88000,
-        'ruralSingle': 32000,
-        'ruralFamily': 60000
-    },
-    'foodBasket': {
-        'dailyMinimum': 300,
-        'monthlyMinimum': 9000,
-        'description': 'Basic food basket (unga, sukuma, onions, tomatoes)'
-    }
-};
-
+    KNBS_BENCHMARKS = {
+        'minimumWage': {
+            'urban': 0x3ef2,
+            'rural': 0x34bc,
+            'agricultural': 0x2ee0,
+            'domestic': 0x2710
+        },
+        'povertyLine': {
+            'foodPoor': 0xc4c,
+            'overallPoor': 0x1557,
+            'extremePoor': 0x929
+        },
+        'livingWage': {
+            'urbanSingle': 0x61a8,
+            'urbanFamily': 0xafc8,
+            'ruralSingle': 0x4650,
+            'ruralFamily': 0x7d00
+        },
+        'foodBasket': {
+            'dailyMinimum': 0x96,
+            'monthlyMinimum': 0x1194,
+            'description': _0x1e67ff(0x3f2)
+        }
+    };
 let conversationState = {
     'pendingClarification': null,
     'lastResponse': null,
@@ -203,197 +155,35 @@ function hasPendingClarification() {
     return conversationState[_0x1e5814(0x3ce)] !== null;
 }
 
-// ============================================================
-// UPDATED: getUserWealthTier - Monthly Income Based
-// ============================================================
 function getUserWealthTier(_0x11d5da, _0x39c208) {
     const _0x1f52b5 = _0x1e67ff;
-    
-    // Check if business user
-    const isBusiness = state.user?.type === 'business';
-    
-    if (isBusiness) {
-        return getBusinessHealthTier(_0x39c208, _0x11d5da);
-    }
-    
-    // Personal: Monthly income based
     if (_0x39c208 < 0x0) return {
         'name': _0x1f52b5(0x2bd),
         ...WEALTH_TIERS[_0x1f52b5(0x2bd)],
         'displayName': _0x1f52b5(0x30a),
         'humanDescription': _0x1f52b5(0x356) + Math[_0x1f52b5(0x39e)](_0x39c208)[_0x1f52b5(0x3c9)]() + _0x1f52b5(0x206)
     };
-    
-    // Find the right tier based on monthly income
-    for (const [name, tier] of Object.entries(WEALTH_TIERS)) {
-        if (_0x11d5da >= tier.minMonthlyIncome && _0x11d5da <= tier.maxMonthlyIncome) {
-            return {
-                'name': name,
-                ...tier
-            };
-        }
+    for (const [_0x299d03, _0x3712cc] of Object[_0x1f52b5(0x3b5)](WEALTH_TIERS)) {
+        if (_0x11d5da >= _0x3712cc[_0x1f52b5(0x1e2)] && _0x11d5da <= _0x3712cc[_0x1f52b5(0x40d)]) return {
+            'name': _0x299d03,
+            ..._0x3712cc
+        };
     }
     return {
         'name': 'STRUGGLING',
-        ...WEALTH_TIERS['STRUGGLING']
+        ...WEALTH_TIERS[_0x1f52b5(0x288)]
     };
 }
 
-function getBusinessHealthTier(cash, monthlyRevenue) {
-    const monthlyExpenses = getMonthlyExpenses();
-    const cashRunway = monthlyExpenses > 0 ? cash / monthlyExpenses : 0;
-    
-    if (cashRunway < 1) {
-        return {
-            'name': 'CRITICAL',
-            'displayName': '🔴 Critical',
-            'color': '#C42B1C',
-            'adviceStyle': 'survival',
-            'humanDescription': 'Your business has less than 1 month of cash runway. Urgent action needed.',
-            'priority': 1
-        };
-    } else if (cashRunway < 3) {
-        return {
-            'name': 'STRUGGLING',
-            'displayName': '🟡 Struggling',
-            'color': '#F39C12',
-            'adviceStyle': 'conservative',
-            'humanDescription': 'Your business has ' + Math.floor(cashRunway) + ' months of cash runway. Focus on cash flow.',
-            'priority': 2
-        };
-    } else if (cashRunway < 6) {
-        return {
-            'name': 'STABLE',
-            'displayName': '🟢 Stable',
-            'color': '#27AE60',
-            'adviceStyle': 'balanced',
-            'humanDescription': 'Your business has ' + Math.floor(cashRunway) + ' months of cash runway. Good position.',
-            'priority': 3
-        };
-    } else {
-        return {
-            'name': 'THRIVING',
-            'displayName': '💎 Thriving',
-            'color': '#8E44AD',
-            'adviceStyle': 'growth',
-            'humanDescription': 'Your business is well-capitalized with ' + Math.floor(cashRunway) + ' months of runway.',
-            'priority': 4
-        };
-    }
-}
-
-// ============================================================
-// MONTHLY FINANCIAL FUNCTIONS
-// ============================================================
-function getMonthlyIncome() {
-    const transactions = state.transactions || [];
-    const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-    
-    let totalIncome = 0;
-    const incomeAccounts = ['Salary', 'M-Pesa', 'Cash', 'Bank Account', 'Sales Revenue', 
-                           'Service Revenue', 'Other Revenue', 'Side Hustle', 'Allowance'];
-    
-    transactions.forEach(tx => {
-        const txDate = new Date(tx.id);
-        if (txDate >= monthStart && txDate < monthEnd) {
-            if (incomeAccounts.includes(tx.debit)) {
-                totalIncome += tx.amount;
-            }
-        }
-    });
-    return totalIncome;
-}
-
-function getMonthlyExpenses() {
-    const transactions = state.transactions || [];
-    const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-    
-    let totalExpenses = 0;
-    const expenseAccounts = ['Rent', 'Payroll', 'Utilities', 'Food & Groceries', 'Transport', 
-                            'School', 'Medical', 'Office Supplies', 'Marketing', 'Travel', 
-                            'Professional Fees', 'Tax', 'Insurance', 'Clothes', 
-                            'Travel & Entertainment', 'Other Fun Spending', 'Owner\'s Draw', 
-                            'Tax Reserve', 'Reinvestment', 'Loan Repayment', 'Savings'];
-    
-    transactions.forEach(tx => {
-        const txDate = new Date(tx.id);
-        if (txDate >= monthStart && txDate < monthEnd) {
-            if (expenseAccounts.includes(tx.credit)) {
-                totalExpenses += tx.amount;
-            }
-        }
-    });
-    return totalExpenses;
-}
-
-// ============================================================
-// UPDATED: humanReadableStatus - Monthly Focus
-// ============================================================
 function humanReadableStatus(_0x3a4b72, _0x296e7d, _0x204de2, _0x35bc13) {
     const _0x202f34 = _0x1e67ff;
-    const isBusiness = state.user?.type === 'business';
-    
-    if (isBusiness) {
-        return getBusinessStatusMessage();
-    }
-    
-    // Personal: Monthly 50/30/20 status
-    const monthlyIncome = getMonthlyIncome();
-    const monthlyExpenses = getMonthlyExpenses();
-    const savings = monthlyIncome - monthlyExpenses;
-    const savingsRate = monthlyIncome > 0 ? (savings / monthlyIncome) * 100 : 0;
-    
-    let status = '📊 <strong>Your Monthly Status</strong><br><br>';
-    status += '💰 Income: <strong>KSh ' + Math.floor(monthlyIncome).toLocaleString() + '</strong><br>';
-    status += '💸 Expenses: <strong>KSh ' + Math.floor(monthlyExpenses).toLocaleString() + '</strong><br>';
-    status += '💾 Savings: <strong>KSh ' + Math.floor(savings).toLocaleString() + '</strong><br>';
-    status += '📈 Savings Rate: <strong>' + savingsRate.toFixed(1) + '%</strong><br><br>';
-    
-    // 50/30/20 breakdown
-    const needs = monthlyIncome * 0.5;
-    const wants = monthlyIncome * 0.3;
-    const savingsAlloc = monthlyIncome * 0.2;
-    
-    status += '📋 <strong>50/30/20 Allocation:</strong><br>';
-    status += '├── Needs (50%): KSh ' + Math.floor(needs).toLocaleString() + '<br>';
-    status += '├── Wants (30%): KSh ' + Math.floor(wants).toLocaleString() + '<br>';
-    status += '└── Savings (20%): KSh ' + Math.floor(savingsAlloc).toLocaleString() + '<br><br>';
-    
-    status += '💡 <strong>Advice:</strong> ' + _0x35bc13.humanDescription;
-    
-    return status;
-}
-
-function getBusinessStatusMessage() {
-    const monthlyRevenue = getMonthlyRevenue();
-    const monthlyExpenses = getMonthlyExpenses();
-    const profit = monthlyRevenue - monthlyExpenses;
-    const profitMargin = monthlyRevenue > 0 ? (profit / monthlyRevenue) * 100 : 0;
-    const cashRunway = monthlyExpenses > 0 ? getFin().safeCash / monthlyExpenses : 0;
-    
-    let status = '📊 <strong>Your Business Monthly Report</strong><br><br>';
-    status += '💰 Revenue: <strong>KSh ' + Math.floor(monthlyRevenue).toLocaleString() + '</strong><br>';
-    status += '💸 Operating Costs: <strong>KSh ' + Math.floor(monthlyExpenses).toLocaleString() + '</strong><br>';
-    status += '💾 Profit: <strong>KSh ' + Math.floor(profit).toLocaleString() + '</strong><br>';
-    status += '📈 Profit Margin: <strong>' + profitMargin.toFixed(1) + '%</strong><br>';
-    status += '⏳ Cash Runway: <strong>' + cashRunway.toFixed(1) + ' months</strong><br><br>';
-    
-    // Business health assessment
-    if (cashRunway < 1) {
-        status += '🔴 <strong>CRITICAL:</strong> Less than 1 month of cash runway. Need urgent action!';
-    } else if (cashRunway < 3) {
-        status += '🟡 <strong>WARNING:</strong> Only ' + cashRunway.toFixed(1) + ' months of cash runway.';
-    } else if (cashRunway < 6) {
-        status += '🟢 <strong>OK:</strong> ' + cashRunway.toFixed(1) + ' months of cash runway.';
+    if (_0x35bc13[_0x202f34(0x1cc)] === _0x202f34(0x372)) {
+        if (_0x296e7d < 0x64) return _0x202f34(0x21c) + _0x3a4b72 + '\x20shillings\x20left\x20for\x20' + _0x204de2 + '\x20days.\x20That\x27s\x20about\x20' + Math[_0x202f34(0x3d0)](_0x296e7d) + _0x202f34(0x1f7);
+        else return _0x296e7d < 0x12c ? 'VERY\x20TIGHT:\x20' + _0x3a4b72 + '\x20shillings\x20must\x20last\x20' + _0x204de2 + _0x202f34(0x233) + Math[_0x202f34(0x3d0)](_0x296e7d) + '\x20shillings\x20per\x20day.\x20Enough\x20for\x20unga\x20and\x20sukuma,\x20but\x20nothing\x20extra.' : _0x202f34(0x2bf) + _0x3a4b72 + _0x202f34(0x390) + _0x204de2 + _0x202f34(0x27e) + Math['floor'](_0x296e7d) + _0x202f34(0x41a);
     } else {
-        status += '💎 <strong>EXCELLENT:</strong> ' + cashRunway.toFixed(1) + ' months of cash runway.';
+        if (_0x35bc13['adviceStyle'] === _0x202f34(0x2f0)) return _0x202f34(0x216) + _0x3a4b72 + '\x20shillings\x20to\x20last\x20' + _0x204de2 + '\x20days.\x20That\x27s\x20about\x20' + Math[_0x202f34(0x3d0)](_0x296e7d) + '\x20shillings\x20per\x20day.\x20You\x27re\x20getting\x20by\x20but\x20not\x20thriving.';
+        else return _0x35bc13[_0x202f34(0x1cc)] === _0x202f34(0x232) ? _0x202f34(0x1fb) + _0x3a4b72 + _0x202f34(0x390) + _0x204de2 + '\x20days.\x20About\x20' + Math[_0x202f34(0x3d0)](_0x296e7d) + _0x202f34(0x2b4) : _0x202f34(0x219) + _0x3a4b72[_0x202f34(0x3c9)]() + _0x202f34(0x2d4) + Math[_0x202f34(0x3d0)](_0x296e7d)[_0x202f34(0x3c9)]() + _0x202f34(0x2d8);
     }
-    
-    return status;
 }
 
 function humanReadableAdvice(_0x3efaa1, _0x76d722, _0x34e5a5, _0x6a793b, _0x51be42, _0x354b95) {
@@ -1000,54 +790,6 @@ function updateLiveHud() {
     document[_0x4fbb50(0x1f6)](_0x4fbb50(0x293))[_0x4fbb50(0x1de)] = _0x4fbb50(0x327) + _0x230c19[_0x4fbb50(0x3b2)](0x0), document[_0x4fbb50(0x1f6)]('hud-cover')[_0x4fbb50(0x1de)] = 'KSh\x20' + _0x1d5127[_0x4fbb50(0x30d)][_0x4fbb50(0x3c9)]() + '\x20Reserved';
     const _0x347917 = document[_0x4fbb50(0x1f6)](_0x4fbb50(0x3b7));
     isLiquid(_0x137cef) && _0x16992d > _0x1d5127['daily'] ? _0x347917[_0x4fbb50(0x2cd)][_0x4fbb50(0x31d)] = _0x4fbb50(0x2fd) : _0x347917[_0x4fbb50(0x2cd)][_0x4fbb50(0x31d)] = 'none';
-    
-    // Update the 50/30/20 suggestion
-    setTimeout(updateRuleSuggestion, 100);
-}
-
-// ============================================================
-// 50/30/20 SUGGESTION CARD - Monthly Based
-// ============================================================
-function updateRuleSuggestion() {
-    const fin = getFin();
-    const monthlyIncome = getMonthlyIncome();
-    const monthlyExpenses = getMonthlyExpenses();
-    const savings = monthlyIncome - monthlyExpenses;
-    const remaining = fin['safeCash'];
-    const daysRem = fin['daysRem'];
-    
-    const container = document.getElementById('rule-suggestion-container');
-    if (!container) return;
-    
-    // Hide if no money or negative
-    if (remaining <= 0 || daysRem <= 0 || monthlyIncome <= 0) {
-        container.style.display = 'none';
-        return;
-    }
-    
-    // Show the container
-    container.style.display = 'block';
-    
-    // Calculate 50/30/20 based on MONTHLY income
-    const needs = monthlyIncome * 0.5;
-    const wants = monthlyIncome * 0.3;
-    const savingsAlloc = monthlyIncome * 0.2;
-    
-    // Update the DOM
-    document.getElementById('rule-monthly-income').textContent = 
-        'KSh ' + Math.floor(monthlyIncome).toLocaleString();
-    document.getElementById('rule-needs-amount').textContent = 
-        'KSh ' + Math.floor(needs).toLocaleString();
-    document.getElementById('rule-wants-amount').textContent = 
-        'KSh ' + Math.floor(wants).toLocaleString();
-    document.getElementById('rule-savings-amount').textContent = 
-        'KSh ' + Math.floor(savingsAlloc).toLocaleString();
-    document.getElementById('rule-current-savings').textContent = 
-        'KSh ' + Math.floor(savings).toLocaleString();
-    document.getElementById('rule-remaining-total').textContent = 
-        'KSh ' + Math.floor(remaining).toLocaleString();
-    document.getElementById('rule-daily-cap').textContent = 
-        Math.floor(fin['daily']).toLocaleString();
 }
 
 function getFin() {
@@ -1112,9 +854,6 @@ function navClick(_0x3a90ed) {
     document[_0x4fbf4e(0x3c7)](_0x4fbf4e(0x1bd))[_0x4fbf4e(0x347)](_0x37b423 => _0x37b423[_0x4fbf4e(0x25f)][_0x4fbf4e(0x38e)]('active')), document[_0x4fbf4e(0x1f6)]('nav-sidebar')['classList'][_0x4fbf4e(0x38e)](_0x4fbf4e(0x2f1)), nav(_0x3a90ed);
 }
 
-// ─────────────────────────────────────────────────────────────
-// UPDATED nav() WITH 50/30/20 SUGGESTION CARD
-// ─────────────────────────────────────────────────────────────
 function nav(_0x53a580) {
     const _0x107103 = _0x1e67ff,
         _0x2e291d = document[_0x107103(0x1f6)](_0x107103(0x2ff)),
@@ -1123,55 +862,8 @@ function nav(_0x53a580) {
     if (_0x53a580 === 'dash') {
         const _0x3a57df = getUserWealthTier(_0x6c7755[_0x107103(0x21a)], _0x6c7755['safeCash']),
             _0x499b1f = _0x6c7755[_0x107103(0x30b)][_0x107103(0x225)](_0x5d9a6a => _0x5d9a6a['variance'] > 0x0);
-        _0x2e291d[_0x107103(0x3ec)] = _0x107103(0x382) + _0x3a57df[_0x107103(0x2d6)] + _0x107103(0x2ca) + _0x3a57df[_0x107103(0x2d6)] + _0x107103(0x1d7) + _0x3a57df[_0x107103(0x391)] + _0x107103(0x3b6) + _0x3a57df[_0x107103(0x23a)] + _0x107103(0x333) + _0x3a57df[_0x107103(0x3a5)] + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Leak\x20Finder</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20' + (_0x499b1f[_0x107103(0x24c)] > 0x0 ? _0x107103(0x2ab) + _0x499b1f[_0x107103(0x24c)] + '\x20leak' + (_0x499b1f[_0x107103(0x24c)] > 0x1 ? 's' : '') + _0x107103(0x2e0) : '<span\x20class=\x22chip\x20chip-green\x22>Clean</span>') + _0x107103(0x3fb) + (_0x499b1f[_0x107103(0x24c)] > 0x0 ? _0x499b1f[_0x107103(0x2b8)](_0x4f842f => '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22leak-item\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:500;\x22>' + _0x4f842f['label'] + _0x107103(0x3ca) + _0x4f842f[_0x107103(0x1c1)][_0x107103(0x3c9)]() + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:right;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:var(--win-red);font-size:13px;font-weight:700;\x22>+KSh\x20' + _0x4f842f[_0x107103(0x318)]['toLocaleString']() + _0x107103(0x1d6))[_0x107103(0x2dd)]('') : _0x107103(0x277)) + _0x107103(0x297) + _0x3a57df[_0x107103(0x391)] + _0x107103(0x3d2) + humanReadableStatus(_0x6c7755[_0x107103(0x341)], _0x6c7755[_0x107103(0x21a)], _0x6c7755[_0x107103(0x3e7)], _0x3a57df) + _0x107103(0x3dd);
-        
-        // ── 50/30/20 Suggestion Card ──
-        _0x2e291d[_0x107103(0x3ec)] += `
-            <div id="rule-suggestion-container" style="display:none;margin-top:16px;">
-                <div style="background:white;border-radius:12px;padding:20px 24px;box-shadow:0 2px 8px rgba(0,0,0,0.06);border:1px solid #e8e8e8;">
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-                        <span style="font-size:20px;">💡</span>
-                        <div>
-                            <div style="font-size:15px;font-weight:600;color:#1a1a1a;">Monthly Money Management</div>
-                            <div style="font-size:12px;color:#8a8a8a;">Based on your monthly income</div>
-                        </div>
-                        <span style="margin-left:auto;font-size:12px;background:#f0f7ff;color:#0078D4;padding:4px 12px;border-radius:12px;">50/30/20</span>
-                    </div>
-                    
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;">
-                        <div style="background:#f0f7ff;padding:12px;border-radius:8px;border-left:3px solid #0078D4;">
-                            <div style="font-size:11px;color:#5a5a5a;">🏠 Needs (50%)</div>
-                            <div style="font-size:16px;font-weight:600;color:#1a1a1a;" id="rule-needs-amount">KSh 0</div>
-                            <div style="font-size:10px;color:#8a8a8a;">Rent, food, transport, school</div>
-                        </div>
-                        <div style="background:#fff8f0;padding:12px;border-radius:8px;border-left:3px solid #F39C12;">
-                            <div style="font-size:11px;color:#5a5a5a;">🛍️ Wants (30%)</div>
-                            <div style="font-size:16px;font-weight:600;color:#1a1a1a;" id="rule-wants-amount">KSh 0</div>
-                            <div style="font-size:10px;color:#8a8a8a;">Entertainment, shopping, travel</div>
-                        </div>
-                        <div style="background:#f0fff4;padding:12px;border-radius:8px;border-left:3px solid #27AE60;">
-                            <div style="font-size:11px;color:#5a5a5a;">💰 Savings (20%)</div>
-                            <div style="font-size:16px;font-weight:600;color:#1a1a1a;" id="rule-savings-amount">KSh 0</div>
-                            <div style="font-size:10px;color:#8a8a8a;">Emergency fund, investments</div>
-                        </div>
-                    </div>
-                    
-                    <div style="display:flex;justify-content:space-between;padding-top:12px;border-top:1px solid #f0f0f0;font-size:12px;color:#5a5a5a;">
-                        <div>📊 Monthly Income: <strong id="rule-monthly-income" style="color:#1a1a1a;">KSh 0</strong></div>
-                        <div>💾 Current Savings: <strong id="rule-current-savings" style="color:#27AE60;">KSh 0</strong></div>
-                        <div>📅 Daily Spending: <strong id="rule-daily-cap" style="color:#0078D4;">0</strong>/day</div>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        window[_0x107103(0x322)] < 0x384 && (_0x2e291d['querySelector'](_0x107103(0x36f))[_0x107103(0x2cd)][_0x107103(0x3f9)] = _0x107103(0x1da));
-        
-        // Update the suggestion after rendering
-        setTimeout(updateRuleSuggestion, 150);
-        setTimeout(() => renderChart(), 0x64);
+        _0x2e291d[_0x107103(0x3ec)] = _0x107103(0x382) + _0x3a57df[_0x107103(0x2d6)] + _0x107103(0x2ca) + _0x3a57df[_0x107103(0x2d6)] + _0x107103(0x1d7) + _0x3a57df[_0x107103(0x391)] + _0x107103(0x3b6) + _0x3a57df[_0x107103(0x23a)] + _0x107103(0x333) + _0x3a57df[_0x107103(0x3a5)] + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Leak\x20Finder</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20' + (_0x499b1f[_0x107103(0x24c)] > 0x0 ? _0x107103(0x2ab) + _0x499b1f[_0x107103(0x24c)] + '\x20leak' + (_0x499b1f[_0x107103(0x24c)] > 0x1 ? 's' : '') + _0x107103(0x2e0) : '<span\x20class=\x22chip\x20chip-green\x22>Clean</span>') + _0x107103(0x3fb) + (_0x499b1f[_0x107103(0x24c)] > 0x0 ? _0x499b1f[_0x107103(0x2b8)](_0x4f842f => '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22leak-item\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:500;\x22>' + _0x4f842f['label'] + _0x107103(0x3ca) + _0x4f842f[_0x107103(0x1c1)][_0x107103(0x3c9)]() + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:right;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:var(--win-red);font-size:13px;font-weight:700;\x22>+KSh\x20' + _0x4f842f[_0x107103(0x318)]['toLocaleString']() + _0x107103(0x1d6))[_0x107103(0x2dd)]('') : _0x107103(0x277)) + _0x107103(0x297) + _0x3a57df[_0x107103(0x391)] + _0x107103(0x3d2) + humanReadableStatus(_0x6c7755[_0x107103(0x341)], _0x6c7755[_0x107103(0x21a)], _0x6c7755[_0x107103(0x3e7)], _0x3a57df) + _0x107103(0x3dd), window[_0x107103(0x322)] < 0x384 && (_0x2e291d['querySelector'](_0x107103(0x36f))[_0x107103(0x2cd)][_0x107103(0x3f9)] = _0x107103(0x1da)), setTimeout(() => renderChart(), 0x64);
     }
-    // ... rest of nav function remains the same ...
     if (_0x53a580 === _0x107103(0x281)) {
         let _0x24a3e0 = _0x6c7755['obsStatus'][_0x107103(0x2b8)](_0x4bdfe8 => _0x107103(0x298) + _0x4bdfe8['label'] + _0x107103(0x29c) + _0x4bdfe8[_0x107103(0x1c1)][_0x107103(0x3c9)]() + _0x107103(0x255) + _0x4bdfe8['paid'][_0x107103(0x3c9)]() + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22margin-top:6px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22progress-track\x22\x20style=\x22height:4px;width:120px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22progress-fill\x22\x20style=\x22width:' + Math[_0x107103(0x358)](0x64, _0x4bdfe8[_0x107103(0x336)] / _0x4bdfe8[_0x107103(0x1c1)] * 0x64) + _0x107103(0x1e0) + (_0x4bdfe8['pending'] <= 0x0 ? '#107C10' : _0x107103(0x227)) + ';\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:right;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20' + (_0x4bdfe8[_0x107103(0x30d)] <= 0x0 ? _0x107103(0x25d) : '<div\x20style=\x22font-size:14px;font-weight:700;color:var(--win-yellow);\x22>KSh\x20' + _0x4bdfe8['pending'][_0x107103(0x3c9)]() + _0x107103(0x2eb)) + _0x107103(0x2fc) + (_0x4bdfe8[_0x107103(0x318)] > 0x0 ? _0x107103(0x363) + _0x4bdfe8[_0x107103(0x318)][_0x107103(0x3c9)]() + _0x107103(0x3ad) : '') + _0x107103(0x1ad))[_0x107103(0x2dd)]('');
         _0x2e291d['innerHTML'] = '<div\x20class=\x22win-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22win-card-title\x22>Your\x20Monthly\x20Bills</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22document.getElementById(\x27setup-overlay\x27).classList.remove(\x27hidden\x27)\x22\x20class=\x22btn-secondary\x22\x20style=\x22font-size:11px;padding:5px\x2010px;\x22>Edit\x20List</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>' + (_0x24a3e0 || _0x107103(0x2e4)) + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22padding:16px;border-top:1px\x20solid\x20var(--win-border);\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22factoryReset()\x22\x20style=\x22font-size:11px;color:var(--win-red);background:none;border:none;cursor:pointer;font-family:inherit;\x22>Reset\x20All\x20Data</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>';
@@ -1382,20 +1074,12 @@ async function commitTransaction() {
         await saveBackup();
         if (!backupDirHandle) await setupBackupFolder();
     }
-    
-    // Update the 50/30/20 suggestion
-    updateRuleSuggestion();
-    
     closeTxModal(), nav('dash');
 }
 
 function closeTxModal() {
     const _0x2d2dde = _0x1e67ff;
-    const modal = document['getElementById'](_0x2d2dde(0x2ec));
-    if (modal) {
-        modal['classList']['remove'](_0x2d2dde(0x311));
-    }
-    document['getElementById'](_0x2d2dde(0x3de))['value'] = '';
+    document['getElementById'](_0x2d2dde(0x2ec))[_0x2d2dde(0x25f)][_0x2d2dde(0x38e)](_0x2d2dde(0x311)), document[_0x2d2dde(0x1f6)](_0x2d2dde(0x3de))['value'] = '';
 }
 
 function addObligationRow(_0x19dd2a = '', _0x206219 = '') {
