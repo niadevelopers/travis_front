@@ -1,32 +1,29 @@
 // ================================================================
-// VISIBILITY TOGGLE SYSTEM - M-Pesa/PayPal Style
-// Persists across page refreshes using localStorage
+// VISIBILITY TOGGLE SYSTEM - Clean M-Pesa/PayPal Style
+// Only for: Total Money, Bills You Must Pay, Daily Spending Amount
 // ================================================================
 
 (function() {
     'use strict';
     
-    // Configuration
-    const VISIBILITY_CONFIG = {
-        TOTAL_MONEY: {
+    // Configuration - ONLY these 3 fields
+    const VISIBILITY_CONFIG = [
+        {
             key: 'travis_vis_total_money',
-            label: 'Total Money',
-            emoji: '💰',
-            fieldIndex: 0
+            label: 'Total Money You Have',
+            fieldIndex: 0  // First metric card
         },
-        BILLS: {
+        {
             key: 'travis_vis_bills',
-            label: 'Bills',
-            emoji: '📋',
-            fieldIndex: 1
+            label: 'Bills You Must Pay',
+            fieldIndex: 1  // Second metric card
         },
-        DAILY_SPENDING: {
+        {
             key: 'travis_vis_daily_spending',
-            label: 'Daily Spending',
-            emoji: '📊',
-            fieldIndex: 2
+            label: 'Daily Spending Amount',
+            fieldIndex: 2  // Third metric card
         }
-    };
+    ];
     
     // Get visibility state from localStorage
     function getVisibility(key) {
@@ -62,35 +59,40 @@
         return card ? card.querySelector('.metric-label') : null;
     }
     
-    // Create toggle button
+    // Create toggle button - just a simple eye icon
     function createToggleButton(config, isVisible) {
         const btn = document.createElement('button');
         btn.className = 'vis-toggle-btn';
         btn.dataset.key = config.key;
         btn.dataset.fieldIndex = config.fieldIndex;
-        btn.innerHTML = isVisible ? '👁️' : '🚫👁️';
-        btn.title = isVisible ? 'Tap to hide amount' : 'Tap to show amount';
+        btn.textContent = '👁️';
+        btn.title = isVisible ? 'Hide amount' : 'Show amount';
         btn.setAttribute('aria-label', `Toggle ${config.label} visibility`);
         
-        // Style the button
+        // Minimal styling - clean and unobtrusive
         Object.assign(btn.style, {
             background: 'transparent',
             border: 'none',
             cursor: 'pointer',
-            fontSize: '16px',
-            padding: '2px 6px',
-            marginLeft: '8px',
-            borderRadius: '4px',
-            opacity: '0.6',
-            transition: 'opacity 0.2s, transform 0.1s',
+            fontSize: '14px',
+            padding: '2px 4px',
+            marginLeft: '4px',
+            borderRadius: '3px',
+            opacity: isVisible ? '0.5' : '0.8',
+            transition: 'opacity 0.15s',
             lineHeight: '1',
-            position: 'relative',
-            top: '-1px'
+            color: isVisible ? '#666' : '#0078D4'
         });
         
-        // Hover effects
-        btn.addEventListener('mouseenter', () => { btn.style.opacity = '1'; });
-        btn.addEventListener('mouseleave', () => { btn.style.opacity = '0.6'; });
+        // Hover effect - subtle
+        btn.addEventListener('mouseenter', () => { 
+            btn.style.opacity = '1';
+            btn.style.background = 'rgba(0,0,0,0.04)';
+        });
+        btn.addEventListener('mouseleave', () => { 
+            btn.style.opacity = isVisible ? '0.5' : '0.8';
+            btn.style.background = 'transparent';
+        });
         
         // Click handler
         btn.addEventListener('click', function(e) {
@@ -117,20 +119,21 @@
             valueEl.textContent = card.dataset.originalValue;
             valueEl.style.letterSpacing = 'normal';
             valueEl.style.fontFamily = '';
-            valueEl.style.opacity = '1';
+            valueEl.style.color = '';
         } else {
             // Hide with mosaic style
-            valueEl.textContent = '••••••••';
-            valueEl.style.letterSpacing = '3px';
+            valueEl.textContent = '••••••';
+            valueEl.style.letterSpacing = '2px';
             valueEl.style.fontFamily = 'monospace';
-            valueEl.style.opacity = '0.6';
+            valueEl.style.color = '#999';
         }
         
-        // Update the toggle button icon if it exists
+        // Update the toggle button
         const existingBtn = card.querySelector('.vis-toggle-btn');
         if (existingBtn) {
-            existingBtn.innerHTML = isVisible ? '👁️' : '🚫👁️';
-            existingBtn.title = isVisible ? 'Tap to hide amount' : 'Tap to show amount';
+            existingBtn.style.opacity = isVisible ? '0.5' : '0.8';
+            existingBtn.style.color = isVisible ? '#666' : '#0078D4';
+            existingBtn.title = isVisible ? 'Hide amount' : 'Show amount';
         }
     }
     
@@ -138,13 +141,11 @@
     function applyAllVisibility() {
         const cards = getMetricCards();
         if (cards.length < 3) {
-            // Not ready yet, retry
             setTimeout(applyAllVisibility, 200);
             return;
         }
         
-        const configs = Object.values(VISIBILITY_CONFIG);
-        configs.forEach((config) => {
+        VISIBILITY_CONFIG.forEach((config) => {
             const card = cards[config.fieldIndex];
             if (card) {
                 const isVisible = getVisibility(config.key);
@@ -159,145 +160,70 @@
         const newState = !currentState;
         setVisibility(key, newState);
         
-        // Update the UI
         const cards = getMetricCards();
         const card = cards[fieldIndex];
         if (card) {
-            const config = Object.values(VISIBILITY_CONFIG).find(c => c.key === key);
+            const config = VISIBILITY_CONFIG.find(c => c.key === key);
             if (config) {
                 applyVisibilityToField(card, newState, config);
             }
         }
     }
     
-    // Add toggle buttons to metric cards
+    // Add toggle buttons to metric cards - only for the 3 fields
     function addToggleButtons() {
         const cards = getMetricCards();
         if (cards.length < 3) {
-            // Not ready yet, retry
             setTimeout(addToggleButtons, 300);
             return;
         }
         
-        const configs = Object.values(VISIBILITY_CONFIG);
-        let foundAll = true;
-        
-        configs.forEach((config) => {
+        VISIBILITY_CONFIG.forEach((config) => {
             const card = cards[config.fieldIndex];
-            if (!card) {
-                foundAll = false;
-                return;
-            }
+            if (!card) return;
             
-            // Check if button already exists
-            if (card.querySelector('.vis-toggle-btn')) {
-                return;
-            }
+            // Skip if button already exists
+            if (card.querySelector('.vis-toggle-btn')) return;
             
             const isVisible = getVisibility(config.key);
             const btn = createToggleButton(config, isVisible);
             
-            // Add the button to the label
+            // Add button next to the label
             const labelEl = getLabelElement(card);
             if (labelEl) {
-                // Make label flex to accommodate the button
-                labelEl.style.display = 'flex';
+                labelEl.style.display = 'inline-flex';
                 labelEl.style.alignItems = 'center';
-                labelEl.style.gap = '4px';
-                
-                // Insert the button
+                labelEl.style.gap = '2px';
                 labelEl.appendChild(btn);
-            } else {
-                // Fallback: add to card header
-                const header = card.querySelector('.metric-accent');
-                if (header) {
-                    header.style.display = 'flex';
-                    header.style.alignItems = 'center';
-                    header.style.gap = '6px';
-                    header.appendChild(btn);
-                }
             }
         });
-        
-        if (!foundAll) {
-            setTimeout(addToggleButtons, 500);
-        }
     }
     
     // Hook into the existing updateHeader function
     function hookIntoUpdateHeader() {
-        // Wait for the original updateHeader to be defined
         const checkInterval = setInterval(() => {
-            if (typeof window.updateHeader === 'function' && 
-                window.updateHeader.toString().includes('Total Money')) {
+            if (typeof window.updateHeader === 'function') {
                 clearInterval(checkInterval);
                 
-                // Store reference to original function
                 const originalUpdateHeader = window.updateHeader;
                 
-                // Override with our version
                 window.updateHeader = function(financialData) {
-                    // Call original
                     originalUpdateHeader(financialData);
                     
-                    // Apply our visibility states after a short delay
                     setTimeout(() => {
                         applyAllVisibility();
-                        // Ensure toggle buttons exist
-                        setTimeout(addToggleButtons, 100);
+                        setTimeout(addToggleButtons, 50);
                     }, 150);
                 };
                 
-                console.log('✅ Visibility toggle hooked into updateHeader');
+                console.log('✅ Visibility toggle active for 3 fields');
             }
         }, 100);
         
-        // Safety timeout
         setTimeout(() => clearInterval(checkInterval), 10000);
     }
     
-    // Handle dynamic DOM updates (for when nav changes)
-    function setupMutationObserver() {
-        const targetNode = document.querySelector('#app-content') || document.body;
-        if (!targetNode) return;
-        
-        const observer = new MutationObserver(function(mutations) {
-            let shouldUpdate = false;
-            
-            mutations.forEach(function(mutation) {
-                if (mutation.addedNodes.length > 0) {
-                    mutation.addedNodes.forEach(function(node) {
-                        if (node.nodeType === 1) { // Element
-                            // Check if this is a new metric card or contains one
-                            if (node.classList && node.classList.contains('metric-card')) {
-                                shouldUpdate = true;
-                            }
-                            if (node.querySelectorAll) {
-                                const cards = node.querySelectorAll('.metric-card');
-                                if (cards.length > 0) shouldUpdate = true;
-                            }
-                        }
-                    });
-                }
-            });
-            
-            if (shouldUpdate) {
-                setTimeout(() => {
-                    applyAllVisibility();
-                    setTimeout(addToggleButtons, 100);
-                }, 200);
-            }
-        });
-        
-        observer.observe(targetNode, {
-            childList: true,
-            subtree: true
-        });
-        
-        return observer;
-    }
-    
-    // Add CSS styles
+    // Add minimal CSS
     function addStyles() {
         const style = document.createElement('style');
         style.id = 'vis-toggle-styles';
@@ -306,26 +232,39 @@
                 background: transparent !important;
                 border: none !important;
                 cursor: pointer !important;
-                font-size: 16px !important;
-                padding: 2px 6px !important;
-                margin-left: 6px !important;
-                border-radius: 4px !important;
+                font-size: 14px !important;
+                padding: 2px 4px !important;
+                margin-left: 4px !important;
+                border-radius: 3px !important;
                 opacity: 0.5 !important;
-                transition: opacity 0.2s, transform 0.1s !important;
+                transition: opacity 0.15s, background 0.15s !important;
                 line-height: 1 !important;
                 user-select: none !important;
                 touch-action: manipulation !important;
+                color: #666 !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 20px !important;
+                height: 20px !important;
+                padding: 0 !important;
             }
             .vis-toggle-btn:hover {
                 opacity: 1 !important;
-                background: rgba(0,0,0,0.05) !important;
+                background: rgba(0,0,0,0.04) !important;
             }
             .vis-toggle-btn:active {
-                transform: scale(0.85) !important;
+                transform: scale(0.9) !important;
             }
             .vis-toggle-btn:focus-visible {
                 outline: 2px solid #0078D4 !important;
                 outline-offset: 2px !important;
+            }
+            
+            .metric-card .metric-label {
+                display: inline-flex !important;
+                align-items: center !important;
+                gap: 2px !important;
             }
             
             .metric-card .metric-value {
@@ -333,18 +272,11 @@
                 font-variant-numeric: tabular-nums;
             }
             
-            /* Mobile responsive */
             @media (max-width: 480px) {
                 .vis-toggle-btn {
-                    font-size: 14px !important;
-                    padding: 2px 4px !important;
-                }
-            }
-            
-            /* Dark mode support if needed */
-            @media (prefers-color-scheme: dark) {
-                .vis-toggle-btn:hover {
-                    background: rgba(255,255,255,0.08) !important;
+                    font-size: 12px !important;
+                    width: 18px !important;
+                    height: 18px !important;
                 }
             }
         `;
@@ -353,32 +285,24 @@
     
     // Initialize everything
     function initVisibilityToggle() {
-        console.log('🔄 Initializing visibility toggle system...');
+        console.log('🔒 Initializing privacy toggles for 3 fields...');
         
-        // Add styles
         addStyles();
-        
-        // Hook into updateHeader
         hookIntoUpdateHeader();
         
-        // Set up mutation observer for dynamic updates
-        setupMutationObserver();
-        
-        // Initial apply after everything loads
         window.addEventListener('load', function() {
             setTimeout(() => {
                 applyAllVisibility();
-                setTimeout(addToggleButtons, 200);
+                setTimeout(addToggleButtons, 100);
             }, 500);
         });
         
-        // Also run after a short delay for initial render
         setTimeout(() => {
             applyAllVisibility();
             setTimeout(addToggleButtons, 100);
         }, 1000);
         
-        // Expose functions globally for debugging/inspection
+        // Expose for debugging
         window.visToggle = {
             getVisibility: getVisibility,
             setVisibility: setVisibility,
@@ -388,9 +312,7 @@
             config: VISIBILITY_CONFIG
         };
         
-        console.log('✅ Visibility toggle system initialized. Each field has independent privacy control.');
-        console.log('💡 Users can click the 👁️/🚫👁️ icon next to each amount to toggle visibility.');
-        console.log('💾 Settings are saved to localStorage and persist across page refreshes.');
+        console.log('✅ Ready. Click 👁️ next to: Total Money, Bills, Daily Spending');
     }
     
     // Run when DOM is ready
