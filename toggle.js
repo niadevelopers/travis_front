@@ -1,5 +1,5 @@
 // ================================================================
-// VISIBILITY TOGGLE SYSTEM - Fixed version
+// VISIBILITY TOGGLE SYSTEM - With clear visual distinction
 // ================================================================
 
 (function() {
@@ -58,49 +58,57 @@
         return card ? card.querySelector('.metric-label') : null;
     }
     
-    // Create toggle button - just a simple eye icon
+    // Create toggle button with clear visual states
     function createToggleButton(config, isVisible) {
         const btn = document.createElement('button');
         btn.className = 'vis-toggle-btn';
         btn.dataset.key = config.key;
         btn.dataset.fieldIndex = config.fieldIndex;
-        btn.textContent = '👁️';
-        btn.title = isVisible ? 'Hide amount' : 'Show amount';
         btn.setAttribute('aria-label', `Toggle ${config.label} visibility`);
         
-        // Minimal styling - clean and unobtrusive
-        Object.assign(btn.style, {
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: '14px',
-            padding: '2px 4px',
-            marginLeft: '4px',
-            borderRadius: '3px',
-            opacity: isVisible ? '0.5' : '0.8',
-            transition: 'opacity 0.15s, background 0.15s',
-            lineHeight: '1',
-            color: isVisible ? '#666' : '#0078D4'
-        });
-        
-        // Hover effect - subtle
-        btn.addEventListener('mouseenter', () => { 
-            btn.style.opacity = '1';
-            btn.style.background = 'rgba(0,0,0,0.04)';
-        });
-        btn.addEventListener('mouseleave', () => { 
-            btn.style.opacity = isVisible ? '0.5' : '0.8';
-            btn.style.background = 'transparent';
-        });
+        // Apply the appropriate visual state
+        updateButtonVisuals(btn, isVisible);
         
         // Click handler
         btn.addEventListener('click', function(e) {
             e.stopPropagation();
             e.preventDefault();
+            // Add click animation
+            this.style.transform = 'scale(0.85)';
+            setTimeout(() => { this.style.transform = 'scale(1)'; }, 150);
             toggleVisibility(this.dataset.key, parseInt(this.dataset.fieldIndex));
         });
         
         return btn;
+    }
+    
+    // Update button visuals based on state
+    function updateButtonVisuals(btn, isVisible) {
+        if (isVisible) {
+            // VISIBLE state - subtle
+            btn.textContent = '👁️';
+            btn.title = 'Click to hide amount';
+            Object.assign(btn.style, {
+                opacity: '0.4',
+                color: '#999',
+                background: 'transparent',
+                transform: 'scale(1)',
+                boxShadow: 'none'
+            });
+            btn.setAttribute('data-state', 'visible');
+        } else {
+            // HIDDEN state - clearly visible
+            btn.textContent = '👁️';
+            btn.title = 'Click to show amount';
+            Object.assign(btn.style, {
+                opacity: '1',
+                color: '#0078D4',
+                background: 'rgba(0, 120, 212, 0.08)',
+                transform: 'scale(1)',
+                boxShadow: '0 0 12px rgba(0, 120, 212, 0.15)'
+            });
+            btn.setAttribute('data-state', 'hidden');
+        }
     }
     
     // Apply visibility to a single field
@@ -116,26 +124,59 @@
             card.dataset.originalValue = valueEl.textContent;
         }
         
+        // Update the value display
         if (isVisible) {
             // Show actual value
             valueEl.textContent = card.dataset.originalValue;
             valueEl.style.letterSpacing = 'normal';
             valueEl.style.fontFamily = '';
             valueEl.style.color = '';
+            valueEl.style.opacity = '1';
+            valueEl.style.transition = 'none';
+            
+            // Remove any privacy indicator
+            const indicator = card.querySelector('.privacy-indicator');
+            if (indicator) indicator.remove();
+            
         } else {
-            // Hide with mosaic style
+            // Hide with mosaic style - clear indication of privacy mode
             valueEl.textContent = '••••••';
-            valueEl.style.letterSpacing = '2px';
+            valueEl.style.letterSpacing = '3px';
             valueEl.style.fontFamily = 'monospace';
             valueEl.style.color = '#999';
+            valueEl.style.opacity = '0.6';
+            valueEl.style.transition = 'none';
+            
+            // Add a small privacy indicator (lock icon or badge)
+            let indicator = card.querySelector('.privacy-indicator');
+            if (!indicator) {
+                indicator = document.createElement('span');
+                indicator.className = 'privacy-indicator';
+                indicator.textContent = '🔒';
+                indicator.style.cssText = `
+                    font-size: 10px;
+                    margin-left: 4px;
+                    opacity: 0.7;
+                    display: inline-block;
+                `;
+                // Add after the value
+                valueEl.parentNode.insertBefore(indicator, valueEl.nextSibling);
+            }
         }
         
         // Update the toggle button
         const existingBtn = card.querySelector('.vis-toggle-btn');
         if (existingBtn) {
-            existingBtn.style.opacity = isVisible ? '0.5' : '0.8';
-            existingBtn.style.color = isVisible ? '#666' : '#0078D4';
-            existingBtn.title = isVisible ? 'Hide amount' : 'Show amount';
+            updateButtonVisuals(existingBtn, isVisible);
+        }
+        
+        // Add a subtle highlight/glow effect to the card when hidden
+        if (isVisible) {
+            card.style.boxShadow = '';
+            card.style.transition = 'box-shadow 0.3s ease';
+        } else {
+            card.style.boxShadow = '0 2px 12px rgba(0, 120, 212, 0.06)';
+            card.style.transition = 'box-shadow 0.3s ease';
         }
     }
     
@@ -153,7 +194,6 @@
         VISIBILITY_CONFIG.forEach((config) => {
             const card = cards[config.fieldIndex];
             if (card) {
-                console.log('Applying visibility to:', config.label, 'index:', config.fieldIndex);
                 const isVisible = getVisibility(config.key);
                 applyVisibilityToField(card, isVisible, config);
             } else {
@@ -178,7 +218,7 @@
         }
     }
     
-    // Add toggle buttons to metric cards - only for the 3 fields
+    // Add toggle buttons to metric cards
     function addToggleButtons() {
         const cards = getMetricCards();
         console.log('Adding toggle buttons, found', cards.length, 'cards');
@@ -208,7 +248,7 @@
             if (labelEl) {
                 labelEl.style.display = 'inline-flex';
                 labelEl.style.alignItems = 'center';
-                labelEl.style.gap = '2px';
+                labelEl.style.gap = '4px';
                 labelEl.appendChild(btn);
                 console.log('✅ Added toggle to:', config.label);
             } else {
@@ -242,42 +282,97 @@
         setTimeout(() => clearInterval(checkInterval), 10000);
     }
     
-    // Add minimal CSS
+    // Add styles with clear visual distinction
     function addStyles() {
         const style = document.createElement('style');
         style.id = 'vis-toggle-styles';
         style.textContent = `
+            /* Base button style */
             .vis-toggle-btn {
                 background: transparent !important;
                 border: none !important;
                 cursor: pointer !important;
-                font-size: 14px !important;
-                padding: 2px 4px !important;
-                margin-left: 4px !important;
-                border-radius: 3px !important;
-                opacity: 0.5 !important;
-                transition: opacity 0.15s, background 0.15s !important;
+                font-size: 15px !important;
+                padding: 4px !important;
+                margin-left: 6px !important;
+                border-radius: 50% !important;
+                transition: all 0.2s ease !important;
                 line-height: 1 !important;
                 user-select: none !important;
                 touch-action: manipulation !important;
-                color: #666 !important;
+                width: 28px !important;
+                height: 28px !important;
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                width: 20px !important;
-                height: 20px !important;
-                padding: 0 !important;
+                position: relative !important;
+                flex-shrink: 0 !important;
             }
-            .vis-toggle-btn:hover {
-                opacity: 1 !important;
+            
+            /* VISIBLE state - subtle */
+            .vis-toggle-btn[data-state="visible"] {
+                opacity: 0.35 !important;
+                color: #999 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                transform: scale(1) !important;
+            }
+            
+            .vis-toggle-btn[data-state="visible"]:hover {
+                opacity: 0.7 !important;
                 background: rgba(0,0,0,0.04) !important;
+                transform: scale(1.05) !important;
             }
+            
+            /* HIDDEN state - clearly visible and active */
+            .vis-toggle-btn[data-state="hidden"] {
+                opacity: 1 !important;
+                color: #0078D4 !important;
+                background: rgba(0, 120, 212, 0.1) !important;
+                box-shadow: 0 0 16px rgba(0, 120, 212, 0.15) !important;
+                transform: scale(1) !important;
+                animation: visPulse 2s ease-in-out infinite !important;
+            }
+            
+            .vis-toggle-btn[data-state="hidden"]:hover {
+                background: rgba(0, 120, 212, 0.18) !important;
+                box-shadow: 0 0 24px rgba(0, 120, 212, 0.25) !important;
+                transform: scale(1.08) !important;
+            }
+            
+            /* Click animation */
             .vis-toggle-btn:active {
-                transform: scale(0.9) !important;
+                transform: scale(0.85) !important;
+                transition: transform 0.1s ease !important;
             }
-            .vis-toggle-btn:focus-visible {
-                outline: 2px solid #0078D4 !important;
-                outline-offset: 2px !important;
+            
+            /* Pulse animation when hidden - draws attention to privacy mode */
+            @keyframes visPulse {
+                0%, 100% {
+                    box-shadow: 0 0 16px rgba(0, 120, 212, 0.15);
+                }
+                50% {
+                    box-shadow: 0 0 20px rgba(0, 120, 212, 0.25);
+                }
+            }
+            
+            /* Privacy indicator (lock icon) when hidden */
+            .privacy-indicator {
+                font-size: 10px !important;
+                margin-left: 4px !important;
+                opacity: 0.6 !important;
+                display: inline-block !important;
+                animation: lockFade 0.3s ease !important;
+            }
+            
+            @keyframes lockFade {
+                0% { opacity: 0; transform: scale(0.8); }
+                100% { opacity: 0.6; transform: scale(1); }
+            }
+            
+            /* Card glow effect when hidden */
+            .metric-card:has(.vis-toggle-btn[data-state="hidden"]) {
+                transition: box-shadow 0.3s ease !important;
             }
             
             .metric-card .metric-label {
@@ -291,11 +386,25 @@
                 font-variant-numeric: tabular-nums;
             }
             
+            /* Responsive */
             @media (max-width: 480px) {
                 .vis-toggle-btn {
-                    font-size: 12px !important;
-                    width: 18px !important;
-                    height: 18px !important;
+                    font-size: 13px !important;
+                    width: 24px !important;
+                    height: 24px !important;
+                }
+            }
+            
+            /* Dark mode support */
+            @media (prefers-color-scheme: dark) {
+                .vis-toggle-btn[data-state="visible"]:hover {
+                    background: rgba(255,255,255,0.06) !important;
+                }
+                .vis-toggle-btn[data-state="hidden"] {
+                    background: rgba(0, 120, 212, 0.15) !important;
+                }
+                .vis-toggle-btn[data-state="hidden"]:hover {
+                    background: rgba(0, 120, 212, 0.25) !important;
                 }
             }
         `;
@@ -304,9 +413,14 @@
     
     // Initialize everything
     function initVisibilityToggle() {
-        console.log('🔒 Initializing privacy toggles...');
+        console.log('🔒 Initializing privacy toggles with visual distinction...');
         console.log('Target fields:');
         VISIBILITY_CONFIG.forEach(c => console.log('  -', c.label, '(index:', c.fieldIndex, ')'));
+        console.log('');
+        console.log('Visual states:');
+        console.log('  👁️ Gray  = Visible (tap to hide)');
+        console.log('  👁️ Blue  = Hidden (tap to show)');
+        console.log('  🔒 Lock  = Privacy mode active');
         
         addStyles();
         hookIntoUpdateHeader();
@@ -323,7 +437,6 @@
             setTimeout(addToggleButtons, 100);
         }, 1500);
         
-        // Extra safety - try again after 3 seconds
         setTimeout(() => {
             applyAllVisibility();
             setTimeout(addToggleButtons, 100);
@@ -340,9 +453,11 @@
             getCards: getMetricCards
         };
         
-        console.log('✅ Ready. Use visToggle in console for debugging.');
-        console.log('ℹ️  Toggles on: Total Money (0), Bills (1), Daily Spending (3)');
-        console.log('ℹ️  Days to Month End (2) is NOT toggled.');
+        console.log('');
+        console.log('✅ Ready! Click the 👁️ icon next to each amount.');
+        console.log('📌 Clear visual distinction:');
+        console.log('   - 👁️ Gray = Amount visible');
+        console.log('   - 👁️ Blue with glow = Amount hidden (privacy mode)');
     }
     
     // Run when DOM is ready
