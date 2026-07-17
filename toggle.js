@@ -1,27 +1,26 @@
 // ================================================================
-// VISIBILITY TOGGLE SYSTEM - Clean M-Pesa/PayPal Style
-// Only for: Total Money, Bills You Must Pay, Daily Spending Amount
+// VISIBILITY TOGGLE SYSTEM - Fixed version
 // ================================================================
 
 (function() {
     'use strict';
     
-    // Configuration - ONLY these 3 fields
+    // Configuration - CORRECT field indices
     const VISIBILITY_CONFIG = [
         {
             key: 'travis_vis_total_money',
             label: 'Total Money You Have',
-            fieldIndex: 0  // First metric card
+            fieldIndex: 0  // First metric
         },
         {
             key: 'travis_vis_bills',
             label: 'Bills You Must Pay',
-            fieldIndex: 1  // Second metric card
+            fieldIndex: 1  // Second metric
         },
         {
             key: 'travis_vis_daily_spending',
             label: 'Daily Spending Amount',
-            fieldIndex: 2  // Third metric card
+            fieldIndex: 3  // FOURTH metric (skipping Days Until Month End)
         }
     ];
     
@@ -79,7 +78,7 @@
             marginLeft: '4px',
             borderRadius: '3px',
             opacity: isVisible ? '0.5' : '0.8',
-            transition: 'opacity 0.15s',
+            transition: 'opacity 0.15s, background 0.15s',
             lineHeight: '1',
             color: isVisible ? '#666' : '#0078D4'
         });
@@ -107,7 +106,10 @@
     // Apply visibility to a single field
     function applyVisibilityToField(card, isVisible, config) {
         const valueEl = getValueElement(card);
-        if (!valueEl) return;
+        if (!valueEl) {
+            console.warn('No value element found for', config.label);
+            return;
+        }
         
         // Store original value if not already stored
         if (!card.dataset.originalValue) {
@@ -140,16 +142,22 @@
     // Apply all visibility states
     function applyAllVisibility() {
         const cards = getMetricCards();
-        if (cards.length < 3) {
-            setTimeout(applyAllVisibility, 200);
+        console.log('Found', cards.length, 'metric cards');
+        
+        if (cards.length < 4) {
+            console.log('Not enough cards yet, retrying...');
+            setTimeout(applyAllVisibility, 300);
             return;
         }
         
         VISIBILITY_CONFIG.forEach((config) => {
             const card = cards[config.fieldIndex];
             if (card) {
+                console.log('Applying visibility to:', config.label, 'index:', config.fieldIndex);
                 const isVisible = getVisibility(config.key);
                 applyVisibilityToField(card, isVisible, config);
+            } else {
+                console.warn('Card not found for:', config.label, 'at index:', config.fieldIndex);
             }
         });
     }
@@ -173,17 +181,24 @@
     // Add toggle buttons to metric cards - only for the 3 fields
     function addToggleButtons() {
         const cards = getMetricCards();
-        if (cards.length < 3) {
+        console.log('Adding toggle buttons, found', cards.length, 'cards');
+        
+        if (cards.length < 4) {
             setTimeout(addToggleButtons, 300);
             return;
         }
         
         VISIBILITY_CONFIG.forEach((config) => {
             const card = cards[config.fieldIndex];
-            if (!card) return;
+            if (!card) {
+                console.warn('No card at index', config.fieldIndex, 'for', config.label);
+                return;
+            }
             
             // Skip if button already exists
-            if (card.querySelector('.vis-toggle-btn')) return;
+            if (card.querySelector('.vis-toggle-btn')) {
+                return;
+            }
             
             const isVisible = getVisibility(config.key);
             const btn = createToggleButton(config, isVisible);
@@ -195,6 +210,9 @@
                 labelEl.style.alignItems = 'center';
                 labelEl.style.gap = '2px';
                 labelEl.appendChild(btn);
+                console.log('✅ Added toggle to:', config.label);
+            } else {
+                console.warn('No label element for:', config.label);
             }
         });
     }
@@ -211,12 +229,13 @@
                     originalUpdateHeader(financialData);
                     
                     setTimeout(() => {
+                        console.log('Header updated, reapplying visibility...');
                         applyAllVisibility();
-                        setTimeout(addToggleButtons, 50);
-                    }, 150);
+                        setTimeout(addToggleButtons, 100);
+                    }, 200);
                 };
                 
-                console.log('✅ Visibility toggle active for 3 fields');
+                console.log('✅ Hooked into updateHeader function');
             }
         }, 100);
         
@@ -285,7 +304,9 @@
     
     // Initialize everything
     function initVisibilityToggle() {
-        console.log('🔒 Initializing privacy toggles for 3 fields...');
+        console.log('🔒 Initializing privacy toggles...');
+        console.log('Target fields:');
+        VISIBILITY_CONFIG.forEach(c => console.log('  -', c.label, '(index:', c.fieldIndex, ')'));
         
         addStyles();
         hookIntoUpdateHeader();
@@ -293,14 +314,20 @@
         window.addEventListener('load', function() {
             setTimeout(() => {
                 applyAllVisibility();
-                setTimeout(addToggleButtons, 100);
-            }, 500);
+                setTimeout(addToggleButtons, 200);
+            }, 800);
         });
         
         setTimeout(() => {
             applyAllVisibility();
             setTimeout(addToggleButtons, 100);
-        }, 1000);
+        }, 1500);
+        
+        // Extra safety - try again after 3 seconds
+        setTimeout(() => {
+            applyAllVisibility();
+            setTimeout(addToggleButtons, 100);
+        }, 3000);
         
         // Expose for debugging
         window.visToggle = {
@@ -309,10 +336,13 @@
             toggle: toggleVisibility,
             applyAll: applyAllVisibility,
             addButtons: addToggleButtons,
-            config: VISIBILITY_CONFIG
+            config: VISIBILITY_CONFIG,
+            getCards: getMetricCards
         };
         
-        console.log('✅ Ready. Click 👁️ next to: Total Money, Bills, Daily Spending');
+        console.log('✅ Ready. Use visToggle in console for debugging.');
+        console.log('ℹ️  Toggles on: Total Money (0), Bills (1), Daily Spending (3)');
+        console.log('ℹ️  Days to Month End (2) is NOT toggled.');
     }
     
     // Run when DOM is ready
