@@ -13,8 +13,8 @@
 }(_0x5909, 0x7e779), (function() {
     'use strict';
     const _0x41f8e5 = _0x34b2;
-    const _0x5325d3 = [/M-?PESA/i, /transaction cost/i, /new m-?pesa balance/i, /safaricom/i, /fuliza/i, /deposit/i, /deposited/i],
-        _0x521a09 = /\b([A-Z]{2}[A-Z0-9]{8})\b/g,
+    const _0x5325d3 = [/M-?PESA/i, /transaction cost/i, /new m-?pesa balance/i, /safaricom/i, /fuliza/i],
+        _0x521a09 = /\b([A-Z0-9]{10})\b/g,
         _0x1410f4 = /(?:Ksh|KES)\s*([\d,]+\.?\d*)/gi,
         _0x296380 = /transaction cost[,:]?\s*(?:Ksh|KES)\s*([\d,]+\.?\d*)/i,
         _0x15d1a4 = /Fuliza M-PESA charge of\s*(?:Ksh|KES)\s*([\d,]+\.?\d*)/i;
@@ -22,10 +22,6 @@
     function _0xa65199(_0x1022c8) {
         const _0x38da16 = _0x34b2,
             _0x9c3e4c = _0x1022c8[_0x38da16(0xa9)]();
-        if (/deposit|deposited/i [_0x38da16(0x13c)](_0x1022c8)) return {
-            'type': 'deposit',
-            'label': 'Deposit'
-        };
         if (/fuliza/i ['test'](_0x1022c8)) return {
             'type': _0x38da16(0x125),
             'label': _0x38da16(0x8d)
@@ -98,21 +94,15 @@
         if (_0x1e50bf) {
             const _0x23ac4d = parseFloat(_0x1e50bf[0x1][_0x4db353(0x94)](/,/g, ''));
             if (_0x23ac4d > 0x0) {
-                let _0x5c6e8f = '';
-                const _0x3a1b2c = _0x15f829.match(/\b([A-Z]{2}[A-Z0-9]{8})\b/);
-                if (_0x3a1b2c) {
-                    _0x5c6e8f = _0x3a1b2c[1];
-                } else {
-                    const _0x2f9c7d = _0x15f829.match(/Ksh\s*([\d,]+\.?\d*)/i);
-                    const _0x5a3c8b = _0x2f9c7d ? parseFloat(_0x2f9c7d[1].replace(/,/g, '')) : 0;
-                    const _0x18f4e2 = _0x15f829.match(/on\s+(\d{1,2}\/\d{1,2}\/\d{2,4})/i);
-                    const _0x1c5a7d = _0x18f4e2 ? _0x18f4e2[1] : 'nodate';
-                    _0x5c6e8f = 'FULIZA_' + _0x5a3c8b + '_' + _0x1c5a7d;
+                let fulizaRef = 'FULIZA-' + Date.now();
+                const refMatch = _0x15f829.match(/\b([A-Z0-9]{10})\b/);
+                if (refMatch && refMatch[1] !== 'CONFIRMED' && refMatch[1] !== 'TRANSACTION') {
+                    fulizaRef = refMatch[1];
                 }
                 return {
                     'type': _0x4db353(0x125),
                     'label': _0x4db353(0x8d),
-                    'ref': _0x5c6e8f,
+                    'ref': fulizaRef,
                     'amount': 0x0,
                     'recipient': _0x4db353(0x149),
                     'charge': _0x23ac4d,
@@ -120,14 +110,14 @@
                 };
             }
         }
-        const _0x34b93a = new Set(['CONFIRMED', _0x4db353(0x143), _0x4db353(0x10d), 'FULIZA']);
+        const _0x34b93a = new Set(['CONFIRMED', _0x4db353(0x143), _0x4db353(0x10d)]);
         let _0x446688 = '';
-        const _0x2e0d26 = /\b([A-Z]{2}[A-Z0-9]{8})\b/g;
+        const _0x2e0d26 = /\b([A-Z0-9]{10})\b/g;
         let _0x5ead85;
         while ((_0x5ead85 = _0x2e0d26[_0x4db353(0x75)](_0x15f829)) !== null) {
-            const _0x14c8f4 = _0x5ead85[0x1];
-            if (!_0x34b93a['has'](_0x14c8f4[_0x4db353(0x139)]()) && _0x14c8f4.length === 0xa) {
-                _0x446688 = _0x14c8f4;
+            const code = _0x5ead85[0x1];
+            if (!_0x34b93a['has'](code['toUpperCase']()) && code.length === 10) {
+                _0x446688 = code;
                 break;
             }
         }
@@ -144,39 +134,20 @@
                 type: _0x13e39a,
                 label: _0x2b61f0
             } = _0xa65199(_0x15f829);
-        if (_0x13e39a === 'receive') {
-            const _0x4f1c2d = _0x23a5b0(_0x15f829);
-            return {
-                'type': _0x13e39a,
-                'label': _0x2b61f0,
-                'ref': _0x446688 || ('RECEIVE_' + _0x218f3b + '_' + (_0x4f1c2d || 'unknown').substring(0, 0xa) + '_' + Date.now()),
-                'amount': _0x218f3b,
-                'recipient': _0x4f1c2d,
-                'charge': 0x0,
-                'raw': _0x15f829
-            };
-        }
-        if (_0x13e39a === 'deposit') {
-            return {
-                'type': 'deposit',
-                'label': 'Deposit',
-                'ref': _0x446688 || ('DEPOSIT_' + _0x218f3b + '_' + Date.now()),
-                'amount': _0x218f3b,
-                'recipient': 'Self',
-                'charge': 0x0,
-                'raw': _0x15f829
-            };
-        }
+        if (_0x13e39a === 'receive') return {
+            'type': _0x13e39a,
+            'label': _0x2b61f0,
+            'ref': _0x446688 || ('RECEIVE_' + _0x218f3b + '_' + Date.now()),
+            'amount': _0x218f3b,
+            'recipient': _0x23a5b0(_0x15f829),
+            'charge': 0x0,
+            'raw': _0x15f829
+        };
         const _0x214907 = _0x23a5b0(_0x15f829);
-        if (!_0x446688) {
-            const _0x3f2e1a = _0x15f829.match(/on\s+(\d{1,2}\/\d{1,2}\/\d{2,4})/i);
-            const _0x5f8c2b = _0x3f2e1a ? _0x3f2e1a[1] : 'nodate';
-            _0x446688 = _0x13e39a + '_' + _0x218f3b + '_' + (_0x214907 || 'unknown').substring(0, 0xa) + '_' + _0x5f8c2b;
-        }
         return {
             'type': _0x13e39a,
             'label': _0x2b61f0,
-            'ref': _0x446688,
+            'ref': _0x446688 || (_0x13e39a + '_' + _0x218f3b + '_' + (_0x214907 || 'unknown').substring(0, 10) + '_' + Date.now()),
             'amount': _0x218f3b,
             'recipient': _0x214907,
             'charge': _0x560b9f,
@@ -192,18 +163,7 @@
         for (const _0x3e5027 of _0x20460f) {
             const _0x321556 = _0x28d4a7(_0x3e5027);
             if (!_0x321556) continue;
-            let _0x47b150;
-            if (_0x321556['ref'] && _0x321556['ref'].length >= 0xa && !_0x321556['ref']['startsWith']('MPESA-') && !_0x321556['ref']['startsWith']('RECEIVE_') && !_0x321556['ref']['startsWith']('DEPOSIT_') && !_0x321556['ref']['startsWith']('FULIZA_')) {
-                _0x47b150 = _0x321556['ref'];
-            } else {
-                const _0x2f3e1a = _0x321556['type'] || 'unknown';
-                const _0x4f2c8b = _0x321556['amount'] || 0;
-                const _0x3e1f2a = (_0x321556['recipient'] || 'unknown').substring(0, 0xf);
-                const _0x5c8f3b = _0x321556['charge'] || 0;
-                const _0x4f3e2a = _0x321556['raw'].match(/on\s+(\d{1,2}\/\d{1,2}\/\d{2,4})/i);
-                const _0x3e2f1a = _0x4f3e2a ? _0x4f3e2a[1] : 'nodate';
-                _0x47b150 = _0x2f3e1a + '_' + _0x4f2c8b + '_' + _0x5c8f3b + '_' + _0x3e1f2a + '_' + _0x3e2f1a;
-            }
+            const _0x47b150 = _0x321556['ref'] || _0x321556['raw'].substring(0, 0x3c);
             if (_0x18a3e1[_0x269779(0xe8)](_0x47b150)) continue;
             _0x18a3e1[_0x269779(0xd9)](_0x47b150), _0x510938[_0x269779(0xf6)](_0x321556);
         }
@@ -229,22 +189,11 @@
                         const _0x530ca4 = _0x3d423c;
                         _0x48cf29[_0x530ca4(0x11e)]();
                         const _0x42b26e = new Set();
-                        // Fix: Look for references in description with proper pattern
                         (_0x47faf8[_0x530ca4(0x112)] || [])['forEach'](_0x1bee90 => {
-                            const _0xf01077 = _0x530ca4;
-                            // Look for pattern with parentheses
-                            let match = (_0x1bee90[_0xf01077(0x85)] || '').match(/\(([A-Z]{2}[A-Z0-9]{8})\)/);
-                            if (match) {
-                                _0x42b26e[_0xf01077(0xd9)](match[1]);
-                            } else {
-                                // Also look for bare references
-                                match = (_0x1bee90[_0xf01077(0x85)] || '').match(/\b([A-Z]{2}[A-Z0-9]{8})\b/);
-                                if (match && match[1].length === 10) {
-                                    _0x42b26e[_0xf01077(0xd9)](match[1]);
-                                }
-                            }
-                        });
-                        _0x523738(_0x42b26e);
+                            const _0xf01077 = _0x530ca4,
+                                _0x52aab1 = (_0x1bee90[_0xf01077(0x85)] || '').match(/\(([A-Z0-9]{10})\)/);
+                            if (_0x52aab1) _0x42b26e[_0xf01077(0xd9)](_0x52aab1[0x1]);
+                        }), _0x523738(_0x42b26e);
                     }, _0x47faf8[_0x3d423c(0x123)] = () => {
                         const _0x29536c = _0x3d423c;
                         _0x48cf29[_0x29536c(0x11e)](), _0x523738(new Set());
@@ -259,11 +208,10 @@
     async function _0x2bc494(_0x197aaa) {
         const _0x3b25b6 = _0x34b2;
         
-        // Helper function to save entry and update state
+        // Helper: Save entry and update state
         async function saveEntry(entry) {
             if (typeof saveData === _0x3b25b6(0x82) && typeof state !== _0x3b25b6(0xae)) {
                 await saveData('tx', entry);
-                // Ensure state.transactions exists and push
                 if (!state['transactions']) state['transactions'] = [];
                 state['transactions']['push'](entry);
                 return true;
@@ -271,123 +219,115 @@
                 await _0x5088ad(entry);
                 return true;
             }
-            return false;
         }
         
-        // Handle receive transactions - money IN
-        if (_0x197aaa['type'] === 'receive' || _0x197aaa['type'] === 'deposit') {
-            if (_0x197aaa['amount'] <= 0x0) return null;
-            const _0x35518e = {
+        if (_0x197aaa['type'] === 'receive') {
+            if (_0x197aaa['amount'] <= 0) return null;
+            const entry = {
                 'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8),
                 'debit': _0x3b25b6(0x369),
                 'credit': '0',
                 'amount': _0x197aaa['amount'],
                 'desc': 'Received ' + _0x197aaa['amount'] + ' from ' + (_0x197aaa['recipient'] || 'Unknown') + ' (' + _0x197aaa['ref'] + ')'
             };
-            await saveEntry(_0x35518e);
-            return _0x35518e;
+            await saveEntry(entry);
+            return entry;
         }
         
-        // Handle withdraw - transfer from M-PESA to Cash
         if (_0x197aaa['type'] === 'withdraw') {
-            const _0x1f3e2a = [];
-            if (_0x197aaa['amount'] > 0x0) {
-                const _0x3f2e1a = {
+            const entries = [];
+            if (_0x197aaa['amount'] > 0) {
+                const entry = {
                     'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8),
                     'debit': 'Cash',
                     'credit': _0x3b25b6(0x369),
                     'amount': _0x197aaa['amount'],
                     'desc': 'Withdrew ' + _0x197aaa['amount'] + ' from M-PESA (' + _0x197aaa['ref'] + ')'
                 };
-                await saveEntry(_0x3f2e1a);
-                _0x1f3e2a.push(_0x3f2e1a);
+                await saveEntry(entry);
+                entries.push(entry);
             }
-            if (_0x197aaa['charge'] > 0x0) {
-                const _0x4f3e2a = {
-                    'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8) + 0x1,
+            if (_0x197aaa['charge'] > 0) {
+                const entry = {
+                    'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8) + 1,
                     'debit': 'Bills',
                     'credit': _0x3b25b6(0x369),
                     'amount': _0x197aaa['charge'],
                     'desc': 'Withdrawal charge: ' + _0x197aaa['charge'] + ' (' + _0x197aaa['ref'] + ')'
                 };
-                await saveEntry(_0x4f3e2a);
-                _0x1f3e2a.push(_0x4f3e2a);
+                await saveEntry(entry);
+                entries.push(entry);
             }
-            return _0x1f3e2a;
+            return entries;
         }
         
-        // Handle airtime, paybill, buy_goods - log as expenses
         if (_0x197aaa['type'] === 'airtime' || _0x197aaa['type'] === 'paybill' || _0x197aaa['type'] === 'buy_goods') {
-            if (_0x197aaa['amount'] > 0x0) {
-                const _0x35518e = {
+            if (_0x197aaa['amount'] > 0) {
+                const entry = {
                     'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8),
                     'debit': 'Bills',
                     'credit': _0x3b25b6(0x369),
                     'amount': _0x197aaa['amount'],
                     'desc': _0x197aaa['label'] + ': ' + _0x197aaa['amount'] + ' to ' + (_0x197aaa['recipient'] || 'Unknown') + ' (' + _0x197aaa['ref'] + ')'
                 };
-                await saveEntry(_0x35518e);
-                return _0x35518e;
+                await saveEntry(entry);
+                return entry;
             }
             return null;
         }
         
-        // Handle fuliza - log as expense
         if (_0x197aaa['type'] === 'fuliza') {
-            if (_0x197aaa['charge'] > 0x0) {
-                const _0x35518e = {
+            if (_0x197aaa['charge'] > 0) {
+                const entry = {
                     'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8),
                     'debit': 'Bills',
                     'credit': _0x3b25b6(0x369),
                     'amount': _0x197aaa['charge'],
                     'desc': 'Fuliza M-PESA payment: ' + _0x197aaa['charge'] + ' (' + _0x197aaa['ref'] + ')'
                 };
-                await saveEntry(_0x35518e);
-                return _0x35518e;
+                await saveEntry(entry);
+                return entry;
             }
             return null;
         }
         
-        // Handle send - log both amount and charge
         if (_0x197aaa['type'] === 'send') {
-            const _0x1f3e2a = [];
-            if (_0x197aaa['amount'] > 0x0) {
-                const _0x3f2e1a = {
+            const entries = [];
+            if (_0x197aaa['amount'] > 0) {
+                const entry = {
                     'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8),
                     'debit': '0',
                     'credit': _0x3b25b6(0x369),
                     'amount': _0x197aaa['amount'],
                     'desc': 'Sent ' + _0x197aaa['amount'] + ' to ' + (_0x197aaa['recipient'] || 'Unknown') + ' (' + _0x197aaa['ref'] + ')'
                 };
-                await saveEntry(_0x3f2e1a);
-                _0x1f3e2a.push(_0x3f2e1a);
+                await saveEntry(entry);
+                entries.push(entry);
             }
-            if (_0x197aaa['charge'] > 0x0) {
-                const _0x4f3e2a = {
-                    'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8) + 0x1,
+            if (_0x197aaa['charge'] > 0) {
+                const entry = {
+                    'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8) + 1,
                     'debit': 'Bills',
                     'credit': _0x3b25b6(0x369),
                     'amount': _0x197aaa['charge'],
                     'desc': 'Send charge: ' + _0x197aaa['charge'] + ' (' + _0x197aaa['ref'] + ')'
                 };
-                await saveEntry(_0x4f3e2a);
-                _0x1f3e2a.push(_0x4f3e2a);
+                await saveEntry(entry);
+                entries.push(entry);
             }
-            return _0x1f3e2a;
+            return entries;
         }
         
-        // Default: log the charge as expense (original behavior)
-        if (_0x197aaa['charge'] <= 0x0) return null;
-        const _0x23367b = 'M-PESA charge: ' + _0x197aaa['charge'] + ' (' + _0x197aaa['type'] + ') - ' + (_0x197aaa['recipient'] || '') + ' (' + _0x197aaa['ref'] + ')';
-        const _0x35518e = {
+        if (_0x197aaa['charge'] <= 0) return null;
+        const entry = {
             'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8),
             'debit': 'Bills',
             'credit': _0x3b25b6(0x369),
             'amount': _0x197aaa['charge'],
-            'desc': _0x23367b
+            'desc': 'M-PESA charge: ' + _0x197aaa['charge'] + ' (' + _0x197aaa['type'] + ') - ' + (_0x197aaa['recipient'] || '') + ' (' + _0x197aaa['ref'] + ')'
         };
-        await saveEntry(_0x35518e);
-        return _0x35518e;
+        await saveEntry(entry);
+        return entry;
     }
 
     function _0x5088ad(_0x548d18) {
@@ -593,8 +533,7 @@
         'airtime': '📞',
         'receive': '📥',
         'fuliza': '⚡',
-        'mpesa': '📱',
-        'deposit': '💰'
+        'mpesa': '📱'
     };
     async function _0x577eaf(_0x46b0cd) {
         const _0x4380de = _0x34b2,
@@ -625,23 +564,23 @@
         let _0x41b3dc = '';
         if (_0x2fc50a['length'] > 0x0) {
             const _0x2f0f7c = _0x2fc50a['reduce']((_0xc59697, _0x2c4605) => _0xc59697 + _0x2c4605['charge'], 0x0);
-            _0x41b3dc += '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#f0fdf4;border:1px\x20solid\x20#86efac;border-radius:8px;padding:10px\x2014px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;font-weight:600;color:#166534;text-transform:uppercase;letter-spacing:.05em;\x22>Total\x20New\x20Charges</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:20px;font-weight:800;color:#15803d;\x22>KSh\x20' + _0x2f0f7c['toLocaleString'](_0x4380de(0xfe)) + _0x4380de(0x142) + _0x2fc50a['length'] + '\x20new\x20transaction' + (_0x2fc50a['length'] !== 0x1 ? 's' : '') + _0x4380de(0x93);
+            _0x41b3dc += '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#f0fdf4;border:1px\x20solid\x20#86efac;border-radius:8px;padding:10px\x2014px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;font-weight:600;color:#166534;text-transform:uppercase;letter-spacing:.05em;\x22>Total\x20New\x20Charges</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:20px;font-weight:800;color:#15803d;\x22>KSh\x20' + _0x2f0f7c[_0x4380de(0xd3)](_0x4380de(0xfe)) + _0x4380de(0x142) + _0x2fc50a[_0x4380de(0xed)] + '\x20new\x20transaction' + (_0x2fc50a[_0x4380de(0xed)] !== 0x1 ? 's' : '') + _0x4380de(0x93);
         }
-        _0x2fc50a['forEach'](_0x32e0cd => {
+        _0x2fc50a[_0x4380de(0xe3)](_0x32e0cd => {
             const _0x3b44c3 = _0x4380de,
-                _0x17e273 = _0x1487e6[_0x32e0cd['type']] || '📱';
-            _0x41b3dc += _0x3b44c3(0xa0) + _0x17e273 + _0x3b44c3(0xa6) + _0x32e0cd['label'] + '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22font-size:10px;color:#9ca3af;font-family:monospace;\x22>' + _0x32e0cd['ref'] + _0x3b44c3(0x126) + (_0x32e0cd['recipient'] ? _0x3b44c3(0xe6) + _0x32e0cd['recipient'] + _0x3b44c3(0xd4) : '') + '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20' + (_0x32e0cd['amount'] ? '<div\x20style=\x22font-size:11px;color:#6b7280;margin-top:2px;\x22>Amount:\x20KSh\x20' + _0x32e0cd['amount']['toLocaleString'](_0x3b44c3(0xfe)) + '</div>' : '') + '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:right;flex-shrink:0;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:#6b7280;\x22>Charge</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:17px;font-weight:800;color:#dc2626;\x22>KSh\x20' + _0x32e0cd['charge']['toLocaleString'](_0x3b44c3(0xfe)) + _0x3b44c3(0x88);
-        }), _0x15bd5d['length'] > 0x0 && (_0x41b3dc += '<div\x20style=\x22font-size:11px;font-weight:600;color:#92400e;margin:10px\x200\x206px;text-transform:uppercase;letter-spacing:.05em;\x22>⚠️\x20Already\x20in\x20ledger\x20—\x20skipped</div>', _0x15bd5d['forEach'](_0x52333f => {
+                _0x17e273 = _0x1487e6[_0x32e0cd[_0x3b44c3(0xf0)]] || '📱';
+            _0x41b3dc += _0x3b44c3(0xa0) + _0x17e273 + _0x3b44c3(0xa6) + _0x32e0cd[_0x3b44c3(0xa4)][_0x3b44c3(0x139)]() + '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22font-size:10px;color:#9ca3af;font-family:monospace;\x22>' + _0x32e0cd[_0x3b44c3(0xf1)] + _0x3b44c3(0x126) + (_0x32e0cd[_0x3b44c3(0x113)] ? _0x3b44c3(0xe6) + _0x32e0cd['recipient'] + _0x3b44c3(0xd4) : '') + '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20' + (_0x32e0cd['amount'] ? '<div\x20style=\x22font-size:11px;color:#6b7280;margin-top:2px;\x22>Amount:\x20KSh\x20' + _0x32e0cd[_0x3b44c3(0x124)][_0x3b44c3(0xd3)](_0x3b44c3(0xfe)) + '</div>' : '') + '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:right;flex-shrink:0;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:#6b7280;\x22>Charge</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:17px;font-weight:800;color:#dc2626;\x22>KSh\x20' + _0x32e0cd['charge'][_0x3b44c3(0xd3)](_0x3b44c3(0xfe)) + _0x3b44c3(0x88);
+        }), _0x15bd5d[_0x4380de(0xed)] > 0x0 && (_0x41b3dc += '<div\x20style=\x22font-size:11px;font-weight:600;color:#92400e;margin:10px\x200\x206px;text-transform:uppercase;letter-spacing:.05em;\x22>⚠️\x20Already\x20in\x20ledger\x20—\x20skipped</div>', _0x15bd5d[_0x4380de(0xe3)](_0x52333f => {
             const _0x48d929 = _0x4380de;
-            _0x41b3dc += _0x48d929(0x134) + _0x52333f['label'] + '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22font-size:10px;color:#b45309;font-family:monospace;margin-left:6px;\x22>' + _0x52333f['ref'] + _0x48d929(0x101) + _0x52333f['charge']['toLocaleString'](_0x48d929(0xfe)) + _0x48d929(0xac);
-        })), _0x368772['length'] > 0x0 && (_0x41b3dc += _0x4380de(0x129) + _0x368772['length'] + _0x4380de(0xa3) + (_0x368772['length'] !== 0x1 ? 's' : '') + _0x4380de(0xf9) + _0x368772['map'](_0x5834ab => _0x5834ab['label'])['join'](',\x20') + ')\x20—\x20nothing\x20to\x20log.\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>'), _0x2fc50a['length'] === 0x0 && _0x44895c['length'] > 0x0 && (_0x41b3dc += _0x4380de(0x74)), _0xc856ea[_0x4380de(0xf7)] = _0x41b3dc, _0xa40f77[_0x4380de(0x141)][_0x4380de(0x9a)] = _0x4380de(0x9d), _0x162ad5['style'][_0x4380de(0x9a)] = _0x2fc50a['length'] > 0x0 ? _0x4380de(0x9d) : 'none', _0x162ad5['dataset']['results'] = JSON['stringify'](_0x2fc50a);
+            _0x41b3dc += _0x48d929(0x134) + _0x52333f[_0x48d929(0xa4)][_0x48d929(0x139)]() + '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22font-size:10px;color:#b45309;font-family:monospace;margin-left:6px;\x22>' + _0x52333f[_0x48d929(0xf1)] + _0x48d929(0x101) + _0x52333f[_0x48d929(0x12b)]['toLocaleString'](_0x48d929(0xfe)) + _0x48d929(0xac);
+        })), _0x368772['length'] > 0x0 && (_0x41b3dc += _0x4380de(0x129) + _0x368772['length'] + _0x4380de(0xa3) + (_0x368772[_0x4380de(0xed)] !== 0x1 ? 's' : '') + _0x4380de(0xf9) + _0x368772['map'](_0x5834ab => _0x5834ab[_0x4380de(0xa4)])['join'](',\x20') + ')\x20—\x20nothing\x20to\x20log.\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>'), _0x2fc50a[_0x4380de(0xed)] === 0x0 && _0x44895c[_0x4380de(0xed)] > 0x0 && (_0x41b3dc += _0x4380de(0x74)), _0xc856ea[_0x4380de(0xf7)] = _0x41b3dc, _0xa40f77[_0x4380de(0x141)][_0x4380de(0x9a)] = _0x4380de(0x9d), _0x162ad5['style'][_0x4380de(0x9a)] = _0x2fc50a[_0x4380de(0xed)] > 0x0 ? _0x4380de(0x9d) : 'none', _0x162ad5['dataset']['results'] = JSON[_0x4380de(0x79)](_0x2fc50a);
     }
 
     async function _0x1e111e(_0x557fdf) {
         const _0x2437c9 = _0x34b2,
             _0xbf873a = _0x557fdf[_0x2437c9(0x7a)](_0x2437c9(0x131)),
-            _0x46c6c2 = JSON['parse'](_0xbf873a[_0x2437c9(0xce)][_0x2437c9(0xc2)] || '[]');
-        if (_0x46c6c2['length'] === 0x0) return;
+            _0x46c6c2 = JSON[_0x2437c9(0xaa)](_0xbf873a[_0x2437c9(0xce)][_0x2437c9(0xc2)] || '[]');
+        if (_0x46c6c2[_0x2437c9(0xed)] === 0x0) return;
         _0xbf873a[_0x2437c9(0x109)] = !![], _0xbf873a[_0x2437c9(0xfa)] = _0x2437c9(0x137);
         let _0x501fa8 = 0x0,
             _0x8d4114 = 0x0;
@@ -659,26 +598,22 @@
                     }
                 }
             } catch (_0x38ff5f) {
-                console['error'](_0x2437c9(0xc5), _0x2992dc['ref'], _0x38ff5f);
+                console['error'](_0x2437c9(0xc5), _0x2992dc[_0x2437c9(0xf1)], _0x38ff5f);
             }
         }
         if (typeof saveBackup === _0x2437c9(0x82)) try {
             await saveBackup();
         } catch (_0x26ffae) {}
-        
-        // Force refresh of UI by reloading transactions from IndexedDB
         try {
-            const freshTransactions = await getAllData('tx');
-            if (freshTransactions && freshTransactions.length > 0) {
-                state['transactions'] = freshTransactions.sort((a, b) => a.id - b.id);
+            const fresh = await getAllData('tx');
+            if (fresh && fresh.length > 0) {
+                state['transactions'] = fresh.sort((a, b) => a.id - b.id);
             }
         } catch (e) {}
-        
         if (typeof nav === _0x2437c9(0x82)) try {
-            nav('dash');
+            nav(_0x2437c9(0x11c));
         } catch (_0x35f3ac) {}
-        
-        _0x598327(_0x557fdf, '\x20' + _0x501fa8 + _0x2437c9(0x95) + (_0x501fa8 !== 0x1 ? 's' : '') + _0x2437c9(0xbd) + _0x8d4114['toLocaleString'](_0x2437c9(0xfe)) + _0x2437c9(0x144)), _0xbf873a['textContent'] = _0x501fa8 + '\x20Entry' + (_0x501fa8 !== 0x1 ? 's' : '') + _0x2437c9(0x133), _0xbf873a[_0x2437c9(0x141)]['background'] = _0x2437c9(0x8e), _0xbf873a[_0x2437c9(0x109)] = ![], setTimeout(() => {
+        _0x598327(_0x557fdf, '\x20' + _0x501fa8 + _0x2437c9(0x95) + (_0x501fa8 !== 0x1 ? 's' : '') + _0x2437c9(0xbd) + _0x8d4114[_0x2437c9(0xd3)](_0x2437c9(0xfe)) + _0x2437c9(0x144)), _0xbf873a['textContent'] = _0x501fa8 + '\x20Entry' + (_0x501fa8 !== 0x1 ? 's' : '') + _0x2437c9(0x133), _0xbf873a[_0x2437c9(0x141)]['background'] = _0x2437c9(0x8e), _0xbf873a[_0x2437c9(0x109)] = ![], setTimeout(() => {
             const _0x3d46fa = _0x2437c9;
             _0x557fdf[_0x3d46fa(0x7a)](_0x3d46fa(0xe1))[_0x3d46fa(0xcd)] = '', _0x557fdf['querySelector'](_0x3d46fa(0xd8))[_0x3d46fa(0x141)][_0x3d46fa(0x9a)] = 'none', _0xbf873a['textContent'] = _0x3d46fa(0x92), _0xbf873a['style'][_0x3d46fa(0x100)] = _0x3d46fa(0xe5), _0xbf873a[_0x3d46fa(0x141)][_0x3d46fa(0x9a)] = _0x3d46fa(0xb2);
         }, 0xbb8);
@@ -710,7 +645,7 @@
             _0x12aa43[_0x185a40(0x141)]['display'] = _0x185a40(0x9d), _0x20d913[_0x185a40(0xfa)] = _0x185a40(0xc9), _0x58e862['textContent'] = '';
             return;
         }
-        _0x12aa43['style'][_0x185a40(0x9a)] = _0x185a40(0x9d), _0x20d913[_0x185a40(0xfa)] = _0x185a40(0x115) + _0x304106['toLocaleString'](_0x185a40(0xfe)), _0x58e862[_0x185a40(0xfa)] = 'Official\x20tariff\x20for\x20KSh\x20' + _0xbaf290['toLocaleString'](_0x185a40(0xfe)) + '\x20' + (_0x48a75c === _0x185a40(0x81) ? _0x185a40(0x8f) : _0x185a40(0xcf));
+        _0x12aa43['style'][_0x185a40(0x9a)] = _0x185a40(0x9d), _0x20d913[_0x185a40(0xfa)] = _0x185a40(0x115) + _0x304106[_0x185a40(0xd3)](_0x185a40(0xfe)), _0x58e862[_0x185a40(0xfa)] = 'Official\x20tariff\x20for\x20KSh\x20' + _0xbaf290[_0x185a40(0xd3)](_0x185a40(0xfe)) + '\x20' + (_0x48a75c === _0x185a40(0x81) ? _0x185a40(0x8f) : _0x185a40(0xcf));
     }
     async function _0x5a8591(_0x5331b4) {
         const _0x340d9c = _0x34b2,
@@ -743,18 +678,17 @@
             };
         try {
             await _0x2bc494(_0x376aa5);
-            // Force refresh of UI
             try {
-                const freshTransactions = await getAllData('tx');
-                if (freshTransactions && freshTransactions.length > 0) {
-                    state['transactions'] = freshTransactions.sort((a, b) => a.id - b.id);
+                const fresh = await getAllData('tx');
+                if (fresh && fresh.length > 0) {
+                    state['transactions'] = fresh.sort((a, b) => a.id - b.id);
                 }
             } catch (e) {}
             if (typeof saveBackup === _0x340d9c(0x82)) try {
                 await saveBackup();
             } catch (_0x55b2af) {}
             if (typeof nav === _0x340d9c(0x82)) try {
-                nav('dash');
+                nav(_0x340d9c(0x11c));
             } catch (_0x567321) {}
             _0x598327(_0x5331b4, _0x340d9c(0x115) + _0x5cec01 + _0x340d9c(0xd2)), _0x5331b4[_0x340d9c(0x7a)](_0x340d9c(0xbf))[_0x340d9c(0xcd)] = '', _0x5331b4[_0x340d9c(0x7a)](_0x340d9c(0x99))[_0x340d9c(0xcd)] = '', _0x5331b4[_0x340d9c(0x7a)]('#manual-lookup-result')[_0x340d9c(0x141)][_0x340d9c(0x9a)] = _0x340d9c(0xb2);
         } catch (_0x27f3dd) {
@@ -768,7 +702,7 @@
             _0x27647d = (_0x532c1f, _0x570a02) => {
                 const _0xae9ed7 = _0x34b2;
                 if (!_0x532c1f) return;
-                _0x532c1f[_0xae9ed7(0xf7)] = _0xae9ed7(0xf4) + _0x570a02[_0xae9ed7(0x9e)]((_0x31065e, _0x46ab88) => _0xae9ed7(0xe7) + (_0x46ab88 % 0x2 === 0x0 ? _0xae9ed7(0xec) : _0xae9ed7(0x78)) + _0xae9ed7(0x11d) + _0x31065e[_0xae9ed7(0xc8)]['toLocaleString']() + '–' + _0x31065e['max']['toLocaleString']() + _0xae9ed7(0xf5) + (_0x31065e[_0xae9ed7(0x12b)] === 0x0 ? _0xae9ed7(0x8b) : _0xae9ed7(0x147)) + ';text-align:right;border-bottom:1px\x20solid\x20#f3f4f6;\x22>KSh\x20' + _0x31065e['charge'] + _0xae9ed7(0xeb))['join']('') + _0xae9ed7(0x104);
+                _0x532c1f[_0xae9ed7(0xf7)] = _0xae9ed7(0xf4) + _0x570a02[_0xae9ed7(0x9e)]((_0x31065e, _0x46ab88) => _0xae9ed7(0xe7) + (_0x46ab88 % 0x2 === 0x0 ? _0xae9ed7(0xec) : _0xae9ed7(0x78)) + _0xae9ed7(0x11d) + _0x31065e[_0xae9ed7(0xc8)][_0xae9ed7(0xd3)]() + '–' + _0x31065e['max']['toLocaleString']() + _0xae9ed7(0xf5) + (_0x31065e[_0xae9ed7(0x12b)] === 0x0 ? _0xae9ed7(0x8b) : _0xae9ed7(0x147)) + ';text-align:right;border-bottom:1px\x20solid\x20#f3f4f6;\x22>KSh\x20' + _0x31065e['charge'] + _0xae9ed7(0xeb))[_0xae9ed7(0x76)]('') + _0xae9ed7(0x104);
             };
         _0x27647d(document[_0x2381f1(0xca)](_0x2381f1(0x106)), _0xbeb8fc[_0x2381f1(0xba)]), _0x27647d(document[_0x2381f1(0xca)](_0x2381f1(0x111)), _0xbeb8fc[_0x2381f1(0x81)]);
     }
