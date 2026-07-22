@@ -229,11 +229,22 @@
                         const _0x530ca4 = _0x3d423c;
                         _0x48cf29[_0x530ca4(0x11e)]();
                         const _0x42b26e = new Set();
+                        // Fix: Look for references in description with proper pattern
                         (_0x47faf8[_0x530ca4(0x112)] || [])['forEach'](_0x1bee90 => {
-                            const _0xf01077 = _0x530ca4,
-                                _0x52aab1 = (_0x1bee90[_0xf01077(0x85)] || '')[_0xf01077(0xad)](/([A-Z]{2}[A-Z0-9]{8})/);
-                            if (_0x52aab1) _0x42b26e[_0xf01077(0xd9)](_0x52aab1[0x1]);
-                        }), _0x523738(_0x42b26e);
+                            const _0xf01077 = _0x530ca4;
+                            // Look for pattern with parentheses
+                            let match = (_0x1bee90[_0xf01077(0x85)] || '').match(/\(([A-Z]{2}[A-Z0-9]{8})\)/);
+                            if (match) {
+                                _0x42b26e[_0xf01077(0xd9)](match[1]);
+                            } else {
+                                // Also look for bare references
+                                match = (_0x1bee90[_0xf01077(0x85)] || '').match(/\b([A-Z]{2}[A-Z0-9]{8})\b/);
+                                if (match && match[1].length === 10) {
+                                    _0x42b26e[_0xf01077(0xd9)](match[1]);
+                                }
+                            }
+                        });
+                        _0x523738(_0x42b26e);
                     }, _0x47faf8[_0x3d423c(0x123)] = () => {
                         const _0x29536c = _0x3d423c;
                         _0x48cf29[_0x29536c(0x11e)](), _0x523738(new Set());
@@ -248,6 +259,21 @@
     async function _0x2bc494(_0x197aaa) {
         const _0x3b25b6 = _0x34b2;
         
+        // Helper function to save entry and update state
+        async function saveEntry(entry) {
+            if (typeof saveData === _0x3b25b6(0x82) && typeof state !== _0x3b25b6(0xae)) {
+                await saveData('tx', entry);
+                // Ensure state.transactions exists and push
+                if (!state['transactions']) state['transactions'] = [];
+                state['transactions']['push'](entry);
+                return true;
+            } else {
+                await _0x5088ad(entry);
+                return true;
+            }
+            return false;
+        }
+        
         // Handle receive transactions - money IN
         if (_0x197aaa['type'] === 'receive' || _0x197aaa['type'] === 'deposit') {
             if (_0x197aaa['amount'] <= 0x0) return null;
@@ -258,12 +284,7 @@
                 'amount': _0x197aaa['amount'],
                 'desc': 'Received ' + _0x197aaa['amount'] + ' from ' + (_0x197aaa['recipient'] || 'Unknown') + ' (' + _0x197aaa['ref'] + ')'
             };
-            if (typeof saveData === _0x3b25b6(0x82) && typeof state !== _0x3b25b6(0xae)) {
-                await saveData('tx', _0x35518e);
-                state['transactions']['push'](_0x35518e);
-            } else {
-                await _0x5088ad(_0x35518e);
-            }
+            await saveEntry(_0x35518e);
             return _0x35518e;
         }
         
@@ -278,12 +299,7 @@
                     'amount': _0x197aaa['amount'],
                     'desc': 'Withdrew ' + _0x197aaa['amount'] + ' from M-PESA (' + _0x197aaa['ref'] + ')'
                 };
-                if (typeof saveData === _0x3b25b6(0x82) && typeof state !== _0x3b25b6(0xae)) {
-                    await saveData('tx', _0x3f2e1a);
-                    state['transactions']['push'](_0x3f2e1a);
-                } else {
-                    await _0x5088ad(_0x3f2e1a);
-                }
+                await saveEntry(_0x3f2e1a);
                 _0x1f3e2a.push(_0x3f2e1a);
             }
             if (_0x197aaa['charge'] > 0x0) {
@@ -294,12 +310,7 @@
                     'amount': _0x197aaa['charge'],
                     'desc': 'Withdrawal charge: ' + _0x197aaa['charge'] + ' (' + _0x197aaa['ref'] + ')'
                 };
-                if (typeof saveData === _0x3b25b6(0x82) && typeof state !== _0x3b25b6(0xae)) {
-                    await saveData('tx', _0x4f3e2a);
-                    state['transactions']['push'](_0x4f3e2a);
-                } else {
-                    await _0x5088ad(_0x4f3e2a);
-                }
+                await saveEntry(_0x4f3e2a);
                 _0x1f3e2a.push(_0x4f3e2a);
             }
             return _0x1f3e2a;
@@ -315,12 +326,7 @@
                     'amount': _0x197aaa['amount'],
                     'desc': _0x197aaa['label'] + ': ' + _0x197aaa['amount'] + ' to ' + (_0x197aaa['recipient'] || 'Unknown') + ' (' + _0x197aaa['ref'] + ')'
                 };
-                if (typeof saveData === _0x3b25b6(0x82) && typeof state !== _0x3b25b6(0xae)) {
-                    await saveData('tx', _0x35518e);
-                    state['transactions']['push'](_0x35518e);
-                } else {
-                    await _0x5088ad(_0x35518e);
-                }
+                await saveEntry(_0x35518e);
                 return _0x35518e;
             }
             return null;
@@ -336,12 +342,7 @@
                     'amount': _0x197aaa['charge'],
                     'desc': 'Fuliza M-PESA payment: ' + _0x197aaa['charge'] + ' (' + _0x197aaa['ref'] + ')'
                 };
-                if (typeof saveData === _0x3b25b6(0x82) && typeof state !== _0x3b25b6(0xae)) {
-                    await saveData('tx', _0x35518e);
-                    state['transactions']['push'](_0x35518e);
-                } else {
-                    await _0x5088ad(_0x35518e);
-                }
+                await saveEntry(_0x35518e);
                 return _0x35518e;
             }
             return null;
@@ -358,12 +359,7 @@
                     'amount': _0x197aaa['amount'],
                     'desc': 'Sent ' + _0x197aaa['amount'] + ' to ' + (_0x197aaa['recipient'] || 'Unknown') + ' (' + _0x197aaa['ref'] + ')'
                 };
-                if (typeof saveData === _0x3b25b6(0x82) && typeof state !== _0x3b25b6(0xae)) {
-                    await saveData('tx', _0x3f2e1a);
-                    state['transactions']['push'](_0x3f2e1a);
-                } else {
-                    await _0x5088ad(_0x3f2e1a);
-                }
+                await saveEntry(_0x3f2e1a);
                 _0x1f3e2a.push(_0x3f2e1a);
             }
             if (_0x197aaa['charge'] > 0x0) {
@@ -374,12 +370,7 @@
                     'amount': _0x197aaa['charge'],
                     'desc': 'Send charge: ' + _0x197aaa['charge'] + ' (' + _0x197aaa['ref'] + ')'
                 };
-                if (typeof saveData === _0x3b25b6(0x82) && typeof state !== _0x3b25b6(0xae)) {
-                    await saveData('tx', _0x4f3e2a);
-                    state['transactions']['push'](_0x4f3e2a);
-                } else {
-                    await _0x5088ad(_0x4f3e2a);
-                }
+                await saveEntry(_0x4f3e2a);
                 _0x1f3e2a.push(_0x4f3e2a);
             }
             return _0x1f3e2a;
@@ -395,12 +386,7 @@
             'amount': _0x197aaa['charge'],
             'desc': _0x23367b
         };
-        if (typeof saveData === _0x3b25b6(0x82) && typeof state !== _0x3b25b6(0xae)) {
-            await saveData('tx', _0x35518e);
-            state['transactions']['push'](_0x35518e);
-        } else {
-            await _0x5088ad(_0x35518e);
-        }
+        await saveEntry(_0x35518e);
         return _0x35518e;
     }
 
@@ -630,7 +616,6 @@
             return;
         }
         const _0x2fc50a = _0x44895c['filter'](_0x58c29a => {
-            // Include transactions with amount > 0 OR charge > 0
             return (_0x58c29a['amount'] > 0x0 || _0x58c29a['charge'] > 0x0) && !_0x477c0d['has'](_0x58c29a['ref']);
         });
         const _0x15bd5d = _0x44895c['filter'](_0x4697f1 => {
@@ -680,9 +665,19 @@
         if (typeof saveBackup === _0x2437c9(0x82)) try {
             await saveBackup();
         } catch (_0x26ffae) {}
+        
+        // Force refresh of UI by reloading transactions from IndexedDB
+        try {
+            const freshTransactions = await getAllData('tx');
+            if (freshTransactions && freshTransactions.length > 0) {
+                state['transactions'] = freshTransactions.sort((a, b) => a.id - b.id);
+            }
+        } catch (e) {}
+        
         if (typeof nav === _0x2437c9(0x82)) try {
-            nav(_0x2437c9(0x11c));
+            nav('dash');
         } catch (_0x35f3ac) {}
+        
         _0x598327(_0x557fdf, '\x20' + _0x501fa8 + _0x2437c9(0x95) + (_0x501fa8 !== 0x1 ? 's' : '') + _0x2437c9(0xbd) + _0x8d4114['toLocaleString'](_0x2437c9(0xfe)) + _0x2437c9(0x144)), _0xbf873a['textContent'] = _0x501fa8 + '\x20Entry' + (_0x501fa8 !== 0x1 ? 's' : '') + _0x2437c9(0x133), _0xbf873a[_0x2437c9(0x141)]['background'] = _0x2437c9(0x8e), _0xbf873a[_0x2437c9(0x109)] = ![], setTimeout(() => {
             const _0x3d46fa = _0x2437c9;
             _0x557fdf[_0x3d46fa(0x7a)](_0x3d46fa(0xe1))[_0x3d46fa(0xcd)] = '', _0x557fdf['querySelector'](_0x3d46fa(0xd8))[_0x3d46fa(0x141)][_0x3d46fa(0x9a)] = 'none', _0xbf873a['textContent'] = _0x3d46fa(0x92), _0xbf873a['style'][_0x3d46fa(0x100)] = _0x3d46fa(0xe5), _0xbf873a[_0x3d46fa(0x141)][_0x3d46fa(0x9a)] = _0x3d46fa(0xb2);
@@ -748,11 +743,18 @@
             };
         try {
             await _0x2bc494(_0x376aa5);
+            // Force refresh of UI
+            try {
+                const freshTransactions = await getAllData('tx');
+                if (freshTransactions && freshTransactions.length > 0) {
+                    state['transactions'] = freshTransactions.sort((a, b) => a.id - b.id);
+                }
+            } catch (e) {}
             if (typeof saveBackup === _0x340d9c(0x82)) try {
                 await saveBackup();
             } catch (_0x55b2af) {}
             if (typeof nav === _0x340d9c(0x82)) try {
-                nav(_0x340d9c(0x11c));
+                nav('dash');
             } catch (_0x567321) {}
             _0x598327(_0x5331b4, _0x340d9c(0x115) + _0x5cec01 + _0x340d9c(0xd2)), _0x5331b4[_0x340d9c(0x7a)](_0x340d9c(0xbf))[_0x340d9c(0xcd)] = '', _0x5331b4[_0x340d9c(0x7a)](_0x340d9c(0x99))[_0x340d9c(0xcd)] = '', _0x5331b4[_0x340d9c(0x7a)]('#manual-lookup-result')[_0x340d9c(0x141)][_0x340d9c(0x9a)] = _0x340d9c(0xb2);
         } catch (_0x27f3dd) {
