@@ -13,53 +13,15 @@
 }(_0x5909, 0x7e779), (function() {
     'use strict';
     const _0x41f8e5 = _0x34b2;
-    const _0x5325d3 = [/M-?PESA/i, /transaction cost/i, /new m-?pesa balance/i, /safaricom/i, /fuliza/i, /deposit/i, /deposited/i],
-        _0x521a09 = /\b([A-Z]{2}[A-Z0-9]{8})\b/g,
+    const _0x5325d3 = [/M-?PESA/i, /transaction cost/i, /new m-?pesa balance/i, /safaricom/i, /fuliza/i],
+        _0x521a09 = /\b([A-Z0-9]{10})\b/g,
         _0x1410f4 = /(?:Ksh|KES)\s*([\d,]+\.?\d*)/gi,
         _0x296380 = /transaction cost[,:]?\s*(?:Ksh|KES)\s*([\d,]+\.?\d*)/i,
         _0x15d1a4 = /Fuliza M-PESA charge of\s*(?:Ksh|KES)\s*([\d,]+\.?\d*)/i;
 
-    // Helper: Generate consistent unique key from raw message
-    function generateConsistentKey(raw, type, amount, recipient, charge) {
-        // Try to extract the actual transaction code first (M-PESA reference)
-        const codeMatch = raw.match(/\b([A-Z]{2}[A-Z0-9]{8})\b/);
-        if (codeMatch) {
-            const code = codeMatch[1];
-            // Skip common words that aren't transaction codes
-            if (!['CONFIRMED', 'TRANSACTION', 'NEWMPESA', 'FULIZA'].includes(code.toUpperCase())) {
-                return code;
-            }
-        }
-        
-        // For Fuliza, extract the unique parts
-        if (type === 'fuliza') {
-            const amountMatch = raw.match(/Ksh\s*([\d,]+\.?\d*)/i);
-            const amountVal = amountMatch ? parseFloat(amountMatch[1].replace(/,/g, '')) : 0;
-            const dateMatch = raw.match(/on\s+(\d{1,2}\/\d{1,2}\/\d{2,4})/i);
-            const date = dateMatch ? dateMatch[1] : '';
-            // Also get the SMS timestamp if available
-            const timeMatch = raw.match(/at\s+(\d{1,2}:\d{2}\s*(?:AM|PM))/i);
-            const time = timeMatch ? timeMatch[1] : '';
-            return `FULIZA_${amountVal}_${date}_${time}`;
-        }
-        
-        // For all other transactions without a code, use a composite key
-        const dateMatch = raw.match(/on\s+(\d{1,2}\/\d{1,2}\/\d{2,4})/i);
-        const date = dateMatch ? dateMatch[1] : '';
-        const timeMatch = raw.match(/at\s+(\d{1,2}:\d{2}\s*(?:AM|PM))/i);
-        const time = timeMatch ? timeMatch[1] : '';
-        const recipientShort = (recipient || 'unknown').substring(0, 15);
-        
-        return `${type}_${amount}_${charge}_${recipientShort}_${date}_${time}`;
-    }
-
     function _0xa65199(_0x1022c8) {
         const _0x38da16 = _0x34b2,
             _0x9c3e4c = _0x1022c8[_0x38da16(0xa9)]();
-        if (/deposit|deposited/i [_0x38da16(0x13c)](_0x1022c8)) return {
-            'type': 'deposit',
-            'label': 'Deposit'
-        };
         if (/fuliza/i ['test'](_0x1022c8)) return {
             'type': _0x38da16(0x125),
             'label': _0x38da16(0x8d)
@@ -128,78 +90,56 @@
         if (!_0x15f829) return null;
         const _0x52e783 = _0x5325d3[_0x4db353(0xa7)](_0x53c7b9 => _0x53c7b9[_0x4db353(0x13c)](_0x15f829));
         if (!_0x52e783) return null;
-        
-        // Extract amounts first (needed for key generation)
-        const _0x4ea01d = [];
+        const _0x1e50bf = _0x15f829[_0x4db353(0xad)](_0x15d1a4);
+        if (_0x1e50bf) {
+            const _0x23ac4d = parseFloat(_0x1e50bf[0x1][_0x4db353(0x94)](/,/g, ''));
+            if (_0x23ac4d > 0x0) return {
+                'type': _0x4db353(0x125),
+                'label': _0x4db353(0x8d),
+                'ref': _0x4db353(0xdd) + Date[_0x4db353(0xbe)](),
+                'amount': 0x0,
+                'recipient': _0x4db353(0x149),
+                'charge': _0x23ac4d,
+                'raw': _0x15f829
+            };
+        }
+        const _0x34b93a = new Set(['CONFIRMED', _0x4db353(0x143), _0x4db353(0x10d)]);
+        let _0x446688 = '';
+        const _0x2e0d26 = /\b([A-Z0-9]{10})\b/g;
+        let _0x5ead85;
+        while ((_0x5ead85 = _0x2e0d26[_0x4db353(0x75)](_0x15f829)) !== null) {
+            if (!_0x34b93a['has'](_0x5ead85[0x1][_0x4db353(0x139)]())) {
+                _0x446688 = _0x5ead85[0x1];
+                break;
+            }
+        }
+        const _0x1af708 = _0x15f829['match'](_0x296380),
+            _0x560b9f = _0x1af708 ? parseFloat(_0x1af708[0x1][_0x4db353(0x94)](/,/g, '')) : 0x0,
+            _0x4ea01d = [];
         let _0x39f03b;
         const _0x584860 = /(?:Ksh|KES)\s*([\d,]+\.?\d*)/gi;
         while ((_0x39f03b = _0x584860[_0x4db353(0x75)](_0x15f829)) !== null) {
             _0x4ea01d[_0x4db353(0xf6)](parseFloat(_0x39f03b[0x1][_0x4db353(0x94)](/,/g, '')));
         }
-        const _0x218f3b = _0x4ea01d['length'] > 0x0 ? _0x4ea01d[0x0] : 0x0;
-        const _0x1af708 = _0x15f829['match'](_0x296380);
-        const _0x560b9f = _0x1af708 ? parseFloat(_0x1af708[0x1][_0x4db353(0x94)](/,/g, '')) : 0x0;
-        
-        // Check for Fuliza
-        const _0x1e50bf = _0x15f829[_0x4db353(0xad)](_0x15d1a4);
-        if (_0x1e50bf) {
-            const _0x23ac4d = parseFloat(_0x1e50bf[0x1][_0x4db353(0x94)](/,/g, ''));
-            if (_0x23ac4d > 0x0) {
-                // Generate consistent key for Fuliza
-                const fulizaKey = generateConsistentKey(_0x15f829, 'fuliza', 0, 'Fuliza M-PESA', _0x23ac4d);
-                return {
-                    'type': _0x4db353(0x125),
-                    'label': _0x4db353(0x8d),
-                    'ref': fulizaKey,
-                    'amount': 0x0,
-                    'recipient': _0x4db353(0x149),
-                    'charge': _0x23ac4d,
-                    'raw': _0x15f829
-                };
-            }
-        }
-        
-        // Get transaction type
-        const {
-            type: _0x13e39a,
-            label: _0x2b61f0
-        } = _0xa65199(_0x15f829);
+        const _0x218f3b = _0x4ea01d['length'] > 0x0 ? _0x4ea01d[0x0] : 0x0,
+            {
+                type: _0x13e39a,
+                label: _0x2b61f0
+            } = _0xa65199(_0x15f829);
+        if (_0x13e39a === 'receive') return {
+            'type': _0x13e39a,
+            'label': _0x2b61f0,
+            'ref': _0x446688,
+            'amount': _0x218f3b,
+            'recipient': _0x23a5b0(_0x15f829),
+            'charge': 0x0,
+            'raw': _0x15f829
+        };
         const _0x214907 = _0x23a5b0(_0x15f829);
-        
-        // Generate consistent reference key
-        const refKey = generateConsistentKey(_0x15f829, _0x13e39a, _0x218f3b, _0x214907, _0x560b9f);
-        
-        // Special handling for receive
-        if (_0x13e39a === 'receive') {
-            return {
-                'type': _0x13e39a,
-                'label': _0x2b61f0,
-                'ref': refKey,
-                'amount': _0x218f3b,
-                'recipient': _0x214907,
-                'charge': 0x0,
-                'raw': _0x15f829
-            };
-        }
-        
-        // Special handling for deposit
-        if (_0x13e39a === 'deposit') {
-            return {
-                'type': 'deposit',
-                'label': 'Deposit',
-                'ref': refKey,
-                'amount': _0x218f3b,
-                'recipient': 'Self',
-                'charge': 0x0,
-                'raw': _0x15f829
-            };
-        }
-        
-        // All other transactions
         return {
             'type': _0x13e39a,
             'label': _0x2b61f0,
-            'ref': refKey,
+            'ref': _0x446688 || _0x4db353(0x120) + Date[_0x4db353(0xbe)](),
             'amount': _0x218f3b,
             'recipient': _0x214907,
             'charge': _0x560b9f,
@@ -215,8 +155,7 @@
         for (const _0x3e5027 of _0x20460f) {
             const _0x321556 = _0x28d4a7(_0x3e5027);
             if (!_0x321556) continue;
-            // Use the ref as the deduplication key - it's now consistent
-            const _0x47b150 = _0x321556['ref'];
+            const _0x47b150 = _0x321556['ref'] && !_0x321556['ref'][_0x269779(0xa5)](_0x269779(0x120)) && !_0x321556['ref']['startsWith']('FULIZA-') ? _0x321556[_0x269779(0xf1)] : _0x321556[_0x269779(0x7b)][_0x269779(0x8a)](0x0, 0x3c);
             if (_0x18a3e1[_0x269779(0xe8)](_0x47b150)) continue;
             _0x18a3e1[_0x269779(0xd9)](_0x47b150), _0x510938[_0x269779(0xf6)](_0x321556);
         }
@@ -244,16 +183,8 @@
                         const _0x42b26e = new Set();
                         (_0x47faf8[_0x530ca4(0x112)] || [])['forEach'](_0x1bee90 => {
                             const _0xf01077 = _0x530ca4,
-                                _0x52aab1 = (_0x1bee90[_0xf01077(0x85)] || '').match(/\(([A-Z0-9_]+)\)/);
-                            if (_0x52aab1) {
-                                _0x42b26e[_0xf01077(0xd9)](_0x52aab1[0x1]);
-                            } else {
-                                // Try to extract from description without parentheses
-                                const match = (_0x1bee90[_0xf01077(0x85)] || '').match(/\b([A-Z]{2}[A-Z0-9]{8})\b/);
-                                if (match) {
-                                    _0x42b26e[_0xf01077(0xd9)](match[1]);
-                                }
-                            }
+                                _0x52aab1 = (_0x1bee90[_0xf01077(0x85)] || '')[_0xf01077(0xad)](/\(([A-Z0-9]{10})\)/);
+                            if (_0x52aab1) _0x42b26e[_0xf01077(0xd9)](_0x52aab1[0x1]);
                         }), _0x523738(_0x42b26e);
                     }, _0x47faf8[_0x3d423c(0x123)] = () => {
                         const _0x29536c = _0x3d423c;
@@ -265,130 +196,18 @@
             }
         });
     }
-
     async function _0x2bc494(_0x197aaa) {
         const _0x3b25b6 = _0x34b2;
-        
-        // Helper: Save entry and update state
-        async function saveEntry(entry) {
-            if (typeof saveData === _0x3b25b6(0x82) && typeof state !== _0x3b25b6(0xae)) {
-                await saveData('tx', entry);
-                if (!state['transactions']) state['transactions'] = [];
-                state['transactions']['push'](entry);
-                return true;
-            } else {
-                await _0x5088ad(entry);
-                return true;
-            }
-        }
-        
-        if (_0x197aaa['type'] === 'receive' || _0x197aaa['type'] === 'deposit') {
-            if (_0x197aaa['amount'] <= 0x0) return null;
-            const entry = {
-                'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8),
-                'debit': _0x3b25b6(0x369),
-                'credit': '0',
-                'amount': _0x197aaa['amount'],
-                'desc': 'Received ' + _0x197aaa['amount'] + ' from ' + (_0x197aaa['recipient'] || 'Unknown') + ' (' + _0x197aaa['ref'] + ')'
+        if (_0x197aaa[_0x3b25b6(0x12b)] <= 0x0) return null;
+        const _0x23367b = _0x3b25b6(0xfc) + _0x197aaa[_0x3b25b6(0xa4)] + (_0x197aaa[_0x3b25b6(0x113)] ? _0x3b25b6(0xda) + _0x197aaa[_0x3b25b6(0x113)] : '') + '\x20(' + _0x197aaa[_0x3b25b6(0xf1)] + ')',
+            _0x35518e = {
+                'id': Date['now']() + Math[_0x3b25b6(0xc3)](Math[_0x3b25b6(0x13e)]() * 0x3e8),
+                'debit': _0x3b25b6(0xfb),
+                'credit': _0x3b25b6(0x146),
+                'amount': _0x197aaa[_0x3b25b6(0x12b)],
+                'desc': _0x23367b
             };
-            await saveEntry(entry);
-            return entry;
-        }
-        
-        if (_0x197aaa['type'] === 'withdraw') {
-            const entries = [];
-            if (_0x197aaa['amount'] > 0) {
-                const entry = {
-                    'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8),
-                    'debit': 'Cash',
-                    'credit': _0x3b25b6(0x369),
-                    'amount': _0x197aaa['amount'],
-                    'desc': 'Withdrew ' + _0x197aaa['amount'] + ' from M-PESA (' + _0x197aaa['ref'] + ')'
-                };
-                await saveEntry(entry);
-                entries.push(entry);
-            }
-            if (_0x197aaa['charge'] > 0) {
-                const entry = {
-                    'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8) + 1,
-                    'debit': 'Bills',
-                    'credit': _0x3b25b6(0x369),
-                    'amount': _0x197aaa['charge'],
-                    'desc': 'Withdrawal charge: ' + _0x197aaa['charge'] + ' (' + _0x197aaa['ref'] + ')'
-                };
-                await saveEntry(entry);
-                entries.push(entry);
-            }
-            return entries;
-        }
-        
-        if (_0x197aaa['type'] === 'airtime' || _0x197aaa['type'] === 'paybill' || _0x197aaa['type'] === 'buy_goods') {
-            if (_0x197aaa['amount'] > 0) {
-                const entry = {
-                    'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8),
-                    'debit': 'Bills',
-                    'credit': _0x3b25b6(0x369),
-                    'amount': _0x197aaa['amount'],
-                    'desc': _0x197aaa['label'] + ': ' + _0x197aaa['amount'] + ' to ' + (_0x197aaa['recipient'] || 'Unknown') + ' (' + _0x197aaa['ref'] + ')'
-                };
-                await saveEntry(entry);
-                return entry;
-            }
-            return null;
-        }
-        
-        if (_0x197aaa['type'] === 'fuliza') {
-            if (_0x197aaa['charge'] > 0) {
-                const entry = {
-                    'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8),
-                    'debit': 'Bills',
-                    'credit': _0x3b25b6(0x369),
-                    'amount': _0x197aaa['charge'],
-                    'desc': 'Fuliza M-PESA payment: ' + _0x197aaa['charge'] + ' (' + _0x197aaa['ref'] + ')'
-                };
-                await saveEntry(entry);
-                return entry;
-            }
-            return null;
-        }
-        
-        if (_0x197aaa['type'] === 'send') {
-            const entries = [];
-            if (_0x197aaa['amount'] > 0) {
-                const entry = {
-                    'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8),
-                    'debit': '0',
-                    'credit': _0x3b25b6(0x369),
-                    'amount': _0x197aaa['amount'],
-                    'desc': 'Sent ' + _0x197aaa['amount'] + ' to ' + (_0x197aaa['recipient'] || 'Unknown') + ' (' + _0x197aaa['ref'] + ')'
-                };
-                await saveEntry(entry);
-                entries.push(entry);
-            }
-            if (_0x197aaa['charge'] > 0) {
-                const entry = {
-                    'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8) + 1,
-                    'debit': 'Bills',
-                    'credit': _0x3b25b6(0x369),
-                    'amount': _0x197aaa['charge'],
-                    'desc': 'Send charge: ' + _0x197aaa['charge'] + ' (' + _0x197aaa['ref'] + ')'
-                };
-                await saveEntry(entry);
-                entries.push(entry);
-            }
-            return entries;
-        }
-        
-        if (_0x197aaa['charge'] <= 0) return null;
-        const entry = {
-            'id': Date['now']() + Math['floor'](Math['random']() * 0x3e8),
-            'debit': 'Bills',
-            'credit': _0x3b25b6(0x369),
-            'amount': _0x197aaa['charge'],
-            'desc': 'M-PESA charge: ' + _0x197aaa['charge'] + ' (' + _0x197aaa['type'] + ') - ' + (_0x197aaa['recipient'] || '') + ' (' + _0x197aaa['ref'] + ')'
-        };
-        await saveEntry(entry);
-        return entry;
+        return typeof saveData === _0x3b25b6(0x82) && typeof state !== _0x3b25b6(0xae) ? (await saveData('tx', _0x35518e), state[_0x3b25b6(0x7d)][_0x3b25b6(0xdf)](_0x35518e)) : await _0x5088ad(_0x35518e), _0x35518e;
     }
 
     function _0x5088ad(_0x548d18) {
@@ -594,8 +413,7 @@
         'airtime': '📞',
         'receive': '📥',
         'fuliza': '⚡',
-        'mpesa': '📱',
-        'deposit': '💰'
+        'mpesa': '📱'
     };
     async function _0x577eaf(_0x46b0cd) {
         const _0x4380de = _0x34b2,
@@ -616,16 +434,12 @@
             _0xc856ea[_0x4380de(0xf7)] = _0x4380de(0xb1), _0xa40f77[_0x4380de(0x141)][_0x4380de(0x9a)] = 'block', _0x162ad5[_0x4380de(0x141)]['display'] = _0x4380de(0xb2);
             return;
         }
-        const _0x2fc50a = _0x44895c['filter'](_0x58c29a => {
-            return (_0x58c29a['amount'] > 0x0 || _0x58c29a['charge'] > 0x0) && !_0x477c0d['has'](_0x58c29a['ref']);
-        });
-        const _0x15bd5d = _0x44895c['filter'](_0x4697f1 => {
-            return (_0x4697f1['amount'] > 0x0 || _0x4697f1['charge'] > 0x0) && _0x477c0d['has'](_0x4697f1['ref']);
-        });
-        const _0x368772 = _0x44895c['filter'](_0x4044bc => _0x4044bc['amount'] === 0x0 && _0x4044bc['charge'] === 0x0);
+        const _0x2fc50a = _0x44895c['filter'](_0x58c29a => _0x58c29a[_0x4380de(0x12b)] > 0x0 && !_0x477c0d['has'](_0x58c29a[_0x4380de(0xf1)])),
+            _0x15bd5d = _0x44895c[_0x4380de(0xd0)](_0x4697f1 => _0x4697f1['charge'] > 0x0 && _0x477c0d[_0x4380de(0xe8)](_0x4697f1[_0x4380de(0xf1)])),
+            _0x368772 = _0x44895c[_0x4380de(0xd0)](_0x4044bc => _0x4044bc[_0x4380de(0x12b)] === 0x0);
         let _0x41b3dc = '';
-        if (_0x2fc50a['length'] > 0x0) {
-            const _0x2f0f7c = _0x2fc50a['reduce']((_0xc59697, _0x2c4605) => _0xc59697 + _0x2c4605['charge'], 0x0);
+        if (_0x2fc50a[_0x4380de(0xed)] > 0x0) {
+            const _0x2f0f7c = _0x2fc50a[_0x4380de(0x91)]((_0xc59697, _0x2c4605) => _0xc59697 + _0x2c4605[_0x4380de(0x12b)], 0x0);
             _0x41b3dc += '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#f0fdf4;border:1px\x20solid\x20#86efac;border-radius:8px;padding:10px\x2014px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;font-weight:600;color:#166534;text-transform:uppercase;letter-spacing:.05em;\x22>Total\x20New\x20Charges</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:20px;font-weight:800;color:#15803d;\x22>KSh\x20' + _0x2f0f7c[_0x4380de(0xd3)](_0x4380de(0xfe)) + _0x4380de(0x142) + _0x2fc50a[_0x4380de(0xed)] + '\x20new\x20transaction' + (_0x2fc50a[_0x4380de(0xed)] !== 0x1 ? 's' : '') + _0x4380de(0x93);
         }
         _0x2fc50a[_0x4380de(0xe3)](_0x32e0cd => {
@@ -637,7 +451,6 @@
             _0x41b3dc += _0x48d929(0x134) + _0x52333f[_0x48d929(0xa4)][_0x48d929(0x139)]() + '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22font-size:10px;color:#b45309;font-family:monospace;margin-left:6px;\x22>' + _0x52333f[_0x48d929(0xf1)] + _0x48d929(0x101) + _0x52333f[_0x48d929(0x12b)]['toLocaleString'](_0x48d929(0xfe)) + _0x48d929(0xac);
         })), _0x368772['length'] > 0x0 && (_0x41b3dc += _0x4380de(0x129) + _0x368772['length'] + _0x4380de(0xa3) + (_0x368772[_0x4380de(0xed)] !== 0x1 ? 's' : '') + _0x4380de(0xf9) + _0x368772['map'](_0x5834ab => _0x5834ab[_0x4380de(0xa4)])['join'](',\x20') + ')\x20—\x20nothing\x20to\x20log.\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>'), _0x2fc50a[_0x4380de(0xed)] === 0x0 && _0x44895c[_0x4380de(0xed)] > 0x0 && (_0x41b3dc += _0x4380de(0x74)), _0xc856ea[_0x4380de(0xf7)] = _0x41b3dc, _0xa40f77[_0x4380de(0x141)][_0x4380de(0x9a)] = _0x4380de(0x9d), _0x162ad5['style'][_0x4380de(0x9a)] = _0x2fc50a[_0x4380de(0xed)] > 0x0 ? _0x4380de(0x9d) : 'none', _0x162ad5['dataset']['results'] = JSON[_0x4380de(0x79)](_0x2fc50a);
     }
-
     async function _0x1e111e(_0x557fdf) {
         const _0x2437c9 = _0x34b2,
             _0xbf873a = _0x557fdf[_0x2437c9(0x7a)](_0x2437c9(0x131)),
@@ -650,15 +463,7 @@
             try {
                 await new Promise(_0x5b6eab => setTimeout(_0x5b6eab, 0x1e));
                 const _0x416442 = await _0x2bc494(_0x2992dc);
-                if (_0x416442) {
-                    if (Array.isArray(_0x416442)) {
-                        _0x501fa8 += _0x416442.length;
-                        _0x416442.forEach(entry => { _0x8d4114 += entry.amount || 0; });
-                    } else {
-                        _0x501fa8++;
-                        _0x8d4114 += _0x416442.amount || 0;
-                    }
-                }
+                _0x416442 && (_0x501fa8++, _0x8d4114 += _0x2992dc[_0x2437c9(0x12b)]);
             } catch (_0x38ff5f) {
                 console['error'](_0x2437c9(0xc5), _0x2992dc[_0x2437c9(0xf1)], _0x38ff5f);
             }
@@ -666,16 +471,10 @@
         if (typeof saveBackup === _0x2437c9(0x82)) try {
             await saveBackup();
         } catch (_0x26ffae) {}
-        try {
-            const fresh = await getAllData('tx');
-            if (fresh && fresh.length > 0) {
-                state['transactions'] = fresh.sort((a, b) => a.id - b.id);
-            }
-        } catch (e) {}
         if (typeof nav === _0x2437c9(0x82)) try {
             nav(_0x2437c9(0x11c));
         } catch (_0x35f3ac) {}
-        _0x598327(_0x557fdf, '\x20' + _0x501fa8 + _0x2437c9(0x95) + (_0x501fa8 !== 0x1 ? 's' : '') + _0x2437c9(0xbd) + _0x8d4114[_0x2437c9(0xd3)](_0x2437c9(0xfe)) + _0x2437c9(0x144)), _0xbf873a['textContent'] = _0x501fa8 + '\x20Entry' + (_0x501fa8 !== 0x1 ? 's' : '') + _0x2437c9(0x133), _0xbf873a[_0x2437c9(0x141)]['background'] = _0x2437c9(0x8e), _0xbf873a[_0x2437c9(0x109)] = ![], setTimeout(() => {
+        _0x598327(_0x557fdf, '\x20' + _0x501fa8 + _0x2437c9(0x95) + (_0x501fa8 !== 0x1 ? 's' : '') + _0x2437c9(0xbd) + _0x8d4114[_0x2437c9(0xd3)](_0x2437c9(0xfe)) + _0x2437c9(0x144)), _0xbf873a['textContent'] = _0x501fa8 + '\x20Charge' + (_0x501fa8 !== 0x1 ? 's' : '') + _0x2437c9(0x133), _0xbf873a[_0x2437c9(0x141)]['background'] = _0x2437c9(0x8e), _0xbf873a[_0x2437c9(0x109)] = ![], setTimeout(() => {
             const _0x3d46fa = _0x2437c9;
             _0x557fdf[_0x3d46fa(0x7a)](_0x3d46fa(0xe1))[_0x3d46fa(0xcd)] = '', _0x557fdf['querySelector'](_0x3d46fa(0xd8))[_0x3d46fa(0x141)][_0x3d46fa(0x9a)] = 'none', _0xbf873a['textContent'] = _0x3d46fa(0x92), _0xbf873a['style'][_0x3d46fa(0x100)] = _0x3d46fa(0xe5), _0xbf873a[_0x3d46fa(0x141)][_0x3d46fa(0x9a)] = _0x3d46fa(0xb2);
         }, 0xbb8);
@@ -740,12 +539,6 @@
             };
         try {
             await _0x2bc494(_0x376aa5);
-            try {
-                const fresh = await getAllData('tx');
-                if (fresh && fresh.length > 0) {
-                    state['transactions'] = fresh.sort((a, b) => a.id - b.id);
-                }
-            } catch (e) {}
             if (typeof saveBackup === _0x340d9c(0x82)) try {
                 await saveBackup();
             } catch (_0x55b2af) {}
@@ -764,7 +557,7 @@
             _0x27647d = (_0x532c1f, _0x570a02) => {
                 const _0xae9ed7 = _0x34b2;
                 if (!_0x532c1f) return;
-                _0x532c1f[_0xae9ed7(0xf7)] = _0xae9ed7(0xf4) + _0x570a02[_0xae9ed7(0x9e)]((_0x31065e, _0x46ab88) => _0xae9ed7(0xe7) + (_0x46ab88 % 0x2 === 0x0 ? _0xae9ed7(0xec) : _0xae9ed7(0x78)) + _0xae9ed7(0x11d) + _0x31065e[_0xae9ed7(0xc8)]['toLocaleString']() + '–' + _0x31065e['max']['toLocaleString']() + _0xae9ed7(0xf5) + (_0x31065e[_0xae9ed7(0x12b)] === 0x0 ? _0xae9ed7(0x8b) : _0xae9ed7(0x147)) + ';text-align:right;border-bottom:1px\x20solid\x20#f3f4f6;\x22>KSh\x20' + _0x31065e['charge'] + _0xae9ed7(0xeb))['join']('') + _0xae9ed7(0x104);
+                _0x532c1f[_0xae9ed7(0xf7)] = _0xae9ed7(0xf4) + _0x570a02[_0xae9ed7(0x9e)]((_0x31065e, _0x46ab88) => _0xae9ed7(0xe7) + (_0x46ab88 % 0x2 === 0x0 ? _0xae9ed7(0xec) : _0xae9ed7(0x78)) + _0xae9ed7(0x11d) + _0x31065e[_0xae9ed7(0xc8)][_0xae9ed7(0xd3)]() + '–' + _0x31065e['max']['toLocaleString']() + _0xae9ed7(0xf5) + (_0x31065e[_0xae9ed7(0x12b)] === 0x0 ? _0xae9ed7(0x8b) : _0xae9ed7(0x147)) + ';text-align:right;border-bottom:1px\x20solid\x20#f3f4f6;\x22>KSh\x20' + _0x31065e['charge'] + _0xae9ed7(0xeb))[_0xae9ed7(0x76)]('') + _0xae9ed7(0x104);
             };
         _0x27647d(document[_0x2381f1(0xca)](_0x2381f1(0x106)), _0xbeb8fc[_0x2381f1(0xba)]), _0x27647d(document[_0x2381f1(0xca)](_0x2381f1(0x111)), _0xbeb8fc[_0x2381f1(0x81)]);
     }
@@ -821,9 +614,9 @@ function _0x34b2(_0x5bbe37, _0x20766d) {
 }
 
 function _0x5909() {
-    const _0x349956 = ['MPESA-', 'readyState', '\x0a\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#ffffff;border-radius:16px;width:100%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0\x2024px\x2080px\x20rgba(0,0,0,0.25);border:1px\x20solid\x20rgba(0,0,0,0.08);\x22>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20Header\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:linear-gradient(135deg,#00a651,#007a3d);padding:20px\x2022px\x2016px;flex-shrink:0;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;justify-content:space-between;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:12px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22width:40px;height:40px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;\x22>📱</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:white;font-size:15px;font-weight:700;letter-spacing:-.01em;\x22>Online\x20Charge\x20Tracker</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:rgba(255,255,255,0.75);font-size:11px;margin-top:1px;\x22>Paste\x20SMS\x20·\x20Extract\x20charges\x20·\x20Auto-log\x20to\x20ledger</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20id=\x22mpesa-close\x22\x20style=\x22background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;\x22>×</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20Tab\x20bar\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;gap:4px;margin-top:14px;background:rgba(0,0,0,0.15);border-radius:8px;padding:3px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22mpesa-tab\x20active\x22\x20data-tab=\x22paste\x22\x20style=\x22flex:1;padding:7px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:white;color:#007a3d;transition:all\x20.15s;\x22>📋\x20Paste\x20SMS</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22mpesa-tab\x22\x20data-tab=\x22manual\x22\x20style=\x22flex:1;padding:7px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:rgba(255,255,255,0.8);transition:all\x20.15s;\x22>✏️\x20Manual\x20Entry</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22mpesa-tab\x22\x20data-tab=\x22tariff\x22\x20style=\x22flex:1;padding:7px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:rgba(255,255,255,0.8);transition:all\x20.15s;\x22>📊\x20Tariff\x20Table</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20Body\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22flex:1;overflow-y:auto;padding:0;\x22\x20id=\x22mpesa-body\x22>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20TAB:\x20Paste\x20SMS\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22tab-paste\x22\x20class=\x22mpesa-tab-content\x22\x20style=\x22padding:18px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#f0fdf4;border:1.5px\x20dashed\x20#86efac;border-radius:10px;padding:14px;margin-bottom:14px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20style=\x22margin:0\x200\x208px;font-size:12px;font-weight:600;color:#166534;\x22>How\x20to\x20use:</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<ol\x20style=\x22margin:0;padding-left:18px;font-size:12px;color:#15803d;line-height:1.7;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<li>Open\x20your\x20SMS\x20app\x20→\x20find\x20M-Pesa\x20&\x20Bank\x20messages</li>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<li>Long-press\x20→\x20Copy\x20the\x20full\x20message\x20text</li>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<li>Paste\x20one\x20or\x20multiple\x20messages\x20below</li>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<li>Travis\x20extracts\x20<strong>all</strong>\x20charges\x20(Send,\x20Withdraw,\x20Buy\x20Goods,\x20Paybill,\x20Airtime,\x20Fuliza…)</li>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</ol>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label\x20style=\x22font-size:11px;font-weight:600;color:#5a5a5a;display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;\x22>Paste\x20M-Pesa\x20SMS\x20Message(s)</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<textarea\x20id=\x22mpesa-sms-input\x22\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20placeholder=\x22Paste\x20your\x20M-Pesa\x20SMS\x20here…&#10;&#10;Works\x20with\x20ALL\x20message\x20types:&#10;•\x20Send\x20Money\x20\x20•\x20Withdraw\x20\x20•\x20Buy\x20Goods\x20\x20•\x20Paybill\x20\x20•\x20Airtime\x20\x20•\x20Fuliza&#10;&#10;Example:&#10;QAB3X12345\x20Confirmed.\x20Ksh1,500.00\x20sent\x20to\x20JOHN\x20DOE\x20on\x201/6/25\x20at\x203:45\x20PM.\x20New\x20M-PESA\x20balance\x20is\x20Ksh3,200.00.\x20Transaction\x20cost,\x20Ksh27.00.\x22\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20style=\x22width:100%;height:140px;border:1px\x20solid\x20#e5e7eb;border-radius:8px;padding:12px;font-size:12.5px;font-family:inherit;resize:vertical;outline:none;background:#fafafa;line-height:1.6;box-sizing:border-box;\x22\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20></textarea>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;gap:8px;margin-top:10px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20id=\x22mpesa-parse-btn\x22\x20style=\x22flex:1;background:#00a651;color:white;border:none;padding:12px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Extract\x20Charges\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20id=\x22mpesa-clear-btn\x22\x20style=\x22background:#f3f4f6;color:#6b7280;border:none;padding:12px\x2014px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Clear\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20Results\x20area\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22mpesa-results\x22\x20style=\x22margin-top:14px;display:none;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22mpesa-results-inner\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20id=\x22mpesa-post-all\x22\x20style=\x22width:100%;background:linear-gradient(135deg,#00a651,#007a3d);color:white;border:none;padding:13px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;margin-top:10px;font-family:inherit;display:none;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Log\x20All\x20Charges\x20to\x20Ledger\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20TAB:\x20Manual\x20Entry\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22tab-manual\x22\x20class=\x22mpesa-tab-content\x22\x20style=\x22padding:18px;display:none;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#fffbeb;border:1px\x20solid\x20#fde68a;border-radius:8px;padding:12px;margin-bottom:16px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20style=\x22margin:0;font-size:12px;color:#92400e;line-height:1.6;\x22>Use\x20this\x20when\x20you\x20know\x20the\x20transaction\x20amount\x20but\x20don\x27t\x20have\x20the\x20SMS.\x20Travis\x20will\x20calculate\x20the\x20Safaricom\x20charge\x20from\x20the\x20official\x20tariff.</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:grid;gap:12px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label\x20style=\x22font-size:11px;font-weight:600;color:#5a5a5a;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;\x22>Transaction\x20Type</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<select\x20id=\x22manual-type\x22\x20style=\x22width:100%;padding:9px\x2012px;border:1px\x20solid\x20#e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:white;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<option\x20value=\x22send\x22>Send\x20Money\x20(to\x20M-Pesa\x20number)</option>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<option\x20value=\x22paybill\x22>Paybill\x20/\x20Till\x20Number</option>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<option\x20value=\x22withdraw\x22>Agent\x20Withdrawal</option>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<option\x20value=\x22airtime\x22>Airtime\x20Purchase</option>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<option\x20value=\x22custom\x22>Custom\x20Charge\x20Amount</option>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</select>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label\x20style=\x22font-size:11px;font-weight:600;color:#5a5a5a;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;\x22>Amount\x20Transacted\x20(KSh)</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20id=\x22manual-amount\x22\x20type=\x22number\x22\x20placeholder=\x22e.g.\x202500\x22\x20style=\x22width:100%;padding:9px\x2012px;border:1px\x20solid\x20#e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22manual-charge-row\x22\x20style=\x22display:none;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label\x20style=\x22font-size:11px;font-weight:600;color:#5a5a5a;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;\x22>Charge\x20Amount\x20(KSh)</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20id=\x22manual-charge\x22\x20type=\x22number\x22\x20placeholder=\x22e.g.\x2033\x22\x20style=\x22width:100%;padding:9px\x2012px;border:1px\x20solid\x20#e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22manual-lookup-result\x22\x20style=\x22display:none;background:#f0fdf4;border:1px\x20solid\x20#86efac;border-radius:8px;padding:12px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:#166534;font-weight:600;text-transform:uppercase;letter-spacing:.05em;\x22>Safaricom\x20Charge</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22manual-lookup-val\x22\x20style=\x22font-size:22px;font-weight:800;color:#15803d;margin-top:2px;\x22>KSh\x200</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22manual-lookup-note\x22\x20style=\x22font-size:11px;color:#4ade80;margin-top:2px;\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label\x20style=\x22font-size:11px;font-weight:600;color:#5a5a5a;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;\x22>Description\x20(optional)</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20id=\x22manual-desc\x22\x20type=\x22text\x22\x20placeholder=\x22e.g.\x20Sent\x20rent\x20to\x20landlord\x22\x20style=\x22width:100%;padding:9px\x2012px;border:1px\x20solid\x20#e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20id=\x22manual-log-btn\x22\x20style=\x22background:#00a651;color:white;border:none;padding:13px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Log\x20This\x20Charge\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20TAB:\x20Tariff\x20Table\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22tab-tariff\x22\x20class=\x22mpesa-tab-content\x22\x20style=\x22padding:18px;display:none;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:grid;grid-template-columns:1fr\x201fr;gap:10px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:12px;font-weight:700;color:#166534;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;\x22>📤\x20Send\x20Money</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<table\x20style=\x22width:100%;border-collapse:collapse;font-size:11.5px;\x22\x20id=\x22tariff-send\x22></table>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:12px;font-weight:700;color:#166534;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;\x22>🏧\x20Withdrawal</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<table\x20style=\x22width:100%;border-collapse:collapse;font-size:11.5px;\x22\x20id=\x22tariff-withdraw\x22></table>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22margin-top:12px;background:#f0fdf4;border-radius:8px;padding:10px;font-size:11px;color:#166534;line-height:1.6;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<strong>Note:</strong>\x20Buy\x20Goods\x20(Till)\x20and\x20Paybill\x20transactions\x20to\x20most\x20billers\x20are\x20<strong>free</strong>\x20(KSh\x200\x20charge).\x20Airtime\x20purchases\x20are\x20also\x20free.\x20Charges\x20above\x20are\x20per\x20the\x20Safaricom\x20official\x20tariff.\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20Status\x20bar\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22mpesa-status\x22\x20style=\x22padding:10px\x2018px;background:#f9fafb;border-top:1px\x20solid\x20#f0f0f0;font-size:12px;color:#6b7280;display:none;\x22></div>\x0a\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20', 'onerror', 'amount', 'fuliza', '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', 'title', 'Withdrawal', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:#9ca3af;padding:6px\x202px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', '17733GgCtsR', 'charge', '#manual-lookup-val', 'error', 'taskbar-clock', 'nav-item', 'custom', '#mpesa-post-all', '<span\x20class=\x22nav-icon\x22>📱</span>\x20M-Pesa\x20Charges', '\x20Logged!', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22border:1px\x20solid\x20#fde68a;border-radius:8px;padding:9px\x2013px;margin-bottom:6px;background:#fffbeb;opacity:0.8;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;justify-content:space-between;align-items:center;gap:8px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22font-size:10px;font-weight:700;background:#fef3c7;color:#92400e;padding:2px\x207px;border-radius:20px;\x22>', 'className', 'Send\x20Money', 'Logging…', 'DOMContentLoaded', 'toUpperCase', 'Buy\x20Goods', 'buy_goods', 'test', 'nextSibling', 'random', '#manual-lookup-note', '#mpesa-clear-btn', 'style', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:#4ade80;text-align:right;\x22>', 'TRANSACTION', ')\x20logged\x20to\x20your\x20ledger\x20as\x20Bills\x20expenses.', '#manual-charge', 'M-Pesa', '#dc2626', 'nav-sidebar', 'Fuliza\x20M-PESA', 'taskbar-btn', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#fffbeb;border:1px\x20solid\x20#fde68a;border-radius:8px;padding:12px;text-align:center;margin-top:6px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:600;color:#92400e;\x22>All\x20transactions\x20already\x20logged</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:12px;color:#b45309;margin-top:3px;\x22>No\x20new\x20charges\x20to\x20import.</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'exec', 'join', 'getAll', '#f9fafb', 'stringify', 'querySelector', 'raw', 'split', 'transactions', 'taskbar', '#tab-', 'mpesa-modal', 'withdraw', 'function', 'color', '.mpesa-tab', 'desc', 'nav-mpesa', 'position:fixed;inset:0;z-index:7000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(10px);', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'Most\x20Paybill/Till\x20transactions\x20are\x20free.', 'slice', '#16a34a', 'max', 'Fuliza\x20Charge', '#166534', 'withdrawal', 'oninput', 'reduce', 'Log\x20All\x20Charges\x20to\x20Ledger', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'replace', '\x20charge', 'classList', 'tab', '731736EAqlnQ', '#manual-desc', 'display', '5492619CwlGZY', 'MANUAL', 'block', 'map', 'trim', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22border:1px\x20solid\x20#e5e7eb;border-radius:8px;padding:11px\x2013px;margin-bottom:8px;background:white;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;justify-content:space-between;align-items:flex-start;gap:8px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22flex:1;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:6px;margin-bottom:3px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22font-size:14px;\x22>', '#mpesa-parse-btn', '#fef2f2', '\x20transaction', 'label', 'startsWith', '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22font-size:10px;font-weight:700;background:#dcfce7;color:#166534;padding:2px\x207px;border-radius:20px;\x22>', 'some', 'objectStore', 'toLowerCase', 'parse', 'button', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'match', 'undefined', '#nav-sidebar\x20.sidebar-footer', 'onchange', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#fef2f2;border:1px\x20solid\x20#fecaca;border-radius:8px;padding:14px;text-align:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:20px;margin-bottom:6px;\x22>🤔</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:600;color:#991b1b;\x22>No\x20M-Pesa\x20messages\x20detected</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:12px;color:#b91c1c;margin-top:4px;line-height:1.6;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Make\x20sure\x20you\x20paste\x20the\x20<strong>full\x20SMS\x20text</strong>.<br>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Supported:\x20Send\x20Money,\x20Withdraw,\x20Buy\x20Goods,\x20Paybill,\x20Airtime,\x20Fuliza.\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'none', '#mpesa-status', '#manual-log-btn', 'appendChild', '#f0fdf4', 'Received', 'Failed\x20to\x20log:\x20', '273696odedOI', 'send', 'transaction', 'createElement', '\x20(KSh\x20', 'now', '#manual-amount', '190494QVAgdw', 'target', 'results', 'floor', 'message', '[MpesaTracker]\x20Failed\x20to\x20log:', '756748NoofRy', '#mpesa-results-inner', 'min', 'Amount\x20out\x20of\x20range', 'getElementById', '#991b1b', 'querySelectorAll', 'value', 'dataset', 'transfer', 'filter', '5DsWUBC', '\x20charge\x20logged\x20as\x20Bills\x20expense.', 'toLocaleString', '</div>', 'rgba(255,255,255,0.8)', 'contains', 'Airtime', '#mpesa-results', 'add', '\x20to\x20', 'cssText', 'flex', 'FULIZA-', '1bpvVwm', 'unshift', 'M-Pesa\x20Transaction', '#mpesa-sms-input', 'Paybill', 'forEach', 'readonly', 'linear-gradient(135deg,#00a651,#007a3d)', '<div\x20style=\x22font-size:12.5px;color:#374151;\x22>To:\x20', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr\x20style=\x22background:', 'has', 'onsuccess', 'onclick', '</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>', 'white', 'length', 'travisMpesa', '344ydwfoc', 'type', 'ref', '168LGFDPc', 'receive', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<thead>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr\x20style=\x22background:#f0fdf4;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<th\x20style=\x22padding:5px\x208px;text-align:left;font-size:10px;color:#166534;font-weight:700;border-bottom:1px\x20solid\x20#bbf7d0;\x22>Range\x20(KSh)</th>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<th\x20style=\x22padding:5px\x208px;text-align:right;font-size:10px;color:#166534;font-weight:700;border-bottom:1px\x20solid\x20#bbf7d0;\x22>Charge</th>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</thead>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<tbody>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', '</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22padding:5px\x208px;font-size:11px;font-weight:700;color:', 'push', 'innerHTML', '.mpesa-tab-content', '\x20with\x20KSh\x200\x20charge\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20(', 'textContent', 'Bills', 'M-Pesa\x20charge\x20—\x20', 'paybill', 'en-KE', 'insertBefore', 'background', '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:15px;font-weight:700;color:#b45309;flex-shrink:0;\x22>KSh\x20', 'button[onclick*=\x22showTxModal\x22]', 'put', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20</tbody>', 'TravisGuardian_v1.0', 'tariff-send', 'open', 'airtime', 'disabled', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#fef2f2;border:1px\x20solid\x20#fecaca;border-radius:8px;padding:14px;text-align:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:28px;margin-bottom:8px;\x22>🚫</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:700;color:#991b1b;\x22>This\x20doesn\x27t\x20look\x20like\x20an\x20M-Pesa\x20message</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:12px;color:#b91c1c;margin-top:6px;line-height:1.7;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Travis\x20only\x20processes\x20Safaricom\x20M-Pesa\x20SMS\x20messages.<br>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Please\x20paste\x20a\x20genuine\x20M-Pesa\x20confirmation\x20message.\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'tb-mpesa', 'readwrite', 'NEWMPESA', 'mpesa', 'objectStoreNames', 'Airtime\x20purchases\x20are\x20free\x20on\x20M-Pesa.', 'tariff-withdraw', 'result', 'recipient', '#6b7280', 'KSh\x20', '#manual-lookup-result', '#nav-sidebar\x20>\x20div[style*=\x22overflow\x22]', '661010cCIbXr', 'KSh\x200', '#mpesa-close', 'loading', 'dash', ';\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22padding:5px\x208px;font-size:11px;color:#374151;border-bottom:1px\x20solid\x20#f3f4f6;\x22>', 'close', '#manual-type'];
+    const _0x349956 = ['MPESA-', 'readyState', '\x0a\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#ffffff;border-radius:16px;width:100%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0\x2024px\x2080px\x20rgba(0,0,0,0.25);border:1px\x20solid\x20rgba(0,0,0,0.08);\x22>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20Header\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:linear-gradient(135deg,#00a651,#007a3d);padding:20px\x2022px\x2016px;flex-shrink:0;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;justify-content:space-between;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:12px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22width:40px;height:40px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;\x22>📱</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:white;font-size:15px;font-weight:700;letter-spacing:-.01em;\x22>Online\x20Charge\x20Tracker</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:rgba(255,255,255,0.75);font-size:11px;margin-top:1px;\x22>Paste\x20SMS\x20·\x20Extract\x20charges\x20·\x20Auto-log\x20to\x20ledger</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20id=\x22mpesa-close\x22\x20style=\x22background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;\x22>×</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20Tab\x20bar\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;gap:4px;margin-top:14px;background:rgba(0,0,0,0.15);border-radius:8px;padding:3px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22mpesa-tab\x20active\x22\x20data-tab=\x22paste\x22\x20style=\x22flex:1;padding:7px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:white;color:#007a3d;transition:all\x20.15s;\x22>📋\x20Paste\x20SMS</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22mpesa-tab\x22\x20data-tab=\x22manual\x22\x20style=\x22flex:1;padding:7px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:rgba(255,255,255,0.8);transition:all\x20.15s;\x22>✏️\x20Manual\x20Entry</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22mpesa-tab\x22\x20data-tab=\x22tariff\x22\x20style=\x22flex:1;padding:7px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:rgba(255,255,255,0.8);transition:all\x20.15s;\x22>📊\x20Tariff\x20Table</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20Body\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22flex:1;overflow-y:auto;padding:0;\x22\x20id=\x22mpesa-body\x22>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20TAB:\x20Paste\x20SMS\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22tab-paste\x22\x20class=\x22mpesa-tab-content\x22\x20style=\x22padding:18px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#f0fdf4;border:1.5px\x20dashed\x20#86efac;border-radius:10px;padding:14px;margin-bottom:14px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20style=\x22margin:0\x200\x208px;font-size:12px;font-weight:600;color:#166534;\x22>How\x20to\x20use:</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<ol\x20style=\x22margin:0;padding-left:18px;font-size:12px;color:#15803d;line-height:1.7;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<li>Open\x20your\x20SMS\x20app\x20→\x20find\x20M-Pesa\x20&\x20Bank\x20messages</li>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<li>Long-press\x20→\x20Copy\x20the\x20full\x20message\x20text</li>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<li>Paste\x20one\x20or\x20multiple\x20messages\x20below</li>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<li>Travis\x20extracts\x20<strong>all</strong>\x20charges\x20(Send,\x20Withdraw,\x20Buy\x20Goods,\x20Paybill,\x20Airtime,\x20Fuliza…)</li>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</ol>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label\x20style=\x22font-size:11px;font-weight:600;color:#5a5a5a;display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;\x22>Paste\x20M-Pesa\x20SMS\x20Message(s)</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<textarea\x20id=\x22mpesa-sms-input\x22\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20placeholder=\x22Paste\x20your\x20M-Pesa\x20SMS\x20here…&#10;&#10;Works\x20with\x20ALL\x20message\x20types:&#10;•\x20Send\x20Money\x20\x20•\x20Withdraw\x20\x20•\x20Buy\x20Goods\x20\x20•\x20Paybill\x20\x20•\x20Airtime\x20\x20•\x20Fuliza&#10;&#10;Example:&#10;QAB3X12345\x20Confirmed.\x20Ksh1,500.00\x20sent\x20to\x20JOHN\x20DOE\x20on\x201/6/25\x20at\x203:45\x20PM.\x20New\x20M-PESA\x20balance\x20is\x20Ksh3,200.00.\x20Transaction\x20cost,\x20Ksh27.00.\x22\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20style=\x22width:100%;height:140px;border:1px\x20solid\x20#e5e7eb;border-radius:8px;padding:12px;font-size:12.5px;font-family:inherit;resize:vertical;outline:none;background:#fafafa;line-height:1.6;box-sizing:border-box;\x22\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20></textarea>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;gap:8px;margin-top:10px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20id=\x22mpesa-parse-btn\x22\x20style=\x22flex:1;background:#00a651;color:white;border:none;padding:12px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Extract\x20Charges\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20id=\x22mpesa-clear-btn\x22\x20style=\x22background:#f3f4f6;color:#6b7280;border:none;padding:12px\x2014px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Clear\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20Results\x20area\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22mpesa-results\x22\x20style=\x22margin-top:14px;display:none;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22mpesa-results-inner\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20id=\x22mpesa-post-all\x22\x20style=\x22width:100%;background:linear-gradient(135deg,#00a651,#007a3d);color:white;border:none;padding:13px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;margin-top:10px;font-family:inherit;display:none;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Log\x20All\x20Charges\x20to\x20Ledger\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20TAB:\x20Manual\x20Entry\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22tab-manual\x22\x20class=\x22mpesa-tab-content\x22\x20style=\x22padding:18px;display:none;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#fffbeb;border:1px\x20solid\x20#fde68a;border-radius:8px;padding:12px;margin-bottom:16px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20style=\x22margin:0;font-size:12px;color:#92400e;line-height:1.6;\x22>Use\x20this\x20when\x20you\x20know\x20the\x20transaction\x20amount\x20but\x20don\x27t\x20have\x20the\x20SMS.\x20Travis\x20will\x20calculate\x20the\x20Safaricom\x20charge\x20from\x20the\x20official\x20tariff.</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:grid;gap:12px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label\x20style=\x22font-size:11px;font-weight:600;color:#5a5a5a;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;\x22>Transaction\x20Type</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<select\x20id=\x22manual-type\x22\x20style=\x22width:100%;padding:9px\x2012px;border:1px\x20solid\x20#e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:white;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<option\x20value=\x22send\x22>Send\x20Money\x20(to\x20M-Pesa\x20number)</option>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<option\x20value=\x22paybill\x22>Paybill\x20/\x20Till\x20Number</option>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<option\x20value=\x22withdraw\x22>Agent\x20Withdrawal</option>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<option\x20value=\x22airtime\x22>Airtime\x20Purchase</option>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<option\x20value=\x22custom\x22>Custom\x20Charge\x20Amount</option>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</select>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label\x20style=\x22font-size:11px;font-weight:600;color:#5a5a5a;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;\x22>Amount\x20Transacted\x20(KSh)</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20id=\x22manual-amount\x22\x20type=\x22number\x22\x20placeholder=\x22e.g.\x202500\x22\x20style=\x22width:100%;padding:9px\x2012px;border:1px\x20solid\x20#e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22manual-charge-row\x22\x20style=\x22display:none;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label\x20style=\x22font-size:11px;font-weight:600;color:#5a5a5a;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;\x22>Charge\x20Amount\x20(KSh)</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20id=\x22manual-charge\x22\x20type=\x22number\x22\x20placeholder=\x22e.g.\x2033\x22\x20style=\x22width:100%;padding:9px\x2012px;border:1px\x20solid\x20#e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22manual-lookup-result\x22\x20style=\x22display:none;background:#f0fdf4;border:1px\x20solid\x20#86efac;border-radius:8px;padding:12px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:#166534;font-weight:600;text-transform:uppercase;letter-spacing:.05em;\x22>Safaricom\x20Charge</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22manual-lookup-val\x22\x20style=\x22font-size:22px;font-weight:800;color:#15803d;margin-top:2px;\x22>KSh\x200</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22manual-lookup-note\x22\x20style=\x22font-size:11px;color:#4ade80;margin-top:2px;\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label\x20style=\x22font-size:11px;font-weight:600;color:#5a5a5a;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;\x22>Description\x20(optional)</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20id=\x22manual-desc\x22\x20type=\x22text\x22\x20placeholder=\x22e.g.\x20Sent\x20rent\x20to\x20landlord\x22\x20style=\x22width:100%;padding:9px\x2012px;border:1px\x20solid\x20#e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20id=\x22manual-log-btn\x22\x20style=\x22background:#00a651;color:white;border:none;padding:13px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Log\x20This\x20Charge\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20TAB:\x20Tariff\x20Table\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22tab-tariff\x22\x20class=\x22mpesa-tab-content\x22\x20style=\x22padding:18px;display:none;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:grid;grid-template-columns:1fr\x201fr;gap:10px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:12px;font-weight:700;color:#166534;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;\x22>📤\x20Send\x20Money</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<table\x20style=\x22width:100%;border-collapse:collapse;font-size:11.5px;\x22\x20id=\x22tariff-send\x22></table>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:12px;font-weight:700;color:#166534;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;\x22>🏧\x20Withdrawal</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<table\x20style=\x22width:100%;border-collapse:collapse;font-size:11.5px;\x22\x20id=\x22tariff-withdraw\x22></table>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22margin-top:12px;background:#f0fdf4;border-radius:8px;padding:10px;font-size:11px;color:#166534;line-height:1.6;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<strong>Note:</strong>\x20Buy\x20Goods\x20(Till)\x20and\x20Paybill\x20transactions\x20to\x20most\x20billers\x20are\x20<strong>free</strong>\x20(KSh\x200\x20charge).\x20Airtime\x20purchases\x20are\x20also\x20free.\x20Charges\x20above\x20are\x20per\x20the\x20Safaricom\x20official\x20tariff.\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20Status\x20bar\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22mpesa-status\x22\x20style=\x22padding:10px\x2018px;background:#f9fafb;border-top:1px\x20solid\x20#f0f0f0;font-size:12px;color:#6b7280;display:none;\x22></div>\x0a\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20', 'onerror', 'amount', 'fuliza', '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', 'title', 'Withdrawal', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:#9ca3af;padding:6px\x202px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', '17733GgCtsR', 'charge', '#manual-lookup-val', 'error', 'taskbar-clock', 'nav-item', 'custom', '#mpesa-post-all', '<span\x20class=\x22nav-icon\x22>📱</span>\x20M-Pesa\x20Charges', '\x20Logged!', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22border:1px\x20solid\x20#fde68a;border-radius:8px;padding:9px\x2013px;margin-bottom:6px;background:#fffbeb;opacity:0.8;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;justify-content:space-between;align-items:center;gap:8px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22font-size:10px;font-weight:700;background:#fef3c7;color:#92400e;padding:2px\x207px;border-radius:20px;\x22>', 'className', 'Send\x20Money', 'Logging…', 'DOMContentLoaded', 'toUpperCase', 'Buy\x20Goods', 'buy_goods', 'test', 'nextSibling', 'random', '#manual-lookup-note', '#mpesa-clear-btn', 'style', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:#4ade80;text-align:right;\x22>', 'TRANSACTION', ')\x20logged\x20to\x20your\x20ledger\x20as\x20Bills\x20expenses.', '#manual-charge', 'M-Pesa', '#dc2626', 'nav-sidebar', 'Fuliza\x20M-PESA', 'taskbar-btn', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#fffbeb;border:1px\x20solid\x20#fde68a;border-radius:8px;padding:12px;text-align:center;margin-top:6px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:600;color:#92400e;\x22>All\x20transactions\x20already\x20logged</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:12px;color:#b45309;margin-top:3px;\x22>No\x20new\x20charges\x20to\x20import.</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'exec', 'join', 'getAll', '#f9fafb', 'stringify', 'querySelector', 'raw', 'split', 'transactions', 'taskbar', '#tab-', 'mpesa-modal', 'withdraw', 'function', 'color', '.mpesa-tab', 'desc', 'nav-mpesa', 'position:fixed;inset:0;z-index:7000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(10px);', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'Most\x20Paybill/Till\x20transactions\x20are\x20free.', 'slice', '#16a34a', 'max', 'Fuliza\x20Charge', '#166534', 'withdrawal', 'oninput', 'reduce', 'Log\x20All\x20Charges\x20to\x20Ledger', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'replace', '\x20charge', 'classList', 'tab', '731736EAqlnQ', '#manual-desc', 'display', '5492619CwlGZY', 'MANUAL', 'block', 'map', 'trim', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22border:1px\x20solid\x20#e5e7eb;border-radius:8px;padding:11px\x2013px;margin-bottom:8px;background:white;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;justify-content:space-between;align-items:flex-start;gap:8px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22flex:1;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:6px;margin-bottom:3px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22font-size:14px;\x22>', '#mpesa-parse-btn', '#fef2f2', '\x20transaction', 'label', 'startsWith', '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22font-size:10px;font-weight:700;background:#dcfce7;color:#166534;padding:2px\x207px;border-radius:20px;\x22>', 'some', 'objectStore', 'toLowerCase', 'parse', 'button', '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'match', 'undefined', '#nav-sidebar\x20.sidebar-footer', 'onchange', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#fef2f2;border:1px\x20solid\x20#fecaca;border-radius:8px;padding:14px;text-align:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:20px;margin-bottom:6px;\x22>🤔</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:600;color:#991b1b;\x22>No\x20M-Pesa\x20messages\x20detected</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:12px;color:#b91c1c;margin-top:4px;line-height:1.6;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Make\x20sure\x20you\x20paste\x20the\x20<strong>full\x20SMS\x20text</strong>.<br>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Supported:\x20Send\x20Money,\x20Withdraw,\x20Buy\x20Goods,\x20Paybill,\x20Airtime,\x20Fuliza.\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'none', '#mpesa-status', '#manual-log-btn', 'appendChild', '#f0fdf4', 'Received', 'Failed\x20to\x20log:\x20', '273696odedOI', 'send', 'transaction', 'createElement', '\x20(KSh\x20', 'now', '#manual-amount', '190494QVAgdw', 'target', 'results', 'floor', 'message', '[MpesaTracker]\x20Failed\x20to\x20log:', '756748NoofRy', '#mpesa-results-inner', 'min', 'Amount\x20out\x20of\x20range', 'getElementById', '#991b1b', 'querySelectorAll', 'value', 'dataset', 'transfer', 'filter', '5DsWUBC', '\x20charge\x20logged\x20as\x20Bills\x20expense.', 'toLocaleString', '</div>', 'rgba(255,255,255,0.8)', 'contains', 'Airtime', '#mpesa-results', 'add', '\x20to\x20', 'cssText', 'flex', 'FULIZA-', '1bpvVwm', 'unshift', 'M-Pesa\x20Transaction', '#mpesa-sms-input', 'Paybill', 'forEach', 'readonly', 'linear-gradient(135deg,#00a651,#007a3d)', '<div\x20style=\x22font-size:12.5px;color:#374151;\x22>To:\x20', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr\x20style=\x22background:', 'has', 'onsuccess', 'onclick', '</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>', 'white', 'length', 'travisMpesa', '344ydwfoc', 'type', 'ref', '168LGFDPc', 'receive', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<thead>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr\x20style=\x22background:#f0fdf4;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<th\x20style=\x22padding:5px\x208px;text-align:left;font-size:10px;color:#166534;font-weight:700;border-bottom:1px\x20solid\x20#bbf7d0;\x22>Range\x20(KSh)</th>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<th\x20style=\x22padding:5px\x208px;text-align:right;font-size:10px;color:#166534;font-weight:700;border-bottom:1px\x20solid\x20#bbf7d0;\x22>Charge</th>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</thead>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<tbody>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', '</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22padding:5px\x208px;font-size:11px;font-weight:700;color:', 'push', 'innerHTML', '.mpesa-tab-content', '\x20with\x20KSh\x200\x20charge\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20(', 'textContent', 'Bills', 'M-Pesa\x20charge\x20—\x20', 'paybill', 'en-KE', 'insertBefore', 'background', '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:#92400e;margin-top:3px;\x22>Duplicate\x20—\x20already\x20logged,\x20will\x20not\x20be\x20re-imported</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:15px;font-weight:700;color:#b45309;flex-shrink:0;\x22>KSh\x20', 'button[onclick*=\x22showTxModal\x22]', 'put', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20</tbody>', 'TravisGuardian_v1.0', 'tariff-send', 'open', 'airtime', 'disabled', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#fef2f2;border:1px\x20solid\x20#fecaca;border-radius:8px;padding:14px;text-align:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:28px;margin-bottom:8px;\x22>🚫</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:13px;font-weight:700;color:#991b1b;\x22>This\x20doesn\x27t\x20look\x20like\x20an\x20M-Pesa\x20message</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:12px;color:#b91c1c;margin-top:6px;line-height:1.7;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Travis\x20only\x20processes\x20Safaricom\x20M-Pesa\x20SMS\x20messages.<br>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Please\x20paste\x20a\x20genuine\x20M-Pesa\x20confirmation\x20message.\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>', 'tb-mpesa', 'readwrite', 'NEWMPESA', 'mpesa', 'objectStoreNames', 'Airtime\x20purchases\x20are\x20free\x20on\x20M-Pesa.', 'tariff-withdraw', 'result', 'recipient', '#6b7280', 'KSh\x20', '#manual-lookup-result', '#nav-sidebar\x20>\x20div[style*=\x22overflow\x22]', '661010cCIbXr', 'KSh\x200', '#mpesa-close', 'loading', 'dash', ';\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22padding:5px\x208px;font-size:11px;color:#374151;border-bottom:1px\x20solid\x20#f3f4f6;\x22>', 'close', '#manual-type'];
     _0x5909 = function() {
         return _0x349956;
     };
     return _0x5909();
-}
+},thats my file,go through it first donnot produce codes yes,since i need us to discuss first
