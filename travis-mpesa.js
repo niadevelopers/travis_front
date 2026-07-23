@@ -197,17 +197,142 @@
         });
     }
     async function _0x2bc494(_0x197aaa) {
-        const _0x3b25b6 = _0x34b2;
-        if (_0x197aaa[_0x3b25b6(0x12b)] <= 0x0) return null;
-        const _0x23367b = _0x3b25b6(0xfc) + _0x197aaa[_0x3b25b6(0xa4)] + (_0x197aaa[_0x3b25b6(0x113)] ? _0x3b25b6(0xda) + _0x197aaa[_0x3b25b6(0x113)] : '') + '\x20(' + _0x197aaa[_0x3b25b6(0xf1)] + ')',
-            _0x35518e = {
-                'id': Date['now']() + Math[_0x3b25b6(0xc3)](Math[_0x3b25b6(0x13e)]() * 0x3e8),
-                'debit': _0x3b25b6(0xfb),
-                'credit': _0x3b25b6(0x146),
-                'amount': _0x197aaa[_0x3b25b6(0x12b)],
-                'desc': _0x23367b
-            };
-        return typeof saveData === _0x3b25b6(0x82) && typeof state !== _0x3b25b6(0xae) ? (await saveData('tx', _0x35518e), state[_0x3b25b6(0x7d)][_0x3b25b6(0xdf)](_0x35518e)) : await _0x5088ad(_0x35518e), _0x35518e;
+        try {
+            const _0x1a2b3c = _0x197aaa['type'],
+                _0x2b3c4d = _0x197aaa['ref'],
+                _0x3c4d5e = Number(_0x197aaa['amount']) || 0x0,
+                _0x4d5e6f = _0x197aaa['recipient'] || '',
+                _0x5e6f70 = Number(_0x197aaa['charge']) || 0x0,
+                _0x6f7081 = !!_0x197aaa['isFuliza'] || _0x1a2b3c === 'fuliza';
+
+            if (!_0x197aaa['direction']) {
+                _0x197aaa['direction'] = _0x1a2b3c === 'receive' ? 'incoming' : 'outgoing';
+            }
+
+            if (_0x3c4d5e <= 0x0 && _0x5e6f70 <= 0x0 && !_0x6f7081) return null;
+
+            const _0x7081a2 = (_0x9c => Number(_0x9c).toLocaleString('en-KE')),
+                _0x81a2b3 = Date['now']() + Math['floor'](Math['random']() * 0x3e8),
+                _0x92b3c4 = [];
+
+            if (_0x6f7081) {
+                if (_0x3c4d5e > 0x0) {
+                    _0x92b3c4['push']({
+                        'id': _0x81a2b3,
+                        'debit': 'Fuliza\x20Repayment',
+                        'credit': 'Cash',
+                        'amount': _0x3c4d5e,
+                        'desc': 'Fuliza\x20repayment\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20(REF:\x20' + _0x2b3c4d + ')'
+                    });
+                }
+                if (_0x5e6f70 > 0x0) {
+                    _0x92b3c4['push']({
+                        'id': _0x81a2b3 + _0x92b3c4['length'],
+                        'debit': 'M-Pesa\x20Charge',
+                        'credit': 'Cash',
+                        'amount': _0x5e6f70,
+                        'desc': 'Fuliza\x20charge\x20KSh\x20' + _0x7081a2(_0x5e6f70) + '\x20(REF:\x20' + _0x2b3c4d + ')'
+                    });
+                }
+            } else if (_0x1a2b3c === 'receive') {
+                _0x92b3c4['push']({
+                    'id': _0x81a2b3,
+                    'debit': 'Cash',
+                    'credit': _0x4d5e6f,
+                    'amount': _0x3c4d5e,
+                    'desc': 'Received\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20from\x20' + _0x4d5e6f + '\x20(REF:\x20' + _0x2b3c4d + ')'
+                });
+            } else if (_0x1a2b3c === 'send') {
+                _0x92b3c4['push']({
+                    'id': _0x81a2b3,
+                    'debit': _0x4d5e6f,
+                    'credit': 'Cash',
+                    'amount': _0x3c4d5e,
+                    'desc': 'SEND\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20to\x20' + _0x4d5e6f + '\x20(charge:\x20KSh\x20' + _0x7081a2(_0x5e6f70) + ')\x20(REF:\x20' + _0x2b3c4d + ')'
+                });
+                if (_0x5e6f70 > 0x0) {
+                    _0x92b3c4['push']({
+                        'id': _0x81a2b3 + 0x1,
+                        'debit': 'M-Pesa\x20Charge',
+                        'credit': 'Cash',
+                        'amount': _0x5e6f70,
+                        'desc': 'M-Pesa\x20charge\x20KSh\x20' + _0x7081a2(_0x5e6f70) + '\x20for\x20REF:\x20' + _0x2b3c4d
+                    });
+                }
+            } else if (_0x1a2b3c === 'withdraw') {
+                _0x92b3c4['push']({
+                    'id': _0x81a2b3,
+                    'debit': 'M-Pesa\x20Withdrawal',
+                    'credit': 'Cash',
+                    'amount': _0x3c4d5e,
+                    'desc': 'WITHDRAW\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20from\x20' + _0x4d5e6f + '\x20(charge:\x20KSh\x20' + _0x7081a2(_0x5e6f70) + ')\x20(REF:\x20' + _0x2b3c4d + ')'
+                });
+                if (_0x5e6f70 > 0x0) {
+                    _0x92b3c4['push']({
+                        'id': _0x81a2b3 + 0x1,
+                        'debit': 'M-Pesa\x20Charge',
+                        'credit': 'Cash',
+                        'amount': _0x5e6f70,
+                        'desc': 'M-Pesa\x20charge\x20KSh\x20' + _0x7081a2(_0x5e6f70) + '\x20for\x20REF:\x20' + _0x2b3c4d
+                    });
+                }
+            } else if (_0x1a2b3c === 'paybill' || _0x1a2b3c === 'buy_goods') {
+                _0x92b3c4['push']({
+                    'id': _0x81a2b3,
+                    'debit': _0x4d5e6f || 'Paybill',
+                    'credit': 'Cash',
+                    'amount': _0x3c4d5e,
+                    'desc': 'PAYBILL\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20to\x20' + _0x4d5e6f + '\x20(REF:\x20' + _0x2b3c4d + ')'
+                });
+                if (_0x5e6f70 > 0x0) {
+                    _0x92b3c4['push']({
+                        'id': _0x81a2b3 + 0x1,
+                        'debit': 'M-Pesa\x20Charge',
+                        'credit': 'Cash',
+                        'amount': _0x5e6f70,
+                        'desc': 'M-Pesa\x20charge\x20KSh\x20' + _0x7081a2(_0x5e6f70) + '\x20for\x20REF:\x20' + _0x2b3c4d
+                    });
+                }
+            } else if (_0x1a2b3c === 'airtime') {
+                _0x92b3c4['push']({
+                    'id': _0x81a2b3,
+                    'debit': 'Airtime\x20Purchase',
+                    'credit': 'Cash',
+                    'amount': _0x3c4d5e,
+                    'desc': 'AIRTIME\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20for\x20' + _0x4d5e6f + '\x20(REF:\x20' + _0x2b3c4d + ')'
+                });
+            } else if (_0x5e6f70 > 0x0) {
+                _0x92b3c4['push']({
+                    'id': _0x81a2b3,
+                    'debit': 'M-Pesa\x20Charge',
+                    'credit': 'Cash',
+                    'amount': _0x5e6f70,
+                    'desc': 'M-Pesa\x20charge\x20—\x20KSh\x20' + _0x7081a2(_0x5e6f70) + '\x20(' + _0x2b3c4d + ')'
+                });
+            }
+
+            if (_0x92b3c4['length'] === 0x0) return null;
+
+            const _0xa3c4d5 = typeof saveData !== 'undefined' && typeof state !== 'undefined';
+            for (const _0xb4d5e6 of _0x92b3c4) {
+                if (_0xa3c4d5) {
+                    await saveData('tx', _0xb4d5e6);
+                    state['transactions']['push'](_0xb4d5e6);
+                } else {
+                    await _0x5088ad(_0xb4d5e6);
+                }
+            }
+            if (_0xa3c4d5) {
+                if (typeof updateRuleSuggestion === 'function') updateRuleSuggestion();
+                if (typeof nav === 'function') nav('dash');
+                if (typeof saveBackup === 'function') await saveBackup();
+            }
+
+            return _0x92b3c4[0x0];
+        } catch (_0xc5d6e7) {
+            console['error']('[MpesaTracker]\x20_0x2bc494\x20error:', _0xc5d6e7);
+            return null;
+        }
     }
 
     function _0x5088ad(_0x548d18) {
@@ -512,7 +637,7 @@
         const _0x340d9c = _0x34b2,
             _0x102bc3 = _0x5331b4[_0x340d9c(0x7a)]('#manual-type')[_0x340d9c(0xcd)],
             _0x30aa97 = parseFloat(_0x5331b4[_0x340d9c(0x7a)](_0x340d9c(0xbf))[_0x340d9c(0xcd)]) || 0x0,
-            _0x102c02 = _0x5331b4[_0x340d9c(0x7a)](_0x340d9c(0x99))['value'][_0x340d9c(0x9f)]() || 'M-Pesa\x20transaction\x20charge',
+            _0x102c02 = _0x5331b4['querySelector'](_0x340d9c(0x99))['value'][_0x340d9c(0x9f)]() || 'M-Pesa\x20transaction\x20charge',
             _0x26cea5 = _0x5331b4['querySelector'](_0x340d9c(0xb4));
         let _0x5cec01 = 0x0;
         if (_0x102bc3 === 'custom') _0x5cec01 = parseFloat(_0x5331b4[_0x340d9c(0x7a)](_0x340d9c(0x145))[_0x340d9c(0xcd)]) || 0x0;
