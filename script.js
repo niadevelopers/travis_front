@@ -961,23 +961,26 @@ function nav(_0x53a580) {
         if (_0x2af92b['key'] === _0x1de39a(0x384)) handleAsk();
     }));
     if (_0x53a580 === _0x107103(0x209)) {
-        // ── LEDGER: Show only current month transactions ──
+        // ── LEDGER: Only show current month transactions ──
         const now = new Date();
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
         
-        // Filter transactions to only current month
-        const currentMonthTxs = state[_0x107103(0x26b)].filter(tx => {
+        // Filter only current month
+        const currentMonthTxs = state[_0x107103(0x26b)].filter(function(tx) {
             const txDate = new Date(tx['id']);
             return txDate.getMonth() === currentMonth && txDate.getFullYear() === currentYear;
         });
         
-        // Sort by date (newest first)
-        const sortedTxs = currentMonthTxs.sort((a, b) => b['id'] - a['id']);
+        // Sort newest first
+        const sortedTxs = currentMonthTxs.sort(function(a, b) {
+            return b['id'] - a['id'];
+        });
         
-        let _0x567f4f = sortedTxs.map(_0x4bd4b3 => '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22font-family:monospace;font-size:11px;color:var(--win-text-3);white-space:nowrap;\x22>' + new Date(_0x4bd4b3['id'])[_0x107103(0x229)](_0x107103(0x396)) + _0x107103(0x25c) + _0x4bd4b3[_0x107103(0x207)] + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;gap:6px;margin-top:4px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22chip\x20chip-green\x22\x20style=\x22font-size:10px;\x22>' + _0x4bd4b3[_0x107103(0x230)] + _0x107103(0x3cc) + _0x4bd4b3[_0x107103(0x40c)] + '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22text-align:right;font-family:monospace;color:var(--win-green);font-weight:600;white-space:nowrap;\x22>+' + _0x4bd4b3[_0x107103(0x1c1)][_0x107103(0x3c9)]() + _0x107103(0x231) + _0x4bd4b3[_0x107103(0x1c1)][_0x107103(0x3c9)]() + _0x107103(0x2e6))['join']('');
+        let _0x567f4f = sortedTxs.map(function(_0x4bd4b3) {
+            return '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22font-family:monospace;font-size:11px;color:var(--win-text-3);white-space:nowrap;\x22>' + new Date(_0x4bd4b3['id'])[_0x107103(0x229)](_0x107103(0x396)) + _0x107103(0x25c) + _0x4bd4b3[_0x107103(0x207)] + '</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;gap:6px;margin-top:4px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22chip\x20chip-green\x22\x20style=\x22font-size:10px;\x22>' + _0x4bd4b3[_0x107103(0x230)] + _0x107103(0x3cc) + _0x4bd4b3[_0x107103(0x40c)] + '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20style=\x22text-align:right;font-family:monospace;color:var(--win-green);font-weight:600;white-space:nowrap;\x22>+' + _0x4bd4b3[_0x107103(0x1c1)][_0x107103(0x3c9)]() + _0x107103(0x231) + _0x4bd4b3[_0x107103(0x1c1)][_0x107103(0x3c9)]() + _0x107103(0x2e6);
+        }).join('');
         
-        // Get current month name for display
         const monthName = now.toLocaleString('en-KE', { month: 'long' });
         const year = now.getFullYear();
         const txCount = sortedTxs.length;
