@@ -148,7 +148,7 @@
             if (_0x23ac4d > 0x0) return {
                 'type': _0x4db353(0x125),
                 'label': _0x4db353(0x8d),
-                'ref': _0x4db353(0xdd) + Date[_0x4db353(0xbe)](),
+                'ref': 'FULIZA-' + Date[_0x4db353(0xbe)](),
                 'amount': 0x0,
                 'recipient': _0x4db353(0x149),
                 'charge': _0x23ac4d,
@@ -169,7 +169,7 @@
             }
         }
 
-        // ─── EXTRACT TRANSACTION CHARGE (ONLY from explicit pattern) ────
+        // ─── EXTRACT TRANSACTION CHARGE ───────────────────────────────────
         const chargeMatch = _0x15f829['match'](_0x296380);
         let charge = chargeMatch ? parseFloat(chargeMatch[0x1][_0x4db353(0x94)](/,/g, '')) : 0;
 
@@ -186,20 +186,15 @@
         let balance = balanceMatch ? parseFloat(balanceMatch[1].replace(/,/g, '')) : 0;
 
         // ─── FIND THE MAIN TRANSACTION AMOUNT ────────────────────────────
-        // The main amount is the FIRST amount that is NOT the balance and NOT the charge
         let mainAmount = 0;
         for (const amt of allAmounts) {
-            // Skip if this is the balance
             if (balance > 0 && Math.abs(amt - balance) < 0.01) continue;
-            // Skip if this is the charge
             if (charge > 0 && Math.abs(amt - charge) < 0.01) continue;
-            // First non-balance, non-charge amount is the main amount
             if (mainAmount === 0) {
                 mainAmount = amt;
             }
         }
 
-        // Fallback: if no main amount found, use the first amount
         if (mainAmount === 0 && allAmounts.length > 0) {
             mainAmount = allAmounts[0];
         }
@@ -207,15 +202,13 @@
         const { type, label } = _0xa65199(_0x15f829);
         const recipient = _0x23a5b0(_0x15f829);
 
-        // ─── DETERMINE DEBIT/CREDIT BASED ON DIRECTION ──────────────────
+        // ─── DETERMINE DEBIT/CREDIT FOR MAIN TRANSACTION ──────────────────
         let debitAccount, creditAccount;
 
         if (direction === 'incoming') {
-            // Money arrives: Sender → Cash
             debitAccount = recipient || 'M-Pesa';
             creditAccount = 'Cash';
         } else if (direction === 'contra') {
-            // Money moves within ecosystem (deposits, withdrawals)
             if (/deposit|deposited|bank deposit|cash deposit|agent deposit/i.test(_0x15f829)) {
                 debitAccount = 'Cash';
                 creditAccount = 'Bank / M-Pesa';
@@ -224,7 +217,6 @@
                 creditAccount = 'Cash';
             }
         } else {
-            // Outgoing or unknown: Cash → Recipient
             debitAccount = 'Cash';
             creditAccount = recipient || 'M-Pesa';
         }
@@ -283,9 +275,15 @@
                             const _0xf01077 = _0x3d423c,
                                 _0x52aab1 = (_0x1bee90[_0xf01077(0x85)] || '')[_0xf01077(0xad)](/\(([A-Z0-9]{10})\)/);
                             if (_0x52aab1) _0x42b26e[_0xf01077(0xd9)](_0x52aab1[0x1]);
-                            // Also check for REF: pattern
                             const refMatch = (_0x1bee90[_0xf01077(0x85)] || '')['match'](/REF:\s*([A-Z0-9]{10})/);
                             if (refMatch) _0x42b26e[_0xf01077(0xd9)](refMatch[0x1]);
+                            // Also store raw desc for fallback deduplication
+                            const rawDesc = _0x1bee90[_0xf01077(0x85)] || '';
+                            if (rawDesc) {
+                                // Create hash of first 80 chars for fuzzy matching
+                                const hash = rawDesc.substring(0, 80).replace(/[0-9]/g, '');
+                                _0x42b26e['add']('hash:' + hash);
+                            }
                         });
                         _0x523738(_0x42b26e);
                     }, _0x47faf8[_0x3d423c(0x123)] = () => {
@@ -298,7 +296,7 @@
         });
     }
 
-    // ─── TRANSACTION LOGGER ──────────────────────────────────────────────
+    // ─── TRANSACTION LOGGER - DOUBLE ENTRY WITH CHARGE AS EXPENSE ─────────
     async function _0x2bc494(_0x197aaa) {
         try {
             const _0x1a2b3c = _0x197aaa['type'];
@@ -346,20 +344,57 @@
                 });
             }
 
-            // ─── CHARGE TRANSACTION ────────────────────────────────────────
+            // ─── CHARGE TRANSACTION - CORRECT DOUBLE ENTRY ──────────────
             if (_0x5e6f70 > 0) {
+                // Charge is an expense: Debit "Bills" (expense), Credit "Cash" (or "Bank")
+                // This reflects that the charge is a cost incurred, not a contra entry
+                const chargeDesc = `M-Pesa charge KSh ${_0x7081a2(_0x5e6f70)} (REF: ${_0x2b3c4d})`;
+
+                // For personal accounts: Credit "Cash" (money leaving your M-Pesa)
+                // For business accounts: Could credit "Bank" but we use "Cash" as the credit account
+                // The charge reduces your cash/bank balance
                 transactions.push({
                     'id': _0x81a2b3 + transactions.length,
-                    'debit': 'M-Pesa Charge',
-                    'credit': 'Cash',
+                    'debit': 'Bills',      // Expense account - charge is a cost
+                    'credit': 'Cash',       // Cash/Bank account - money leaves
                     'amount': _0x5e6f70,
-                    'desc': `M-Pesa charge KSh ${_0x7081a2(_0x5e6f70)} (REF: ${_0x2b3c4d})`
+                    'desc': chargeDesc
                 });
+
+                // Also ensure the main transaction's credit account is correctly set
+                // For outgoing transactions, the main amount already debits Cash and credits Recipient
+                // The charge entry separately debits Bills and credits Cash
+                // This is proper double entry: 
+                // 1. Cash → Recipient (main amount)
+                // 2. Bills → Cash (charge amount)
+                // Net effect: Cash decreases by (main + charge), Recipient increases by main, Bills increases by charge
             }
 
             if (transactions.length === 0) return null;
 
             const useMainFile = typeof saveData !== 'undefined' && typeof state !== 'undefined';
+
+            // ─── STRICT DEDUPLICATION CHECK ──────────────────────────────
+            // Check if this exact transaction already exists in the ledger
+            const existingRefs = await _0xfe8e01();
+            const refToCheck = _0x2b3c4d;
+            
+            // Create a unique hash for this transaction based on key fields
+            const txHash = `${_0x3c4d5e}|${_0x5e6f70}|${_0x4d5e6f.substring(0, 10)}|${_0x1a2b3c}`;
+            
+            // Check if this transaction is already recorded
+            let isDuplicate = false;
+            for (const existingRef of existingRefs) {
+                if (existingRef === refToCheck || existingRef === 'hash:' + txHash.substring(0, 40)) {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+
+            if (isDuplicate) {
+                console.log('[MpesaTracker] Duplicate transaction skipped:', refToCheck);
+                return null;
+            }
 
             for (const tx of transactions) {
                 if (useMainFile) {
