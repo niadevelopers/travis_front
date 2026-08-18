@@ -67,15 +67,52 @@
 
     // ─── EXTRACT M-PESA CODE - PRIMARY UNIQUE IDENTIFIER ──────────────────
     function extractMpesaCode(_0x1022c8) {
-        // Match the exact M-PESA code format: 2 letters + 8 alphanumeric = 10 chars
         const codeMatch = _0x1022c8.match(/\b([A-Z]{2}[0-9A-Z]{8})\b/);
         if (codeMatch) return codeMatch[1];
-        // Fallback: any 10-character alphanumeric at start
         const altMatch = _0x1022c8.match(/^([A-Z0-9]{10})\s/);
         if (altMatch) return altMatch[1];
         return null;
     }
 
+    // ─── EXTRACT RECIPIENT/SENDER ─────────────────────────────────────────
+    function _0x23a5b0(_0x134efc) {
+        const _0x1b2238 = _0x34b2;
+        let _0x18a2b4;
+        
+        // Sent to patterns
+        _0x18a2b4 = _0x134efc[_0x1b2238(0xad)](/sent to\s+(.+?)\s+(?:\d{7,}|on\s+[\d/])/i);
+        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
+        _0x18a2b4 = _0x134efc['match'](/sent to\s+(.+?)\s+for account/i);
+        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
+        
+        // Paid to patterns
+        _0x18a2b4 = _0x134efc[_0x1b2238(0xad)](/paid\s+(?:Ksh|KES)[\d,\.]+\s+to\s+\d+\s*[-–]\s*(.+?)\s+on\s/i);
+        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
+        _0x18a2b4 = _0x134efc[_0x1b2238(0xad)](/paid to\s+(.+?)(?:\.\s*(?:Till|on)|\.?\s*New M-?PESA|\s+on\s+[\d/])/i);
+        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
+        
+        // Received from patterns
+        _0x18a2b4 = _0x134efc[_0x1b2238(0xad)](/from\s+\d+\s*[-–]\s*(.+?)\s+on\s/i);
+        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
+        _0x18a2b4 = _0x134efc[_0x1b2238(0xad)](/from\s+\d+\s*[-–]\s*(.+?)\s*New M-?PESA/i);
+        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
+        _0x18a2b4 = _0x134efc[_0x1b2238(0xad)](/received\s+(?:Ksh|KES)[\d,\.]+\s+from\s+(.+?)\s+(?:\d{7,}|on\s+[\d/])/i);
+        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
+        
+        // Deposits
+        _0x18a2b4 = _0x134efc.match(/deposited by\s+(.+?)\s+(?:\d{5,}|on\s+)/i);
+        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
+        _0x18a2b4 = _0x134efc.match(/deposited to\s+(.+?)\s+(?:\d{7,}|on\s+)/i);
+        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
+        
+        // Withdrawals
+        _0x18a2b4 = _0x134efc.match(/withdrawn from\s+(.+?)\s+(?:\d{5,}|on\s+)/i);
+        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
+        
+        return '';
+    }
+
+    // ─── DETERMINE TRANSACTION TYPE ──────────────────────────────────────
     function _0xa65199(_0x1022c8) {
         const _0x38da16 = _0x34b2,
             _0x9c3e4c = _0x1022c8[_0x38da16(0xa9)]();
@@ -115,70 +152,33 @@
             'type': 'send',
             'label': _0x38da16(0x136)
         };
+        if (/cash deposited|deposit/i ['test'](_0x1022c8)) return {
+            'type': 'deposit',
+            'label': 'Cash Deposit'
+        };
         return {
             'type': _0x38da16(0x10e),
             'label': _0x38da16(0xe0)
         };
     }
 
-    function _0x23a5b0(_0x134efc) {
-        const _0x1b2238 = _0x34b2;
-        let _0x18a2b4;
-        _0x18a2b4 = _0x134efc[_0x1b2238(0xad)](/sent to\s+(.+?)\s+(?:\d{7,}|on\s+[\d/])/i);
-        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
-        _0x18a2b4 = _0x134efc['match'](/sent to\s+(.+?)\s+for account/i);
-        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
-        _0x18a2b4 = _0x134efc[_0x1b2238(0xad)](/paid\s+(?:Ksh|KES)[\d,\.]+\s+to\s+\d+\s*[-–]\s*(.+?)\s+on\s/i);
-        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
-        _0x18a2b4 = _0x134efc[_0x1b2238(0xad)](/paid to\s+(.+?)(?:\.\s*(?:Till|on)|\.?\s*New M-?PESA|\s+on\s+[\d/])/i);
-        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
-        _0x18a2b4 = _0x134efc[_0x1b2238(0xad)](/from\s+\d+\s*[-–]\s*(.+?)\s+on\s/i);
-        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
-        _0x18a2b4 = _0x134efc[_0x1b2238(0xad)](/from\s+\d+\s*[-–]\s*(.+?)\s*New M-?PESA/i);
-        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
-        _0x18a2b4 = _0x134efc[_0x1b2238(0xad)](/received\s+(?:Ksh|KES)[\d,\.]+\s+from\s+(.+?)\s+(?:\d{7,}|on\s+[\d/])/i);
-        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
-        // For deposits: "cash deposited by AGENT ALEX 98765"
-        _0x18a2b4 = _0x134efc.match(/deposited by\s+(.+?)\s+(?:\d{5,}|on\s+)/i);
-        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
-        // For withdrawals: "withdrawn from AGENT ALEX 98765"
-        _0x18a2b4 = _0x134efc.match(/withdrawn from\s+(.+?)\s+(?:\d{5,}|on\s+)/i);
-        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
-        return '';
-    }
-
-    // ─── MAIN PARSER - PROPERLY IDENTIFIES AMOUNTS IGNORING BALANCE ──────
+    // ─── MAIN PARSER - PROCESSES ALL MESSAGES ────────────────────────────
     function _0x28d4a7(_0x3e0ebd) {
         const _0x4db353 = _0x34b2,
             _0x15f829 = _0x3e0ebd[_0x4db353(0x9f)]();
         if (!_0x15f829 || _0x15f829.length < 20) return null;
 
-        // ─── EXTRACT M-PESA CODE - PRIMARY UNIQUE IDENTIFIER ─────────────
+        // ─── EXTRACT M-PESA CODE ──────────────────────────────────────────
         const mpesaCode = extractMpesaCode(_0x15f829);
-        if (!mpesaCode) return null; // Must have an M-PESA code
+        if (!mpesaCode) return null;
         
         // Check if it's an M-Pesa message
         const _0x52e783 = _0x5325d3[_0x4db353(0xa7)](_0x53c7b9 => _0x53c7b9[_0x4db353(0x13c)](_0x15f829));
         if (!_0x52e783) return null;
 
         const direction = detectMoneyDirection(_0x15f829);
-
-        // ─── CHECK FOR FULIZA CHARGE ──────────────────────────────────────
-        const _0x1e50bf = _0x15f829[_0x4db353(0xad)](_0x15d1a4);
-        if (_0x1e50bf) {
-            const _0x23ac4d = parseFloat(_0x1e50bf[0x1][_0x4db353(0x94)](/,/g, ''));
-            if (_0x23ac4d > 0x0) return {
-                'type': _0x4db353(0x125),
-                'label': _0x4db353(0x8d),
-                'ref': mpesaCode,
-                'amount': 0x0,
-                'recipient': _0x4db353(0x149),
-                'charge': _0x23ac4d,
-                'direction': direction,
-                'raw': _0x15f829,
-                'mpesaCode': mpesaCode
-            };
-        }
+        const { type, label } = _0xa65199(_0x15f829);
+        const recipient = _0x23a5b0(_0x15f829);
 
         // ─── EXTRACT TRANSACTION CHARGE ───────────────────────────────────
         const chargeMatch = _0x15f829['match'](_0x296380);
@@ -210,26 +210,97 @@
             mainAmount = allAmounts[0];
         }
 
-        const { type, label } = _0xa65199(_0x15f829);
-        const recipient = _0x23a5b0(_0x15f829);
+        // ─── DETERMINE ACCOUNTING ENTRIES ─────────────────────────────────
+        // Determine debit and credit accounts based on transaction type
+        let debitAccount, creditAccount, transactionEntries = [];
 
-        // ─── DETERMINE DEBIT/CREDIT FOR MAIN TRANSACTION ──────────────────
-        let debitAccount, creditAccount;
-
-        if (direction === 'incoming') {
-            debitAccount = recipient || 'M-Pesa';
-            creditAccount = 'Cash';
-        } else if (direction === 'contra') {
-            if (/deposit|deposited|bank deposit|cash deposit|agent deposit/i.test(_0x15f829)) {
-                debitAccount = 'Cash';
-                creditAccount = 'Bank / M-Pesa';
-            } else {
-                debitAccount = 'Bank / M-Pesa';
+        // Always record the main transaction
+        if (mainAmount > 0) {
+            if (direction === 'incoming') {
+                // Money comes IN: Sender → Cash
+                debitAccount = recipient || 'M-Pesa';
                 creditAccount = 'Cash';
+                transactionEntries.push({
+                    'debit': debitAccount,
+                    'credit': creditAccount,
+                    'amount': mainAmount,
+                    'desc': `Received KSh ${mainAmount.toLocaleString()} from ${recipient || 'Unknown'} (${mpesaCode})`
+                });
+            } else if (direction === 'contra') {
+                // Money moves within ecosystem
+                if (/deposit|deposited|cash deposit|agent deposit/i.test(_0x15f829)) {
+                    transactionEntries.push({
+                        'debit': 'Cash',
+                        'credit': 'Bank / M-Pesa',
+                        'amount': mainAmount,
+                        'desc': `Cash Deposit KSh ${mainAmount.toLocaleString()} (${mpesaCode})`
+                    });
+                } else if (/withdraw|withdrawn/i.test(_0x15f829)) {
+                    transactionEntries.push({
+                        'debit': 'Bank / M-Pesa',
+                        'credit': 'Cash',
+                        'amount': mainAmount,
+                        'desc': `Cash Withdrawal KSh ${mainAmount.toLocaleString()} (${mpesaCode})`
+                    });
+                } else {
+                    transactionEntries.push({
+                        'debit': 'Bank / M-Pesa',
+                        'credit': 'Cash',
+                        'amount': mainAmount,
+                        'desc': `Transfer KSh ${mainAmount.toLocaleString()} (${mpesaCode})`
+                    });
+                }
+            } else {
+                // Outgoing: Cash → Recipient
+                let desc = '';
+                if (type === 'airtime') {
+                    desc = `Airtime Purchase KSh ${mainAmount.toLocaleString()} (${mpesaCode})`;
+                } else if (type === 'paybill' || type === 'buy_goods') {
+                    desc = `Paybill KSh ${mainAmount.toLocaleString()} to ${recipient || 'Paybill'} (${mpesaCode})`;
+                } else if (type === 'send') {
+                    desc = `Send Money KSh ${mainAmount.toLocaleString()} to ${recipient} (${mpesaCode})`;
+                } else {
+                    desc = `Payment KSh ${mainAmount.toLocaleString()} to ${recipient || 'Recipient'} (${mpesaCode})`;
+                }
+                transactionEntries.push({
+                    'debit': 'Cash',
+                    'credit': recipient || 'M-Pesa',
+                    'amount': mainAmount,
+                    'desc': desc
+                });
             }
-        } else {
-            debitAccount = 'Cash';
-            creditAccount = recipient || 'M-Pesa';
+        }
+
+        // ─── ADD CHARGE ENTRY - CORRECT DOUBLE ENTRY ─────────────────────
+        if (charge > 0) {
+            // Charge is an expense: Debit "Bills", Credit "Cash"
+            transactionEntries.push({
+                'debit': 'Bills',
+                'credit': 'Cash',
+                'amount': charge,
+                'desc': `M-Pesa charge KSh ${charge.toLocaleString()} (${mpesaCode})`
+            });
+        }
+
+        // ─── IF NO MAIN AMOUNT BUT CHARGE EXISTS (Fuliza) ────────────────
+        if (mainAmount === 0 && charge > 0) {
+            transactionEntries = [{
+                'debit': 'Bills',
+                'credit': 'Cash',
+                'amount': charge,
+                'desc': `Fuliza charge KSh ${charge.toLocaleString()} (${mpesaCode})`
+            }];
+        }
+
+        // ─── IF NO AMOUNTS AT ALL, STILL ACKNOWLEDGE THE MESSAGE ────────
+        if (transactionEntries.length === 0) {
+            // This should rarely happen, but we still want to acknowledge the message
+            transactionEntries.push({
+                'debit': 'Cash',
+                'credit': 'M-Pesa',
+                'amount': 0,
+                'desc': `Message acknowledged: ${_0x15f829.substring(0, 60)}... (${mpesaCode})`
+            });
         }
 
         return {
@@ -237,13 +308,14 @@
             'label': label,
             'ref': mpesaCode,
             'amount': mainAmount,
-            'recipient': recipient,
             'charge': charge,
+            'recipient': recipient,
             'direction': direction,
-            'debit': debitAccount,
-            'credit': creditAccount,
             'raw': _0x15f829,
-            'mpesaCode': mpesaCode
+            'entries': transactionEntries,
+            'mpesaCode': mpesaCode,
+            'hasCharge': charge > 0,
+            'hasAmount': mainAmount > 0
         };
     }
 
@@ -251,18 +323,18 @@
     function _0x856f67(_0x20cbfd) {
         const _0x269779 = _0x34b2;
         
-        // Split by M-PESA code pattern - each message starts with a code
+        // Split by M-PESA code pattern
         let messages = _0x20cbfd.split(/\n{2,}|(?=\b[A-Z]{2}[0-9A-Z]{8}\s+Confirmed)/g)
             .map(msg => msg.trim())
             .filter(msg => msg.length > 15);
         
-        // If no messages found with the pattern, try splitting by newlines
         if (messages.length === 0) {
             messages = _0x20cbfd.split(/\n/).filter(msg => msg.trim().length > 15);
         }
 
         const _0x510938 = [];
-        const _0x18a3e1 = new Set(); // Track by M-PESA code ONLY
+        const _0x18a3e1 = new Set();
+        let processedCount = 0;
         
         for (const _0x3e5027 of messages) {
             if (!_0x3e5027 || _0x3e5027.length < 15) continue;
@@ -270,7 +342,6 @@
             const _0x321556 = _0x28d4a7(_0x3e5027);
             if (!_0x321556) continue;
             
-            // Use M-PESA code as the definitive unique key - NO FALLBACK
             const key = _0x321556.mpesaCode;
             if (!key) continue;
             
@@ -281,6 +352,7 @@
             
             _0x18a3e1.add(key);
             _0x510938.push(_0x321556);
+            processedCount++;
         }
         
         console.log(`[MpesaTracker] Processed ${messages.length} messages, extracted ${_0x510938.length} transactions`);
@@ -309,12 +381,9 @@
                         const _0x42b26e = new Set();
                         (_0x47faf8[_0x3d423c(0x112)] || [])['forEach'](_0x1bee90 => {
                             const _0xf01077 = _0x3d423c;
-                            // Extract M-PESA code from description - STRICT match
                             const desc = _0x1bee90[_0xf01077(0x85)] || '';
-                            // Look for code in parentheses: (QG78HJ2K9L)
                             const codeMatch = desc.match(/\(([A-Z]{2}[0-9A-Z]{8})\)/);
                             if (codeMatch) _0x42b26e.add(codeMatch[1]);
-                            // Also check for raw M-PESA code
                             const rawMatch = desc.match(/\b([A-Z]{2}[0-9A-Z]{8})\b/);
                             if (rawMatch) _0x42b26e.add(rawMatch[1]);
                         });
@@ -329,90 +398,46 @@
         });
     }
 
-    // ─── TRANSACTION LOGGER - DOUBLE ENTRY WITH CHARGE AS EXPENSE ─────────
+    // ─── TRANSACTION LOGGER - RECORDS ALL ENTRIES ────────────────────────
     async function _0x2bc494(_0x197aaa) {
         try {
-            const _0x1a2b3c = _0x197aaa['type'];
             const _0x2b3c4d = _0x197aaa['ref'];
-            const _0x3c4d5e = Number(_0x197aaa['amount']) || 0;
-            const _0x4d5e6f = _0x197aaa['recipient'] || '';
             const _0x5e6f70 = Number(_0x197aaa['charge']) || 0;
-            const _0x6f7081 = !!_0x197aaa['isFuliza'] || _0x1a2b3c === 'fuliza';
-
-            const debit = _0x197aaa['debit'] || 'Cash';
-            const credit = _0x197aaa['credit'] || 'M-Pesa';
-            const direction = _0x197aaa['direction'] || (_0x1a2b3c === 'receive' ? 'incoming' : 'outgoing');
-
-            if (_0x3c4d5e <= 0 && _0x5e6f70 <= 0 && !_0x6f7081) return null;
-
-            const _0x7081a2 = (n) => Number(n).toLocaleString('en-KE');
-            const _0x81a2b3 = Date.now() + Math.floor(Math.random() * 1000);
-            const transactions = [];
-
-            // ─── MAIN TRANSACTION ──────────────────────────────────────────
-            if (_0x3c4d5e > 0) {
-                let desc = '';
-                if (_0x1a2b3c === 'receive' || direction === 'incoming') {
-                    desc = `Received KSh ${_0x7081a2(_0x3c4d5e)} from ${_0x4d5e6f || 'M-Pesa'} (${_0x2b3c4d})`;
-                } else if (direction === 'contra') {
-                    desc = `TRANSFER KSh ${_0x7081a2(_0x3c4d5e)}: ${debit} → ${credit} (${_0x2b3c4d})`;
-                } else if (_0x1a2b3c === 'airtime') {
-                    desc = `AIRTIME KSh ${_0x7081a2(_0x3c4d5e)} for ${_0x4d5e6f || 'phone'} (${_0x2b3c4d})`;
-                } else if (_0x1a2b3c === 'send') {
-                    desc = `SEND KSh ${_0x7081a2(_0x3c4d5e)} to ${_0x4d5e6f} (${_0x2b3c4d})`;
-                } else if (_0x1a2b3c === 'paybill' || _0x1a2b3c === 'buy_goods') {
-                    desc = `PAYBILL KSh ${_0x7081a2(_0x3c4d5e)} to ${_0x4d5e6f || 'Paybill'} (${_0x2b3c4d})`;
-                } else if (_0x1a2b3c === 'withdraw') {
-                    desc = `WITHDRAW KSh ${_0x7081a2(_0x3c4d5e)} from ${_0x4d5e6f || 'M-Pesa'} (${_0x2b3c4d})`;
-                } else {
-                    desc = `${_0x1a2b3c.toUpperCase()} KSh ${_0x7081a2(_0x3c4d5e)} (${_0x2b3c4d})`;
-                }
-
-                transactions.push({
-                    'id': _0x81a2b3,
-                    'debit': debit,
-                    'credit': credit,
-                    'amount': _0x3c4d5e,
-                    'desc': desc
-                });
-            }
-
-            // ─── CHARGE TRANSACTION - CORRECT DOUBLE ENTRY ──────────────
-            if (_0x5e6f70 > 0) {
-                // Charge is an expense: Debit "Bills" (expense), Credit "Cash"
-                const chargeDesc = `M-Pesa charge KSh ${_0x7081a2(_0x5e6f70)} (${_0x2b3c4d})`;
-
-                transactions.push({
-                    'id': _0x81a2b3 + transactions.length,
-                    'debit': 'Bills',      // Expense account
-                    'credit': 'Cash',       // Cash/Bank account
-                    'amount': _0x5e6f70,
-                    'desc': chargeDesc
-                });
-            }
-
-            if (transactions.length === 0) return null;
-
-            const useMainFile = typeof saveData !== 'undefined' && typeof state !== 'undefined';
-
-            // ─── STRICT DEDUPLICATION CHECK - ONLY M-PESA CODE ──────────
+            
+            // Get existing references for deduplication
             const existingRefs = await _0xfe8e01();
-            const refToCheck = _0x2b3c4d;
             
             // Check if this M-PESA code is already in the ledger
-            if (existingRefs.has(refToCheck)) {
-                console.log(`[MpesaTracker] Duplicate transaction skipped: ${refToCheck}`);
+            if (existingRefs.has(_0x2b3c4d)) {
+                console.log(`[MpesaTracker] Duplicate transaction skipped: ${_0x2b3c4d}`);
                 return null;
             }
 
-            // ─── SAVE TRANSACTIONS ────────────────────────────────────────
-            for (const tx of transactions) {
+            const entries = _0x197aaa['entries'] || [];
+            if (entries.length === 0) return null;
+
+            const useMainFile = typeof saveData !== 'undefined' && typeof state !== 'undefined';
+            const _0x81a2b3 = Date.now() + Math.floor(Math.random() * 1000);
+            const savedEntries = [];
+
+            // ─── SAVE EACH ENTRY ──────────────────────────────────────────
+            for (let i = 0; i < entries.length; i++) {
+                const entry = entries[i];
+                const tx = {
+                    'id': _0x81a2b3 + i,
+                    'debit': entry.debit || 'Cash',
+                    'credit': entry.credit || 'M-Pesa',
+                    'amount': entry.amount || 0,
+                    'desc': entry.desc || `Transaction (${_0x2b3c4d})`
+                };
+
                 if (useMainFile) {
                     await saveData('tx', tx);
                     state.transactions.push(tx);
                 } else {
                     await _0x5088ad(tx);
                 }
+                savedEntries.push(tx);
             }
 
             if (useMainFile) {
@@ -422,7 +447,7 @@
                 if (typeof updateLiveHud === 'function') updateLiveHud();
             }
 
-            return transactions[0];
+            return savedEntries[0];
         } catch (_0xc5d6e7) {
             console['error']('[MpesaTracker] Log error:', _0xc5d6e7);
             return null;
@@ -452,136 +477,42 @@
 
     // ─── SAFARICOM TARIFF TABLE ───────────────────────────────────────────
     const _0xbeb8fc = {
-        'send': [{
-            'min': 0x1,
-            'max': 0x31,
-            'charge': 0x0
-        }, {
-            'min': 0x32,
-            'max': 0x64,
-            'charge': 0x0
-        }, {
-            'min': 0x65,
-            'max': 0x1f4,
-            'charge': 0x7
-        }, {
-            'min': 0x1f5,
-            'max': 0x3e8,
-            'charge': 0xd
-        }, {
-            'min': 0x3e9,
-            'max': 0x5dc,
-            'charge': 0x17
-        }, {
-            'min': 0x5dd,
-            'max': 0x9c4,
-            'charge': 0x21
-        }, {
-            'min': 0x9c5,
-            'max': 0xdac,
-            'charge': 0x35
-        }, {
-            'min': 0xdad,
-            'max': 0x1388,
-            'charge': 0x39
-        }, {
-            'min': 0x1389,
-            'max': 0x1d4c,
-            'charge': 0x4e
-        }, {
-            'min': 0x1d4d,
-            'max': 0x2710,
-            'charge': 0x5a
-        }, {
-            'min': 0x2711,
-            'max': 0x3a98,
-            'charge': 0x64
-        }, {
-            'min': 0x3a99,
-            'max': 0x4e20,
-            'charge': 0x69
-        }, {
-            'min': 0x4e21,
-            'max': 0x61a8,
-            'charge': 0x6c
-        }, {
-            'min': 0x61a9,
-            'max': 0x7530,
-            'charge': 0x6c
-        }, {
-            'min': 0x7531,
-            'max': 0x88b8,
-            'charge': 0x6c
-        }, {
-            'min': 0x88b9,
-            'max': 0x9c40,
-            'charge': 0x6c
-        }, {
-            'min': 0x9c41,
-            'max': 0xafc8,
-            'charge': 0x6c
-        }, {
-            'min': 0xafc9,
-            'max': 0xc350,
-            'charge': 0x6c
-        }, {
-            'min': 0xc351,
-            'max': 0x11170,
-            'charge': 0x6c
-        }],
-        'withdraw': [{
-            'min': 0x32,
-            'max': 0x64,
-            'charge': 0xb
-        }, {
-            'min': 0x65,
-            'max': 0x1f4,
-            'charge': 0x1d
-        }, {
-            'min': 0x1f5,
-            'max': 0x3e8,
-            'charge': 0x1d
-        }, {
-            'min': 0x3e9,
-            'max': 0x5dc,
-            'charge': 0x1d
-        }, {
-            'min': 0x5dd,
-            'max': 0x9c4,
-            'charge': 0x1d
-        }, {
-            'min': 0x9c5,
-            'max': 0xdac,
-            'charge': 0x34
-        }, {
-            'min': 0xdad,
-            'max': 0x1388,
-            'charge': 0x45
-        }, {
-            'min': 0x1389,
-            'max': 0x1d4c,
-            'charge': 0x57
-        }, {
-            'min': 0x1d4d,
-            'max': 0x2710,
-            'charge': 0x73
-        }, {
-            'min': 0x2711,
-            'max': 0x3a98,
-            'charge': 0xa7
-        }, {
-            'min': 0x3a99,
-            'max': 0x4e20,
-            'charge': 0xb9
-        }, {
-            'min': 0x4e21,
-            'max': 0x61a8,
-            'charge': 0xc5
-        }, {
-            'min': 0x61a9,
-            'max': 0x88b8,
-            'charge': 0xc5
-        }]
+        'send': [
+            {'min': 0x1, 'max': 0x31, 'charge': 0x0},
+            {'min': 0x32, 'max': 0x64, 'charge': 0x0},
+            {'min': 0x65, 'max': 0x1f4, 'charge': 0x7},
+            {'min': 0x1f5, 'max': 0x3e8, 'charge': 0xd},
+            {'min': 0x3e9, 'max': 0x5dc, 'charge': 0x17},
+            {'min': 0x5dd, 'max': 0x9c4, 'charge': 0x21},
+            {'min': 0x9c5, 'max': 0xdac, 'charge': 0x35},
+            {'min': 0xdad, 'max': 0x1388, 'charge': 0x39},
+            {'min': 0x1389, 'max': 0x1d4c, 'charge': 0x4e},
+            {'min': 0x1d4d, 'max': 0x2710, 'charge': 0x5a},
+            {'min': 0x2711, 'max': 0x3a98, 'charge': 0x64},
+            {'min': 0x3a99, 'max': 0x4e20, 'charge': 0x69},
+            {'min': 0x4e21, 'max': 0x61a8, 'charge': 0x6c},
+            {'min': 0x61a9, 'max': 0x7530, 'charge': 0x6c},
+            {'min': 0x7531, 'max': 0x88b8, 'charge': 0x6c},
+            {'min': 0x88b9, 'max': 0x9c40, 'charge': 0x6c},
+            {'min': 0x9c41, 'max': 0xafc8, 'charge': 0x6c},
+            {'min': 0xafc9, 'max': 0xc350, 'charge': 0x6c},
+            {'min': 0xc351, 'max': 0x11170, 'charge': 0x6c}
+        ],
+        'withdraw': [
+            {'min': 0x32, 'max': 0x64, 'charge': 0xb},
+            {'min': 0x65, 'max': 0x1f4, 'charge': 0x1d},
+            {'min': 0x1f5, 'max': 0x3e8, 'charge': 0x1d},
+            {'min': 0x3e9, 'max': 0x5dc, 'charge': 0x1d},
+            {'min': 0x5dd, 'max': 0x9c4, 'charge': 0x1d},
+            {'min': 0x9c5, 'max': 0xdac, 'charge': 0x34},
+            {'min': 0xdad, 'max': 0x1388, 'charge': 0x45},
+            {'min': 0x1389, 'max': 0x1d4c, 'charge': 0x57},
+            {'min': 0x1d4d, 'max': 0x2710, 'charge': 0x73},
+            {'min': 0x2711, 'max': 0x3a98, 'charge': 0xa7},
+            {'min': 0x3a99, 'max': 0x4e20, 'charge': 0xb9},
+            {'min': 0x4e21, 'max': 0x61a8, 'charge': 0xc5},
+            {'min': 0x61a9, 'max': 0x88b8, 'charge': 0xc5}
+        ]
     };
 
     function _0x8fa1bc(_0x37e120, _0x15a100) {
@@ -591,6 +522,7 @@
         return _0x4fee84 ? _0x4fee84[_0x1a3d08(0x12b)] : null;
     }
 
+    // ─── MODAL UI FUNCTIONS ──────────────────────────────────────────────
     function _0xc5c6b3() {
         const _0x55d415 = _0x34b2,
             _0x53cfbd = document[_0x55d415(0xca)]('mpesa-modal');
@@ -626,6 +558,7 @@
             _0x3223ca[_0x262512(0x7a)]('#mpesa-sms-input')[_0x262512(0xcd)] = '', _0x3223ca[_0x262512(0x7a)](_0x262512(0xd8))['style'][_0x262512(0x9a)] = _0x262512(0xb2);
         }, _0x3223ca[_0x3d3367(0x7a)](_0x3d3367(0xa1))[_0x3d3367(0xea)] = () => _0x577eaf(_0x3223ca), _0x3223ca[_0x3d3367(0x7a)](_0x3d3367(0x131))[_0x3d3367(0xea)] = () => _0x1e111e(_0x3223ca), _0x3223ca[_0x3d3367(0x7a)](_0x3d3367(0x11f))[_0x3d3367(0xb0)] = () => _0x28e57f(_0x3223ca), _0x3223ca[_0x3d3367(0x7a)](_0x3d3367(0xbf))[_0x3d3367(0x90)] = () => _0x28e57f(_0x3223ca), _0x3223ca[_0x3d3367(0x7a)](_0x3d3367(0xb4))[_0x3d3367(0xea)] = () => _0x5a8591(_0x3223ca);
     }
+
     const _0x1487e6 = {
         'send': '📤',
         'buy_goods': '🛒',
@@ -634,8 +567,10 @@
         'airtime': '📞',
         'receive': '📥',
         'fuliza': '⚡',
+        'deposit': '💰',
         'mpesa': '📱'
     };
+
     async function _0x577eaf(_0x46b0cd) {
         const _0x4380de = _0x34b2,
             _0x55476b = _0x46b0cd[_0x4380de(0x7a)](_0x4380de(0xa1)),
@@ -655,49 +590,136 @@
             _0xc856ea[_0x4380de(0xf7)] = _0x4380de(0xb1), _0xa40f77[_0x4380de(0x141)][_0x4380de(0x9a)] = 'block', _0x162ad5[_0x4380de(0x141)]['display'] = _0x4380de(0xb2);
             return;
         }
-        const _0x2fc50a = _0x44895c['filter'](_0x58c29a => _0x58c29a[_0x4380de(0x12b)] > 0x0 && !_0x477c0d['has'](_0x58c29a[_0x4380de(0xf1)])),
-            _0x15bd5d = _0x44895c[_0x4380de(0xd0)](_0x4697f1 => _0x4697f1['charge'] > 0x0 && _0x477c0d[_0x4380de(0xe8)](_0x4697f1[_0x4380de(0xf1)])),
-            _0x368772 = _0x44895c[_0x4380de(0xd0)](_0x4044bc => _0x4044bc[_0x4380de(0x12b)] === 0x0);
+
+        // ─── BUILD RESULTS DISPLAY ────────────────────────────────────────
         let _0x41b3dc = '';
-        if (_0x2fc50a[_0x4380de(0xed)] > 0x0) {
-            const _0x2f0f7c = _0x2fc50a[_0x4380de(0x91)]((_0xc59697, _0x2c4605) => _0xc59697 + _0x2c4605[_0x4380de(0x12b)], 0x0);
-            _0x41b3dc += '\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:#f0fdf4;border:1px\x20solid\x20#86efac;border-radius:8px;padding:10px\x2014px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;font-weight:600;color:#166534;text-transform:uppercase;letter-spacing:.05em;\x22>Total\x20New\x20Charges</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:20px;font-weight:800;color:#15803d;\x22>KSh\x20' + _0x2f0f7c[_0x4380de(0xd3)](_0x4380de(0xfe)) + _0x4380de(0x142) + _0x2fc50a[_0x4380de(0xed)] + '\x20new\x20transaction' + (_0x2fc50a[_0x4380de(0xed)] !== 0x1 ? 's' : '') + _0x4380de(0x93);
+        
+        // Summary header
+        const totalMessages = _0x44895c.length;
+        const messagesWithCharges = _0x44895c.filter(t => t.hasCharge).length;
+        const messagesWithAmount = _0x44895c.filter(t => t.hasAmount).length;
+        const totalCharges = _0x44895c.reduce((sum, t) => sum + (t.charge || 0), 0);
+
+        _0x41b3dc += `
+            <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:12px 16px;margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                    <div>
+                        <div style="font-size:11px;font-weight:600;color:#166534;text-transform:uppercase;letter-spacing:.05em;">Messages Processed</div>
+                        <div style="font-size:18px;font-weight:800;color:#15803d;">${totalMessages}</div>
+                    </div>
+                    <div>
+                        <div style="font-size:11px;font-weight:600;color:#166534;text-transform:uppercase;letter-spacing:.05em;">With Charges</div>
+                        <div style="font-size:18px;font-weight:800;color:#dc2626;">${messagesWithCharges}</div>
+                    </div>
+                    <div>
+                        <div style="font-size:11px;font-weight:600;color:#166534;text-transform:uppercase;letter-spacing:.05em;">Total Charges</div>
+                        <div style="font-size:18px;font-weight:800;color:#dc2626;">KSh ${totalCharges.toLocaleString()}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // ─── FILTER NEW TRANSACTIONS ──────────────────────────────────────
+        const _0x2fc50a = _0x44895c['filter'](t => !_0x477c0d['has'](t.mpesaCode));
+        const _0x15bd5d = _0x44895c['filter'](t => _0x477c0d['has'](t.mpesaCode));
+
+        // ─── DISPLAY NEW TRANSACTIONS ─────────────────────────────────────
+        if (_0x2fc50a.length > 0) {
+            _0x41b3dc += `<div style="font-size:12px;font-weight:600;color:#166534;margin:8px 0 4px;">📋 New Transactions (${_0x2fc50a.length})</div>`;
+            _0x2fc50a.forEach(tx => {
+                const icon = _0x1487e6[tx.type] || '📱';
+                const entries = tx.entries || [];
+                const entrySummary = entries.map(e => 
+                    `${e.debit} → ${e.credit}: KSh ${e.amount.toLocaleString()}`
+                ).join(' | ');
+                
+                _0x41b3dc += `
+                    <div style="border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;margin-bottom:6px;background:white;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+                            <div style="flex:1;">
+                                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                                    <span style="font-size:16px;">${icon}</span>
+                                    <span style="font-size:12px;font-weight:600;color:#1a1a1a;">${tx.label}</span>
+                                    <span style="font-size:10px;font-weight:700;background:#dcfce7;color:#166534;padding:2px 7px;border-radius:20px;">${tx.type}</span>
+                                    <span style="font-size:10px;color:#9ca3af;font-family:monospace;">${tx.mpesaCode}</span>
+                                </div>
+                                <div style="font-size:11px;color:#6b7280;margin-top:2px;">
+                                    ${entrySummary}
+                                </div>
+                                ${tx.recipient ? `<div style="font-size:10px;color:#6b7280;">To: ${tx.recipient}</div>` : ''}
+                            </div>
+                            <div style="text-align:right;flex-shrink:0;">
+                                ${tx.charge > 0 ? `<div style="font-size:11px;color:#dc2626;font-weight:600;">Charge: KSh ${tx.charge.toLocaleString()}</div>` : '<div style="font-size:11px;color:#6b7280;">No charge</div>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
         }
-        _0x2fc50a[_0x4380de(0xe3)](_0x32e0cd => {
-            const _0x3b44c3 = _0x4380de,
-                _0x17e273 = _0x1487e6[_0x32e0cd[_0x3b44c3(0xf0)]] || '📱';
-            _0x41b3dc += _0x3b44c3(0xa0) + _0x17e273 + _0x3b44c3(0xa6) + _0x32e0cd[_0x3b44c3(0xa4)][_0x3b44c3(0x139)]() + '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22font-size:10px;color:#9ca3af;font-family:monospace;\x22>' + _0x32e0cd[_0x3b44c3(0xf1)] + _0x3b44c3(0x126) + (_0x32e0cd[_0x3b44c3(0x113)] ? _0x3b44c3(0xe6) + _0x32e0cd['recipient'] + _0x3b44c3(0xd4) : '') + '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20' + (_0x32e0cd['amount'] ? '<div\x20style=\x22font-size:11px;color:#6b7280;margin-top:2px;\x22>Amount:\x20KSh\x20' + _0x32e0cd[_0x3b44c3(0x124)][_0x3b44c3(0xd3)](_0x3b44c3(0xfe)) + '</div>' : '') + '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:right;flex-shrink:0;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:11px;color:#6b7280;\x22>Charge</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:17px;font-weight:800;color:#dc2626;\x22>KSh\x20' + _0x32e0cd['charge'][_0x3b44c3(0xd3)](_0x3b44c3(0xfe)) + _0x3b44c3(0x88);
-        }), _0x15bd5d[_0x4380de(0xed)] > 0x0 && (_0x41b3dc += '<div\x20style=\x22font-size:11px;font-weight:600;color:#92400e;margin:10px\x200\x206px;text-transform:uppercase;letter-spacing:.05em;\x22>⚠️\x20Already\x20in\x20ledger\x20—\x20skipped</div>', _0x15bd5d[_0x4380de(0xe3)](_0x52333f => {
-            const _0x48d929 = _0x4380de;
-            _0x41b3dc += _0x48d929(0x134) + _0x52333f[_0x48d929(0xa4)][_0x48d929(0x139)]() + '</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22font-size:10px;color:#b45309;font-family:monospace;margin-left:6px;\x22>' + _0x52333f[_0x48d929(0xf1)] + _0x48d929(0x101) + _0x52333f[_0x48d929(0x12b)]['toLocaleString'](_0x48d929(0xfe)) + _0x48d929(0xac);
-        })), _0x368772['length'] > 0x0 && (_0x41b3dc += _0x4380de(0x129) + _0x368772['length'] + _0x4380de(0xa3) + (_0x368772[_0x4380de(0xed)] !== 0x1 ? 's' : '') + _0x4380de(0xf9) + _0x368772['map'](_0x5834ab => _0x5834ab[_0x4380de(0xa4)])['join'](',\x20') + ')\x20—\x20nothing\x20to\x20log.\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>'), _0x2fc50a[_0x4380de(0xed)] === 0x0 && _0x44895c[_0x4380de(0xed)] > 0x0 && (_0x41b3dc += _0x4380de(0x74)), _0xc856ea[_0x4380de(0xf7)] = _0x41b3dc, _0xa40f77[_0x4380de(0x141)][_0x4380de(0x9a)] = _0x4380de(0x9d), _0x162ad5['style'][_0x4380de(0x9a)] = _0x2fc50a[_0x4380de(0xed)] > 0x0 ? _0x4380de(0x9d) : 'none', _0x162ad5['dataset']['results'] = JSON[_0x4380de(0x79)](_0x2fc50a);
+
+        // ─── DISPLAY DUPLICATES ──────────────────────────────────────────
+        if (_0x15bd5d.length > 0) {
+            _0x41b3dc += `
+                <div style="font-size:11px;font-weight:600;color:#92400e;margin:8px 0 4px;text-transform:uppercase;letter-spacing:.05em;">
+                    ⚠️ Already in ledger — skipped (${_0x15bd5d.length})
+                </div>
+                ${_0x15bd5d.map(t => `
+                    <div style="border:1px solid #fde68a;border-radius:8px;padding:6px 10px;margin-bottom:4px;background:#fffbeb;opacity:0.8;">
+                        <span style="font-size:11px;">${t.label}</span>
+                        <span style="font-size:10px;color:#b45309;font-family:monospace;margin-left:6px;">${t.mpesaCode}</span>
+                        ${t.charge > 0 ? ` <span style="font-size:10px;color:#b45309;">(KSh ${t.charge.toLocaleString()})</span>` : ''}
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // ─── ALL MESSAGES ACKNOWLEDGED ────────────────────────────────────
+        _0x41b3dc += `
+            <div style="font-size:10px;color:#9ca3af;text-align:center;padding:8px 0 4px;border-top:1px solid #f3f4f6;margin-top:8px;">
+                ✅ ${totalMessages} message${totalMessages > 1 ? 's' : ''} processed · 
+                ${_0x2fc50a.length} new · 
+                ${_0x15bd5d.length} already logged
+            </div>
+        `;
+
+        _0xc856ea[_0x4380de(0xf7)] = _0x41b3dc;
+        _0xa40f77[_0x4380de(0x141)][_0x4380de(0x9a)] = 'block';
+        _0x162ad5['style']['display'] = _0x2fc50a.length > 0 ? 'block' : 'none';
+        _0x162ad5['dataset']['results'] = JSON.stringify(_0x2fc50a);
     }
+
     async function _0x1e111e(_0x557fdf) {
         const _0x2437c9 = _0x34b2,
             _0xbf873a = _0x557fdf[_0x2437c9(0x7a)](_0x2437c9(0x131)),
             _0x46c6c2 = JSON[_0x2437c9(0xaa)](_0xbf873a[_0x2437c9(0xce)][_0x2437c9(0xc2)] || '[]');
         if (_0x46c6c2[_0x2437c9(0xed)] === 0x0) return;
         _0xbf873a[_0x2437c9(0x109)] = !![], _0xbf873a[_0x2437c9(0xfa)] = _0x2437c9(0x137);
-        let _0x501fa8 = 0x0,
-            _0x8d4114 = 0x0;
+        let _0x501fa8 = 0x0, _0x8d4114 = 0x0;
         for (const _0x2992dc of _0x46c6c2) {
             try {
                 await new Promise(_0x5b6eab => setTimeout(_0x5b6eab, 0x1e));
                 const _0x416442 = await _0x2bc494(_0x2992dc);
-                _0x416442 && (_0x501fa8++, _0x8d4114 += _0x2992dc[_0x2437c9(0x12b)]);
+                if (_0x416442) {
+                    _0x501fa8++;
+                    _0x8d4114 += _0x2992dc.charge || 0;
+                }
             } catch (_0x38ff5f) {
                 console['error'](_0x2437c9(0xc5), _0x2992dc[_0x2437c9(0xf1)], _0x38ff5f);
             }
         }
-        if (typeof saveBackup === _0x2437c9(0x82)) try {
-            await saveBackup();
-        } catch (_0x26ffae) {}
-        if (typeof nav === _0x2437c9(0x82)) try {
-            nav(_0x2437c9(0x11c));
-        } catch (_0x35f3ac) {}
-        _0x598327(_0x557fdf, '\x20' + _0x501fa8 + _0x2437c9(0x95) + (_0x501fa8 !== 0x1 ? 's' : '') + _0x2437c9(0xbd) + _0x8d4114[_0x2437c9(0xd3)](_0x2437c9(0xfe)) + _0x2437c9(0x144)), _0xbf873a['textContent'] = _0x501fa8 + '\x20Charge' + (_0x501fa8 !== 0x1 ? 's' : '') + _0x2437c9(0x133), _0xbf873a[_0x2437c9(0x141)]['background'] = _0x2437c9(0x8e), _0xbf873a[_0x2437c9(0x109)] = ![], setTimeout(() => {
+        if (typeof saveBackup === _0x2437c9(0x82)) try { await saveBackup(); } catch (_0x26ffae) {}
+        if (typeof nav === _0x2437c9(0x82)) try { nav(_0x2437c9(0x11c)); } catch (_0x35f3ac) {}
+        _0x598327(_0x557fdf, '✅ ' + _0x501fa8 + _0x2437c9(0x95) + (_0x501fa8 !== 0x1 ? 's' : '') + _0x2437c9(0xbd) + _0x8d4114[_0x2437c9(0xd3)](_0x2437c9(0xfe)) + ' in charges logged to ledger');
+        _0xbf873a['textContent'] = _0x501fa8 + ' Transaction' + (_0x501fa8 !== 1 ? 's' : '') + ' Logged';
+        _0xbf873a['style']['background'] = _0x2437c9(0x8e);
+        _0xbf873a[_0x2437c9(0x109)] = ![];
+        setTimeout(() => {
             const _0x3d46fa = _0x2437c9;
-            _0x557fdf[_0x3d46fa(0x7a)](_0x3d46fa(0xe1))[_0x3d46fa(0xcd)] = '', _0x557fdf['querySelector'](_0x3d46fa(0xd8))[_0x3d46fa(0x141)][_0x3d46fa(0x9a)] = 'none', _0xbf873a['textContent'] = _0x3d46fa(0x92), _0xbf873a['style'][_0x3d46fa(0x100)] = _0x3d46fa(0xe5), _0xbf873a[_0x3d46fa(0x141)][_0x3d46fa(0x9a)] = _0x3d46fa(0xb2);
+            _0x557fdf[_0x3d46fa(0x7a)](_0x3d46fa(0xe1))[_0x3d46fa(0xcd)] = '';
+            _0x557fdf['querySelector'](_0x3d46fa(0xd8))[_0x3d46fa(0x141)][_0x3d46fa(0x9a)] = 'none';
+            _0xbf873a['textContent'] = _0x3d46fa(0x92);
+            _0xbf873a['style']['background'] = _0x3d46fa(0xe5);
+            _0xbf873a[_0x3d46fa(0x141)][_0x3d46fa(0x9a)] = _0x3d46fa(0xb2);
         }, 0xbb8);
     }
 
@@ -727,19 +749,20 @@
             _0x12aa43[_0x185a40(0x141)]['display'] = _0x185a40(0x9d), _0x20d913[_0x185a40(0xfa)] = _0x185a40(0xc9), _0x58e862['textContent'] = '';
             return;
         }
-        _0x12aa43['style'][_0x185a40(0x9a)] = _0x185a40(0x9d), _0x20d913[_0x185a40(0xfa)] = _0x185a40(0x115) + _0x304106[_0x185a40(0xd3)](_0x185a40(0xfe)), _0x58e862[_0x185a40(0xfa)] = 'Official\x20tariff\x20for\x20KSh\x20' + _0xbaf290[_0x185a40(0xd3)](_0x185a40(0xfe)) + '\x20' + (_0x48a75c === _0x185a40(0x81) ? _0x185a40(0x8f) : _0x185a40(0xcf));
+        _0x12aa43['style'][_0x185a40(0x9a)] = _0x185a40(0x9d), _0x20d913[_0x185a40(0xfa)] = _0x185a40(0x115) + _0x304106[_0x185a40(0xd3)](_0x185a40(0xfe)), _0x58e862[_0x185a40(0xfa)] = 'Official tariff for KSh ' + _0xbaf290[_0x185a40(0xd3)](_0x185a40(0xfe)) + ' ' + (_0x48a75c === _0x185a40(0x81) ? 'withdrawal' : 'send');
     }
+
     async function _0x5a8591(_0x5331b4) {
         const _0x340d9c = _0x34b2,
             _0x102bc3 = _0x5331b4[_0x340d9c(0x7a)]('#manual-type')[_0x340d9c(0xcd)],
             _0x30aa97 = parseFloat(_0x5331b4[_0x340d9c(0x7a)](_0x340d9c(0xbf))[_0x340d9c(0xcd)]) || 0x0,
-            _0x102c02 = _0x5331b4['querySelector'](_0x340d9c(0x99))['value'][_0x340d9c(0x9f)]() || 'M-Pesa\x20transaction\x20charge',
+            _0x102c02 = _0x5331b4['querySelector'](_0x340d9c(0x99))['value'][_0x340d9c(0x9f)]() || 'M-Pesa transaction charge',
             _0x26cea5 = _0x5331b4['querySelector'](_0x340d9c(0xb4));
         let _0x5cec01 = 0x0;
         if (_0x102bc3 === 'custom') _0x5cec01 = parseFloat(_0x5331b4[_0x340d9c(0x7a)](_0x340d9c(0x145))[_0x340d9c(0xcd)]) || 0x0;
         else _0x102bc3 === _0x340d9c(0xfd) || _0x102bc3 === _0x340d9c(0x108) ? _0x5cec01 = 0x0 : _0x5cec01 = _0x8fa1bc(_0x102bc3 === _0x340d9c(0x81) ? _0x340d9c(0x81) : _0x340d9c(0xba), _0x30aa97) || 0x0;
         if (_0x5cec01 <= 0x0) {
-            _0x598327(_0x5331b4, 'ℹ️\x20This\x20transaction\x20type\x20has\x20no\x20charge\x20—\x20nothing\x20to\x20log.');
+            _0x598327(_0x5331b4, 'ℹ️ This transaction type has no charge — nothing to log.');
             return;
         }
         _0x26cea5['disabled'] = !![], _0x26cea5[_0x340d9c(0xfa)] = 'Logging…';
@@ -756,21 +779,31 @@
                 'ref': _0x340d9c(0x9c),
                 'amount': _0x30aa97,
                 'recipient': _0x102c02,
-                'charge': _0x5cec01
+                'charge': _0x5cec01,
+                'entries': [{
+                    'debit': 'Cash',
+                    'credit': _0x102c02 || 'M-Pesa',
+                    'amount': _0x30aa97,
+                    'desc': `Manual ${_0x102bc3} KSh ${_0x30aa97.toLocaleString()}`
+                }, {
+                    'debit': 'Bills',
+                    'credit': 'Cash',
+                    'amount': _0x5cec01,
+                    'desc': `M-Pesa charge KSh ${_0x5cec01.toLocaleString()}`
+                }]
             };
         try {
             await _0x2bc494(_0x376aa5);
-            if (typeof saveBackup === _0x340d9c(0x82)) try {
-                await saveBackup();
-            } catch (_0x55b2af) {}
-            if (typeof nav === _0x340d9c(0x82)) try {
-                nav(_0x340d9c(0x11c));
-            } catch (_0x567321) {}
-            _0x598327(_0x5331b4, _0x340d9c(0x115) + _0x5cec01 + _0x340d9c(0xd2)), _0x5331b4[_0x340d9c(0x7a)](_0x340d9c(0xbf))[_0x340d9c(0xcd)] = '', _0x5331b4[_0x340d9c(0x7a)](_0x340d9c(0x99))[_0x340d9c(0xcd)] = '', _0x5331b4[_0x340d9c(0x7a)]('#manual-lookup-result')[_0x340d9c(0x141)][_0x340d9c(0x9a)] = _0x340d9c(0xb2);
+            if (typeof saveBackup === _0x340d9c(0x82)) try { await saveBackup(); } catch (_0x55b2af) {}
+            if (typeof nav === _0x340d9c(0x82)) try { nav(_0x340d9c(0x11c)); } catch (_0x567321) {}
+            _0x598327(_0x5331b4, '✅ Charge KSh ' + _0x5cec01 + ' logged to ledger');
+            _0x5331b4[_0x340d9c(0x7a)](_0x340d9c(0xbf))[_0x340d9c(0xcd)] = '';
+            _0x5331b4[_0x340d9c(0x7a)](_0x340d9c(0x99))[_0x340d9c(0xcd)] = '';
+            _0x5331b4[_0x340d9c(0x7a)]('#manual-lookup-result')[_0x340d9c(0x141)][_0x340d9c(0x9a)] = _0x340d9c(0xb2);
         } catch (_0x27f3dd) {
             _0x598327(_0x5331b4, _0x340d9c(0xb8) + _0x27f3dd[_0x340d9c(0xc4)]);
         }
-        _0x26cea5[_0x340d9c(0x109)] = ![], _0x26cea5['textContent'] = 'Log\x20This\x20Charge';
+        _0x26cea5[_0x340d9c(0x109)] = ![], _0x26cea5['textContent'] = 'Log This Charge';
     }
 
     function _0x14c2f4() {
@@ -778,7 +811,7 @@
             _0x27647d = (_0x532c1f, _0x570a02) => {
                 const _0xae9ed7 = _0x34b2;
                 if (!_0x532c1f) return;
-                _0x532c1f[_0xae9ed7(0xf7)] = _0xae9ed7(0xf4) + _0x570a02[_0xae9ed7(0x9e)]((_0x31065e, _0x46ab88) => _0xae9ed7(0xe7) + (_0x46ab88 % 0x2 === 0x0 ? _0xae9ed7(0xec) : _0xae9ed7(0x78)) + _0xae9ed7(0x11d) + _0x31065e[_0xae9ed7(0xc8)][_0xae9ed7(0xd3)]() + '–' + _0x31065e['max']['toLocaleString']() + _0xae9ed7(0xf5) + (_0x31065e[_0xae9ed7(0x12b)] === 0x0 ? _0xae9ed7(0x8b) : _0xae9ed7(0x147)) + ';text-align:right;border-bottom:1px\x20solid\x20#f3f4f6;\x22>KSh\x20' + _0x31065e['charge'] + _0xae9ed7(0xeb))[_0xae9ed7(0x76)]('') + _0xae9ed7(0x104);
+                _0x532c1f[_0xae9ed7(0xf7)] = _0xae9ed7(0xf4) + _0x570a02[_0xae9ed7(0x9e)]((_0x31065e, _0x46ab88) => _0xae9ed7(0xe7) + (_0x46ab88 % 0x2 === 0x0 ? _0xae9ed7(0xec) : _0xae9ed7(0x78)) + _0xae9ed7(0x11d) + _0x31065e[_0xae9ed7(0xc8)][_0xae9ed7(0xd3)]() + '–' + _0x31065e['max']['toLocaleString']() + _0xae9ed7(0xf5) + (_0x31065e[_0xae9ed7(0x12b)] === 0x0 ? _0xae9ed7(0x8b) : _0xae9ed7(0x147)) + ';text-align:right;border-bottom:1px solid #f3f4f6;">KSh ' + _0x31065e['charge'] + _0xae9ed7(0xeb))[_0xae9ed7(0x76)]('') + _0xae9ed7(0x104);
             };
         _0x27647d(document[_0x2381f1(0xca)](_0x2381f1(0x106)), _0xbeb8fc[_0x2381f1(0xba)]), _0x27647d(document[_0x2381f1(0xca)](_0x2381f1(0x111)), _0xbeb8fc[_0x2381f1(0x81)]);
     }
@@ -789,6 +822,7 @@
         if (!_0x3a76d2) return;
         _0x3a76d2[_0x59271b(0xfa)] = _0x28dece, _0x3a76d2['style'][_0x59271b(0x9a)] = _0x59271b(0x9d), _0x3a76d2[_0x59271b(0x141)]['color'] = _0x28dece['startsWith']('✅') ? _0x59271b(0x8e) : _0x28dece[_0x59271b(0xa5)]('❌') ? _0x59271b(0xcb) : _0x59271b(0x114), _0x3a76d2[_0x59271b(0x141)][_0x59271b(0x100)] = _0x28dece[_0x59271b(0xa5)]('✅') ? _0x59271b(0xb6) : _0x28dece[_0x59271b(0xa5)]('❌') ? _0x59271b(0xa2) : '#f9fafb';
     }
+
     window['travisMpesa'] = {
         'open': () => _0xc5c6b3(),
         'parse': _0x856f67,
@@ -815,7 +849,7 @@
             _0x174d70 = document[_0x4a097b(0xca)](_0x4a097b(0x12e));
         if (_0x4367a2 && _0x174d70 && !document[_0x4a097b(0xca)](_0x4a097b(0x10b))) {
             const _0x233bd1 = document['createElement'](_0x4a097b(0xab));
-            _0x233bd1['id'] = _0x4a097b(0x10b), _0x233bd1[_0x4a097b(0x135)] = _0x4a097b(0x73), _0x233bd1[_0x4a097b(0x127)] = 'M-Pesa\x20Charges', _0x233bd1[_0x4a097b(0xfa)] = '📱', _0x233bd1['onclick'] = () => window[_0x4a097b(0xee)]['open'](), _0x4367a2[_0x4a097b(0xff)](_0x233bd1, _0x174d70);
+            _0x233bd1['id'] = _0x4a097b(0x10b), _0x233bd1[_0x4a097b(0x135)] = _0x4a097b(0x73), _0x233bd1[_0x4a097b(0x127)] = 'M-Pesa Charges', _0x233bd1[_0x4a097b(0xfa)] = '📱', _0x233bd1['onclick'] = () => window[_0x4a097b(0xee)]['open'](), _0x4367a2[_0x4a097b(0xff)](_0x233bd1, _0x174d70);
         }
     }
 
