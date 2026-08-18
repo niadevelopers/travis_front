@@ -65,6 +65,16 @@
         return 'unknown';
     }
 
+    // ─── EXTRACT M-PESA CODE - PRIMARY UNIQUE IDENTIFIER ──────────────────
+    function extractMpesaCode(_0x1022c8) {
+        const codeMatch = _0x1022c8.match(/\b([A-Z]{2}[0-9A-Z]{8})\b/);
+        if (codeMatch) return codeMatch[1];
+        // Fallback: any 10-character alphanumeric at start
+        const altMatch = _0x1022c8.match(/^([A-Z0-9]{10})\s/);
+        if (altMatch) return altMatch[1];
+        return 'MPESA-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 5).toUpperCase();
+    }
+
     function _0xa65199(_0x1022c8) {
         const _0x38da16 = _0x34b2,
             _0x9c3e4c = _0x1022c8[_0x38da16(0xa9)]();
@@ -127,6 +137,12 @@
         if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
         _0x18a2b4 = _0x134efc[_0x1b2238(0xad)](/received\s+(?:Ksh|KES)[\d,\.]+\s+from\s+(.+?)\s+(?:\d{7,}|on\s+[\d/])/i);
         if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
+        // For deposits: "cash deposited by AGENT ALEX 98765"
+        _0x18a2b4 = _0x134efc.match(/deposited by\s+(.+?)\s+(?:\d{5,}|on\s+)/i);
+        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
+        // For withdrawals: "withdrawn from AGENT ALEX 98765"
+        _0x18a2b4 = _0x134efc.match(/withdrawn from\s+(.+?)\s+(?:\d{5,}|on\s+)/i);
+        if (_0x18a2b4) return _0x18a2b4[0x1][_0x1b2238(0x9f)]();
         return '';
     }
 
@@ -134,8 +150,12 @@
     function _0x28d4a7(_0x3e0ebd) {
         const _0x4db353 = _0x34b2,
             _0x15f829 = _0x3e0ebd[_0x4db353(0x9f)]();
-        if (!_0x15f829) return null;
+        if (!_0x15f829 || _0x15f829.length < 20) return null;
 
+        // ─── EXTRACT M-PESA CODE - PRIMARY UNIQUE IDENTIFIER ─────────────
+        const mpesaCode = extractMpesaCode(_0x15f829);
+        
+        // Check if it's an M-Pesa message
         const _0x52e783 = _0x5325d3[_0x4db353(0xa7)](_0x53c7b9 => _0x53c7b9[_0x4db353(0x13c)](_0x15f829));
         if (!_0x52e783) return null;
 
@@ -148,25 +168,14 @@
             if (_0x23ac4d > 0x0) return {
                 'type': _0x4db353(0x125),
                 'label': _0x4db353(0x8d),
-                'ref': 'FULIZA-' + Date[_0x4db353(0xbe)](),
+                'ref': 'FULIZA-' + mpesaCode,
                 'amount': 0x0,
                 'recipient': _0x4db353(0x149),
                 'charge': _0x23ac4d,
                 'direction': direction,
-                'raw': _0x15f829
+                'raw': _0x15f829,
+                'mpesaCode': mpesaCode
             };
-        }
-
-        // ─── EXTRACT UNIQUE REFERENCE ─────────────────────────────────────
-        const _0x34b93a = new Set(['CONFIRMED', _0x4db353(0x143), _0x4db353(0x10d)]);
-        let _0x446688 = '';
-        const _0x2e0d26 = /\b([A-Z0-9]{10})\b/g;
-        let _0x5ead85;
-        while ((_0x5ead85 = _0x2e0d26[_0x4db353(0x75)](_0x15f829)) !== null) {
-            if (!_0x34b93a['has'](_0x5ead85[0x1][_0x4db353(0x139)]())) {
-                _0x446688 = _0x5ead85[0x1];
-                break;
-            }
         }
 
         // ─── EXTRACT TRANSACTION CHARGE ───────────────────────────────────
@@ -224,31 +233,52 @@
         return {
             'type': type,
             'label': label,
-            'ref': _0x446688 || 'MPESA-' + Date.now().toString(36).toUpperCase(),
+            'ref': mpesaCode,  // Use M-PESA code as the primary reference
             'amount': mainAmount,
             'recipient': recipient,
             'charge': charge,
             'direction': direction,
             'debit': debitAccount,
             'credit': creditAccount,
-            'raw': _0x15f829
+            'raw': _0x15f829,
+            'mpesaCode': mpesaCode
         };
     }
 
-    // ─── BATCH PARSER WITH STRICT DEDUPLICATION ────────────────────────────
+    // ─── BATCH PARSER - PROCESS ALL MESSAGES ──────────────────────────────
     function _0x856f67(_0x20cbfd) {
-        const _0x269779 = _0x34b2,
-            _0x20460f = _0x20cbfd[_0x269779(0x7c)](/\n{2,}|(?=[A-Z]{1}[A-Z0-9]{9}\s+Confirmed)|(?=Confirmed\.)/g)[_0x269779(0x9e)](_0x1939f9 => _0x1939f9[_0x269779(0x9f)]())[_0x269779(0xd0)](_0x2da1f2 => _0x2da1f2['length'] > 0xa),
-            _0x510938 = [],
-            _0x18a3e1 = new Set();
-        for (const _0x3e5027 of _0x20460f) {
+        const _0x269779 = _0x34b2;
+        
+        // Split by newlines or common message boundaries
+        let messages = _0x20cbfd.split(/\n{2,}|(?=[A-Z]{2}[0-9A-Z]{8}\s+Confirmed)|(?=Confirmed\.)/g)
+            .map(msg => msg.trim())
+            .filter(msg => msg.length > 15);
+        
+        // If no messages found with the pattern, try splitting by newlines
+        if (messages.length === 0) {
+            messages = _0x20cbfd.split(/\n/).filter(msg => msg.trim().length > 15);
+        }
+
+        const _0x510938 = [];
+        const _0x18a3e1 = new Set(); // Track by M-PESA code
+        
+        for (const _0x3e5027 of messages) {
+            if (!_0x3e5027 || _0x3e5027.length < 15) continue;
+            
             const _0x321556 = _0x28d4a7(_0x3e5027);
             if (!_0x321556) continue;
-            // Use the reference number as the unique key for deduplication
-            const _0x47b150 = _0x321556['ref'] && !_0x321556['ref'][_0x269779(0xa5)](_0x269779(0x120)) && !_0x321556['ref']['startsWith']('FULIZA-') ? _0x321556[_0x269779(0xf1)] : _0x321556[_0x269779(0x7b)][_0x269779(0x8a)](0x0, 0x3c);
-            if (_0x18a3e1[_0x269779(0xe8)](_0x47b150)) continue;
-            _0x18a3e1[_0x269779(0xd9)](_0x47b150), _0x510938[_0x269779(0xf6)](_0x321556);
+            
+            // Use M-PESA code as the definitive unique key
+            const key = _0x321556.mpesaCode || _0x321556.ref;
+            if (_0x18a3e1.has(key)) continue;
+            
+            _0x18a3e1.add(key);
+            _0x510938.push(_0x321556);
         }
+        
+        // Log the count of messages processed
+        console.log(`[MpesaTracker] Processed ${messages.length} messages, extracted ${_0x510938.length} transactions`);
+        
         return _0x510938;
     }
 
@@ -272,18 +302,20 @@
                         _0x48cf29[_0x3d423c(0x11e)]();
                         const _0x42b26e = new Set();
                         (_0x47faf8[_0x3d423c(0x112)] || [])['forEach'](_0x1bee90 => {
-                            const _0xf01077 = _0x3d423c,
-                                _0x52aab1 = (_0x1bee90[_0xf01077(0x85)] || '')[_0xf01077(0xad)](/\(([A-Z0-9]{10})\)/);
-                            if (_0x52aab1) _0x42b26e[_0xf01077(0xd9)](_0x52aab1[0x1]);
-                            const refMatch = (_0x1bee90[_0xf01077(0x85)] || '')['match'](/REF:\s*([A-Z0-9]{10})/);
-                            if (refMatch) _0x42b26e[_0xf01077(0xd9)](refMatch[0x1]);
-                            // Also store raw desc for fallback deduplication
-                            const rawDesc = _0x1bee90[_0xf01077(0x85)] || '';
-                            if (rawDesc) {
-                                // Create hash of first 80 chars for fuzzy matching
-                                const hash = rawDesc.substring(0, 80).replace(/[0-9]/g, '');
-                                _0x42b26e['add']('hash:' + hash);
-                            }
+                            const _0xf01077 = _0x3d423c;
+                            // Extract M-PESA code from description
+                            const desc = _0x1bee90[_0xf01077(0x85)] || '';
+                            const codeMatch = desc.match(/REF:\s*([A-Z0-9]{10})/);
+                            if (codeMatch) _0x42b26e.add(codeMatch[1]);
+                            // Also check for (CODE) pattern
+                            const altMatch = desc.match(/\(([A-Z0-9]{10})\)/);
+                            if (altMatch) _0x42b26e.add(altMatch[1]);
+                            // Check for raw M-PESA code
+                            const rawMatch = desc.match(/\b([A-Z]{2}[0-9A-Z]{8})\b/);
+                            if (rawMatch) _0x42b26e.add(rawMatch[1]);
+                            // Also store hash-based fallback
+                            const hash = desc.substring(0, 60).replace(/[0-9]/g, '');
+                            _0x42b26e.add('hash:' + hash);
                         });
                         _0x523738(_0x42b26e);
                     }, _0x47faf8[_0x3d423c(0x123)] = () => {
@@ -320,19 +352,19 @@
             if (_0x3c4d5e > 0) {
                 let desc = '';
                 if (_0x1a2b3c === 'receive' || direction === 'incoming') {
-                    desc = `Received KSh ${_0x7081a2(_0x3c4d5e)} from ${_0x4d5e6f || 'M-Pesa'} (REF: ${_0x2b3c4d})`;
+                    desc = `Received KSh ${_0x7081a2(_0x3c4d5e)} from ${_0x4d5e6f || 'M-Pesa'} (${_0x2b3c4d})`;
                 } else if (direction === 'contra') {
-                    desc = `TRANSFER KSh ${_0x7081a2(_0x3c4d5e)}: ${debit} → ${credit} (REF: ${_0x2b3c4d})`;
+                    desc = `TRANSFER KSh ${_0x7081a2(_0x3c4d5e)}: ${debit} → ${credit} (${_0x2b3c4d})`;
                 } else if (_0x1a2b3c === 'airtime') {
-                    desc = `AIRTIME KSh ${_0x7081a2(_0x3c4d5e)} for ${_0x4d5e6f || 'phone'} (REF: ${_0x2b3c4d})`;
+                    desc = `AIRTIME KSh ${_0x7081a2(_0x3c4d5e)} for ${_0x4d5e6f || 'phone'} (${_0x2b3c4d})`;
                 } else if (_0x1a2b3c === 'send') {
-                    desc = `SEND KSh ${_0x7081a2(_0x3c4d5e)} to ${_0x4d5e6f} (REF: ${_0x2b3c4d})`;
+                    desc = `SEND KSh ${_0x7081a2(_0x3c4d5e)} to ${_0x4d5e6f} (${_0x2b3c4d})`;
                 } else if (_0x1a2b3c === 'paybill' || _0x1a2b3c === 'buy_goods') {
-                    desc = `PAYBILL KSh ${_0x7081a2(_0x3c4d5e)} to ${_0x4d5e6f || 'Paybill'} (REF: ${_0x2b3c4d})`;
+                    desc = `PAYBILL KSh ${_0x7081a2(_0x3c4d5e)} to ${_0x4d5e6f || 'Paybill'} (${_0x2b3c4d})`;
                 } else if (_0x1a2b3c === 'withdraw') {
-                    desc = `WITHDRAW KSh ${_0x7081a2(_0x3c4d5e)} from ${_0x4d5e6f || 'M-Pesa'} (REF: ${_0x2b3c4d})`;
+                    desc = `WITHDRAW KSh ${_0x7081a2(_0x3c4d5e)} from ${_0x4d5e6f || 'M-Pesa'} (${_0x2b3c4d})`;
                 } else {
-                    desc = `${_0x1a2b3c.toUpperCase()} KSh ${_0x7081a2(_0x3c4d5e)} (REF: ${_0x2b3c4d})`;
+                    desc = `${_0x1a2b3c.toUpperCase()} KSh ${_0x7081a2(_0x3c4d5e)} (${_0x2b3c4d})`;
                 }
 
                 transactions.push({
@@ -346,28 +378,16 @@
 
             // ─── CHARGE TRANSACTION - CORRECT DOUBLE ENTRY ──────────────
             if (_0x5e6f70 > 0) {
-                // Charge is an expense: Debit "Bills" (expense), Credit "Cash" (or "Bank")
-                // This reflects that the charge is a cost incurred, not a contra entry
-                const chargeDesc = `M-Pesa charge KSh ${_0x7081a2(_0x5e6f70)} (REF: ${_0x2b3c4d})`;
+                // Charge is an expense: Debit "Bills" (expense), Credit "Cash"
+                const chargeDesc = `M-Pesa charge KSh ${_0x7081a2(_0x5e6f70)} (${_0x2b3c4d})`;
 
-                // For personal accounts: Credit "Cash" (money leaving your M-Pesa)
-                // For business accounts: Could credit "Bank" but we use "Cash" as the credit account
-                // The charge reduces your cash/bank balance
                 transactions.push({
                     'id': _0x81a2b3 + transactions.length,
-                    'debit': 'Bills',      // Expense account - charge is a cost
-                    'credit': 'Cash',       // Cash/Bank account - money leaves
+                    'debit': 'Bills',      // Expense account
+                    'credit': 'Cash',       // Cash/Bank account
                     'amount': _0x5e6f70,
                     'desc': chargeDesc
                 });
-
-                // Also ensure the main transaction's credit account is correctly set
-                // For outgoing transactions, the main amount already debits Cash and credits Recipient
-                // The charge entry separately debits Bills and credits Cash
-                // This is proper double entry: 
-                // 1. Cash → Recipient (main amount)
-                // 2. Bills → Cash (charge amount)
-                // Net effect: Cash decreases by (main + charge), Recipient increases by main, Bills increases by charge
             }
 
             if (transactions.length === 0) return null;
@@ -375,19 +395,19 @@
             const useMainFile = typeof saveData !== 'undefined' && typeof state !== 'undefined';
 
             // ─── STRICT DEDUPLICATION CHECK ──────────────────────────────
-            // Check if this exact transaction already exists in the ledger
             const existingRefs = await _0xfe8e01();
             const refToCheck = _0x2b3c4d;
             
-            // Create a unique hash for this transaction based on key fields
-            const txHash = `${_0x3c4d5e}|${_0x5e6f70}|${_0x4d5e6f.substring(0, 10)}|${_0x1a2b3c}`;
-            
-            // Check if this transaction is already recorded
             let isDuplicate = false;
-            for (const existingRef of existingRefs) {
-                if (existingRef === refToCheck || existingRef === 'hash:' + txHash.substring(0, 40)) {
+            // Check by M-PESA code first
+            if (existingRefs.has(refToCheck)) {
+                isDuplicate = true;
+            }
+            // Also check by hash-based fallback
+            if (!isDuplicate && transactions.length > 0) {
+                const hash = transactions[0].desc.substring(0, 60).replace(/[0-9]/g, '');
+                if (existingRefs.has('hash:' + hash)) {
                     isDuplicate = true;
-                    break;
                 }
             }
 
@@ -396,6 +416,7 @@
                 return null;
             }
 
+            // ─── SAVE TRANSACTIONS ────────────────────────────────────────
             for (const tx of transactions) {
                 if (useMainFile) {
                     await saveData('tx', tx);
