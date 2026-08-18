@@ -289,6 +289,7 @@
             const _0x5e6f70 = Number(_0x197aaa['charge']) || 0;
             const _0x6f7081 = !!_0x197aaa['isFuliza'] || _0x1a2b3c === 'fuliza';
 
+            // Use the debit/credit from parser
             const debit = _0x197aaa['debit'] || 'Cash';
             const credit = _0x197aaa['credit'] || 'M-Pesa';
             const direction = _0x197aaa['direction'] || (_0x1a2b3c === 'receive' ? 'incoming' : 'outgoing');
@@ -322,40 +323,106 @@
                         'desc': 'Fuliza charge KSh ' + _0x7081a2(_0x5e6f70) + ' (REF: ' + _0x2b3c4d + ')'
                     });
                 }
-            } else if (_0x3c4d5e > 0) {
-                let desc = '';
-                if (_0x1a2b3c === 'receive' || direction === 'incoming') {
-                    desc = 'Received KSh ' + _0x7081a2(_0x3c4d5e) + ' from ' + (_0x4d5e6f || 'M-Pesa') + ' (REF: ' + _0x2b3c4d + ')';
-                } else if (direction === 'contra') {
-                    desc = 'TRANSFER KSh ' + _0x7081a2(_0x3c4d5e) + ': ' + debit + ' → ' + credit + ' (REF: ' + _0x2b3c4d + ')';
-                } else if (_0x1a2b3c === 'airtime') {
-                    desc = 'AIRTIME KSh ' + _0x7081a2(_0x3c4d5e) + ' for ' + (_0x4d5e6f || 'phone') + ' (REF: ' + _0x2b3c4d + ')';
-                } else if (_0x1a2b3c === 'send') {
-                    desc = 'SEND KSh ' + _0x7081a2(_0x3c4d5e) + ' to ' + _0x4d5e6f + ' (REF: ' + _0x2b3c4d + ')';
-                } else if (_0x1a2b3c === 'paybill' || _0x1a2b3c === 'buy_goods') {
-                    desc = 'PAYBILL KSh ' + _0x7081a2(_0x3c4d5e) + ' to ' + (_0x4d5e6f || 'Paybill') + ' (REF: ' + _0x2b3c4d + ')';
-                } else if (_0x1a2b3c === 'withdraw') {
-                    desc = 'WITHDRAW KSh ' + _0x7081a2(_0x3c4d5e) + ' from ' + (_0x4d5e6f || 'M-Pesa') + ' (REF: ' + _0x2b3c4d + ')';
-                } else {
-                    desc = _0x1a2b3c.toUpperCase() + ' KSh ' + _0x7081a2(_0x3c4d5e) + ' (REF: ' + _0x2b3c4d + ')';
-                }
-
+            } else if (_0x1a2b3c === 'receive' || direction === 'incoming') {
                 transactions.push({
                     'id': _0x81a2b3,
                     'debit': debit,
                     'credit': credit,
                     'amount': _0x3c4d5e,
-                    'desc': desc
+                    'desc': 'Received KSh ' + _0x7081a2(_0x3c4d5e) + ' from ' + (_0x4d5e6f || 'M-Pesa') + ' (REF: ' + _0x2b3c4d + ')'
                 });
-            }
-
-            if (_0x5e6f70 > 0 && !_0x6f7081) {
+                if (_0x5e6f70 > 0) {
+                    transactions.push({
+                        'id': _0x81a2b3 + transactions.length,
+                        'debit': 'M-Pesa Charge',
+                        'credit': 'Cash',
+                        'amount': _0x5e6f70,
+                        'desc': 'M-Pesa charge KSh ' + _0x7081a2(_0x5e6f70) + ' for REF: ' + _0x2b3c4d
+                    });
+                }
+            } else if (direction === 'contra') {
                 transactions.push({
-                    'id': _0x81a2b3 + transactions.length,
+                    'id': _0x81a2b3,
+                    'debit': debit,
+                    'credit': credit,
+                    'amount': _0x3c4d5e,
+                    'desc': 'TRANSFER KSh ' + _0x7081a2(_0x3c4d5e) + ': ' + debit + ' → ' + credit + ' (REF: ' + _0x2b3c4d + ')'
+                });
+                if (_0x5e6f70 > 0) {
+                    transactions.push({
+                        'id': _0x81a2b3 + transactions.length,
+                        'debit': 'M-Pesa Charge',
+                        'credit': 'Cash',
+                        'amount': _0x5e6f70,
+                        'desc': 'M-Pesa charge KSh ' + _0x7081a2(_0x5e6f70) + ' for REF: ' + _0x2b3c4d
+                    });
+                }
+            } else if (_0x1a2b3c === 'send') {
+                transactions.push({
+                    'id': _0x81a2b3,
+                    'debit': debit,
+                    'credit': credit,
+                    'amount': _0x3c4d5e,
+                    'desc': 'SEND KSh ' + _0x7081a2(_0x3c4d5e) + ' to ' + _0x4d5e6f + ' (charge: KSh ' + _0x7081a2(_0x5e6f70) + ') (REF: ' + _0x2b3c4d + ')'
+                });
+                if (_0x5e6f70 > 0) {
+                    transactions.push({
+                        'id': _0x81a2b3 + transactions.length,
+                        'debit': 'M-Pesa Charge',
+                        'credit': 'Cash',
+                        'amount': _0x5e6f70,
+                        'desc': 'M-Pesa charge KSh ' + _0x7081a2(_0x5e6f70) + ' for REF: ' + _0x2b3c4d
+                    });
+                }
+            } else if (_0x1a2b3c === 'withdraw') {
+                transactions.push({
+                    'id': _0x81a2b3,
+                    'debit': debit,
+                    'credit': credit,
+                    'amount': _0x3c4d5e,
+                    'desc': 'WITHDRAW KSh ' + _0x7081a2(_0x3c4d5e) + ' from ' + _0x4d5e6f + ' (charge: KSh ' + _0x7081a2(_0x5e6f70) + ') (REF: ' + _0x2b3c4d + ')'
+                });
+                if (_0x5e6f70 > 0) {
+                    transactions.push({
+                        'id': _0x81a2b3 + transactions.length,
+                        'debit': 'M-Pesa Charge',
+                        'credit': 'Cash',
+                        'amount': _0x5e6f70,
+                        'desc': 'M-Pesa charge KSh ' + _0x7081a2(_0x5e6f70) + ' for REF: ' + _0x2b3c4d
+                    });
+                }
+            } else if (_0x1a2b3c === 'paybill' || _0x1a2b3c === 'buy_goods') {
+                transactions.push({
+                    'id': _0x81a2b3,
+                    'debit': debit,
+                    'credit': credit,
+                    'amount': _0x3c4d5e,
+                    'desc': 'PAYBILL KSh ' + _0x7081a2(_0x3c4d5e) + ' to ' + (_0x4d5e6f || 'Paybill') + ' (REF: ' + _0x2b3c4d + ')'
+                });
+                if (_0x5e6f70 > 0) {
+                    transactions.push({
+                        'id': _0x81a2b3 + transactions.length,
+                        'debit': 'M-Pesa Charge',
+                        'credit': 'Cash',
+                        'amount': _0x5e6f70,
+                        'desc': 'M-Pesa charge KSh ' + _0x7081a2(_0x5e6f70) + ' for REF: ' + _0x2b3c4d
+                    });
+                }
+            } else if (_0x1a2b3c === 'airtime') {
+                transactions.push({
+                    'id': _0x81a2b3,
+                    'debit': debit,
+                    'credit': credit,
+                    'amount': _0x3c4d5e,
+                    'desc': 'AIRTIME KSh ' + _0x7081a2(_0x3c4d5e) + ' for ' + _0x4d5e6f + ' (REF: ' + _0x2b3c4d + ')'
+                });
+            } else if (_0x5e6f70 > 0) {
+                transactions.push({
+                    'id': _0x81a2b3,
                     'debit': 'M-Pesa Charge',
                     'credit': 'Cash',
                     'amount': _0x5e6f70,
-                    'desc': 'M-Pesa charge KSh ' + _0x7081a2(_0x5e6f70) + ' (REF: ' + _0x2b3c4d + ')'
+                    'desc': 'M-Pesa charge — KSh ' + _0x7081a2(_0x5e6f70) + ' (' + _0x2b3c4d + ')'
                 });
             }
 
