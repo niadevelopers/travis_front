@@ -130,20 +130,18 @@
         return '';
     }
 
-    // ─── MAIN PARSER ──────────────────────────────────────────────────────
+    // ─── MAIN PARSER - PROPERLY IDENTIFIES AMOUNTS IGNORING BALANCE ──────
     function _0x28d4a7(_0x3e0ebd) {
         const _0x4db353 = _0x34b2,
             _0x15f829 = _0x3e0ebd[_0x4db353(0x9f)]();
         if (!_0x15f829) return null;
 
-        // Check if this is an M-Pesa message
         const _0x52e783 = _0x5325d3[_0x4db353(0xa7)](_0x53c7b9 => _0x53c7b9[_0x4db353(0x13c)](_0x15f829));
         if (!_0x52e783) return null;
 
-        // Detect direction
         const direction = detectMoneyDirection(_0x15f829);
 
-        // Check for Fuliza charge
+        // ─── CHECK FOR FULIZA CHARGE ──────────────────────────────────────
         const _0x1e50bf = _0x15f829[_0x4db353(0xad)](_0x15d1a4);
         if (_0x1e50bf) {
             const _0x23ac4d = parseFloat(_0x1e50bf[0x1][_0x4db353(0x94)](/,/g, ''));
@@ -159,7 +157,7 @@
             };
         }
 
-        // ─── EXTRACT UNIQUE REFERENCE ──────────────────────────────────────
+        // ─── EXTRACT UNIQUE REFERENCE ─────────────────────────────────────
         const _0x34b93a = new Set(['CONFIRMED', _0x4db353(0x143), _0x4db353(0x10d)]);
         let _0x446688 = '';
         const _0x2e0d26 = /\b([A-Z0-9]{10})\b/g;
@@ -171,7 +169,7 @@
             }
         }
 
-        // ─── EXTRACT CHARGE (ONLY from explicit transaction cost) ────────
+        // ─── EXTRACT TRANSACTION CHARGE (ONLY from explicit pattern) ────
         const chargeMatch = _0x15f829['match'](_0x296380);
         let charge = chargeMatch ? parseFloat(chargeMatch[0x1][_0x4db353(0x94)](/,/g, '')) : 0;
 
@@ -187,7 +185,8 @@
         const balanceMatch = _0x15f829.match(/New\s+M-?PESA\s+balance\s+is\s+(?:Ksh|KES)\s*([\d,]+\.?\d*)/i);
         let balance = balanceMatch ? parseFloat(balanceMatch[1].replace(/,/g, '')) : 0;
 
-        // ─── FIND THE MAIN AMOUNT ─────────────────────────────────────────
+        // ─── FIND THE MAIN TRANSACTION AMOUNT ────────────────────────────
+        // The main amount is the FIRST amount that is NOT the balance and NOT the charge
         let mainAmount = 0;
         for (const amt of allAmounts) {
             // Skip if this is the balance
@@ -200,14 +199,9 @@
             }
         }
 
-        // If still no main amount, use the first amount that's not the charge
+        // Fallback: if no main amount found, use the first amount
         if (mainAmount === 0 && allAmounts.length > 0) {
-            for (const amt of allAmounts) {
-                if (charge === 0 || Math.abs(amt - charge) >= 0.01) {
-                    mainAmount = amt;
-                    break;
-                }
-            }
+            mainAmount = allAmounts[0];
         }
 
         const { type, label } = _0xa65199(_0x15f829);
@@ -221,19 +215,13 @@
             debitAccount = recipient || 'M-Pesa';
             creditAccount = 'Cash';
         } else if (direction === 'contra') {
-            // Money moves within ecosystem
+            // Money moves within ecosystem (deposits, withdrawals)
             if (/deposit|deposited|bank deposit|cash deposit|agent deposit/i.test(_0x15f829)) {
-                // Deposit: Cash → Bank / M-Pesa
                 debitAccount = 'Cash';
                 creditAccount = 'Bank / M-Pesa';
-            } else if (/withdraw|withdrew|withdrawn|agent withdrawal|cash withdrawal|mpesa withdrawal/i.test(_0x15f829)) {
-                // Withdrawal: Bank / M-Pesa → Cash
+            } else {
                 debitAccount = 'Bank / M-Pesa';
                 creditAccount = 'Cash';
-            } else {
-                // Generic contra: Cash → Bank
-                debitAccount = 'Cash';
-                creditAccount = 'Bank / M-Pesa';
             }
         } else {
             // Outgoing or unknown: Cash → Recipient
@@ -255,6 +243,7 @@
         };
     }
 
+    // ─── BATCH PARSER WITH STRICT DEDUPLICATION ────────────────────────────
     function _0x856f67(_0x20cbfd) {
         const _0x269779 = _0x34b2,
             _0x20460f = _0x20cbfd[_0x269779(0x7c)](/\n{2,}|(?=[A-Z]{1}[A-Z0-9]{9}\s+Confirmed)|(?=Confirmed\.)/g)[_0x269779(0x9e)](_0x1939f9 => _0x1939f9[_0x269779(0x9f)]())[_0x269779(0xd0)](_0x2da1f2 => _0x2da1f2['length'] > 0xa),
@@ -263,6 +252,7 @@
         for (const _0x3e5027 of _0x20460f) {
             const _0x321556 = _0x28d4a7(_0x3e5027);
             if (!_0x321556) continue;
+            // Use the reference number as the unique key for deduplication
             const _0x47b150 = _0x321556['ref'] && !_0x321556['ref'][_0x269779(0xa5)](_0x269779(0x120)) && !_0x321556['ref']['startsWith']('FULIZA-') ? _0x321556[_0x269779(0xf1)] : _0x321556[_0x269779(0x7b)][_0x269779(0x8a)](0x0, 0x3c);
             if (_0x18a3e1[_0x269779(0xe8)](_0x47b150)) continue;
             _0x18a3e1[_0x269779(0xd9)](_0x47b150), _0x510938[_0x269779(0xf6)](_0x321556);
@@ -270,7 +260,7 @@
         return _0x510938;
     }
 
-    // ─── DEDUPLICATION: Check existing ledger entries ────────────────────
+    // ─── CHECK EXISTING LEDGER FOR DUPLICATES ─────────────────────────────
     function _0xfe8e01() {
         return new Promise(_0x523738 => {
             const _0x3e9cef = _0x34b2;
@@ -287,20 +277,19 @@
                         _0x5e0b67 = _0x4d77c0[_0x3d423c(0xa8)]('tx'),
                         _0x47faf8 = _0x5e0b67[_0x3d423c(0x77)]();
                     _0x47faf8[_0x3d423c(0xe9)] = () => {
-                        const _0x530ca4 = _0x3d423c;
-                        _0x48cf29[_0x530ca4(0x11e)]();
+                        _0x48cf29[_0x3d423c(0x11e)]();
                         const _0x42b26e = new Set();
-                        (_0x47faf8[_0x530ca4(0x112)] || [])['forEach'](_0x1bee90 => {
-                            const _0xf01077 = _0x530ca4,
+                        (_0x47faf8[_0x3d423c(0x112)] || [])['forEach'](_0x1bee90 => {
+                            const _0xf01077 = _0x3d423c,
                                 _0x52aab1 = (_0x1bee90[_0xf01077(0x85)] || '')[_0xf01077(0xad)](/\(([A-Z0-9]{10})\)/);
                             if (_0x52aab1) _0x42b26e[_0xf01077(0xd9)](_0x52aab1[0x1]);
                             // Also check for REF: pattern
-                            const refMatch = (_0x1bee90[_0xf01077(0x85)] || '')[_0xf01077(0xad)](/REF:\s*([A-Z0-9]{10})/);
+                            const refMatch = (_0x1bee90[_0xf01077(0x85)] || '')['match'](/REF:\s*([A-Z0-9]{10})/);
                             if (refMatch) _0x42b26e[_0xf01077(0xd9)](refMatch[0x1]);
-                        }), _0x523738(_0x42b26e);
+                        });
+                        _0x523738(_0x42b26e);
                     }, _0x47faf8[_0x3d423c(0x123)] = () => {
-                        const _0x29536c = _0x3d423c;
-                        _0x48cf29[_0x29536c(0x11e)](), _0x523738(new Set());
+                        _0x48cf29[_0x3d423c(0x11e)](), _0x523738(new Set());
                     };
                 }, _0x3bbca8['onerror'] = () => _0x523738(new Set());
             } catch (_0x35655b) {
@@ -323,147 +312,48 @@
             const credit = _0x197aaa['credit'] || 'M-Pesa';
             const direction = _0x197aaa['direction'] || (_0x1a2b3c === 'receive' ? 'incoming' : 'outgoing');
 
-            // Skip if no meaningful transaction
             if (_0x3c4d5e <= 0 && _0x5e6f70 <= 0 && !_0x6f7081) return null;
 
             const _0x7081a2 = (n) => Number(n).toLocaleString('en-KE');
             const _0x81a2b3 = Date.now() + Math.floor(Math.random() * 1000);
             const transactions = [];
 
-            // ─── FULIZA: Repayment + Charge ─────────────────────────────────
-            if (_0x6f7081) {
-                if (_0x3c4d5e > 0) {
-                    transactions.push({
-                        'id': _0x81a2b3,
-                        'debit': 'Fuliza Repayment',
-                        'credit': 'Cash',
-                        'amount': _0x3c4d5e,
-                        'desc': 'Fuliza repayment KSh ' + _0x7081a2(_0x3c4d5e) + ' (REF: ' + _0x2b3c4d + ')'
-                    });
+            // ─── MAIN TRANSACTION ──────────────────────────────────────────
+            if (_0x3c4d5e > 0) {
+                let desc = '';
+                if (_0x1a2b3c === 'receive' || direction === 'incoming') {
+                    desc = `Received KSh ${_0x7081a2(_0x3c4d5e)} from ${_0x4d5e6f || 'M-Pesa'} (REF: ${_0x2b3c4d})`;
+                } else if (direction === 'contra') {
+                    desc = `TRANSFER KSh ${_0x7081a2(_0x3c4d5e)}: ${debit} → ${credit} (REF: ${_0x2b3c4d})`;
+                } else if (_0x1a2b3c === 'airtime') {
+                    desc = `AIRTIME KSh ${_0x7081a2(_0x3c4d5e)} for ${_0x4d5e6f || 'phone'} (REF: ${_0x2b3c4d})`;
+                } else if (_0x1a2b3c === 'send') {
+                    desc = `SEND KSh ${_0x7081a2(_0x3c4d5e)} to ${_0x4d5e6f} (REF: ${_0x2b3c4d})`;
+                } else if (_0x1a2b3c === 'paybill' || _0x1a2b3c === 'buy_goods') {
+                    desc = `PAYBILL KSh ${_0x7081a2(_0x3c4d5e)} to ${_0x4d5e6f || 'Paybill'} (REF: ${_0x2b3c4d})`;
+                } else if (_0x1a2b3c === 'withdraw') {
+                    desc = `WITHDRAW KSh ${_0x7081a2(_0x3c4d5e)} from ${_0x4d5e6f || 'M-Pesa'} (REF: ${_0x2b3c4d})`;
+                } else {
+                    desc = `${_0x1a2b3c.toUpperCase()} KSh ${_0x7081a2(_0x3c4d5e)} (REF: ${_0x2b3c4d})`;
                 }
-                if (_0x5e6f70 > 0) {
-                    transactions.push({
-                        'id': _0x81a2b3 + transactions.length,
-                        'debit': 'M-Pesa Charge',
-                        'credit': 'Cash',
-                        'amount': _0x5e6f70,
-                        'desc': 'Fuliza charge KSh ' + _0x7081a2(_0x5e6f70) + ' (REF: ' + _0x2b3c4d + ')'
-                    });
-                }
-            }
-            // ─── RECEIVE: Money comes in ────────────────────────────────────
-            else if (_0x1a2b3c === 'receive' || direction === 'incoming') {
+
                 transactions.push({
                     'id': _0x81a2b3,
                     'debit': debit,
                     'credit': credit,
                     'amount': _0x3c4d5e,
-                    'desc': 'Received KSh ' + _0x7081a2(_0x3c4d5e) + ' from ' + (_0x4d5e6f || 'M-Pesa') + ' (REF: ' + _0x2b3c4d + ')'
-                });
-                if (_0x5e6f70 > 0) {
-                    transactions.push({
-                        'id': _0x81a2b3 + transactions.length,
-                        'debit': 'M-Pesa Charge',
-                        'credit': 'Cash',
-                        'amount': _0x5e6f70,
-                        'desc': 'M-Pesa charge KSh ' + _0x7081a2(_0x5e6f70) + ' for REF: ' + _0x2b3c4d
-                    });
-                }
-            }
-            // ─── CONTRA: Money moves within ecosystem ──────────────────────
-            else if (direction === 'contra') {
-                transactions.push({
-                    'id': _0x81a2b3,
-                    'debit': debit,
-                    'credit': credit,
-                    'amount': _0x3c4d5e,
-                    'desc': 'TRANSFER KSh ' + _0x7081a2(_0x3c4d5e) + ': ' + debit + ' → ' + credit + ' (REF: ' + _0x2b3c4d + ')'
-                });
-                if (_0x5e6f70 > 0) {
-                    transactions.push({
-                        'id': _0x81a2b3 + transactions.length,
-                        'debit': 'M-Pesa Charge',
-                        'credit': 'Cash',
-                        'amount': _0x5e6f70,
-                        'desc': 'M-Pesa charge KSh ' + _0x7081a2(_0x5e6f70) + ' for REF: ' + _0x2b3c4d
-                    });
-                }
-            }
-            // ─── SEND: Money leaves ─────────────────────────────────────────
-            else if (_0x1a2b3c === 'send') {
-                transactions.push({
-                    'id': _0x81a2b3,
-                    'debit': debit,
-                    'credit': credit,
-                    'amount': _0x3c4d5e,
-                    'desc': 'SEND KSh ' + _0x7081a2(_0x3c4d5e) + ' to ' + _0x4d5e6f + ' (REF: ' + _0x2b3c4d + ')'
-                });
-                if (_0x5e6f70 > 0) {
-                    transactions.push({
-                        'id': _0x81a2b3 + transactions.length,
-                        'debit': 'M-Pesa Charge',
-                        'credit': 'Cash',
-                        'amount': _0x5e6f70,
-                        'desc': 'M-Pesa charge KSh ' + _0x7081a2(_0x5e6f70) + ' for REF: ' + _0x2b3c4d
-                    });
-                }
-            }
-            // ─── WITHDRAW: Contra entry ─────────────────────────────────────
-            else if (_0x1a2b3c === 'withdraw') {
-                transactions.push({
-                    'id': _0x81a2b3,
-                    'debit': debit,
-                    'credit': credit,
-                    'amount': _0x3c4d5e,
-                    'desc': 'WITHDRAW KSh ' + _0x7081a2(_0x3c4d5e) + ' from ' + (_0x4d5e6f || 'M-Pesa') + ' (REF: ' + _0x2b3c4d + ')'
-                });
-                if (_0x5e6f70 > 0) {
-                    transactions.push({
-                        'id': _0x81a2b3 + transactions.length,
-                        'debit': 'M-Pesa Charge',
-                        'credit': 'Cash',
-                        'amount': _0x5e6f70,
-                        'desc': 'M-Pesa charge KSh ' + _0x7081a2(_0x5e6f70) + ' for REF: ' + _0x2b3c4d
-                    });
-                }
-            }
-            // ─── PAYBILL / BUY GOODS ────────────────────────────────────────
-            else if (_0x1a2b3c === 'paybill' || _0x1a2b3c === 'buy_goods') {
-                transactions.push({
-                    'id': _0x81a2b3,
-                    'debit': debit,
-                    'credit': credit,
-                    'amount': _0x3c4d5e,
-                    'desc': 'PAYBILL KSh ' + _0x7081a2(_0x3c4d5e) + ' to ' + (_0x4d5e6f || 'Paybill') + ' (REF: ' + _0x2b3c4d + ')'
-                });
-                if (_0x5e6f70 > 0) {
-                    transactions.push({
-                        'id': _0x81a2b3 + transactions.length,
-                        'debit': 'M-Pesa Charge',
-                        'credit': 'Cash',
-                        'amount': _0x5e6f70,
-                        'desc': 'M-Pesa charge KSh ' + _0x7081a2(_0x5e6f70) + ' for REF: ' + _0x2b3c4d
-                    });
-                }
-            }
-            // ─── AIRTIME ─────────────────────────────────────────────────────
-            else if (_0x1a2b3c === 'airtime') {
-                transactions.push({
-                    'id': _0x81a2b3,
-                    'debit': debit,
-                    'credit': credit,
-                    'amount': _0x3c4d5e,
-                    'desc': 'AIRTIME KSh ' + _0x7081a2(_0x3c4d5e) + ' for ' + (_0x4d5e6f || 'phone') + ' (REF: ' + _0x2b3c4d + ')'
+                    'desc': desc
                 });
             }
-            // ─── FALLBACK: Just log the charge ─────────────────────────────
-            else if (_0x5e6f70 > 0) {
+
+            // ─── CHARGE TRANSACTION ────────────────────────────────────────
+            if (_0x5e6f70 > 0) {
                 transactions.push({
-                    'id': _0x81a2b3,
+                    'id': _0x81a2b3 + transactions.length,
                     'debit': 'M-Pesa Charge',
                     'credit': 'Cash',
                     'amount': _0x5e6f70,
-                    'desc': 'M-Pesa charge — KSh ' + _0x7081a2(_0x5e6f70) + ' (' + _0x2b3c4d + ')'
+                    'desc': `M-Pesa charge KSh ${_0x7081a2(_0x5e6f70)} (REF: ${_0x2b3c4d})`
                 });
             }
 
@@ -480,7 +370,6 @@
                 }
             }
 
-            // ─── TRIGGER UI UPDATES ─────────────────────────────────────────
             if (useMainFile) {
                 if (typeof updateRuleSuggestion === 'function') updateRuleSuggestion();
                 if (typeof nav === 'function') nav('dash');
@@ -516,6 +405,7 @@
         });
     }
 
+    // ─── SAFARICOM TARIFF TABLE ───────────────────────────────────────────
     const _0xbeb8fc = {
         'send': [{
             'min': 0x1,
