@@ -67,12 +67,13 @@
 
     // ─── EXTRACT M-PESA CODE - PRIMARY UNIQUE IDENTIFIER ──────────────────
     function extractMpesaCode(_0x1022c8) {
+        // Match the exact M-PESA code format: 2 letters + 8 alphanumeric = 10 chars
         const codeMatch = _0x1022c8.match(/\b([A-Z]{2}[0-9A-Z]{8})\b/);
         if (codeMatch) return codeMatch[1];
         // Fallback: any 10-character alphanumeric at start
         const altMatch = _0x1022c8.match(/^([A-Z0-9]{10})\s/);
         if (altMatch) return altMatch[1];
-        return 'MPESA-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 5).toUpperCase();
+        return null;
     }
 
     function _0xa65199(_0x1022c8) {
@@ -154,6 +155,7 @@
 
         // ─── EXTRACT M-PESA CODE - PRIMARY UNIQUE IDENTIFIER ─────────────
         const mpesaCode = extractMpesaCode(_0x15f829);
+        if (!mpesaCode) return null; // Must have an M-PESA code
         
         // Check if it's an M-Pesa message
         const _0x52e783 = _0x5325d3[_0x4db353(0xa7)](_0x53c7b9 => _0x53c7b9[_0x4db353(0x13c)](_0x15f829));
@@ -168,7 +170,7 @@
             if (_0x23ac4d > 0x0) return {
                 'type': _0x4db353(0x125),
                 'label': _0x4db353(0x8d),
-                'ref': 'FULIZA-' + mpesaCode,
+                'ref': mpesaCode,
                 'amount': 0x0,
                 'recipient': _0x4db353(0x149),
                 'charge': _0x23ac4d,
@@ -233,7 +235,7 @@
         return {
             'type': type,
             'label': label,
-            'ref': mpesaCode,  // Use M-PESA code as the primary reference
+            'ref': mpesaCode,
             'amount': mainAmount,
             'recipient': recipient,
             'charge': charge,
@@ -249,8 +251,8 @@
     function _0x856f67(_0x20cbfd) {
         const _0x269779 = _0x34b2;
         
-        // Split by newlines or common message boundaries
-        let messages = _0x20cbfd.split(/\n{2,}|(?=[A-Z]{2}[0-9A-Z]{8}\s+Confirmed)|(?=Confirmed\.)/g)
+        // Split by M-PESA code pattern - each message starts with a code
+        let messages = _0x20cbfd.split(/\n{2,}|(?=\b[A-Z]{2}[0-9A-Z]{8}\s+Confirmed)/g)
             .map(msg => msg.trim())
             .filter(msg => msg.length > 15);
         
@@ -260,7 +262,7 @@
         }
 
         const _0x510938 = [];
-        const _0x18a3e1 = new Set(); // Track by M-PESA code
+        const _0x18a3e1 = new Set(); // Track by M-PESA code ONLY
         
         for (const _0x3e5027 of messages) {
             if (!_0x3e5027 || _0x3e5027.length < 15) continue;
@@ -268,15 +270,19 @@
             const _0x321556 = _0x28d4a7(_0x3e5027);
             if (!_0x321556) continue;
             
-            // Use M-PESA code as the definitive unique key
-            const key = _0x321556.mpesaCode || _0x321556.ref;
-            if (_0x18a3e1.has(key)) continue;
+            // Use M-PESA code as the definitive unique key - NO FALLBACK
+            const key = _0x321556.mpesaCode;
+            if (!key) continue;
+            
+            if (_0x18a3e1.has(key)) {
+                console.log(`[MpesaTracker] Duplicate M-PESA code skipped: ${key}`);
+                continue;
+            }
             
             _0x18a3e1.add(key);
             _0x510938.push(_0x321556);
         }
         
-        // Log the count of messages processed
         console.log(`[MpesaTracker] Processed ${messages.length} messages, extracted ${_0x510938.length} transactions`);
         
         return _0x510938;
@@ -303,19 +309,14 @@
                         const _0x42b26e = new Set();
                         (_0x47faf8[_0x3d423c(0x112)] || [])['forEach'](_0x1bee90 => {
                             const _0xf01077 = _0x3d423c;
-                            // Extract M-PESA code from description
+                            // Extract M-PESA code from description - STRICT match
                             const desc = _0x1bee90[_0xf01077(0x85)] || '';
-                            const codeMatch = desc.match(/REF:\s*([A-Z0-9]{10})/);
+                            // Look for code in parentheses: (QG78HJ2K9L)
+                            const codeMatch = desc.match(/\(([A-Z]{2}[0-9A-Z]{8})\)/);
                             if (codeMatch) _0x42b26e.add(codeMatch[1]);
-                            // Also check for (CODE) pattern
-                            const altMatch = desc.match(/\(([A-Z0-9]{10})\)/);
-                            if (altMatch) _0x42b26e.add(altMatch[1]);
-                            // Check for raw M-PESA code
+                            // Also check for raw M-PESA code
                             const rawMatch = desc.match(/\b([A-Z]{2}[0-9A-Z]{8})\b/);
                             if (rawMatch) _0x42b26e.add(rawMatch[1]);
-                            // Also store hash-based fallback
-                            const hash = desc.substring(0, 60).replace(/[0-9]/g, '');
-                            _0x42b26e.add('hash:' + hash);
                         });
                         _0x523738(_0x42b26e);
                     }, _0x47faf8[_0x3d423c(0x123)] = () => {
@@ -394,25 +395,13 @@
 
             const useMainFile = typeof saveData !== 'undefined' && typeof state !== 'undefined';
 
-            // ─── STRICT DEDUPLICATION CHECK ──────────────────────────────
+            // ─── STRICT DEDUPLICATION CHECK - ONLY M-PESA CODE ──────────
             const existingRefs = await _0xfe8e01();
             const refToCheck = _0x2b3c4d;
             
-            let isDuplicate = false;
-            // Check by M-PESA code first
+            // Check if this M-PESA code is already in the ledger
             if (existingRefs.has(refToCheck)) {
-                isDuplicate = true;
-            }
-            // Also check by hash-based fallback
-            if (!isDuplicate && transactions.length > 0) {
-                const hash = transactions[0].desc.substring(0, 60).replace(/[0-9]/g, '');
-                if (existingRefs.has('hash:' + hash)) {
-                    isDuplicate = true;
-                }
-            }
-
-            if (isDuplicate) {
-                console.log('[MpesaTracker] Duplicate transaction skipped:', refToCheck);
+                console.log(`[MpesaTracker] Duplicate transaction skipped: ${refToCheck}`);
                 return null;
             }
 
