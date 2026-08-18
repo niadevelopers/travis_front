@@ -19,6 +19,52 @@
         _0x296380 = /transaction cost[,:]?\s*(?:Ksh|KES)\s*([\d,]+\.?\d*)/i,
         _0x15d1a4 = /Fuliza M-PESA charge of\s*(?:Ksh|KES)\s*([\d,]+\.?\d*)/i;
 
+    // ─── UPGRADED: Direction Detection Helper ──────────────────────────────
+    function detectMoneyDirection(_0x1022c8) {
+        const lower = _0x1022c8.toLowerCase();
+
+        // CONTRA: Money stays in ecosystem (deposits, withdrawals between own accounts)
+        const contraKeywords = [
+            /deposit/i, /deposited/i, /cash deposit/i, /bank deposit/i,
+            /agent deposit/i, /withdraw to cash/i, /withdrew to cash/i,
+            /cash withdrawal/i, /deposit to bank/i, /mpesa to bank/i,
+            /bank to mpesa/i, /internal transfer/i, /self transfer/i
+        ];
+        for (const pattern of contraKeywords) {
+            if (pattern.test(lower)) return 'contra';
+        }
+
+        // OUTGOING: Money leaves the user
+        const outgoingKeywords = [
+            /sent to/i, /paid to/i, /paid/i, /bought/i, /purchase/i,
+            /purchased/i, /buy/i, /withdraw/i, /withdrew/i, /withdrawn/i,
+            /transferred to/i, /transfer to/i, /gave to/i, /give to/i,
+            /used to pay/i, /used to purchase/i, /used for/i, /spent on/i,
+            /spent/i, /paying/i, /payment to/i, /payment for/i, /mpesa sent/i,
+            /sent money to/i, /cash sent/i, /has been used/i, /fully paid/i,
+            /partially paid/i, /paid using/i, /settled via/i, /airtime purchase/i,
+            /airtime bought/i, /bought airtime/i, /paybill/i, /till number/i,
+            /buy goods/i, /withdrawal/i
+        ];
+        for (const pattern of outgoingKeywords) {
+            if (pattern.test(lower)) return 'outgoing';
+        }
+
+        // INCOMING: Money arrives to user
+        const incomingKeywords = [
+            /received from/i, /received/i, /credited/i, /credit/i,
+            /money received/i, /payment received/i, /cash received/i,
+            /you have received/i, /you received/i, /incoming/i,
+            /credited to you/i, /sent to you/i, /transfer from/i,
+            /transferred from/i, /got from/i, /got/i
+        ];
+        for (const pattern of incomingKeywords) {
+            if (pattern.test(lower)) return 'incoming';
+        }
+
+        return 'unknown';
+    }
+
     function _0xa65199(_0x1022c8) {
         const _0x38da16 = _0x34b2,
             _0x9c3e4c = _0x1022c8[_0x38da16(0xa9)]();
@@ -84,12 +130,18 @@
         return '';
     }
 
+    // ─── UPGRADED: Main Parser with Direction Detection ────────────────────
     function _0x28d4a7(_0x3e0ebd) {
         const _0x4db353 = _0x34b2,
             _0x15f829 = _0x3e0ebd[_0x4db353(0x9f)]();
         if (!_0x15f829) return null;
+
         const _0x52e783 = _0x5325d3[_0x4db353(0xa7)](_0x53c7b9 => _0x53c7b9[_0x4db353(0x13c)](_0x15f829));
         if (!_0x52e783) return null;
+
+        // ─── DETECT DIRECTION ──────────────────────────────────────────────
+        const direction = detectMoneyDirection(_0x15f829);
+
         const _0x1e50bf = _0x15f829[_0x4db353(0xad)](_0x15d1a4);
         if (_0x1e50bf) {
             const _0x23ac4d = parseFloat(_0x1e50bf[0x1][_0x4db353(0x94)](/,/g, ''));
@@ -100,6 +152,7 @@
                 'amount': 0x0,
                 'recipient': _0x4db353(0x149),
                 'charge': _0x23ac4d,
+                'direction': direction,
                 'raw': _0x15f829
             };
         }
@@ -126,16 +179,31 @@
                 type: _0x13e39a,
                 label: _0x2b61f0
             } = _0xa65199(_0x15f829);
-        if (_0x13e39a === 'receive') return {
-            'type': _0x13e39a,
-            'label': _0x2b61f0,
-            'ref': _0x446688,
-            'amount': _0x218f3b,
-            'recipient': _0x23a5b0(_0x15f829),
-            'charge': 0x0,
-            'raw': _0x15f829
-        };
+
         const _0x214907 = _0x23a5b0(_0x15f829);
+
+        // ─── DETERMINE DEBIT/CREDIT BASED ON DIRECTION ──────────────────
+        let debitAccount, creditAccount;
+
+        if (direction === 'incoming') {
+            debitAccount = _0x214907 || 'M-Pesa';
+            creditAccount = 'Cash';
+        } else if (direction === 'contra') {
+            // Deposit: Cash → Bank/M-Pesa
+            if (/deposit|deposited|bank deposit|cash deposit|agent deposit/i.test(_0x15f829)) {
+                debitAccount = 'Cash';
+                creditAccount = _0x214907 || 'Bank / M-Pesa';
+            } else {
+                // Withdrawal: Bank/M-Pesa → Cash
+                debitAccount = _0x214907 || 'Bank / M-Pesa';
+                creditAccount = 'Cash';
+            }
+        } else {
+            // Outgoing or unknown: Cash → Recipient
+            debitAccount = 'Cash';
+            creditAccount = _0x214907 || 'M-Pesa';
+        }
+
         return {
             'type': _0x13e39a,
             'label': _0x2b61f0,
@@ -143,6 +211,9 @@
             'amount': _0x218f3b,
             'recipient': _0x214907,
             'charge': _0x560b9f,
+            'direction': direction,
+            'debit': debitAccount,
+            'credit': creditAccount,
             'raw': _0x15f829
         };
     }
@@ -196,6 +267,8 @@
             }
         });
     }
+
+    // ─── UPGRADED: Transaction Logger - Uses Debit/Credit from Parser ──────
     async function _0x2bc494(_0x197aaa) {
         try {
             const _0x1a2b3c = _0x197aaa['type'],
@@ -204,6 +277,11 @@
                 _0x4d5e6f = _0x197aaa['recipient'] || '',
                 _0x5e6f70 = Number(_0x197aaa['charge']) || 0x0,
                 _0x6f7081 = !!_0x197aaa['isFuliza'] || _0x1a2b3c === 'fuliza';
+
+            // Use the debit/credit from parser
+            const debit = _0x197aaa['debit'] || 'Cash';
+            const credit = _0x197aaa['credit'] || 'M-Pesa';
+            const direction = _0x197aaa['direction'] || (_0x1a2b3c === 'receive' ? 'incoming' : 'outgoing');
 
             if (!_0x197aaa['direction']) {
                 _0x197aaa['direction'] = _0x1a2b3c === 'receive' ? 'incoming' : 'outgoing';
@@ -234,19 +312,46 @@
                         'desc': 'Fuliza\x20charge\x20KSh\x20' + _0x7081a2(_0x5e6f70) + '\x20(REF:\x20' + _0x2b3c4d + ')'
                     });
                 }
-            } else if (_0x1a2b3c === 'receive') {
+            } else if (_0x1a2b3c === 'receive' || direction === 'incoming') {
                 _0x92b3c4['push']({
                     'id': _0x81a2b3,
-                    'debit': 'Cash',
-                    'credit': _0x4d5e6f,
+                    'debit': debit,
+                    'credit': credit,
                     'amount': _0x3c4d5e,
                     'desc': 'Received\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20from\x20' + _0x4d5e6f + '\x20(REF:\x20' + _0x2b3c4d + ')'
                 });
+                if (_0x5e6f70 > 0x0) {
+                    _0x92b3c4['push']({
+                        'id': _0x81a2b3 + 0x1,
+                        'debit': 'M-Pesa\x20Charge',
+                        'credit': 'Cash',
+                        'amount': _0x5e6f70,
+                        'desc': 'M-Pesa\x20charge\x20KSh\x20' + _0x7081a2(_0x5e6f70) + '\x20for\x20REF:\x20' + _0x2b3c4d
+                    });
+                }
+            } else if (direction === 'contra') {
+                // Contra entry: money moves between accounts
+                _0x92b3c4['push']({
+                    'id': _0x81a2b3,
+                    'debit': debit,
+                    'credit': credit,
+                    'amount': _0x3c4d5e,
+                    'desc': 'TRANSFER\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + ': ' + debit + ' → ' + credit + ' (REF: ' + _0x2b3c4d + ')'
+                });
+                if (_0x5e6f70 > 0x0) {
+                    _0x92b3c4['push']({
+                        'id': _0x81a2b3 + 0x1,
+                        'debit': 'M-Pesa\x20Charge',
+                        'credit': 'Cash',
+                        'amount': _0x5e6f70,
+                        'desc': 'M-Pesa\x20charge\x20KSh\x20' + _0x7081a2(_0x5e6f70) + '\x20for\x20REF:\x20' + _0x2b3c4d
+                    });
+                }
             } else if (_0x1a2b3c === 'send') {
                 _0x92b3c4['push']({
                     'id': _0x81a2b3,
-                    'debit': _0x4d5e6f,
-                    'credit': 'Cash',
+                    'debit': debit,
+                    'credit': credit,
                     'amount': _0x3c4d5e,
                     'desc': 'SEND\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20to\x20' + _0x4d5e6f + '\x20(charge:\x20KSh\x20' + _0x7081a2(_0x5e6f70) + ')\x20(REF:\x20' + _0x2b3c4d + ')'
                 });
@@ -262,8 +367,8 @@
             } else if (_0x1a2b3c === 'withdraw') {
                 _0x92b3c4['push']({
                     'id': _0x81a2b3,
-                    'debit': 'M-Pesa\x20Withdrawal',
-                    'credit': 'Cash',
+                    'debit': debit,
+                    'credit': credit,
                     'amount': _0x3c4d5e,
                     'desc': 'WITHDRAW\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20from\x20' + _0x4d5e6f + '\x20(charge:\x20KSh\x20' + _0x7081a2(_0x5e6f70) + ')\x20(REF:\x20' + _0x2b3c4d + ')'
                 });
@@ -279,8 +384,8 @@
             } else if (_0x1a2b3c === 'paybill' || _0x1a2b3c === 'buy_goods') {
                 _0x92b3c4['push']({
                     'id': _0x81a2b3,
-                    'debit': _0x4d5e6f || 'Paybill',
-                    'credit': 'Cash',
+                    'debit': debit,
+                    'credit': credit,
                     'amount': _0x3c4d5e,
                     'desc': 'PAYBILL\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20to\x20' + _0x4d5e6f + '\x20(REF:\x20' + _0x2b3c4d + ')'
                 });
@@ -296,8 +401,8 @@
             } else if (_0x1a2b3c === 'airtime') {
                 _0x92b3c4['push']({
                     'id': _0x81a2b3,
-                    'debit': 'Airtime\x20Purchase',
-                    'credit': 'Cash',
+                    'debit': debit,
+                    'credit': credit,
                     'amount': _0x3c4d5e,
                     'desc': 'AIRTIME\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20for\x20' + _0x4d5e6f + '\x20(REF:\x20' + _0x2b3c4d + ')'
                 });
@@ -696,7 +801,8 @@
     window['travisMpesa'] = {
         'open': () => _0xc5c6b3(),
         'parse': _0x856f67,
-        'tariff': _0x8fa1bc
+        'tariff': _0x8fa1bc,
+        'detectDirection': detectMoneyDirection
     };
 
     function _0x2f6c26() {
