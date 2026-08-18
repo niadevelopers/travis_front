@@ -19,11 +19,11 @@
         _0x296380 = /transaction cost[,:]?\s*(?:Ksh|KES)\s*([\d,]+\.?\d*)/i,
         _0x15d1a4 = /Fuliza M-PESA charge of\s*(?:Ksh|KES)\s*([\d,]+\.?\d*)/i;
 
-    // ─── UPGRADED: Direction Detection Helper ──────────────────────────────
+    // ─── DIRECTION DETECTION ──────────────────────────────────────────────
     function detectMoneyDirection(_0x1022c8) {
         const lower = _0x1022c8.toLowerCase();
 
-        // CONTRA: Money stays in ecosystem (deposits, withdrawals between own accounts)
+        // CONTRA: Money stays in ecosystem (deposits, withdrawals)
         const contraKeywords = [
             /deposit/i, /deposited/i, /cash deposit/i, /bank deposit/i,
             /agent deposit/i, /withdraw to cash/i, /withdrew to cash/i,
@@ -130,7 +130,7 @@
         return '';
     }
 
-    // ─── UPGRADED: Main Parser with Direction Detection ────────────────────
+    // ─── MAIN PARSER ──────────────────────────────────────────────────────
     function _0x28d4a7(_0x3e0ebd) {
         const _0x4db353 = _0x34b2,
             _0x15f829 = _0x3e0ebd[_0x4db353(0x9f)]();
@@ -139,7 +139,6 @@
         const _0x52e783 = _0x5325d3[_0x4db353(0xa7)](_0x53c7b9 => _0x53c7b9[_0x4db353(0x13c)](_0x15f829));
         if (!_0x52e783) return null;
 
-        // ─── DETECT DIRECTION ──────────────────────────────────────────────
         const direction = detectMoneyDirection(_0x15f829);
 
         const _0x1e50bf = _0x15f829[_0x4db353(0xad)](_0x15d1a4);
@@ -166,51 +165,59 @@
                 break;
             }
         }
-        const _0x1af708 = _0x15f829['match'](_0x296380),
-            _0x560b9f = _0x1af708 ? parseFloat(_0x1af708[0x1][_0x4db353(0x94)](/,/g, '')) : 0x0,
-            _0x4ea01d = [];
-        let _0x39f03b;
-        const _0x584860 = /(?:Ksh|KES)\s*([\d,]+\.?\d*)/gi;
-        while ((_0x39f03b = _0x584860[_0x4db353(0x75)](_0x15f829)) !== null) {
-            _0x4ea01d[_0x4db353(0xf6)](parseFloat(_0x39f03b[0x1][_0x4db353(0x94)](/,/g, '')));
+
+        // Extract charge (transaction cost)
+        const _0x1af708 = _0x15f829['match'](_0x296380);
+        let charge = _0x1af708 ? parseFloat(_0x1af708[0x1][_0x4db353(0x94)](/,/g, '')) : 0;
+
+        // Extract ALL amounts from the message
+        const allAmounts = [];
+        let match;
+        const amountRegex = /(?:Ksh|KES)\s*([\d,]+\.?\d*)/gi;
+        while ((match = amountRegex.exec(_0x15f829)) !== null) {
+            allAmounts.push(parseFloat(match[1].replace(/,/g, '')));
         }
-        const _0x218f3b = _0x4ea01d['length'] > 0x0 ? _0x4ea01d[0x0] : 0x0,
-            {
-                type: _0x13e39a,
-                label: _0x2b61f0
-            } = _0xa65199(_0x15f829);
 
-        const _0x214907 = _0x23a5b0(_0x15f829);
+        // The main amount is typically the first amount mentioned (after Ksh)
+        let mainAmount = allAmounts.length > 0 ? allAmounts[0] : 0;
 
-        // ─── DETERMINE DEBIT/CREDIT BASED ON DIRECTION ──────────────────
+        // If there's a transaction cost and it's the last amount, the main amount is the first
+        if (allAmounts.length > 1) {
+            // The last amount is usually the charge
+            charge = allAmounts[allAmounts.length - 1];
+            // The first amount is the main transaction amount
+            mainAmount = allAmounts[0];
+        }
+
+        const { type, label } = _0xa65199(_0x15f829);
+        const recipient = _0x23a5b0(_0x15f829);
+
+        // Determine debit/credit based on direction
         let debitAccount, creditAccount;
 
         if (direction === 'incoming') {
-            debitAccount = _0x214907 || 'M-Pesa';
+            debitAccount = recipient || 'M-Pesa';
             creditAccount = 'Cash';
         } else if (direction === 'contra') {
-            // Deposit: Cash → Bank/M-Pesa
             if (/deposit|deposited|bank deposit|cash deposit|agent deposit/i.test(_0x15f829)) {
                 debitAccount = 'Cash';
-                creditAccount = _0x214907 || 'Bank / M-Pesa';
+                creditAccount = 'Bank / M-Pesa';
             } else {
-                // Withdrawal: Bank/M-Pesa → Cash
-                debitAccount = _0x214907 || 'Bank / M-Pesa';
+                debitAccount = 'Bank / M-Pesa';
                 creditAccount = 'Cash';
             }
         } else {
-            // Outgoing or unknown: Cash → Recipient
             debitAccount = 'Cash';
-            creditAccount = _0x214907 || 'M-Pesa';
+            creditAccount = recipient || 'M-Pesa';
         }
 
         return {
-            'type': _0x13e39a,
-            'label': _0x2b61f0,
-            'ref': _0x446688 || _0x4db353(0x120) + Date[_0x4db353(0xbe)](),
-            'amount': _0x218f3b,
-            'recipient': _0x214907,
-            'charge': _0x560b9f,
+            'type': type,
+            'label': label,
+            'ref': _0x446688 || 'MPESA-' + Date.now().toString(36).toUpperCase(),
+            'amount': mainAmount,
+            'recipient': recipient,
+            'charge': charge,
             'direction': direction,
             'debit': debitAccount,
             'credit': creditAccount,
@@ -268,174 +275,88 @@
         });
     }
 
-    // ─── UPGRADED: Transaction Logger - Uses Debit/Credit from Parser ──────
+    // ─── TRANSACTION LOGGER ──────────────────────────────────────────────
     async function _0x2bc494(_0x197aaa) {
         try {
-            const _0x1a2b3c = _0x197aaa['type'],
-                _0x2b3c4d = _0x197aaa['ref'],
-                _0x3c4d5e = Number(_0x197aaa['amount']) || 0x0,
-                _0x4d5e6f = _0x197aaa['recipient'] || '',
-                _0x5e6f70 = Number(_0x197aaa['charge']) || 0x0,
-                _0x6f7081 = !!_0x197aaa['isFuliza'] || _0x1a2b3c === 'fuliza';
+            const _0x1a2b3c = _0x197aaa['type'];
+            const _0x2b3c4d = _0x197aaa['ref'];
+            const _0x3c4d5e = Number(_0x197aaa['amount']) || 0;
+            const _0x4d5e6f = _0x197aaa['recipient'] || '';
+            const _0x5e6f70 = Number(_0x197aaa['charge']) || 0;
+            const _0x6f7081 = !!_0x197aaa['isFuliza'] || _0x1a2b3c === 'fuliza';
 
-            // Use the debit/credit from parser
             const debit = _0x197aaa['debit'] || 'Cash';
             const credit = _0x197aaa['credit'] || 'M-Pesa';
             const direction = _0x197aaa['direction'] || (_0x1a2b3c === 'receive' ? 'incoming' : 'outgoing');
 
-            if (!_0x197aaa['direction']) {
-                _0x197aaa['direction'] = _0x1a2b3c === 'receive' ? 'incoming' : 'outgoing';
+            if (_0x3c4d5e <= 0 && _0x5e6f70 <= 0 && !_0x6f7081) return null;
+
+            const _0x7081a2 = (n) => Number(n).toLocaleString('en-KE');
+            const _0x81a2b3 = Date.now() + Math.floor(Math.random() * 1000);
+            const transactions = [];
+
+            // ─── Main transaction ───────────────────────────────────────────
+            if (_0x3c4d5e > 0) {
+                let desc = '';
+                if (_0x1a2b3c === 'receive' || direction === 'incoming') {
+                    desc = `Received KSh ${_0x7081a2(_0x3c4d5e)} from ${_0x4d5e6f || 'M-Pesa'} (REF: ${_0x2b3c4d})`;
+                } else if (direction === 'contra') {
+                    desc = `TRANSFER KSh ${_0x7081a2(_0x3c4d5e)}: ${debit} → ${credit} (REF: ${_0x2b3c4d})`;
+                } else if (_0x1a2b3c === 'airtime') {
+                    desc = `AIRTIME KSh ${_0x7081a2(_0x3c4d5e)} for ${_0x4d5e6f || 'phone'} (REF: ${_0x2b3c4d})`;
+                } else if (_0x1a2b3c === 'send') {
+                    desc = `SEND KSh ${_0x7081a2(_0x3c4d5e)} to ${_0x4d5e6f} (REF: ${_0x2b3c4d})`;
+                } else if (_0x1a2b3c === 'paybill' || _0x1a2b3c === 'buy_goods') {
+                    desc = `PAYBILL KSh ${_0x7081a2(_0x3c4d5e)} to ${_0x4d5e6f || 'Paybill'} (REF: ${_0x2b3c4d})`;
+                } else if (_0x1a2b3c === 'withdraw') {
+                    desc = `WITHDRAW KSh ${_0x7081a2(_0x3c4d5e)} from ${_0x4d5e6f || 'M-Pesa'} (REF: ${_0x2b3c4d})`;
+                } else {
+                    desc = `${_0x1a2b3c.toUpperCase()} KSh ${_0x7081a2(_0x3c4d5e)} (REF: ${_0x2b3c4d})`;
+                }
+
+                transactions.push({
+                    'id': _0x81a2b3,
+                    'debit': debit,
+                    'credit': credit,
+                    'amount': _0x3c4d5e,
+                    'desc': desc
+                });
             }
 
-            if (_0x3c4d5e <= 0x0 && _0x5e6f70 <= 0x0 && !_0x6f7081) return null;
-
-            const _0x7081a2 = (_0x9c => Number(_0x9c).toLocaleString('en-KE')),
-                _0x81a2b3 = Date['now']() + Math['floor'](Math['random']() * 0x3e8),
-                _0x92b3c4 = [];
-
-            if (_0x6f7081) {
-                if (_0x3c4d5e > 0x0) {
-                    _0x92b3c4['push']({
-                        'id': _0x81a2b3,
-                        'debit': 'Fuliza\x20Repayment',
-                        'credit': 'Cash',
-                        'amount': _0x3c4d5e,
-                        'desc': 'Fuliza\x20repayment\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20(REF:\x20' + _0x2b3c4d + ')'
-                    });
-                }
-                if (_0x5e6f70 > 0x0) {
-                    _0x92b3c4['push']({
-                        'id': _0x81a2b3 + _0x92b3c4['length'],
-                        'debit': 'M-Pesa\x20Charge',
-                        'credit': 'Cash',
-                        'amount': _0x5e6f70,
-                        'desc': 'Fuliza\x20charge\x20KSh\x20' + _0x7081a2(_0x5e6f70) + '\x20(REF:\x20' + _0x2b3c4d + ')'
-                    });
-                }
-            } else if (_0x1a2b3c === 'receive' || direction === 'incoming') {
-                _0x92b3c4['push']({
-                    'id': _0x81a2b3,
-                    'debit': debit,
-                    'credit': credit,
-                    'amount': _0x3c4d5e,
-                    'desc': 'Received\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20from\x20' + _0x4d5e6f + '\x20(REF:\x20' + _0x2b3c4d + ')'
-                });
-                if (_0x5e6f70 > 0x0) {
-                    _0x92b3c4['push']({
-                        'id': _0x81a2b3 + 0x1,
-                        'debit': 'M-Pesa\x20Charge',
-                        'credit': 'Cash',
-                        'amount': _0x5e6f70,
-                        'desc': 'M-Pesa\x20charge\x20KSh\x20' + _0x7081a2(_0x5e6f70) + '\x20for\x20REF:\x20' + _0x2b3c4d
-                    });
-                }
-            } else if (direction === 'contra') {
-                // Contra entry: money moves between accounts
-                _0x92b3c4['push']({
-                    'id': _0x81a2b3,
-                    'debit': debit,
-                    'credit': credit,
-                    'amount': _0x3c4d5e,
-                    'desc': 'TRANSFER\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + ': ' + debit + ' → ' + credit + ' (REF: ' + _0x2b3c4d + ')'
-                });
-                if (_0x5e6f70 > 0x0) {
-                    _0x92b3c4['push']({
-                        'id': _0x81a2b3 + 0x1,
-                        'debit': 'M-Pesa\x20Charge',
-                        'credit': 'Cash',
-                        'amount': _0x5e6f70,
-                        'desc': 'M-Pesa\x20charge\x20KSh\x20' + _0x7081a2(_0x5e6f70) + '\x20for\x20REF:\x20' + _0x2b3c4d
-                    });
-                }
-            } else if (_0x1a2b3c === 'send') {
-                _0x92b3c4['push']({
-                    'id': _0x81a2b3,
-                    'debit': debit,
-                    'credit': credit,
-                    'amount': _0x3c4d5e,
-                    'desc': 'SEND\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20to\x20' + _0x4d5e6f + '\x20(charge:\x20KSh\x20' + _0x7081a2(_0x5e6f70) + ')\x20(REF:\x20' + _0x2b3c4d + ')'
-                });
-                if (_0x5e6f70 > 0x0) {
-                    _0x92b3c4['push']({
-                        'id': _0x81a2b3 + 0x1,
-                        'debit': 'M-Pesa\x20Charge',
-                        'credit': 'Cash',
-                        'amount': _0x5e6f70,
-                        'desc': 'M-Pesa\x20charge\x20KSh\x20' + _0x7081a2(_0x5e6f70) + '\x20for\x20REF:\x20' + _0x2b3c4d
-                    });
-                }
-            } else if (_0x1a2b3c === 'withdraw') {
-                _0x92b3c4['push']({
-                    'id': _0x81a2b3,
-                    'debit': debit,
-                    'credit': credit,
-                    'amount': _0x3c4d5e,
-                    'desc': 'WITHDRAW\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20from\x20' + _0x4d5e6f + '\x20(charge:\x20KSh\x20' + _0x7081a2(_0x5e6f70) + ')\x20(REF:\x20' + _0x2b3c4d + ')'
-                });
-                if (_0x5e6f70 > 0x0) {
-                    _0x92b3c4['push']({
-                        'id': _0x81a2b3 + 0x1,
-                        'debit': 'M-Pesa\x20Charge',
-                        'credit': 'Cash',
-                        'amount': _0x5e6f70,
-                        'desc': 'M-Pesa\x20charge\x20KSh\x20' + _0x7081a2(_0x5e6f70) + '\x20for\x20REF:\x20' + _0x2b3c4d
-                    });
-                }
-            } else if (_0x1a2b3c === 'paybill' || _0x1a2b3c === 'buy_goods') {
-                _0x92b3c4['push']({
-                    'id': _0x81a2b3,
-                    'debit': debit,
-                    'credit': credit,
-                    'amount': _0x3c4d5e,
-                    'desc': 'PAYBILL\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20to\x20' + _0x4d5e6f + '\x20(REF:\x20' + _0x2b3c4d + ')'
-                });
-                if (_0x5e6f70 > 0x0) {
-                    _0x92b3c4['push']({
-                        'id': _0x81a2b3 + 0x1,
-                        'debit': 'M-Pesa\x20Charge',
-                        'credit': 'Cash',
-                        'amount': _0x5e6f70,
-                        'desc': 'M-Pesa\x20charge\x20KSh\x20' + _0x7081a2(_0x5e6f70) + '\x20for\x20REF:\x20' + _0x2b3c4d
-                    });
-                }
-            } else if (_0x1a2b3c === 'airtime') {
-                _0x92b3c4['push']({
-                    'id': _0x81a2b3,
-                    'debit': debit,
-                    'credit': credit,
-                    'amount': _0x3c4d5e,
-                    'desc': 'AIRTIME\x20KSh\x20' + _0x7081a2(_0x3c4d5e) + '\x20for\x20' + _0x4d5e6f + '\x20(REF:\x20' + _0x2b3c4d + ')'
-                });
-            } else if (_0x5e6f70 > 0x0) {
-                _0x92b3c4['push']({
-                    'id': _0x81a2b3,
-                    'debit': 'M-Pesa\x20Charge',
+            // ─── Charge transaction ─────────────────────────────────────────
+            if (_0x5e6f70 > 0) {
+                transactions.push({
+                    'id': _0x81a2b3 + transactions.length,
+                    'debit': 'M-Pesa Charge',
                     'credit': 'Cash',
                     'amount': _0x5e6f70,
-                    'desc': 'M-Pesa\x20charge\x20—\x20KSh\x20' + _0x7081a2(_0x5e6f70) + '\x20(' + _0x2b3c4d + ')'
+                    'desc': `M-Pesa charge KSh ${_0x7081a2(_0x5e6f70)} (REF: ${_0x2b3c4d})`
                 });
             }
 
-            if (_0x92b3c4['length'] === 0x0) return null;
+            if (transactions.length === 0) return null;
 
-            const _0xa3c4d5 = typeof saveData !== 'undefined' && typeof state !== 'undefined';
-            for (const _0xb4d5e6 of _0x92b3c4) {
-                if (_0xa3c4d5) {
-                    await saveData('tx', _0xb4d5e6);
-                    state['transactions']['push'](_0xb4d5e6);
+            const useMainFile = typeof saveData !== 'undefined' && typeof state !== 'undefined';
+
+            for (const tx of transactions) {
+                if (useMainFile) {
+                    await saveData('tx', tx);
+                    state.transactions.push(tx);
                 } else {
-                    await _0x5088ad(_0xb4d5e6);
+                    await _0x5088ad(tx);
                 }
             }
-            if (_0xa3c4d5) {
+
+            if (useMainFile) {
                 if (typeof updateRuleSuggestion === 'function') updateRuleSuggestion();
                 if (typeof nav === 'function') nav('dash');
                 if (typeof saveBackup === 'function') await saveBackup();
+                if (typeof updateLiveHud === 'function') updateLiveHud();
             }
 
-            return _0x92b3c4[0x0];
+            return transactions[0];
         } catch (_0xc5d6e7) {
-            console['error']('[MpesaTracker]\x20_0x2bc494\x20error:', _0xc5d6e7);
+            console['error']('[MpesaTracker] Log error:', _0xc5d6e7);
             return null;
         }
     }
@@ -460,6 +381,7 @@
             }, _0x346a32[_0x1091a9(0x123)] = () => _0x562b6e(_0x346a32['error']);
         });
     }
+
     const _0xbeb8fc = {
         'send': [{
             'min': 0x1,
