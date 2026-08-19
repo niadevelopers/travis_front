@@ -227,7 +227,7 @@ function humanReadableAdvice(_0x3efaa1, _0x76d722, _0x34e5a5, _0x6a793b, _0x51be
         if (_0x50d611 === _0x4937bb(0x372)) return '\x20You\x20cannot\x20afford\x20to\x20hire\x20anyone\x20right\x20now.\x20Focus\x20on\x20building\x20your\x20own\x20income\x20first.';
         else {
             if (_0x50d611 === _0x4937bb(0x2f0)) {
-                const _0x1c4018 = Math['floor'](_0x6a793b * 0.25);
+                const _0x1c4018 = Math['floor'](_0x6a793b * 0x25);
                 return _0x4937bb(0x317) + _0x1c4018 + _0x4937bb(0x24e);
             } else return '💎\x20At\x20your\x20level,\x20hiring\x20should\x20be\x20about\x20ROI.\x20Will\x20this\x20person\x20generate\x20at\x20least\x203x\x20their\x20salary\x20in\x20value?';
         }
@@ -1286,7 +1286,7 @@ async function handleAsk() {
                 if (_0xcd2970[_0x1e2f7a(0x1e3)] === 'loan') {
                     if (_0x70bc39[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x372)) _0x482ec3 = _0x1e2f7a(0x345) + _0x1b7721 + '\x20shilling\x20loan.\x20With\x20your\x20current\x20situation,\x20any\x20loan\x20is\x20dangerous.', _0x15184e = _0x1e2f7a(0x2fe);
                     else {
-                        const _0x1139cd = Math['round'](_0x1b7721 * 0.15);
+                        const _0x1139cd = Math['round'](_0x1b7721 * 0x15);
                         _0x482ec3 = _0x1e2f7a(0x2c8) + _0x1b7721 + '\x20shilling\x20loan\x20would\x20cost\x20about\x20' + _0x1139cd + '\x20shillings\x20per\x20month\x20in\x20interest.', _0x15184e = _0x1e2f7a(0x411) + _0x1139cd + _0x1e2f7a(0x3fc);
                     }
                 }
@@ -1400,10 +1400,10 @@ async function handleAsk() {
         if (_0xddfb89[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x372)) _0x51cada = 'Do\x20not\x20borrow\x20' + _0x3898ea + _0x1e2f7a(0x25e);
         else {
             if (_0xddfb89[_0x1e2f7a(0x1cc)] === 'conservative') {
-                const _0x29498c = Math[_0x1e2f7a(0x3d8)](_0x3898ea * 0.15);
+                const _0x29498c = Math[_0x1e2f7a(0x3d8)](_0x3898ea * 0x15);
                 _0x51cada = _0x1e2f7a(0x349) + _0x3898ea + _0x1e2f7a(0x3d7) + _0x29498c + '\x20shillings\x20per\x20month\x20in\x20interest.\x20Only\x20borrow\x20if\x20absolutely\x20necessary.';
             } else {
-                const _0x4efe36 = Math['round'](_0x3898ea * 0.12);
+                const _0x4efe36 = Math['round'](_0x3898ea * 0x12);
                 _0x51cada = '💎\x20A\x20' + _0x3898ea + _0x1e2f7a(0x3b4) + _0x4efe36 + _0x1e2f7a(0x375);
             }
         }
@@ -1415,7 +1415,7 @@ async function handleAsk() {
         if (_0xddfb89['adviceStyle'] === _0x1e2f7a(0x372)) _0x51cada = _0x1e2f7a(0x2f4);
         else {
             if (_0xddfb89[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x2f0)) {
-                const _0x497de6 = Math[_0x1e2f7a(0x3d0)](_0x24136c * 0.25);
+                const _0x497de6 = Math[_0x1e2f7a(0x3d0)](_0x24136c * 0x25);
                 _0x51cada = _0x1e2f7a(0x3fe) + _0x497de6[_0x1e2f7a(0x3c9)]() + '\x20shillings.\x20Can\x20you\x20pay\x20that\x20consistently?\x20If\x20yes,\x20consider\x20a\x20part-time\x20person\x20first.';
             } else _0x51cada = '💎\x20At\x20your\x20wealth\x20level,\x20hiring\x20decisions\x20should\x20be\x20about\x20ROI.\x20A\x20good\x20hire\x20should\x20generate\x20at\x20least\x203x\x20their\x20salary\x20in\x20value.\x20What\x20role\x20are\x20you\x20considering?';
         }
@@ -1427,10 +1427,10 @@ async function handleAsk() {
         if (_0xddfb89['adviceStyle'] === _0x1e2f7a(0x372)) _0x51cada = _0x1e2f7a(0x1ff);
         else {
             if (_0xddfb89[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x2f0)) {
-                const _0x2509ab = Math[_0x1e2f7a(0x3d0)](_0x24136c * 0.07);
+                const _0x2509ab = Math[_0x1e2f7a(0x3d0)](_0x24136c * 0x07);
                 _0x51cada = 'Try\x20to\x20save\x20' + _0x2509ab[_0x1e2f7a(0x3c9)]() + _0x1e2f7a(0x339);
             } else {
-                const _0x517880 = Math[_0x1e2f7a(0x3d0)](_0x24136c * 0.15);
+                const _0x517880 = Math[_0x1e2f7a(0x3d0)](_0x24136c * 0x15);
                 _0x51cada = _0x1e2f7a(0x2f3) + _0x517880[_0x1e2f7a(0x3c9)]() + _0x1e2f7a(0x376);
             }
         }
