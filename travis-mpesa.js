@@ -270,13 +270,79 @@
 
     // ------------------------------------------------------------------------
     // 5. SPLITTING A BULK PASTE INTO INDIVIDUAL MESSAGES + IN-BATCH DEDUPE
+    //    FIXED: Uses the unique 10-char alphanumeric code as the definitive
+    //    message delimiter. Every M-Pesa message starts with this code.
     // ------------------------------------------------------------------------
 
     function splitMessages(bulkText) {
-        return bulkText
-            .split(/\n{2,}|(?=[A-Z]{1}[A-Z0-9]{9}\s+Confirmed)|(?=Confirmed\.)/g)
-            .map(s => s.trim())
-            .filter(s => s.length > 10);
+        // Each M-Pesa message starts with a 10-character alphanumeric code
+        // Pattern: exactly 10 uppercase alphanumeric characters, followed by space or newline
+        const messageStartPattern = /\b([A-Z0-9]{10})\s+(?:Confirmed\.|You have|New M-PESA|received|paid|sent|deposited|withdrawn|bought|purchased|used|Fuliza|Loan|M-Shwari|KCB|Safaricom)/gi;
+        
+        // Find all message starts with their codes
+        const starts = [];
+        let match;
+        while ((match = messageStartPattern.exec(bulkText)) !== null) {
+            starts.push({
+                index: match.index,
+                code: match[1],
+                length: match[0].length
+            });
+        }
+        
+        // If no message starts found, try fallback to split by double newlines or "Confirmed."
+        if (starts.length === 0) {
+            // Try alternative splitting methods as fallback
+            const chunks = bulkText.split(/\n{2,}|(?=Confirmed\.)/g)
+                .map(s => s.trim())
+                .filter(s => s.length > 10);
+            
+            // Verify each chunk has a valid code
+            const validChunks = chunks.filter(chunk => {
+                const code = extractRef(chunk);
+                return code !== null;
+            });
+            
+            if (validChunks.length > 0) {
+                return validChunks;
+            }
+            
+            // Last resort: split by lines and try to reconstruct
+            const lines = bulkText.split('\n').filter(s => s.trim().length > 0);
+            const reconstructed = [];
+            let currentChunk = '';
+            
+            for (const line of lines) {
+                const code = extractRef(line);
+                if (code !== null && currentChunk.length > 0) {
+                    reconstructed.push(currentChunk.trim());
+                    currentChunk = line;
+                } else {
+                    currentChunk += ' ' + line;
+                }
+            }
+            if (currentChunk.length > 0) {
+                reconstructed.push(currentChunk.trim());
+            }
+            
+            return reconstructed.filter(chunk => {
+                const code = extractRef(chunk);
+                return code !== null && chunk.length > 10;
+            });
+        }
+        
+        // Extract each message using the start positions
+        const messages = [];
+        for (let i = 0; i < starts.length; i++) {
+            const start = starts[i];
+            const end = i < starts.length - 1 ? starts[i + 1].index : bulkText.length;
+            const messageText = bulkText.substring(start.index, end).trim();
+            if (messageText.length > 10) {
+                messages.push(messageText);
+            }
+        }
+        
+        return messages;
     }
 
     function parseBulk(bulkText) {
@@ -287,6 +353,7 @@
         for (const chunk of chunks) {
             const parsed = parseOne(chunk);
             if (!parsed) continue;
+            // Always use the explicit ref for dedupe if available
             const dedupeKey = parsed.hasExplicitRef ? parsed.ref : parsed.raw.slice(0, 60);
             if (seenInBatch.has(dedupeKey)) continue;
             seenInBatch.add(dedupeKey);
