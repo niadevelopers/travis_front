@@ -940,10 +940,12 @@ function nav(_0x53a580) {
         if (_0x2af92b['key'] === _0x1de39a(0x384)) handleAsk();
     }));
     if (_0x53a580 === _0x107103(0x209)) {
+        // Get current month/year for filtering
         const now = new Date();
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
 
+        // Filter transactions to only those in the current month
         const currentMonthTxs = state[_0x107103(0x26b)].filter(tx => {
             const d = new Date(tx['id']);
             return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
