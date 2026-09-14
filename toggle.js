@@ -125,7 +125,7 @@
             if (!indicator) {
                 indicator = document.createElement('span');
                 indicator.className = 'privacy-indicator';
-                indicator.textContent = '🔒';
+                indicator.textContent = ' ';
                 indicator.style.cssText = `
                     font-size: 10px;
                     margin-left: 4px;
