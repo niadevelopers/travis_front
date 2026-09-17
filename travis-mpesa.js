@@ -84,26 +84,46 @@
     //    "paid" expense, and a deposit doesn't get mis-read as "received".
     // ------------------------------------------------------------------------
 
-    const PATTERNS = {
-        fulizaCharge: /fuliza m-?pesa charge of\s*(?:Ksh|KES)\s*[\d,]+\.?\d*/i,
-        fulizaRepay: /(fuliza)/i,
-        usedToPay: /(?:has been used to|you have used)\s*(?:ksh|kes)?[\d,.\s]*\s*to\s+(fully|partially)\s+pay/i,
-        loanKeyword: /(loan|m-?shwari|kcb)/i,
-        deposit: /\b(cash )?deposit(ed)?\b/i,
-        withdraw: /\bwithdraw(n|al)?\b/i,
-        airtime: /(you have bought.*airtime|airtime.*you have bought|bought.*airtime)/i,
-        paybillAccount: /paid\s+(?:Ksh|KES)[\d,.]+\s+to\s+\d+.*for account/i,
-        paybillGeneric: /paid\s+(?:Ksh|KES)[\d,.]+\s+to\s+\d+/i,
-        buyGoodsTill: /paid to.+till no/i,
-        buyGoodsGeneric: /\bpaid to\b/i,
-        receive: /\byou have received\b|\breceived\s+(?:Ksh|KES)/i,
-        bankCredited: /\b(has been )?credited\b/i,
-        sentTo: /\bsent to\b/i,
-        purchased: /\b(purchased|purchase of)\b/i,
-        bought: /\bbought\b/i,
-        give: /\bgive\b/i,
-        reversal: /\breversed\b/i
-    };
+    //const PATTERNS = {
+      //  fulizaCharge: /fuliza m-?pesa charge of\s*(?:Ksh|KES)\s*[\d,]+\.?\d*/i,
+      //  fulizaRepay: /(fuliza)/i,
+      //  usedToPay: /(?:has been used to|you have used)\s*(?:ksh|kes)?[\d,.\s]*\s*to\s+(fully|partially)\s+pay/i,
+       // loanKeyword: /(loan|m-?shwari|kcb)/i,
+    //    deposit: /\b(cash )?deposit(ed)?\b/i,
+     //   withdraw: /\bwithdraw(n|al)?\b/i,
+      //  airtime: /(you have bought.*airtime|airtime.*you have bought|bought.*airtime)/i,
+      //  paybillAccount: /paid\s+(?:Ksh|KES)[\d,.]+\s+to\s+\d+.*for account/i,
+     //   paybillGeneric: /paid\s+(?:Ksh|KES)[\d,.]+\s+to\s+\d+/i,
+      //  buyGoodsTill: /paid to.+till no/i,
+       // buyGoodsGeneric: /\bpaid to\b/i,
+       // receive: /\byou have received\b|\breceived\s+(?:Ksh|KES)/i,
+      //  bankCredited: /\b(has been )?credited\b/i,
+       // sentTo: /\bsent to\b/i,
+       // purchased: /\b(purchased|purchase of)\b/i,
+     //   bought: /\bbought\b/i,
+       // give: /\bgive\b/i,
+       // reversal: /\breversed\b/i
+    //};//
+
+   const PATTERNS = {
+    fulizaCharge: /fuliza m-?pesa charge of\s*(?:Ksh|KES)\s*[\d,]+\.?\d*/i,
+    fulizaRepay: /(fuliza)/i,
+    usedToPay: /(?:has been used to|you have used)\s*(?:ksh|kes)?[\d,.\s]*\s*to\s+(fully|partially)\s+pay/i,
+    loanKeyword: /(loan|m-?shwari|kcb)/i,
+    deposit: /\b(cash )?deposit(ed)?\b|\bgive\b/i,
+    withdraw: /withdraw(n|al)?\b/i,
+    airtime: /(you have bought.*airtime|airtime.*you have bought|bought.*airtime)/i,
+    paybillAccount: /paid\s+(?:Ksh|KES)[\d,.]+\s+to\s+\d+.*for account/i,
+    paybillGeneric: /paid\s+(?:Ksh|KES)[\d,.]+\s+to\s+\d+/i,
+    buyGoodsTill: /paid to.+till no/i,
+    buyGoodsGeneric: /\bpaid to\b/i,
+    receive: /\byou have received\b|\breceived\s+(?:Ksh|KES)/i,
+    bankCredited: /\b(has been )?credited\b/i,
+    sentTo: /\bsent to\b/i,
+    purchased: /\b(purchased|purchase of)\b/i,
+    bought: /\bbought\b/i,
+    reversal: /\breversed\b/i
+};
 
     /**
      * Determine WHAT the message is and its financial NATURE.
