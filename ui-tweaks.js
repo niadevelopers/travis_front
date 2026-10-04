@@ -1,24 +1,36 @@
 /**
- * ui-tweaks.js  ·  v3.2.1
+ * ui-tweaks.js  ·  v3.3.0
  * ------------------------------------------------------------------
- * v3.2.1 changes (from v3.2.0):
- *   • Delete (×) button is now ALWAYS VISIBLE with a soft red rest
- *     state, so users can see rows are deletable at a glance.
- *   • Removed the row-level mouseenter/mouseleave opacity togglers
- *     that hid the button until hover.
- *   • Hover state now intensifies red + slight scale.
+ * v3.3.0 changes (from v3.2.1):
+ *   • Anomaly detection now works on REAL data end-to-end.
+ *   • Direction comes from double-entry (liquid side determines flow):
+ *       credit liquid -> outflow, counterparty is on the debit side
+ *       debit  liquid -> inflow,  counterparty is on the credit side
+ *   • Party extraction (in priority order):
+ *       1. If the non-liquid account side is not a known category,
+ *          use it directly as the party name (M-Pesa auto-import path).
+ *       2. Otherwise parse the desc for a name after a direction verb
+ *          (manual entry path: "Paid Emilly Otieno", etc).
+ *       3. Otherwise parse a leading name-like token sequence from the
+ *          desc, gated by a capitalisation check + common-word stoplist
+ *          (so "KPLC" and "Kenya Power" work, but "urgent rent" does not).
+ *   • Row detector thresholds relaxed for 2-month histories:
+ *       MIN_ROW_TX   = 3   (was 4)
+ *       ROW_FLOOR    = 150 (was 500)
+ *       90-day window with fallback to full history if <3 past entries.
+ *   • Same-direction comparison only (out vs out, in vs in).
+ *   • "New" chip and "Unusual" chip now coexist on the same row.
+ *   • Test anomaly machinery REMOVED (no injectFakeAnomaly, no ?debug=1
+ *     button, no [TEST ANOMALY] handling).
+ *   • New diagnostic: TravisUITweaks.explainParty(name) — see exactly
+ *     what the detector sees for a given party.
  *
- * v3.2.0 features retained:
- *   • Per-row delete with system-native confirm + 6s undo toast
- *   • deleteTransaction(id), injectFakeAnomaly(), clearFakeAnomalies()
- *   • Debug-only "🧪 Inject test anomaly" when URL has ?debug=1
- *   • Row-level anomaly + category drift + glasmorphic explainers
- *   • LocalStorage dismissal stores, "New" chip, top recipients
- *   • Charges pill (Safaricom fees only) — separate from drift panel
- *
- * v3.0.0 features retained:
- *   • IDB-driven data, month picker, row grouping, net-flow card
- *   • #nav-mpesa relocation
+ * v3.2.x features retained:
+ *   • Per-row delete (visible red ×) with system confirm + 6s undo toast
+ *   • Category drift (1.8× trailing 3-month median; income flags on drops)
+ *   • Glasmorphic explainers, localStorage dismissal stores
+ *   • Top recipients (min 3, split in/out), charges pill
+ *   • Month picker, row grouping, net-flow card, #nav-mpesa relocation
  *
  * Load order: AFTER script.js / travis-mpesa.js / backup-reconcile.js
  *   <script src="ui-tweaks.js"></script>
@@ -48,12 +60,17 @@
   const FILTER_KEY     = 'travis_ledger_period';
   const CHARGE_DEBIT   = 'M-Pesa Charge';
 
-  const ROW_FACTOR       = 2.5;
-  const ROW_FLOOR_KSH    = 500;
+  // Row anomaly
+  const ROW_FACTOR     = 2.5;
+  const ROW_FLOOR_KSH  = 150;
+  const MIN_ROW_TX     = 3;
+
+  // Category drift
   const DRIFT_FACTOR     = 1.8;
   const DRIFT_FLOOR_KSH  = 500;
   const INCOME_DROP_FACT = 0.6;
-  const MIN_CATEGORY_TX  = 4;
+  const MIN_DRIFT_TX     = 4;
+
   const MIN_RECIPIENT_TX = 3;
 
   const EXPENSE_CATEGORIES = new Set([
@@ -68,8 +85,26 @@
     'Sales Revenue','Service Revenue'
   ]);
 
-  const TEST_PREFIX = '[TEST ANOMALY]';
-  const DEBUG = /[?&]debug=1(?:&|$)/.test(location.search);
+  // All known category names, lowercased, used to decide "is this account
+  // a category or a person?" and to reject category words inside descs.
+  const KNOWN_CATEGORIES = new Set([
+    ...[...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES].map(s => s.toLowerCase()),
+    'm-pesa','m-pesa charge','mpesa','bank / m-pesa','bank account','cash',
+    'savings','petty cash','inventory','fixed assets','accounts receivable',
+    'accounts payable','loans payable','credit','fuliza repayment',
+    'loan repayment'
+  ]);
+
+  // Small stoplist so leading-token desc parsing doesn't turn adjectives
+  // like "urgent", "weekly", or "bus" into fake counterparties.
+  const COMMON_WORDS = new Set([
+    'for','to','from','the','a','an','on','at','in','of','and','or','by',
+    'with','via','payment','pay','paid','sent','send','received','recd',
+    'urgent','weekly','daily','monthly','yearly','bus','taxi','fare',
+    'lunch','dinner','breakfast','shopping','groceries','rent','bills',
+    'bill','medical','school','fuel','petrol','diesel','airtime','electricity',
+    'water','wifi','internet','netflix','subscription'
+  ]);
 
   // ==================================================================
   // State
@@ -259,16 +294,153 @@
   }
 
   // ==================================================================
-  // Row-level anomaly
+  // Party extraction
   // ==================================================================
 
-  function buildRecipientHistory(allTx) {
+  function isCategoryName(s) {
+    return KNOWN_CATEGORIES.has(String(s || '').toLowerCase().trim());
+  }
+
+  function normalizeParty(s) {
+    return String(s || '')
+      .toLowerCase()
+      .replace(/\s*\[ref:[^\]]*\]\s*/gi, ' ')
+      .replace(/\b\d{6,}\b/g, ' ')
+      .replace(/[^a-z0-9 .'\-]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function isUsableParty(s) {
+    if (!s || s.length < 3) return false;
+    if (/^\d+$/.test(s)) return false;
+    if (isCategoryName(s)) return false;
+    if (COMMON_WORDS.has(s)) return false;
+    // Reject pure numbers-with-letters junk like "ksh12" already filtered above
+    return true;
+  }
+
+  function captureNameAfter(text, startIdx) {
+    const tail = text.slice(startIdx, startIdx + 60);
+    const stopRx = /\d|\bfor\b|\bon\b|\bat\b|\bre\b|\bregarding\b|\[ref:|,|\.|$/i;
+    const m = tail.match(stopRx);
+    const raw = m ? tail.slice(0, m.index) : tail;
+    return normalizeParty(raw);
+  }
+
+  function parsePartyFromDesc(desc) {
+    if (!desc) return null;
+
+    // Verb-first patterns.
+    const VERBS = [
+      /\bsent\s+(?:to\s+)?/i,
+      /\bpaid\s+(?:to\s+)?/i,
+      /\bpay\s+(?:to\s+)?/i,
+      /\bgave\s+(?:to\s+)?/i,
+      /\bgive\s+(?:to\s+)?/i,
+      /\bgiven\s+(?:to\s+)?/i,
+      /\bpurchased\s+from\s+/i,
+      /\bbought\s+from\s+/i,
+      /\bbuy\s+from\s+/i,
+      /\breceived\s+(?:from\s+)?/i,
+      /\bgot\s+(?:from\s+)?/i,
+      /\brefunded\s+by\s+/i,
+      /\brefund\s+from\s+/i,
+      /\bpaid\s+by\s+/i
+    ];
+    for (const rx of VERBS) {
+      const m = desc.match(rx);
+      if (m) {
+        const name = captureNameAfter(desc, m.index + m[0].length);
+        if (name && isUsableParty(name)) return name;
+      }
+    }
+
+    // Leading-token fallback with capitalisation guard + stoplist.
+    // Only applies to non-verb descs like "KPLC", "Kenya Power", "KPLC Bill".
+    const cleaned = desc.replace(/\[REF:[^\]]*\]/gi, ' ').trim();
+    const rawTokens = cleaned.split(/\s+/).filter(Boolean);
+    // Guard: require at least one token that looks like a proper noun
+    // (all-caps acronym of >=3 letters, or a Capitalised non-first-person word).
+    const hasProperToken = rawTokens.some(t => {
+      const letters = t.replace(/[^A-Za-z]/g, '');
+      if (letters.length < 2) return false;
+      if (/^[A-Z]{3,}$/.test(letters)) return true;       // KPLC, KCB, KRA
+      if (/^[A-Z][a-z]+/.test(letters)) return true;       // Kenya, Otieno
+      return false;
+    });
+    if (!hasProperToken) return null;
+
+    const nameParts = [];
+    for (const tok of rawTokens) {
+      const low = tok.toLowerCase().replace(/[^a-z0-9'\-&]/g, '');
+      if (!low) break;
+      if (/^\d+$/.test(low)) break;
+      if (isCategoryName(low)) break;
+      if (COMMON_WORDS.has(low)) break;
+      nameParts.push(low);
+      if (nameParts.length >= 3) break;
+    }
+    if (nameParts.length > 0) {
+      const joined = nameParts.join(' ');
+      if (isUsableParty(joined)) return joined;
+    }
+    return null;
+  }
+
+  // Direction from double-entry, party from account side if usable,
+  // else from desc.
+  function extractParty(tx) {
+    const debit  = String(tx.debit  || '').trim();
+    const credit = String(tx.credit || '').trim();
+
+    const debitIsLiquid  = isLiquidCredit(debit);
+    const creditIsLiquid = isLiquidCredit(credit);
+
+    let direction = null;
+    let counterpartyAccount = null;
+
+    if (creditIsLiquid && !debitIsLiquid) {
+      direction = 'out';
+      counterpartyAccount = debit;
+    } else if (debitIsLiquid && !creditIsLiquid) {
+      direction = 'in';
+      counterpartyAccount = credit;
+    } else if (debitIsLiquid && creditIsLiquid) {
+      return null;                      // internal transfer
+    } else {
+      // Neither side liquid — fall back to whichever side is a category
+      direction = 'out';
+      counterpartyAccount = isCategoryName(debit) ? credit : debit;
+    }
+
+    // 1. If the counterparty account is a real name, use it.
+    const acctNorm = normalizeParty(counterpartyAccount);
+    if (acctNorm && isUsableParty(acctNorm)) {
+      return { name: acctNorm, direction };
+    }
+
+    // 2. Else parse the desc.
+    const fromDesc = parsePartyFromDesc(String(tx.desc || ''));
+    if (fromDesc) return { name: fromDesc, direction };
+
+    return null;
+  }
+
+  // ==================================================================
+  // Row-level anomaly — built from extractParty
+  // ==================================================================
+
+  function buildPartyHistory(allTx) {
+    // map: "<name>|<direction>" -> { amounts: [], dates: [] }
     const map = new Map();
     for (const t of allTx) {
       if (typeof t.id !== 'number') continue;
-      const key = recipientKey(t);
-      if (!key) continue;
-      const cur = map.get(key) || { amounts: [], dates: [] };
+      if (isChargeRow(t)) continue;
+      const p = extractParty(t);
+      if (!p) continue;
+      const key = p.name + '|' + p.direction;
+      const cur = map.get(key) || { amounts: [], dates: [], name: p.name, direction: p.direction };
       cur.amounts.push(Number(t.amount) || 0);
       cur.dates.push(t.id);
       map.set(key, cur);
@@ -276,10 +448,10 @@
     return map;
   }
 
-  function recipientKey(tx) {
-    const rec = extractMerchant(tx);
-    if (rec && rec.name) return rec.name.toLowerCase() + '|' + String(tx.debit || '');
-    return String(tx.debit || '');
+  function partyKeyOf(tx) {
+    const p = extractParty(tx);
+    if (!p) return null;
+    return p.name + '|' + p.direction;
   }
 
   function rowAnomaly(tx, history) {
@@ -287,27 +459,40 @@
     if (amt < ROW_FLOOR_KSH) return { flagged: false };
     if (isChargeRow(tx)) return { flagged: false };
 
-    const key = recipientKey(tx);
-    const h = history.get(key);
-    if (!h || h.amounts.length < MIN_CATEGORY_TX) return { flagged: false };
+    const key = partyKeyOf(tx);
+    if (!key) return { flagged: false };
 
+    const h = history.get(key);
+    if (!h) return { flagged: false };
+
+    // Past entries only (strictly older than this tx).
     const t0 = tx.id;
     const ninety = 90 * 24 * 60 * 60 * 1000;
-    const past = [];
+    const past90 = [];
     for (let i = 0; i < h.amounts.length; i++) {
-      if (h.dates[i] < t0 && t0 - h.dates[i] <= ninety) past.push(h.amounts[i]);
+      if (h.dates[i] < t0 && t0 - h.dates[i] <= ninety) past90.push(h.amounts[i]);
     }
-    if (past.length < 3) return { flagged: false };
+    // Fallback: if fewer than 3 in 90d, use the full older history.
+    let past = past90;
+    if (past.length < MIN_ROW_TX) {
+      past = [];
+      for (let i = 0; i < h.amounts.length; i++) {
+        if (h.dates[i] < t0) past.push(h.amounts[i]);
+      }
+    }
+    if (past.length < MIN_ROW_TX) return { flagged: false };
 
     const med = medianOf(past);
     if (med <= 0) return { flagged: false };
     const factor = amt / med;
-    if (factor >= ROW_FACTOR) return { flagged: true, median: med, factor };
+    if (factor >= ROW_FACTOR) {
+      return { flagged: true, median: med, factor, pastCount: past.length, usedFallback: past90.length < MIN_ROW_TX };
+    }
     return { flagged: false };
   }
 
   // ==================================================================
-  // Category drift
+  // Category drift (unchanged from v3.2.x)
   // ==================================================================
 
   function monthlyCategoryTotals(allTx) {
@@ -382,7 +567,7 @@
         const monthsAgo = (y - d.getFullYear()) * 12 + (m - d.getMonth());
         if (monthsAgo >= 0 && monthsAgo <= 3) txCount++;
       }
-      if (txCount < MIN_CATEGORY_TX) continue;
+      if (txCount < MIN_DRIFT_TX) continue;
 
       if (type === 'expense') {
         const factor = currentTotal / base;
@@ -445,12 +630,6 @@
                          padding:4px 8px;font-size:12px;background:white;
                          font-family:inherit;color:var(--win-text);">
           </select>
-          ${DEBUG ? `<button id="tg-inject-anomaly" type="button"
-                  style="background:rgba(139,92,246,0.1);color:#5B21B6;border:1px solid rgba(139,92,246,0.3);
-                         border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;
-                         cursor:pointer;font-family:inherit;">
-              🧪 Inject test anomaly
-            </button>` : ''}
         </div>
         <button id="tg-charges-pill" type="button"
                 style="display:none;align-items:center;gap:8px;
@@ -464,11 +643,6 @@
         </button>
       `;
       cardBody.insertBefore(bar, wrap);
-
-      if (DEBUG) {
-        const btn = document.getElementById('tg-inject-anomaly');
-        if (btn) btn.addEventListener('click', () => window.TravisUITweaks.injectFakeAnomaly());
-      }
     }
 
     if (!document.getElementById(LEDGER_META_ID)) {
@@ -494,7 +668,7 @@
     const all = TX_CACHE;
     const visible = all.filter(inSelection);
 
-    const recipientHistory = buildRecipientHistory(all);
+    const partyHistory = buildPartyHistory(all);
     const driftFindings = detectDrift(all);
 
     tbody.innerHTML = '';
@@ -504,7 +678,7 @@
       tr.innerHTML = '<td colspan="5" style="padding:32px;text-align:center;color:var(--win-text-3);">' +
                      'No transactions in this period.</td>';
       tbody.appendChild(tr);
-      renderLedgerMeta(visible, driftFindings);
+      renderLedgerMeta(visible, driftFindings, partyHistory);
       renderChargesPill(visible);
       renderPeriodSelector(all);
       return;
@@ -537,37 +711,36 @@
         '</td>';
       tbody.appendChild(head);
 
-      for (const tx of rows) tbody.appendChild(buildRow(tx, recipientHistory));
+      for (const tx of rows) tbody.appendChild(buildRow(tx, partyHistory));
     }
 
-    renderLedgerMeta(visible, driftFindings);
+    renderLedgerMeta(visible, driftFindings, partyHistory);
     renderChargesPill(visible);
     renderPeriodSelector(all);
   }
 
-  function buildRow(tx, history) {
+  function buildRow(tx, partyHistory) {
     const tr = document.createElement('tr');
     tr.setAttribute('data-tg-txid', String(tx.id));
     const amt = Number(tx.amount) || 0;
     const isAirtime  = tx.debit === 'Airtime Purchase';
     const isCharge   = isChargeRow(tx);
-    const isTest     = String(tx.desc || '').startsWith(TEST_PREFIX);
 
-    const row = isCharge ? { flagged: false } : rowAnomaly(tx, history);
+    const row = isCharge ? { flagged: false } : rowAnomaly(tx, partyHistory);
     const rowFlagged = row.flagged && !isRowDismissed(tx.id);
 
-    const comboKey = (extractMerchant(tx)?.name || tx.debit || '') + '|' + (tx.debit || '');
-    const isNew = !hasSeenCombo(comboKey) && !isCharge && !isAirtime && !isTest;
+    // "New" is a soft blue chip — informational, not a verdict.
+    const p = extractParty(tx);
+    const comboKey = p ? (p.name + '|' + p.direction) : null;
+    const isNew = comboKey && !hasSeenCombo(comboKey) && !isCharge && !isAirtime;
     if (isNew) markSeenCombo(comboKey);
 
     let accent = '';
     if (rowFlagged) accent = 'box-shadow:inset 3px 0 0 #F59E0B;';
     else if (isAirtime) accent = 'box-shadow:inset 3px 0 0 #8B5CF6;';
     else if (isCharge)  accent = 'box-shadow:inset 3px 0 0 #DC2626;';
-    else if (isTest)    accent = 'box-shadow:inset 3px 0 0 #8B5CF6;';
 
     const flags = [];
-    if (isTest) flags.push('<span style="font-size:10px;font-weight:700;background:#EDE9FE;color:#5B21B6;padding:1px 6px;border-radius:20px;">🧪 Test</span>');
     if (rowFlagged) flags.push('<span data-tg-anom-row="1" style="font-size:10px;font-weight:700;background:#FEF3C7;color:#92400E;padding:1px 6px;border-radius:20px;cursor:pointer;">⚠ Unusual · click</span>');
     if (isNew) flags.push('<span style="font-size:10px;font-weight:700;background:#DBEAFE;color:#1E40AF;padding:1px 6px;border-radius:20px;">New</span>');
     if (isAirtime) flags.push('<span style="font-size:10px;font-weight:700;background:#EDE9FE;color:#5B21B6;padding:1px 6px;border-radius:20px;">Airtime</span>');
@@ -723,68 +896,14 @@
   }
 
   // ==================================================================
-  // Test anomaly injection
-  // ==================================================================
-
-  async function injectFakeAnomaly() {
-    const now = Date.now();
-    const day = 24 * 60 * 60 * 1000;
-
-    const recipient = 'TEST-' + Math.random().toString(36).slice(2, 6).toUpperCase();
-    const seed = [
-      { daysAgo: 27, amt: 400 },
-      { daysAgo: 19, amt: 500 },
-      { daysAgo: 12, amt: 450 },
-      { daysAgo: 5,  amt: 520 }
-    ];
-    const entries = seed.map((s, i) => ({
-      id: now - s.daysAgo * day - i,
-      debit: 'Send Money',
-      credit: 'M-Pesa',
-      amount: s.amt,
-      desc: `Sent KSh ${s.amt} to ${recipient} ${TEST_PREFIX}`
-    }));
-    entries.push({
-      id: now,
-      debit: 'Send Money',
-      credit: 'M-Pesa',
-      amount: 12000,
-      desc: `Sent KSh 12,000 to ${recipient} ${TEST_PREFIX}`
-    });
-
-    for (const e of entries) await putTx(e);
-    await refreshCache();
-
-    const d = new Date(now);
-    selection = { kind: 'month', y: d.getFullYear(), m: d.getMonth() };
-    persistSelection();
-
-    renderLedger();
-    syncBackup().catch(() => {});
-    log('injected test anomaly for recipient', recipient);
-    return { recipient, inserted: entries.length };
-  }
-
-  async function clearFakeAnomalies() {
-    const rows = TX_CACHE.filter(t => String(t.desc || '').startsWith(TEST_PREFIX));
-    for (const r of rows) {
-      try { await deleteTx(r.id); } catch (_) {}
-    }
-    await refreshCache();
-    renderLedger();
-    syncBackup().catch(() => {});
-    log('cleared', rows.length, 'test rows');
-    return rows.length;
-  }
-
-  // ==================================================================
   // Explainer panels (glasmorphic)
   // ==================================================================
 
   function showRowExplainer(tx, info) {
     const amt = Number(tx.amount) || 0;
-    const rec = extractMerchant(tx);
-    const label = rec?.name || tx.debit || 'this recipient';
+    const p = extractParty(tx);
+    const label = p ? p.name : (tx.debit || 'this recipient');
+    const dirText = p && p.direction === 'in' ? 'received from' : 'sent to';
     const factor = info.factor.toFixed(2);
     const median = info.median;
 
@@ -798,12 +917,15 @@
           <span style="font-family:monospace;font-weight:700;">KSh ${money(amt)}</span>
         </div>
         <div style="background:rgba(245,158,11,0.10);border-radius:8px;padding:12px 14px;line-height:1.7;">
-          Over the past <strong>90 days</strong>, your typical transaction
-          with <strong>${escapeHtml(label)}</strong> was about
-          <strong>KSh ${money(Math.round(median))}</strong>.
+          Comparing this <strong>${dirText} ${escapeHtml(label)}</strong> against your
+          prior history with them:
           <br>
-          This transaction is <strong>${factor}× larger</strong> than that
-          median — a jump of <strong>KSh ${money(Math.round(amt - median))}</strong>.
+          Your typical prior amount was about
+          <strong>KSh ${money(Math.round(median))}</strong>
+          (from ${info.pastCount} earlier transaction${info.pastCount === 1 ? '' : 's'}${info.usedFallback ? ', full history' : ', last 90 days'}).
+          <br>
+          This transaction is <strong>${factor}× larger</strong> — a jump of
+          <strong>KSh ${money(Math.round(amt - median))}</strong>.
         </div>
         <div style="margin-top:12px;font-size:11px;color:var(--win-text-3);line-height:1.6;">
           If this is a one-off (bonus, emergency, big purchase), dismiss it.
@@ -1177,7 +1299,7 @@
   // Meta cards
   // ==================================================================
 
-  function renderLedgerMeta(visible, driftFindings) {
+  function renderLedgerMeta(visible, driftFindings, partyHistory) {
     const meta = document.getElementById(LEDGER_META_ID);
     if (!meta) return;
 
@@ -1185,16 +1307,17 @@
     const outflow = visible.reduce((s, r) => s + (isLiquidCredit(r.credit) ? Number(r.amount) || 0 : 0), 0);
     const net     = inflow - outflow;
 
+    // Top recipients — group by extractParty(), direction-aware.
     const outMap = new Map();
     const inMap  = new Map();
     for (const r of visible) {
-      const m = extractMerchant(r);
-      if (!m || !m.name) continue;
-      const target = m.dir === 'in' ? inMap : outMap;
-      const cur = target.get(m.name) || { name: m.name, count: 0, total: 0 };
+      const p = extractParty(r);
+      if (!p) continue;
+      const target = p.direction === 'in' ? inMap : outMap;
+      const cur = target.get(p.name) || { name: p.name, count: 0, total: 0 };
       cur.count++;
       cur.total += Number(r.amount) || 0;
-      target.set(m.name, cur);
+      target.set(p.name, cur);
     }
     const sortFn = (a, b) => (b.count - a.count) || (b.total - a.total);
     const topOut = Array.from(outMap.values()).filter(x => x.count >= MIN_RECIPIENT_TX).sort(sortFn).slice(0, 3);
@@ -1257,17 +1380,16 @@
       `;
     }).join('');
 
-    const history = buildRecipientHistory(TX_CACHE);
     const rowAnomalies = visible.filter(t => {
       if (isChargeRow(t)) return false;
       if (isRowDismissed(t.id)) return false;
-      return rowAnomaly(t, history).flagged;
+      return rowAnomaly(t, partyHistory).flagged;
     });
 
     const rowBlocks = rowAnomalies.slice(0, 5).map(t => {
       const amt = Number(t.amount) || 0;
-      const rec = extractMerchant(t);
-      const label = rec?.name || t.debit || 'transaction';
+      const p = extractParty(t);
+      const label = p ? p.name : (t.debit || 'transaction');
       return `
         <div data-tg-rowanom="${t.id}"
              style="display:flex;align-items:center;justify-content:space-between;
@@ -1365,37 +1487,10 @@
         const id = Number(el.getAttribute('data-tg-rowanom'));
         const tx = TX_CACHE.find(t => Number(t.id) === id);
         if (!tx) return;
-        const info = rowAnomaly(tx, buildRecipientHistory(TX_CACHE));
+        const info = rowAnomaly(tx, buildPartyHistory(TX_CACHE));
         if (info.flagged) showRowExplainer(tx, info);
       });
     });
-  }
-
-  // ==================================================================
-  // Merchant extraction
-  // ==================================================================
-
-  function extractMerchant(tx) {
-    const d = String(tx.desc || '');
-    const dir = isLiquidCredit(tx.credit) ? 'out' : 'in';
-
-    const patterns = [
-      /sent\s+(?:ksh|kes)?\s*[\d,.]*\s*to\s+([^\[\n]+)/i,
-      /paybill\s+(?:ksh|kes)?\s*[\d,.]*\s*to\s+([^\[\n]+)/i,
-      /buy goods\s+(?:ksh|kes)?\s*[\d,.]*\s*to\s+([^\[\n]+)/i,
-      /withdrawal\s+(?:ksh|kes)?\s*[\d,.]*\s*from\s+([^\[\n]+)/i,
-      /deposit\s+(?:ksh|kes)?\s*[\d,.]*\s*into\s+([^\[\n]+)/i,
-      /received\s+(?:ksh|kes)?\s*[\d,.]*\s*from\s+([^\[\n]+)/i,
-      /airtime\s+(?:ksh|kes)?\s*[\d,.]*\s*to\s+([^\[\n]+)/i
-    ];
-    for (const rx of patterns) {
-      const m = d.match(rx);
-      if (m && m[1]) {
-        const name = m[1].replace(/\s*\[REF:.*$/, '').replace(new RegExp(TEST_PREFIX.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '.*'), '').trim();
-        if (name.length >= 2) return { name, dir };
-      }
-    }
-    return null;
   }
 
   // ==================================================================
@@ -1471,7 +1566,7 @@
   }
 
   window.TravisUITweaks = {
-    version: '3.2.1',
+    version: '3.3.0',
     refresh: async () => {
       await refreshCache();
       if (ledgerTableMounted()) renderLedger();
@@ -1494,26 +1589,59 @@
       if (ledgerTableMounted()) renderLedger();
       log('cleared dismissals');
     },
-    injectFakeAnomaly,
-    clearFakeAnomalies,
-    deleteTransaction: async (id) => {
-      const tx = TX_CACHE.find(t => Number(t.id) === Number(id));
-      if (!tx) return false;
-      await deleteTx(id);
-      TX_CACHE = TX_CACHE.filter(t => Number(t.id) !== Number(id));
-      renderLedger();
-      syncBackup().catch(() => {});
-      return true;
+    // Diagnostic: inspect what the detector sees for a given party name.
+    // Example: await TravisUITweaks.explainParty('emilly otieno')
+    explainParty: async (rawName) => {
+      await refreshCache();
+      const needle = normalizeParty(rawName);
+      if (!needle) return { error: 'empty name' };
+      const history = buildPartyHistory(TX_CACHE);
+      const matches = [];
+      for (const [key, h] of history.entries()) {
+        if (key.startsWith(needle + '|') || key === needle) {
+          matches.push({ key, ...h });
+        }
+      }
+      if (matches.length === 0) {
+        // Also scan raw tx to help debug keying.
+        const raw = TX_CACHE.filter(t => {
+          const p = extractParty(t);
+          return p && p.name.indexOf(needle) !== -1;
+        });
+        return {
+          query: needle,
+          foundInHistory: false,
+          rawMatchingTx: raw.map(t => ({
+            id: t.id,
+            amount: t.amount,
+            debit: t.debit,
+            credit: t.credit,
+            desc: t.desc,
+            extracted: extractParty(t)
+          }))
+        };
+      }
+      return matches.map(m => {
+        const sorted = m.amounts.slice().sort((a,b)=>a-b);
+        const med = medianOf(sorted);
+        return {
+          key: m.key,
+          totalTx: m.amounts.length,
+          amounts: sorted,
+          median: med,
+          factorOfLargest: med > 0 ? (Math.max(...sorted) / med) : null,
+          wouldFlagLargest: med > 0 && Math.max(...sorted) >= Math.max(ROW_FLOOR_KSH, ROW_FACTOR * med)
+        };
+      });
     },
     status: async () => {
       await refreshCache();
       const months = monthsWithData(TX_CACHE);
       return {
-        version: '3.2.1',
+        version: '3.3.0',
         selection,
         period: periodLabel(),
         txCount: TX_CACHE.length,
-        testRowCount: TX_CACHE.filter(t => String(t.desc || '').startsWith(TEST_PREFIX)).length,
         monthCount: months.length,
         months: months.map(m => MONTHS_LONG[m.m] + ' ' + m.y + ' (' + m.count + ')'),
         mpesaInFinanceSection: (() => {
@@ -1521,8 +1649,7 @@
           const newEntry = document.querySelector('#nav-sidebar button[onclick*="showTxModal"]');
           return !!(btn && newEntry && newEntry.nextElementSibling === btn);
         })(),
-        barPresent: !!document.getElementById(LEDGER_BAR_ID),
-        debug: DEBUG
+        barPresent: !!document.getElementById(LEDGER_BAR_ID)
       };
     },
     rerun: () => {
@@ -1555,7 +1682,7 @@
       if (t) setTimeout(() => { if (ledgerTableMounted()) renderLedger(); }, 60);
     });
 
-    log('booted v3.2.1' + (DEBUG ? ' (debug mode)' : ''));
+    log('booted v3.3.0');
   }
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
