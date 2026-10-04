@@ -946,30 +946,53 @@
       title: 'Why is this unusual?',
       accent: '#F59E0B',
       body: `
-        <div style="margin-bottom:10px;">
-          <strong>${escapeHtml(label)}</strong> —
-          <span style="font-family:monospace;font-weight:700;">KSh ${money(amt)}</span>
-        </div>
-        <div style="background:rgba(245,158,11,0.10);border-radius:8px;padding:12px 14px;line-height:1.7;">
-          Your last <strong>${windowCount}</strong> prior transactions that
-          were <strong>${dirText} ${escapeHtml(label)}</strong>:
-          <div style="font-family:monospace;font-size:12px;margin:6px 0 8px;color:var(--win-text-2);">
-            ${windowStr}
-          </div>
-          Median of that window: <strong>KSh ${money(Math.round(rawMedian))}</strong>.
-          <br>
-          This transaction is <strong>${factor}× larger</strong> — a jump of
-          <strong>KSh ${money(Math.round(jump))}</strong> above the median.
-        </div>
-        <div style="margin-top:12px;font-size:11px;color:var(--win-text-3);line-height:1.6;">
-          <strong>This is normal</strong> teaches Travis to treat this amount as
-          expected — it enters the rolling window and future large amounts to
-          this party will only fire again if the trend actually shifts.
-          <br><br>
-          <strong>Dismiss</strong> just hides the flag for this session. It will
-          come back next time you open the app.
-        </div>
-      `,
+  <div style="margin-bottom:12px;">
+    <strong>${escapeHtml(label)}</strong> —
+    <span style="font-family:monospace;font-weight:700;">KSh ${money(amt)}</span>
+  </div>
+
+  <div style="background:rgba(245,158,11,0.10);border-radius:8px;padding:14px 15px;line-height:1.8;">
+    We compared this against your last
+    <strong>${windowCount}</strong>
+    ${windowCount === 1 ? 'transaction' : 'transactions'} with
+    <strong>${escapeHtml(label)}</strong>.
+    You normally pay around
+    <strong>KSh ${money(Math.round(rawMedian))}</strong>.
+    <br>
+    This one is
+    <strong>KSh ${money(Math.round(jump))} more</strong> than that — about
+    <strong>${Math.round(info.factor)} times</strong> what you usually do.
+  </div>
+
+  <div style="margin-top:14px;">
+    <div style="font-size:11px;font-weight:700;color:var(--win-text-2);
+                text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">
+      The amounts we looked at
+    </div>
+    <div style="background:rgba(0,0,0,0.03);border-radius:8px;
+                padding:10px 12px;font-size:12px;line-height:1.7;
+                color:var(--win-text-2);">
+      ${window.length === 0
+        ? 'No earlier transactions with this person.'
+        : window.map(v => 'KSh ' + money(Math.round(v))).join(' &nbsp;·&nbsp; ')}
+    </div>
+  </div>
+
+  <div style="margin-top:14px;font-size:12px;color:var(--win-text-2);line-height:1.8;">
+    <strong>What do you want to do?</strong>
+    <br>
+    If this is <strong>normal for you now</strong> — for example you agreed on
+    a bigger amount, or this is a one-time payment you planned — choose
+    <em>“This is normal”</em>. Next time you pay this person, Travis will
+    expect around KSh ${money(Math.round(rawMedian))} to
+    KSh ${money(Math.round(amt))}, so it will not bother you again unless the
+    amount really jumps.
+    <br><br>
+    If you want to <strong>look at it again later</strong>, choose
+    <em>“Dismiss for now”</em>. Nothing is decided — the warning will come
+    back next time you open the app.
+  </div>
+`,
       actions: [
         { label: 'This is normal', kind: 'normal', onClick: () => {
             markNormal(tx.id);
