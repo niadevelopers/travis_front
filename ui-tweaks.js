@@ -1,23 +1,19 @@
 /**
- * ui-tweaks.js  ·  v3.2.0
+ * ui-tweaks.js  ·  v3.2.1
  * ------------------------------------------------------------------
- * Standalone DOM + data layer for Travis Guardian's Ledger view.
+ * v3.2.1 changes (from v3.2.0):
+ *   • Delete (×) button is now ALWAYS VISIBLE with a soft red rest
+ *     state, so users can see rows are deletable at a glance.
+ *   • Removed the row-level mouseenter/mouseleave opacity togglers
+ *     that hid the button until hover.
+ *   • Hover state now intensifies red + slight scale.
  *
- * v3.2.0 additions (on top of v3.1.0):
- *   • Per-row delete button (×, hover-revealed, system-native confirm)
- *   • deleteTransaction(id): removes from IDB, updates cache, re-renders,
- *     and asks the backup reconciler to sync (when available).
- *   • Undo toast for 6 seconds after delete — restores same row, same id.
- *   • TravisUITweaks.injectFakeAnomaly() / .clearFakeAnomalies()
- *   • Debug-only "🧪 Inject test anomaly" button when URL has ?debug=1
- *
- * v3.1.0 features retained:
- *   • Row-level anomaly (2.5× same-recipient median over 90d)
- *   • Category drift (1.8× trailing 3-month median, income drops too)
- *   • Glasmorphic explainer panels with "This is normal" / "Dismiss"
- *   • LocalStorage dismissal stores
- *   • "New" chip (blue) for first-seen combos
- *   • Top recipients: min 3 occurrences, split in/out
+ * v3.2.0 features retained:
+ *   • Per-row delete with system-native confirm + 6s undo toast
+ *   • deleteTransaction(id), injectFakeAnomaly(), clearFakeAnomalies()
+ *   • Debug-only "🧪 Inject test anomaly" when URL has ?debug=1
+ *   • Row-level anomaly + category drift + glasmorphic explainers
+ *   • LocalStorage dismissal stores, "New" chip, top recipients
  *   • Charges pill (Safaricom fees only) — separate from drift panel
  *
  * v3.0.0 features retained:
@@ -117,11 +113,6 @@
     m[String(txId)] = Date.now();
     saveMap(LS_ROW_DISMISS, m);
   }
-  function undismissRow(txId) {
-    const m = loadMap(LS_ROW_DISMISS);
-    delete m[String(txId)];
-    saveMap(LS_ROW_DISMISS, m);
-  }
   function hasSeenCombo(combo) {
     const m = loadMap(LS_NEW_SEEN);
     return !!m[combo];
@@ -135,14 +126,6 @@
   // ==================================================================
   // IDB — read, put, delete
   // ==================================================================
-
-  function openDB() {
-    return new Promise((resolve, reject) => {
-      const req = indexedDB.open(DB_NAME, DB_VER);
-      req.onsuccess = () => resolve(req.result);
-      req.onerror   = () => reject(req.error);
-    });
-  }
 
   function readAllTx() {
     return new Promise((resolve) => {
@@ -608,34 +591,30 @@
       <td style="text-align:right;font-family:monospace;color:var(--win-red);font-weight:600;white-space:nowrap;">
         ${isLiquidCredit(tx.credit) ? '-' + money(amt) : ''}
       </td>
-      <td class="tg-row-actions" style="width:36px;text-align:center;padding:8px 6px;">
+      <td class="tg-row-actions" style="width:40px;text-align:center;padding:8px 6px;">
         <button class="tg-row-del" title="Delete transaction"
-                style="width:24px;height:24px;border-radius:6px;border:1px solid var(--win-border-2);
-                       background:rgba(0,0,0,0.03);color:var(--win-text-3);cursor:pointer;
-                       font-size:14px;line-height:1;opacity:0;transition:opacity .15s,background .15s,color .15s;
-                       font-family:inherit;">×</button>
+                aria-label="Delete transaction"
+                style="width:26px;height:26px;border-radius:6px;
+                       border:1px solid rgba(196,43,28,0.25);
+                       background:rgba(196,43,28,0.08);
+                       color:var(--win-red);cursor:pointer;
+                       font-size:15px;font-weight:700;line-height:1;
+                       opacity:1;
+                       transition:background .15s,color .15s,transform .1s;
+                       font-family:inherit;
+                       display:flex;align-items:center;justify-content:center;
+                       margin:0 auto;">×</button>
       </td>
     `;
 
-    // Show delete button on row hover.
-    tr.addEventListener('mouseenter', () => {
-      const b = tr.querySelector('.tg-row-del');
-      if (b) b.style.opacity = '1';
-    });
-    tr.addEventListener('mouseleave', () => {
-      const b = tr.querySelector('.tg-row-del');
-      if (b) b.style.opacity = '0';
-    });
     const delBtn = tr.querySelector('.tg-row-del');
     delBtn.addEventListener('mouseenter', () => {
-      delBtn.style.background = 'rgba(196,43,28,0.12)';
-      delBtn.style.color = 'var(--win-red)';
-      delBtn.style.borderColor = 'rgba(196,43,28,0.4)';
+      delBtn.style.background = 'rgba(196,43,28,0.22)';
+      delBtn.style.transform  = 'scale(1.08)';
     });
     delBtn.addEventListener('mouseleave', () => {
-      delBtn.style.background = 'rgba(0,0,0,0.03)';
-      delBtn.style.color = 'var(--win-text-3)';
-      delBtn.style.borderColor = 'var(--win-border-2)';
+      delBtn.style.background = 'rgba(196,43,28,0.08)';
+      delBtn.style.transform  = 'scale(1)';
     });
     delBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -682,15 +661,9 @@
       return;
     }
 
-    // Update in-memory cache immediately so the UI feels instant.
     TX_CACHE = TX_CACHE.filter(t => Number(t.id) !== Number(tx.id));
     renderLedger();
-
-    // Ask the backup reconciler to mirror IDB. If permission is dead,
-    // this quietly returns null and the next boot's reconcile will sweep
-    // the deletion up.
     syncBackup().catch(() => {});
-
     showUndoToast(tx);
   }
 
@@ -757,9 +730,6 @@
     const now = Date.now();
     const day = 24 * 60 * 60 * 1000;
 
-    // Build a small history: 4 small "Sent ... to TestRecipient" over the
-    // last ~30 days, then one huge one today. That triggers the row-level
-    // detector (today's is 15× the trailing median).
     const recipient = 'TEST-' + Math.random().toString(36).slice(2, 6).toUpperCase();
     const seed = [
       { daysAgo: 27, amt: 400 },
@@ -785,7 +755,6 @@
     for (const e of entries) await putTx(e);
     await refreshCache();
 
-    // Select this month so the anomaly is visible.
     const d = new Date(now);
     selection = { kind: 'month', y: d.getFullYear(), m: d.getMonth() };
     persistSelection();
@@ -1502,7 +1471,7 @@
   }
 
   window.TravisUITweaks = {
-    version: '3.2.0',
+    version: '3.2.1',
     refresh: async () => {
       await refreshCache();
       if (ledgerTableMounted()) renderLedger();
@@ -1540,7 +1509,7 @@
       await refreshCache();
       const months = monthsWithData(TX_CACHE);
       return {
-        version: '3.2.0',
+        version: '3.2.1',
         selection,
         period: periodLabel(),
         txCount: TX_CACHE.length,
@@ -1586,7 +1555,7 @@
       if (t) setTimeout(() => { if (ledgerTableMounted()) renderLedger(); }, 60);
     });
 
-    log('booted v3.2.0' + (DEBUG ? ' (debug mode)' : ''));
+    log('booted v3.2.1' + (DEBUG ? ' (debug mode)' : ''));
   }
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
