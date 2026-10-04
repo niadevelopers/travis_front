@@ -14,6 +14,7 @@ const STATIC_ASSETS = [
   '/tailwind-app.css',
   '/tailwind-landing.css',
   '/backup-reconcile.js',
+  '/ui-tweaks.js',
   '/manifest.json',
   '/jspdf.umd.min.js' // my latest update on the sw.js file
 
