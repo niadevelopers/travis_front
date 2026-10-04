@@ -1,25 +1,27 @@
 /**
- * ui-tweaks.js  ·  v2.0.0
+ * ui-tweaks.js  ·  v2.0.1
  * ------------------------------------------------------------------
  * Standalone DOM + data tweaks for Travis Guardian. Zero coupling with
  * the main app. Everything is applied after the app renders by watching
  * the DOM and reading the app's own `state.transactions` global.
  *
- * Changes in v2 (from v1):
- *   • Ledger is now DATA-DRIVEN — filtered from state.transactions by
- *     numeric tx.id timestamp, not by parsing DOM date cells. The month
- *     off-by-one bug from v1 is gone permanently.
+ * v2.0.1 fixes:
+ *   • Dropdown was stuck on "All time" only. Root cause: on first boot,
+ *     state.transactions was still empty when we persisted a selection,
+ *     so the fallback wrote { kind:'all' } and never re-evaluated.
+ *     Fixed with waitForStateThenRender() + selection validation +
+ *     dropdown options rebuilt on every render.
+ *   • Month list now shows counts, e.g. "October 2026 (47)".
+ *
+ * v2.0.0 features:
+ *   • Data-driven ledger (no DOM date parsing — no month drift).
  *   • Month picker: All time / This month / only months with real data.
  *   • Row grouping by date with per-day spend totals.
- *   • Net-flow line (In / Out / Net) for the selected period.
- *   • Charges pill: sums M-Pesa Charge rows only (Safaricom fees, not
- *     principals). Breakdown panel on click.
- *   • Merchant / recipient roll-up (top 5), inferred from desc patterns.
- *   • Anomaly highlights: rows >2× period median get flagged; airtime
- *     purchases get a category-level callout.
- *
- * Untouched from v1:
- *   • Relocate #nav-mpesa from sidebar-footer to Finance section.
+ *   • Net-flow line (In / Out / Net) for selected period.
+ *   • Charges pill: M-Pesa Charge rows only (Safaricom fees).
+ *   • Merchant/recipient roll-up (top 5).
+ *   • Anomaly highlights + airtime callout.
+ *   • #nav-mpesa relocated from sidebar-footer to Finance section.
  *
  * Load order: include AFTER script.js / travis-mpesa.js / backup-reconcile.js
  *   <script src="ui-tweaks.js"></script>
@@ -36,19 +38,17 @@
   // Shared
   // ==================================================================
 
-  const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun',
-                        'Jul','Aug','Sep','Oct','Nov','Dec'];
-  const MONTHS_LONG  = ['January','February','March','April','May','June',
-                        'July','August','September','October','November','December'];
+  const MONTHS_LONG = ['January','February','March','April','May','June',
+                       'July','August','September','October','November','December'];
 
   const LEDGER_VIEW_ID = 'view-port';
-  const LEDGER_BAR_ID  = 'tg-ledger-bar';       // top bar (picker + charges)
-  const LEDGER_META_ID = 'tg-ledger-meta';      // net-flow + roll-up + anomalies
+  const LEDGER_BAR_ID  = 'tg-ledger-bar';
+  const LEDGER_META_ID = 'tg-ledger-meta';
   const FILTER_KEY     = 'travis_ledger_period';
   const CHARGE_DEBIT   = 'M-Pesa Charge';
 
   // Selection: { kind: 'all' } or { kind: 'month', y: 2026, m: 9 }  (m is 0-based)
-  let selection = { kind: 'month' };             // default set on boot
+  let selection = { kind: 'all' };
   try {
     const raw = localStorage.getItem(FILTER_KEY);
     if (raw) selection = JSON.parse(raw);
@@ -61,7 +61,6 @@
   function readStateTx() {
     try {
       if (window.state && Array.isArray(window.state.transactions)) {
-        // Copy + numeric sort descending by id (newest first)
         return window.state.transactions
           .slice()
           .sort((a, b) => Number(b.id) - Number(a.id));
@@ -90,9 +89,8 @@
     return Number(n || 0).toLocaleString('en-KE');
   }
 
-  // Enumerate months that actually have transactions. Newest first.
   function monthsWithData(txs) {
-    const seen = new Map();          // key "y-m" -> {y, m, count}
+    const seen = new Map();
     for (const t of txs) {
       if (typeof t.id !== 'number') continue;
       const d = new Date(t.id);
@@ -105,10 +103,9 @@
   }
 
   // ==================================================================
-  // 1. LEDGER  — data-driven render + filter + grouping + meta
+  // Ledger chrome (bar + meta containers)
   // ==================================================================
 
-  // Detect that nav('book') has rendered the ledger table.
   function ledgerTableMounted() {
     const view = document.getElementById(LEDGER_VIEW_ID);
     if (!view) return null;
@@ -116,10 +113,9 @@
   }
 
   function ensureLedgerChrome() {
-    // Insert bar + meta containers once, above the table's scroll wrapper.
     const table = ledgerTableMounted();
     if (!table) return;
-    const wrap   = table.parentElement;          // overflow-x wrapper
+    const wrap   = table.parentElement;
     const cardBody = wrap && wrap.parentElement;
     if (!cardBody) return;
 
@@ -166,7 +162,10 @@
     }
   }
 
-  // Rebuild the table body from state.transactions, filtered + grouped.
+  // ==================================================================
+  // Ledger render
+  // ==================================================================
+
   function renderLedger() {
     const table = ledgerTableMounted();
     if (!table) return;
@@ -178,12 +177,8 @@
 
     const all     = readStateTx();
     const visible = all.filter(inSelection);
-
-    // Sort ascending by id within selection so dates flow oldest -> newest
-    // when grouped? No — keep DESC (newest first) which is what users expect.
     visible.sort((a, b) => Number(b.id) - Number(a.id));
 
-    // Replace tbody contents.
     tbody.innerHTML = '';
 
     if (visible.length === 0) {
@@ -198,7 +193,7 @@
     }
 
     // Group by calendar day.
-    const groups = new Map();      // "y-m-d" -> [tx, ...]
+    const groups = new Map();
     for (const tx of visible) {
       const d = new Date(tx.id);
       const key = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
@@ -206,20 +201,14 @@
       groups.get(key).push(tx);
     }
 
-    // Compute anomaly threshold once for the visible set.
     const anomalyThreshold = computeAnomalyThreshold(visible);
 
     for (const [key, rows] of groups) {
       const d = new Date(rows[0].id);
       const dayTotalOut = rows.reduce((s, r) => {
-        // "Out" = rows where the debit side is an expense-ish account and
-        // the credit side is a liquid account. Rather than re-derive the
-        // full account taxonomy, approximate: a row contributes to "spent
-        // today" if its credit is a liquid wallet/cash account.
         return s + (isLiquidCredit(r.credit) ? Number(r.amount) || 0 : 0);
       }, 0);
 
-      // Date sub-header row.
       const head = document.createElement('tr');
       head.setAttribute('data-tg-day-head', key);
       head.innerHTML =
@@ -262,7 +251,7 @@
       .map(r => Number(r.amount) || 0)
       .filter(n => n > 0)
       .sort((a, b) => a - b);
-    if (amounts.length < 5) return Infinity;      // too few to flag
+    if (amounts.length < 5) return Infinity;
     const mid = Math.floor(amounts.length / 2);
     const median = amounts.length % 2
       ? amounts[mid]
@@ -278,13 +267,11 @@
     const isAirtime  = tx.debit === 'Airtime Purchase';
     const isCharge   = isChargeRow(tx);
 
-    // Left accent for anomalies/charges/airtime — subtle, colored strip.
     let accent = '';
     if (isAnomaly) accent = 'box-shadow:inset 3px 0 0 #F59E0B;';
     else if (isAirtime) accent = 'box-shadow:inset 3px 0 0 #8B5CF6;';
     else if (isCharge)  accent = 'box-shadow:inset 3px 0 0 #DC2626;';
 
-    // Chips column (Transaction column): show account pair + optional flags.
     const flags = [];
     if (isAnomaly) flags.push(
       '<span style="font-size:10px;font-weight:700;background:#FEF3C7;' +
@@ -321,8 +308,6 @@
     return tr;
   }
 
-  // Mirror of the app's own logic: a "debit (+)" means money moved INTO a
-  // liquid account (cash/wallet/bank). Credit (-) means money left a liquid.
   function isDebitSideLiquid(tx) {
     return isLiquidCredit(tx.debit);
   }
@@ -336,44 +321,49 @@
     }[c]));
   }
 
-  // -------- Period selector --------
+  // ==================================================================
+  // Period selector
+  // ==================================================================
+
   function renderPeriodSelector(allTxs) {
     const sel = document.getElementById('tg-period-select');
     const lbl = document.getElementById('tg-period-label');
     if (!sel || !lbl) return;
 
     const months = monthsWithData(allTxs);
+    const now = new Date();
+    const hasCurrent = months.some(m => m.y === now.getFullYear() && m.m === now.getMonth());
 
-    // Rebuild options only if the list shape changed (avoids resetting focus).
-    const shape = months.map(m => m.y + '-' + m.m).join('|');
-    if (sel.getAttribute('data-shape') !== shape) {
-      sel.setAttribute('data-shape', shape);
-      const opts = [];
-      opts.push('<option value="all">All time</option>');
+    // Rebuild options from scratch every render. Cheap, avoids cache bugs.
+    const opts = [];
+    opts.push('<option value="all">All time</option>');
+    if (hasCurrent) {
+      opts.push('<option value="' + now.getFullYear() + '-' + now.getMonth() + '">This month</option>');
+    }
+    for (const m of months) {
+      if (m.y === now.getFullYear() && m.m === now.getMonth()) continue;
+      opts.push(
+        '<option value="' + m.y + '-' + m.m + '">' +
+        MONTHS_LONG[m.m] + ' ' + m.y +
+        ' (' + m.count + ')</option>'
+      );
+    }
+    const newHtml = opts.join('');
+    if (sel.innerHTML !== newHtml) sel.innerHTML = newHtml;
 
-      const now = new Date();
-      const hasCurrent = months.some(m => m.y === now.getFullYear() && m.m === now.getMonth());
-      if (hasCurrent) {
-        opts.push('<option value="' + now.getFullYear() + '-' + now.getMonth() + '">This month</option>');
-      }
-      for (const m of months) {
-        const isCurrent = m.y === now.getFullYear() && m.m === now.getMonth();
-        if (isCurrent) continue;                 // already listed above
-        opts.push('<option value="' + m.y + '-' + m.m + '">' +
-                  MONTHS_LONG[m.m] + ' ' + m.y +
-                  ' <span>' + m.count + '</span></option>');
-      }
-      sel.innerHTML = opts.join('');
+    // Sync selected value to current selection.
+    const want = selection.kind === 'all' ? 'all' : selection.y + '-' + selection.m;
+    if (sel.value !== want) sel.value = want;
+
+    // If selection doesn't correspond to any existing option, force "all".
+    if (sel.selectedIndex === -1) {
+      sel.value = 'all';
+      selection = { kind: 'all' };
+      persistSelection();
     }
 
-    // Sync current value.
-    const val = selection.kind === 'all' ? 'all' : selection.y + '-' + selection.m;
-    sel.value = val;
-
-    // Label reflects whatever we're actually showing.
     lbl.textContent = periodLabel();
 
-    // Wire change handler once.
     if (!sel._tgWired) {
       sel._tgWired = true;
       sel.addEventListener('change', () => {
@@ -384,14 +374,15 @@
           selection = { kind: 'month', y, m };
         }
         persistSelection();
-        // Re-render without a full page nav.
-        const table = ledgerTableMounted();
-        if (table) renderLedger();
+        renderLedger();
       });
     }
   }
 
-  // -------- Charges pill --------
+  // ==================================================================
+  // Charges pill + breakdown
+  // ==================================================================
+
   function renderChargesPill(visible) {
     const pill  = document.getElementById('tg-charges-pill');
     const total = document.getElementById('tg-charges-total');
@@ -410,15 +401,16 @@
 
     if (!pill._tgWired) {
       pill._tgWired = true;
-      pill.addEventListener('click', () => showChargesBreakdown(chargeRows));
+      pill.addEventListener('click', () => {
+        const rows = pill._chargeRows || [];
+        showChargesBreakdown(rows);
+      });
     }
-    pill._chargeRows = chargeRows;      // stash for breakdown
+    pill._chargeRows = chargeRows;
   }
 
   function showChargesBreakdown(chargeRows) {
-    const kinds = {
-      send: 0, withdraw: 0, paybill: 0, buygoods: 0, fuliza: 0, other: 0
-    };
+    const kinds = { send: 0, withdraw: 0, paybill: 0, buygoods: 0, fuliza: 0, other: 0 };
     let total = 0;
     for (const r of chargeRows) {
       total += Number(r.amount) || 0;
@@ -431,7 +423,6 @@
       else kinds.other++;
     }
 
-    // Build a tiny floating panel anchored near the pill.
     const existing = document.getElementById('tg-charges-panel');
     if (existing) existing.remove();
 
@@ -472,7 +463,6 @@
 
     document.body.appendChild(panel);
 
-    // Position near the pill.
     const pill = document.getElementById('tg-charges-pill');
     if (pill) {
       const r = pill.getBoundingClientRect();
@@ -480,7 +470,6 @@
       panel.style.left = Math.max(8, Math.min(window.innerWidth - 240, r.right - 220)) + 'px';
     }
 
-    // Dismiss on outside click / Escape.
     const closer = (e) => {
       if (!panel.contains(e.target) && e.target.id !== 'tg-charges-pill') {
         panel.remove();
@@ -488,14 +477,23 @@
         document.removeEventListener('keydown', esc);
       }
     };
-    const esc = (e) => { if (e.key === 'Escape') { panel.remove(); document.removeEventListener('mousedown', closer); document.removeEventListener('keydown', esc); } };
+    const esc = (e) => {
+      if (e.key === 'Escape') {
+        panel.remove();
+        document.removeEventListener('mousedown', closer);
+        document.removeEventListener('keydown', esc);
+      }
+    };
     setTimeout(() => {
       document.addEventListener('mousedown', closer);
       document.addEventListener('keydown', esc);
     }, 0);
   }
 
-  // -------- Meta line: net flow + merchant roll-up + anomalies --------
+  // ==================================================================
+  // Meta cards: net flow + merchant roll-up + anomalies
+  // ==================================================================
+
   function renderLedgerMeta(allTxs, visible) {
     const meta = document.getElementById(LEDGER_META_ID);
     if (!meta) return;
@@ -504,7 +502,6 @@
     const outflow = visible.reduce((s, r) => s + (isCreditSideLiquid(r) ? Number(r.amount) || 0 : 0), 0);
     const net     = inflow - outflow;
 
-    // Merchant roll-up
     const merchants = new Map();
     for (const r of visible) {
       const m = extractMerchant(r);
@@ -518,17 +515,15 @@
       .sort((a, b) => b.total - a.total)
       .slice(0, 5);
 
-    // Airtime anomalies
     const airtime = visible.filter(r => r.debit === 'Airtime Purchase');
     const airtimeTotal = airtime.reduce((s, r) => s + (Number(r.amount) || 0), 0);
 
-    // Unusual amounts
     const threshold = computeAnomalyThreshold(visible);
     const unusual = visible.filter(r => (Number(r.amount) || 0) > threshold);
 
-    const card = (title, body, tone) => `
+    const card = (title, body) => `
       <div style="background:white;border:1px solid var(--win-border);border-radius:10px;
-                  padding:12px 14px;flex:1;min-width:200px;${tone ? 'border-color:' + tone + ';' : ''}">
+                  padding:12px 14px;flex:1;min-width:200px;">
         <div style="font-size:10px;font-weight:700;color:var(--win-text-3);
                     text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">${title}</div>
         <div style="font-size:12px;line-height:1.6;">${body}</div>
@@ -596,13 +591,10 @@
     `;
   }
 
-  // Pull a recipient/merchant name out of the tx description when possible.
   function extractMerchant(tx) {
     const d = String(tx.desc || '');
-    // Direction: if money left a liquid account, it's an outgoing to recipient.
     const dir = isCreditSideLiquid(tx) ? 'out' : 'in';
 
-    // Ordered patterns — most specific first.
     const patterns = [
       /sent\s+(?:ksh|kes)?\s*[\d,.]*\s*to\s+([^\[\n]+)/i,
       /paybill\s+(?:ksh|kes)?\s*[\d,.]*\s*to\s+([^\[\n]+)/i,
@@ -612,7 +604,7 @@
       /received\s+(?:ksh|kes)?\s*[\d,.]*\s*from\s+([^\[\n]+)/i,
       /airtime\s+(?:ksh|kes)?\s*[\d,.]*\s*to\s+([^\[\n]+)/i
     ];
-    for (const rx of patrician(rx => rx).length ? patterns : patterns) {
+    for (const rx of patterns) {
       const m = d.match(rx);
       if (m && m[1]) {
         const name = m[1].replace(/\s*\[REF:.*$/, '').trim();
@@ -621,11 +613,9 @@
     }
     return null;
   }
-  // (typo-proof helper — no-op, keeps the patterns loop clean)
-  function patrician(_) { return []; }
 
   // ==================================================================
-  // 2. M-Pesa button relocation (unchanged from v1)
+  // M-Pesa button relocation
   // ==================================================================
 
   function relocateMpesaButton() {
@@ -657,7 +647,7 @@
   }
 
   // ==================================================================
-  // 3. Ledger observer  — re-render whenever nav('book') rebuilds table
+  // Observers + boot
   // ==================================================================
 
   function installLedgerObserver() {
@@ -671,20 +661,20 @@
       requestAnimationFrame(() => {
         scheduled = false;
         if (ledgerTableMounted()) {
-          // Default selection: current month, but only if it has data.
-          if (!localStorage.getItem(FILTER_KEY)) {
-            const months = monthsWithData(readStateTx());
-            const now = new Date();
-            const hasCurrent = months.some(m => m.y === now.getFullYear() && m.m === now.getMonth());
-            selection = hasCurrent
-              ? { kind: 'month', y: now.getFullYear(), m: now.getMonth() }
-              : (months[0] ? { kind: 'month', y: months[0].y, m: months[0].m } : { kind: 'all' });
+          // Validate persisted selection against actual data.
+          const txs = readStateTx();
+          const months = monthsWithData(txs);
+          const valid =
+            selection.kind === 'all' ||
+            months.some(m => m.y === selection.y && m.m === selection.m);
+
+          if (!valid && months.length > 0) {
+            selection = { kind: 'month', y: months[0].y, m: months[0].m };
             persistSelection();
           }
+
           renderLedger();
         } else {
-          // Not on ledger view — clean up our injected chrome if the
-          // table is gone (so it doesn't leak into other views).
           const bar = document.getElementById(LEDGER_BAR_ID);
           const mta = document.getElementById(LEDGER_META_ID);
           if (bar) bar.remove();
@@ -698,16 +688,41 @@
     schedule();
   }
 
-  // ==================================================================
-  // 4. Public debug handle + boot
-  // ==================================================================
+  // Polls until state.transactions has loaded, then re-renders once.
+  // Solves the "empty on first boot" race that persisted { kind:'all' }.
+  function waitForStateThenRender() {
+    let tries = 0;
+    const MAX = 40;   // ~20s
+    const tick = () => {
+      tries++;
+      const txs = readStateTx();
+      if (txs.length > 0) {
+        log('state.transactions loaded (' + txs.length + ' rows), re-rendering ledger');
+        if (ledgerTableMounted()) renderLedger();
+        return;
+      }
+      if (tries >= MAX) {
+        warn('state.transactions still empty after ' + MAX + ' tries');
+        if (ledgerTableMounted()) renderLedger();
+        return;
+      }
+      setTimeout(tick, 500);
+    };
+    setTimeout(tick, 400);
+  }
 
   window.TravisUITweaks = {
-    version: '2.0.0',
-    showAll: () => { selection = { kind: 'all' }; persistSelection();
-      const t = ledgerTableMounted(); if (t) renderLedger(); },
-    selectMonth: (y, m) => { selection = { kind: 'month', y, m }; persistSelection();
-      const t = ledgerTableMounted(); if (t) renderLedger(); },
+    version: '2.0.1',
+    showAll: () => {
+      selection = { kind: 'all' };
+      persistSelection();
+      if (ledgerTableMounted()) renderLedger();
+    },
+    selectMonth: (y, m) => {
+      selection = { kind: 'month', y, m };
+      persistSelection();
+      if (ledgerTableMounted()) renderLedger();
+    },
     status: () => ({
       selection,
       period: periodLabel(),
@@ -716,19 +731,25 @@
         const newEntry = document.querySelector('#nav-sidebar button[onclick*="showTxModal"]');
         return !!(btn && newEntry && newEntry.nextElementSibling === btn);
       })(),
-      barPresent: !!document.getElementById(LEDGER_BAR_ID)
+      barPresent: !!document.getElementById(LEDGER_BAR_ID),
+      txCount: readStateTx().length,
+      monthCount: monthsWithData(readStateTx()).length
     }),
-    rerun: () => { if (ledgerTableMounted()) renderLedger(); relocateMpesaButton(); }
+    rerun: () => {
+      if (ledgerTableMounted()) renderLedger();
+      relocateMpesaButton();
+    }
   };
 
   function boot() {
     installLedgerObserver();
     installMpesaRelocator();
+    waitForStateThenRender();
     document.addEventListener('click', (e) => {
       const t = e.target && e.target.closest && e.target.closest('.nav-item, .taskbar-btn');
       if (t) setTimeout(() => { if (ledgerTableMounted()) renderLedger(); }, 60);
     });
-    log('booted v2.0.0');
+    log('booted v2.0.1');
   }
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
