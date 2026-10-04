@@ -1,29 +1,28 @@
 /**
- * ui-tweaks.js  ·  v2.0.1
+ * ui-tweaks.js  ·  v3.0.0
  * ------------------------------------------------------------------
- * Standalone DOM + data tweaks for Travis Guardian. Zero coupling with
- * the main app. Everything is applied after the app renders by watching
- * the DOM and reading the app's own `state.transactions` global.
+ * Standalone DOM + data tweaks for Travis Guardian.
  *
- * v2.0.1 fixes:
- *   • Dropdown was stuck on "All time" only. Root cause: on first boot,
- *     state.transactions was still empty when we persisted a selection,
- *     so the fallback wrote { kind:'all' } and never re-evaluated.
- *     Fixed with waitForStateThenRender() + selection validation +
- *     dropdown options rebuilt on every render.
- *   • Month list now shows counts, e.g. "October 2026 (47)".
+ * v3.0.0 — MAJOR FIX:
+ *   v2 relied on window.state.transactions being globally accessible.
+ *   It isn't (the obfuscated script keeps its scope private). The
+ *   month dropdown therefore always saw zero transactions and listed
+ *   only "All time".
  *
- * v2.0.0 features:
- *   • Data-driven ledger (no DOM date parsing — no month drift).
- *   • Month picker: All time / This month / only months with real data.
- *   • Row grouping by date with per-day spend totals.
- *   • Net-flow line (In / Out / Net) for selected period.
- *   • Charges pill: M-Pesa Charge rows only (Safaricom fees).
- *   • Merchant/recipient roll-up (top 5).
- *   • Anomaly highlights + airtime callout.
- *   • #nav-mpesa relocated from sidebar-footer to Finance section.
+ *   v3 reads transactions DIRECTLY FROM INDEXEDDB (store 'tx'),
+ *   independently, using its own connection — same pattern as the
+ *   backup reconciler. No dependency on any global from the main app.
  *
- * Load order: include AFTER script.js / travis-mpesa.js / backup-reconcile.js
+ * Features (unchanged from v2):
+ *   • Month picker: All time / This month / only months with data
+ *   • Row grouping by date + per-day spend
+ *   • Net-flow card (In / Out / Net)
+ *   • Charges pill (M-Pesa Charge rows only) with breakdown
+ *   • Merchant roll-up (top 5)
+ *   • Anomaly highlights + airtime callout
+ *   • #nav-mpesa relocated from sidebar-footer to Finance section
+ *
+ * Load order: include AFTER all other app scripts.
  *   <script src="ui-tweaks.js"></script>
  * ------------------------------------------------------------------
  */
@@ -33,10 +32,15 @@
   const LOG = '[UITweaks]';
   const log  = (...a) => console.log(LOG, ...a);
   const warn = (...a) => console.warn(LOG, ...a);
+  const err  = (...a) => console.error(LOG, ...a);
 
   // ==================================================================
-  // Shared
+  // Config
   // ==================================================================
+
+  const DB_NAME  = 'TravisGuardian_v1.0';
+  const DB_VER   = 1;
+  const STORE    = 'tx';
 
   const MONTHS_LONG = ['January','February','March','April','May','June',
                        'July','August','September','October','November','December'];
@@ -47,31 +51,71 @@
   const FILTER_KEY     = 'travis_ledger_period';
   const CHARGE_DEBIT   = 'M-Pesa Charge';
 
-  // Selection: { kind: 'all' } or { kind: 'month', y: 2026, m: 9 }  (m is 0-based)
   let selection = { kind: 'all' };
   try {
     const raw = localStorage.getItem(FILTER_KEY);
     if (raw) selection = JSON.parse(raw);
   } catch (_) {}
 
-  function persistSelection() {
-    try { localStorage.setItem(FILTER_KEY, JSON.stringify(selection)); } catch (_) {}
+  // In-memory cache of transactions read from IDB. Refreshed on:
+  //   • boot
+  //   • whenever the ledger view is (re)rendered
+  //   • whenever a "Post to Ledger" commit is observed (mutation on #view-port)
+  let TX_CACHE = [];
+
+  // ==================================================================
+  // IDB reader — independent connection
+  // ==================================================================
+
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VER);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror   = () => reject(req.error);
+      // If schema doesn't exist yet, don't create it — just fail gracefully.
+      // The main app is the owner of the schema; we're only a reader.
+    });
   }
 
-  function readStateTx() {
-    try {
-      if (window.state && Array.isArray(window.state.transactions)) {
-        return window.state.transactions
-          .slice()
-          .sort((a, b) => Number(b.id) - Number(a.id));
-      }
-    } catch (_) {}
-    return [];
+  function readAllTx() {
+    return new Promise((resolve) => {
+      const req = indexedDB.open(DB_NAME, DB_VER);
+      req.onsuccess = () => {
+        const db = req.result;
+        try {
+          if (!db.objectStoreNames.contains(STORE)) {
+            db.close();
+            return resolve([]);
+          }
+          const tx = db.transaction(STORE, 'readonly');
+          const store = tx.objectStore(STORE);
+          const all = store.getAll();
+          all.onsuccess = () => {
+            db.close();
+            resolve(all.result || []);
+          };
+          all.onerror = () => { db.close(); resolve([]); };
+        } catch (e) {
+          try { db.close(); } catch (_) {}
+          resolve([]);
+        }
+      };
+      req.onerror = () => resolve([]);
+    });
   }
 
-  function isChargeRow(tx) {
-    return tx && tx.debit === CHARGE_DEBIT;
+  async function refreshCache() {
+    const rows = await readAllTx();
+    rows.sort((a, b) => Number(b.id) - Number(a.id));
+    TX_CACHE = rows;
+    return rows;
   }
+
+  // ==================================================================
+  // Helpers
+  // ==================================================================
+
+  function isChargeRow(tx) { return tx && tx.debit === CHARGE_DEBIT; }
 
   function inSelection(tx) {
     if (!tx || typeof tx.id !== 'number') return false;
@@ -85,9 +129,7 @@
     return MONTHS_LONG[selection.m] + ' ' + selection.y;
   }
 
-  function money(n) {
-    return Number(n || 0).toLocaleString('en-KE');
-  }
+  function money(n) { return Number(n || 0).toLocaleString('en-KE'); }
 
   function monthsWithData(txs) {
     const seen = new Map();
@@ -98,12 +140,42 @@
       if (!seen.has(key)) seen.set(key, { y: d.getFullYear(), m: d.getMonth(), count: 0 });
       seen.get(key).count++;
     }
-    return Array.from(seen.values())
-      .sort((a, b) => (b.y - a.y) || (b.m - a.m));
+    return Array.from(seen.values()).sort((a, b) => (b.y - a.y) || (b.m - a.m));
+  }
+
+  function persistSelection() {
+    try { localStorage.setItem(FILTER_KEY, JSON.stringify(selection)); } catch (_) {}
+  }
+
+  function isLiquidCredit(name) {
+    const s = String(name || '').toLowerCase();
+    return s === 'cash' || s === 'm-pesa' || s === 'bank / m-pesa'
+        || s === 'bank account' || s === 'savings' || s === 'petty cash';
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function dayLabel(d) {
+    return d.toLocaleDateString('en-KE', {
+      weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+    });
+  }
+
+  function computeAnomalyThreshold(rows) {
+    const amounts = rows.map(r => Number(r.amount) || 0).filter(n => n > 0).sort((a,b) => a-b);
+    if (amounts.length < 5) return Infinity;
+    const mid = Math.floor(amounts.length / 2);
+    const median = amounts.length % 2 ? amounts[mid] : (amounts[mid-1] + amounts[mid]) / 2;
+    if (!isFinite(median) || median <= 0) return Infinity;
+    return median * 2;
   }
 
   // ==================================================================
-  // Ledger chrome (bar + meta containers)
+  // Ledger chrome
   // ==================================================================
 
   function ledgerTableMounted() {
@@ -115,7 +187,7 @@
   function ensureLedgerChrome() {
     const table = ledgerTableMounted();
     if (!table) return;
-    const wrap   = table.parentElement;
+    const wrap = table.parentElement;
     const cardBody = wrap && wrap.parentElement;
     if (!cardBody) return;
 
@@ -169,15 +241,14 @@
   function renderLedger() {
     const table = ledgerTableMounted();
     if (!table) return;
-
     ensureLedgerChrome();
 
     const tbody = table.querySelector('tbody');
     if (!tbody) return;
 
-    const all     = readStateTx();
+    const all     = TX_CACHE;
     const visible = all.filter(inSelection);
-    visible.sort((a, b) => Number(b.id) - Number(a.id));
+    // TX_CACHE is already DESC by id from refreshCache.
 
     tbody.innerHTML = '';
 
@@ -186,13 +257,12 @@
       tr.innerHTML = '<td colspan="4" style="padding:32px;text-align:center;color:var(--win-text-3);">' +
                      'No transactions in this period.</td>';
       tbody.appendChild(tr);
-      renderLedgerMeta(all, visible);
+      renderLedgerMeta(visible);
       renderChargesPill(visible);
       renderPeriodSelector(all);
       return;
     }
 
-    // Group by calendar day.
     const groups = new Map();
     for (const tx of visible) {
       const d = new Date(tx.id);
@@ -205,9 +275,7 @@
 
     for (const [key, rows] of groups) {
       const d = new Date(rows[0].id);
-      const dayTotalOut = rows.reduce((s, r) => {
-        return s + (isLiquidCredit(r.credit) ? Number(r.amount) || 0 : 0);
-      }, 0);
+      const dayTotalOut = rows.reduce((s, r) => s + (isLiquidCredit(r.credit) ? Number(r.amount) || 0 : 0), 0);
 
       const head = document.createElement('tr');
       head.setAttribute('data-tg-day-head', key);
@@ -224,40 +292,12 @@
         '</td>';
       tbody.appendChild(head);
 
-      for (const tx of rows) {
-        tbody.appendChild(buildRow(tx, anomalyThreshold));
-      }
+      for (const tx of rows) tbody.appendChild(buildRow(tx, anomalyThreshold));
     }
 
-    renderLedgerMeta(all, visible);
+    renderLedgerMeta(visible);
     renderChargesPill(visible);
     renderPeriodSelector(all);
-  }
-
-  function isLiquidCredit(name) {
-    const s = String(name || '').toLowerCase();
-    return s === 'cash' || s === 'm-pesa' || s === 'bank / m-pesa'
-        || s === 'bank account' || s === 'savings' || s === 'petty cash';
-  }
-
-  function dayLabel(d) {
-    return d.toLocaleDateString('en-KE', {
-      weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
-    });
-  }
-
-  function computeAnomalyThreshold(rows) {
-    const amounts = rows
-      .map(r => Number(r.amount) || 0)
-      .filter(n => n > 0)
-      .sort((a, b) => a - b);
-    if (amounts.length < 5) return Infinity;
-    const mid = Math.floor(amounts.length / 2);
-    const median = amounts.length % 2
-      ? amounts[mid]
-      : (amounts[mid - 1] + amounts[mid]) / 2;
-    if (!isFinite(median) || median <= 0) return Infinity;
-    return median * 2;
   }
 
   function buildRow(tx, anomalyThreshold) {
@@ -273,18 +313,9 @@
     else if (isCharge)  accent = 'box-shadow:inset 3px 0 0 #DC2626;';
 
     const flags = [];
-    if (isAnomaly) flags.push(
-      '<span style="font-size:10px;font-weight:700;background:#FEF3C7;' +
-      'color:#92400E;padding:1px 6px;border-radius:20px;">⚠ Unusual</span>'
-    );
-    if (isAirtime) flags.push(
-      '<span style="font-size:10px;font-weight:700;background:#EDE9FE;' +
-      'color:#5B21B6;padding:1px 6px;border-radius:20px;">Airtime</span>'
-    );
-    if (isCharge) flags.push(
-      '<span style="font-size:10px;font-weight:700;background:#FEE2E2;' +
-      'color:#991B1B;padding:1px 6px;border-radius:20px;">Charge</span>'
-    );
+    if (isAnomaly) flags.push('<span style="font-size:10px;font-weight:700;background:#FEF3C7;color:#92400E;padding:1px 6px;border-radius:20px;">⚠ Unusual</span>');
+    if (isAirtime) flags.push('<span style="font-size:10px;font-weight:700;background:#EDE9FE;color:#5B21B6;padding:1px 6px;border-radius:20px;">Airtime</span>');
+    if (isCharge)  flags.push('<span style="font-size:10px;font-weight:700;background:#FEE2E2;color:#991B1B;padding:1px 6px;border-radius:20px;">Charge</span>');
 
     const esc = escapeHtml;
     tr.innerHTML = `
@@ -299,26 +330,13 @@
         </div>
       </td>
       <td style="text-align:right;font-family:monospace;color:var(--win-green);font-weight:600;white-space:nowrap;">
-        ${isDebitSideLiquid(tx) ? '+' + money(amt) : ''}
+        ${isLiquidCredit(tx.debit) ? '+' + money(amt) : ''}
       </td>
       <td style="text-align:right;font-family:monospace;color:var(--win-red);font-weight:600;white-space:nowrap;">
-        ${isCreditSideLiquid(tx) ? '-' + money(amt) : ''}
+        ${isLiquidCredit(tx.credit) ? '-' + money(amt) : ''}
       </td>
     `;
     return tr;
-  }
-
-  function isDebitSideLiquid(tx) {
-    return isLiquidCredit(tx.debit);
-  }
-  function isCreditSideLiquid(tx) {
-    return isLiquidCredit(tx.credit);
-  }
-
-  function escapeHtml(s) {
-    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[c]));
   }
 
   // ==================================================================
@@ -334,7 +352,6 @@
     const now = new Date();
     const hasCurrent = months.some(m => m.y === now.getFullYear() && m.m === now.getMonth());
 
-    // Rebuild options from scratch every render. Cheap, avoids cache bugs.
     const opts = [];
     opts.push('<option value="all">All time</option>');
     if (hasCurrent) {
@@ -344,18 +361,16 @@
       if (m.y === now.getFullYear() && m.m === now.getMonth()) continue;
       opts.push(
         '<option value="' + m.y + '-' + m.m + '">' +
-        MONTHS_LONG[m.m] + ' ' + m.y +
-        ' (' + m.count + ')</option>'
+        MONTHS_LONG[m.m] + ' ' + m.y + ' (' + m.count + ')' +
+        '</option>'
       );
     }
     const newHtml = opts.join('');
     if (sel.innerHTML !== newHtml) sel.innerHTML = newHtml;
 
-    // Sync selected value to current selection.
     const want = selection.kind === 'all' ? 'all' : selection.y + '-' + selection.m;
     if (sel.value !== want) sel.value = want;
 
-    // If selection doesn't correspond to any existing option, force "all".
     if (sel.selectedIndex === -1) {
       sel.value = 'all';
       selection = { kind: 'all' };
@@ -380,7 +395,7 @@
   }
 
   // ==================================================================
-  // Charges pill + breakdown
+  // Charges pill
   // ==================================================================
 
   function renderChargesPill(visible) {
@@ -390,10 +405,8 @@
     if (!pill || !total || !count) return;
 
     const chargeRows = visible.filter(isChargeRow);
-    if (chargeRows.length === 0) {
-      pill.style.display = 'none';
-      return;
-    }
+    if (chargeRows.length === 0) { pill.style.display = 'none'; return; }
+
     const sum = chargeRows.reduce((s, r) => s + (Number(r.amount) || 0), 0);
     total.textContent = 'KSh ' + money(sum);
     count.textContent = '· ' + chargeRows.length + ' charge' + (chargeRows.length !== 1 ? 's' : '');
@@ -401,10 +414,7 @@
 
     if (!pill._tgWired) {
       pill._tgWired = true;
-      pill.addEventListener('click', () => {
-        const rows = pill._chargeRows || [];
-        showChargesBreakdown(rows);
-      });
+      pill.addEventListener('click', () => showChargesBreakdown(pill._chargeRows || []));
     }
     pill._chargeRows = chargeRows;
   }
@@ -491,15 +501,15 @@
   }
 
   // ==================================================================
-  // Meta cards: net flow + merchant roll-up + anomalies
+  // Meta cards
   // ==================================================================
 
-  function renderLedgerMeta(allTxs, visible) {
+  function renderLedgerMeta(visible) {
     const meta = document.getElementById(LEDGER_META_ID);
     if (!meta) return;
 
-    const inflow  = visible.reduce((s, r) => s + (isDebitSideLiquid(r)  ? Number(r.amount) || 0 : 0), 0);
-    const outflow = visible.reduce((s, r) => s + (isCreditSideLiquid(r) ? Number(r.amount) || 0 : 0), 0);
+    const inflow  = visible.reduce((s, r) => s + (isLiquidCredit(r.debit)  ? Number(r.amount) || 0 : 0), 0);
+    const outflow = visible.reduce((s, r) => s + (isLiquidCredit(r.credit) ? Number(r.amount) || 0 : 0), 0);
     const net     = inflow - outflow;
 
     const merchants = new Map();
@@ -511,9 +521,7 @@
       cur.total += Number(r.amount) || 0;
       merchants.set(m.name, cur);
     }
-    const topMerchants = Array.from(merchants.values())
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 5);
+    const topMerchants = Array.from(merchants.values()).sort((a,b) => b.total - a.total).slice(0, 5);
 
     const airtime = visible.filter(r => r.debit === 'Airtime Purchase');
     const airtimeTotal = airtime.reduce((s, r) => s + (Number(r.amount) || 0), 0);
@@ -593,7 +601,7 @@
 
   function extractMerchant(tx) {
     const d = String(tx.desc || '');
-    const dir = isCreditSideLiquid(tx) ? 'out' : 'in';
+    const dir = isLiquidCredit(tx.credit) ? 'out' : 'in';
 
     const patterns = [
       /sent\s+(?:ksh|kes)?\s*[\d,.]*\s*to\s+([^\[\n]+)/i,
@@ -658,16 +666,17 @@
     const schedule = () => {
       if (scheduled) return;
       scheduled = true;
-      requestAnimationFrame(() => {
+      requestAnimationFrame(async () => {
         scheduled = false;
         if (ledgerTableMounted()) {
-          // Validate persisted selection against actual data.
-          const txs = readStateTx();
-          const months = monthsWithData(txs);
-          const valid =
-            selection.kind === 'all' ||
-            months.some(m => m.y === selection.y && m.m === selection.m);
+          // Pull fresh data from IDB before every render, so newly posted
+          // transactions show up immediately.
+          await refreshCache();
 
+          // Validate persisted selection against actual data.
+          const months = monthsWithData(TX_CACHE);
+          const valid = selection.kind === 'all'
+            || months.some(m => m.y === selection.y && m.m === selection.m);
           if (!valid && months.length > 0) {
             selection = { kind: 'month', y: months[0].y, m: months[0].m };
             persistSelection();
@@ -688,31 +697,13 @@
     schedule();
   }
 
-  // Polls until state.transactions has loaded, then re-renders once.
-  // Solves the "empty on first boot" race that persisted { kind:'all' }.
-  function waitForStateThenRender() {
-    let tries = 0;
-    const MAX = 40;   // ~20s
-    const tick = () => {
-      tries++;
-      const txs = readStateTx();
-      if (txs.length > 0) {
-        log('state.transactions loaded (' + txs.length + ' rows), re-rendering ledger');
-        if (ledgerTableMounted()) renderLedger();
-        return;
-      }
-      if (tries >= MAX) {
-        warn('state.transactions still empty after ' + MAX + ' tries');
-        if (ledgerTableMounted()) renderLedger();
-        return;
-      }
-      setTimeout(tick, 500);
-    };
-    setTimeout(tick, 400);
-  }
-
   window.TravisUITweaks = {
-    version: '2.0.1',
+    version: '3.0.0',
+    refresh: async () => {
+      await refreshCache();
+      if (ledgerTableMounted()) renderLedger();
+      return TX_CACHE.length;
+    },
     showAll: () => {
       selection = { kind: 'all' };
       persistSelection();
@@ -723,33 +714,55 @@
       persistSelection();
       if (ledgerTableMounted()) renderLedger();
     },
-    status: () => ({
-      selection,
-      period: periodLabel(),
-      mpesaInFinanceSection: (() => {
-        const btn = document.getElementById('nav-mpesa');
-        const newEntry = document.querySelector('#nav-sidebar button[onclick*="showTxModal"]');
-        return !!(btn && newEntry && newEntry.nextElementSibling === btn);
-      })(),
-      barPresent: !!document.getElementById(LEDGER_BAR_ID),
-      txCount: readStateTx().length,
-      monthCount: monthsWithData(readStateTx()).length
-    }),
+    status: async () => {
+      await refreshCache();
+      const months = monthsWithData(TX_CACHE);
+      return {
+        selection,
+        period: periodLabel(),
+        txCount: TX_CACHE.length,
+        monthCount: months.length,
+        months: months.map(m => MONTHS_LONG[m.m] + ' ' + m.y + ' (' + m.count + ')'),
+        mpesaInFinanceSection: (() => {
+          const btn = document.getElementById('nav-mpesa');
+          const newEntry = document.querySelector('#nav-sidebar button[onclick*="showTxModal"]');
+          return !!(btn && newEntry && newEntry.nextElementSibling === btn);
+        })(),
+        barPresent: !!document.getElementById(LEDGER_BAR_ID)
+      };
+    },
     rerun: () => {
       if (ledgerTableMounted()) renderLedger();
       relocateMpesaButton();
     }
   };
 
-  function boot() {
+  async function boot() {
     installLedgerObserver();
     installMpesaRelocator();
-    waitForStateThenRender();
+
+    // Warm the cache and pick a sensible default selection if none exists.
+    await refreshCache();
+    log('IDB loaded:', TX_CACHE.length, 'transactions');
+
+    if (TX_CACHE.length > 0 && !localStorage.getItem(FILTER_KEY)) {
+      const months = monthsWithData(TX_CACHE);
+      if (months.length > 0) {
+        const now = new Date();
+        const hasCurrent = months.some(m => m.y === now.getFullYear() && m.m === now.getMonth());
+        selection = hasCurrent
+          ? { kind: 'month', y: now.getFullYear(), m: now.getMonth() }
+          : { kind: 'month', y: months[0].y, m: months[0].m };
+        persistSelection();
+      }
+    }
+
     document.addEventListener('click', (e) => {
       const t = e.target && e.target.closest && e.target.closest('.nav-item, .taskbar-btn');
       if (t) setTimeout(() => { if (ledgerTableMounted()) renderLedger(); }, 60);
     });
-    log('booted v2.0.1');
+
+    log('booted v3.0.0');
   }
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
