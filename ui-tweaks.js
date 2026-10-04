@@ -1,35 +1,27 @@
 /**
- * ui-tweaks.js  ·  v3.1.0
+ * ui-tweaks.js  ·  v3.2.0
  * ------------------------------------------------------------------
  * Standalone DOM + data layer for Travis Guardian's Ledger view.
  *
- * v3.1.0 — Category-drift detection + explainer panels
- *   • Two anomaly detectors:
- *       - Row-level  : single tx >2.5× same-recipient median (90d)
- *       - Category   : current period total >1.8× trailing 3-month
- *                      median for that account name (expenses only)
- *       - Income     : income categories flag on DROPS (>40% below
- *                      trailing median), never on rises.
- *   • Anomalies card restructured into two sub-sections, both
- *     clickable.
- *   • Glasmorphic explainer panel quotes exact numbers + lists the
- *     contributing transactions. Two buttons:
- *       "This is normal"  -> folds current month into baseline
- *       "Dismiss"         -> hides for this category+period only
- *   • LocalStorage dismissal stores:
- *       dismiss:drift:<cat>:<YYYY-MM>
- *       dismiss:row:<txId>
- *       dismiss:baseline-bump:<cat>:<YYYY-MM>
- *   • "New" chip (blue) for first-seen recipient/category combos.
- *   • Top recipients: min 3 occurrences, split incoming/outgoing,
- *     sorted by count then total.
- *   • Charges pill stays SEPARATE from drift panel.
+ * v3.2.0 additions (on top of v3.1.0):
+ *   • Per-row delete button (×, hover-revealed, system-native confirm)
+ *   • deleteTransaction(id): removes from IDB, updates cache, re-renders,
+ *     and asks the backup reconciler to sync (when available).
+ *   • Undo toast for 6 seconds after delete — restores same row, same id.
+ *   • TravisUITweaks.injectFakeAnomaly() / .clearFakeAnomalies()
+ *   • Debug-only "🧪 Inject test anomaly" button when URL has ?debug=1
+ *
+ * v3.1.0 features retained:
+ *   • Row-level anomaly (2.5× same-recipient median over 90d)
+ *   • Category drift (1.8× trailing 3-month median, income drops too)
+ *   • Glasmorphic explainer panels with "This is normal" / "Dismiss"
+ *   • LocalStorage dismissal stores
+ *   • "New" chip (blue) for first-seen combos
+ *   • Top recipients: min 3 occurrences, split in/out
+ *   • Charges pill (Safaricom fees only) — separate from drift panel
  *
  * v3.0.0 features retained:
- *   • IDB-driven data (no window.state dependency)
- *   • Month picker: All time / This month / months with data
- *   • Row grouping by date + per-day spend
- *   • Net-flow card
+ *   • IDB-driven data, month picker, row grouping, net-flow card
  *   • #nav-mpesa relocation
  *
  * Load order: AFTER script.js / travis-mpesa.js / backup-reconcile.js
@@ -60,17 +52,14 @@
   const FILTER_KEY     = 'travis_ledger_period';
   const CHARGE_DEBIT   = 'M-Pesa Charge';
 
-  // Anomaly tuning
-  const ROW_FACTOR       = 2.5;    // row flagged if > 2.5× same-recipient median
-  const ROW_FLOOR_KSH    = 500;    // ignore row flags below this absolute amount
-  const DRIFT_FACTOR     = 1.8;    // category flagged if > 1.8× trailing median
-  const DRIFT_FLOOR_KSH  = 500;    // ignore drift below this absolute increase
-  const INCOME_DROP_FACT  = 0.6;   // income flagged if < 60% of trailing median
-  const MIN_CATEGORY_TX  = 4;      // category needs ≥4 tx in trailing 3mo to drift
-  const MIN_RECIPIENT_TX = 3;      // top-recipient list requires ≥3 occurrences
+  const ROW_FACTOR       = 2.5;
+  const ROW_FLOOR_KSH    = 500;
+  const DRIFT_FACTOR     = 1.8;
+  const DRIFT_FLOOR_KSH  = 500;
+  const INCOME_DROP_FACT = 0.6;
+  const MIN_CATEGORY_TX  = 4;
+  const MIN_RECIPIENT_TX = 3;
 
-  // Account names treated as SPENDING categories for drift detection.
-  // (Not recipients, not transfer legs, not income.)
   const EXPENSE_CATEGORIES = new Set([
     'Airtime Purchase','Bills','Utilities','Rent','School','Food & Groceries',
     'Transport','Medical','Entertainment','Payroll','Marketing',
@@ -78,11 +67,13 @@
     'Send Money','Withdrawals','Deposits'
   ]);
 
-  // Account names treated as INCOME categories.
   const INCOME_CATEGORIES = new Set([
     'Salary','Side Hustle','Allowance','Dividends','Other Income',
     'Sales Revenue','Service Revenue'
   ]);
+
+  const TEST_PREFIX = '[TEST ANOMALY]';
+  const DEBUG = /[?&]debug=1(?:&|$)/.test(location.search);
 
   // ==================================================================
   // State
@@ -100,10 +91,10 @@
   // LocalStorage dismissal helpers
   // ==================================================================
 
-  const LS_DRIFT_DISMISS   = 'tg_ui_dismiss_drift';       // { "Airtime:2026-10": ts }
-  const LS_ROW_DISMISS     = 'tg_ui_dismiss_row';         // { "<txId>": ts }
-  const LS_BASELINE_BUMP   = 'tg_ui_baseline_bump';       // { "Airtime:2026-10": ts }
-  const LS_NEW_SEEN        = 'tg_ui_new_seen';            // { "recipient|account": ts }
+  const LS_DRIFT_DISMISS = 'tg_ui_dismiss_drift';
+  const LS_ROW_DISMISS   = 'tg_ui_dismiss_row';
+  const LS_BASELINE_BUMP = 'tg_ui_baseline_bump';
+  const LS_NEW_SEEN      = 'tg_ui_new_seen';
 
   function loadMap(key) {
     try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : {}; }
@@ -111,10 +102,6 @@
   }
   function saveMap(key, map) {
     try { localStorage.setItem(key, JSON.stringify(map)); } catch (_) {}
-  }
-  function isDismissed(key, mapKey, id) {
-    const m = loadMap(mapKey);
-    return !!m[id + ':' + key] || !!m[key];
   }
   function dismiss(key, mapKey) {
     const m = loadMap(mapKey);
@@ -130,6 +117,11 @@
     m[String(txId)] = Date.now();
     saveMap(LS_ROW_DISMISS, m);
   }
+  function undismissRow(txId) {
+    const m = loadMap(LS_ROW_DISMISS);
+    delete m[String(txId)];
+    saveMap(LS_ROW_DISMISS, m);
+  }
   function hasSeenCombo(combo) {
     const m = loadMap(LS_NEW_SEEN);
     return !!m[combo];
@@ -141,8 +133,16 @@
   }
 
   // ==================================================================
-  // IDB reader
+  // IDB — read, put, delete
   // ==================================================================
+
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VER);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror   = () => reject(req.error);
+    });
+  }
 
   function readAllTx() {
     return new Promise((resolve) => {
@@ -162,11 +162,56 @@
     });
   }
 
+  function putTx(tx) {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VER);
+      req.onsuccess = () => {
+        const db = req.result;
+        try {
+          const t = db.transaction(STORE, 'readwrite');
+          t.objectStore(STORE).put(tx);
+          t.oncomplete = () => { db.close(); resolve(); };
+          t.onerror    = () => { db.close(); reject(t.error); };
+        } catch (e) { try { db.close(); } catch (_) {} reject(e); }
+      };
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  function deleteTx(id) {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VER);
+      req.onsuccess = () => {
+        const db = req.result;
+        try {
+          const t = db.transaction(STORE, 'readwrite');
+          t.objectStore(STORE).delete(id);
+          t.oncomplete = () => { db.close(); resolve(); };
+          t.onerror    = () => { db.close(); reject(t.error); };
+        } catch (e) { try { db.close(); } catch (_) {} reject(e); }
+      };
+      req.onerror = () => reject(req.error);
+    });
+  }
+
   async function refreshCache() {
     const rows = await readAllTx();
     rows.sort((a, b) => Number(b.id) - Number(a.id));
     TX_CACHE = rows;
     return rows;
+  }
+
+  async function syncBackup() {
+    try {
+      if (window.TravisBackup && typeof window.TravisBackup.reconcileNow === 'function') {
+        const res = await window.TravisBackup.reconcileNow();
+        log('backup reconcile:', res);
+        return res;
+      }
+    } catch (e) {
+      warn('backup reconcile failed (will retry on next boot)', e);
+    }
+    return null;
   }
 
   // ==================================================================
@@ -231,11 +276,9 @@
   }
 
   // ==================================================================
-  // Anomaly: row-level
+  // Row-level anomaly
   // ==================================================================
 
-  // Cache of { "recipient|debit": [amounts...] } built per render from ALL tx,
-  // not just visible, so trailing-90-day medians are honest.
   function buildRecipientHistory(allTx) {
     const map = new Map();
     for (const t of allTx) {
@@ -251,13 +294,11 @@
   }
 
   function recipientKey(tx) {
-    // Prefer explicit recipient parsed from desc; fall back to debit account.
     const rec = extractMerchant(tx);
     if (rec && rec.name) return rec.name.toLowerCase() + '|' + String(tx.debit || '');
     return String(tx.debit || '');
   }
 
-  // Returns { flagged: bool, median, factor } for a single tx.
   function rowAnomaly(tx, history) {
     const amt = Number(tx.amount) || 0;
     if (amt < ROW_FLOOR_KSH) return { flagged: false };
@@ -267,7 +308,6 @@
     const h = history.get(key);
     if (!h || h.amounts.length < MIN_CATEGORY_TX) return { flagged: false };
 
-    // 90-day trailing window ending at this tx's date.
     const t0 = tx.id;
     const ninety = 90 * 24 * 60 * 60 * 1000;
     const past = [];
@@ -284,12 +324,10 @@
   }
 
   // ==================================================================
-  // Anomaly: category drift
+  // Category drift
   // ==================================================================
 
-  // Build the monthly total per category across ALL tx.
   function monthlyCategoryTotals(allTx) {
-    // map: "y-m" -> { cat -> total }
     const buckets = new Map();
     for (const t of allTx) {
       if (typeof t.id !== 'number') continue;
@@ -304,33 +342,14 @@
     return buckets;
   }
 
-  // For a category, given a target month (y,m), return the trailing 3 months'
-  // totals (chronological order, length up to 3) that are non-zero.
-  function trailingMonths(buckets, y, m, n) {
-    const out = [];
-    for (let i = n; i >= 1; i--) {
-      let yy = y, mm = m - i;
-      while (mm < 0) { mm += 12; yy--; }
-      const key = yy + '-' + mm;
-      out.push({ y: yy, m: mm, key, total: (buckets.get(key) || {})[categoryOf(null)] || 0 });
-    }
-    // NOTE: the category-total is filled in by caller since trailingMonths
-    // doesn't know the category. We return keys only and caller resolves.
-    return out.map(o => o.key);
-  }
-
   function categoryOf(tx) {
     if (!tx) return null;
     const d = String(tx.debit || '');
-    // For expenses the debit is the account that received value — could be
-    // an expense account (Airtime Purchase, Rent, etc). If debit is a
-    // liquid account, this tx is an inflow and its income category is the
-    // credit side.
     if (EXPENSE_CATEGORIES.has(d)) return d;
     if (isLiquidCredit(d)) {
       const c = String(tx.credit || '');
       if (INCOME_CATEGORIES.has(c)) return c;
-      if (EXPENSE_CATEGORIES.has(c)) return c;   // transfers recorded oddly
+      if (EXPENSE_CATEGORIES.has(c)) return c;
     }
     if (INCOME_CATEGORIES.has(d)) return d;
     if (EXPENSE_CATEGORIES.has(String(tx.credit || ''))) return String(tx.credit);
@@ -341,28 +360,21 @@
     return INCOME_CATEGORIES.has(cat) ? 'income' : 'expense';
   }
 
-  // Detect drift for the current selection. Only runs when selection is a
-  // specific month (not 'all').
   function detectDrift(allTx) {
     if (selection.kind !== 'month') return [];
     const buckets = monthlyCategoryTotals(allTx);
     const y = selection.y, m = selection.m;
-
-    // Current month's totals.
     const curKey = y + '-' + m;
     const cur = buckets.get(curKey) || {};
 
-    // For each category in current month, look at the 3 preceding months.
     const results = [];
     for (const cat of Object.keys(cur)) {
-      if (cat === CHARGE_DEBIT) continue;                 // charges excluded
-      if (isRowDismissed('drift:' + cat + ':' + curKey)) continue;
+      if (cat === CHARGE_DEBIT) continue;
       if (loadMap(LS_DRIFT_DISMISS)[cat + ':' + curKey]) continue;
 
       const type = categoryType(cat);
       const currentTotal = cur[cat] || 0;
 
-      // Trailing 3 months, exclusive of current.
       const trailing = [];
       for (let i = 1; i <= 3; i++) {
         let yy = y, mm = m - i;
@@ -371,20 +383,14 @@
         const t = (buckets.get(key) || {})[cat] || 0;
         if (t > 0) trailing.push(t);
       }
-      if (trailing.length < 2) continue;                 // need at least 2 months of history
+      if (trailing.length < 2) continue;
 
-      // Optional "baseline bump": if user marked the previous month as
-      // normal for this category, include the current total for the
-      // previous month into the baseline too.
       const bumpKey = cat + ':' + curKey;
-      if (loadMap(LS_BASELINE_BUMP)[bumpKey]) {
-        trailing.push(currentTotal);
-      }
+      if (loadMap(LS_BASELINE_BUMP)[bumpKey]) trailing.push(currentTotal);
 
       const base = medianOf(trailing);
       if (base <= 0) continue;
 
-      // Count tx for this category in trailing window; require MIN_CATEGORY_TX.
       let txCount = 0;
       for (const t of allTx) {
         if (typeof t.id !== 'number') continue;
@@ -405,7 +411,6 @@
           });
         }
       } else {
-        // Income: flag on DROPS.
         const factor = currentTotal / base;
         if (factor <= INCOME_DROP_FACT && (base - currentTotal) >= DRIFT_FLOOR_KSH) {
           results.push({
@@ -416,7 +421,6 @@
       }
     }
 
-    // Sort expenses by impact descending, incomes by severity descending.
     results.sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff));
     return results;
   }
@@ -458,6 +462,12 @@
                          padding:4px 8px;font-size:12px;background:white;
                          font-family:inherit;color:var(--win-text);">
           </select>
+          ${DEBUG ? `<button id="tg-inject-anomaly" type="button"
+                  style="background:rgba(139,92,246,0.1);color:#5B21B6;border:1px solid rgba(139,92,246,0.3);
+                         border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;
+                         cursor:pointer;font-family:inherit;">
+              🧪 Inject test anomaly
+            </button>` : ''}
         </div>
         <button id="tg-charges-pill" type="button"
                 style="display:none;align-items:center;gap:8px;
@@ -471,6 +481,11 @@
         </button>
       `;
       cardBody.insertBefore(bar, wrap);
+
+      if (DEBUG) {
+        const btn = document.getElementById('tg-inject-anomaly');
+        if (btn) btn.addEventListener('click', () => window.TravisUITweaks.injectFakeAnomaly());
+      }
     }
 
     if (!document.getElementById(LEDGER_META_ID)) {
@@ -496,7 +511,6 @@
     const all = TX_CACHE;
     const visible = all.filter(inSelection);
 
-    // Build history + anomaly maps once per render.
     const recipientHistory = buildRecipientHistory(all);
     const driftFindings = detectDrift(all);
 
@@ -504,7 +518,7 @@
 
     if (visible.length === 0) {
       const tr = document.createElement('tr');
-      tr.innerHTML = '<td colspan="4" style="padding:32px;text-align:center;color:var(--win-text-3);">' +
+      tr.innerHTML = '<td colspan="5" style="padding:32px;text-align:center;color:var(--win-text-3);">' +
                      'No transactions in this period.</td>';
       tbody.appendChild(tr);
       renderLedgerMeta(visible, driftFindings);
@@ -513,7 +527,6 @@
       return;
     }
 
-    // Group by calendar day.
     const groups = new Map();
     for (const tx of visible) {
       const d = new Date(tx.id);
@@ -529,7 +542,7 @@
       const head = document.createElement('tr');
       head.setAttribute('data-tg-day-head', key);
       head.innerHTML =
-        '<td colspan="4" style="position:sticky;top:0;z-index:1;' +
+        '<td colspan="5" style="position:sticky;top:0;z-index:1;' +
         'padding:8px 14px;background:rgba(0,0,0,0.035);' +
         'font-size:11px;font-weight:600;color:var(--win-text-2);' +
         'text-transform:uppercase;letter-spacing:.06em;' +
@@ -541,7 +554,7 @@
         '</td>';
       tbody.appendChild(head);
 
-      for (const tx of rows) tbody.appendChild(buildRow(tx, recipientHistory, driftFindings));
+      for (const tx of rows) tbody.appendChild(buildRow(tx, recipientHistory));
     }
 
     renderLedgerMeta(visible, driftFindings);
@@ -549,38 +562,31 @@
     renderPeriodSelector(all);
   }
 
-  function buildRow(tx, history, driftFindings) {
+  function buildRow(tx, history) {
     const tr = document.createElement('tr');
+    tr.setAttribute('data-tg-txid', String(tx.id));
     const amt = Number(tx.amount) || 0;
     const isAirtime  = tx.debit === 'Airtime Purchase';
     const isCharge   = isChargeRow(tx);
+    const isTest     = String(tx.desc || '').startsWith(TEST_PREFIX);
 
-    // Determine flags for this row.
     const row = isCharge ? { flagged: false } : rowAnomaly(tx, history);
     const rowFlagged = row.flagged && !isRowDismissed(tx.id);
 
-    // "New" detection: first time we've seen this (recipient|category) combo.
     const comboKey = (extractMerchant(tx)?.name || tx.debit || '') + '|' + (tx.debit || '');
-    const isNew = !hasSeenCombo(comboKey) && !isCharge && !isAirtime;
+    const isNew = !hasSeenCombo(comboKey) && !isCharge && !isAirtime && !isTest;
     if (isNew) markSeenCombo(comboKey);
-
-    // Is this tx part of a drift-flagged category in the current period?
-    const cat = categoryOf(tx);
-    const driftHit = driftFindings.find(d => d.cat === cat);
 
     let accent = '';
     if (rowFlagged) accent = 'box-shadow:inset 3px 0 0 #F59E0B;';
-    else if (driftHit) accent = 'box-shadow:inset 3px 0 0 #FB923C;';
     else if (isAirtime) accent = 'box-shadow:inset 3px 0 0 #8B5CF6;';
     else if (isCharge)  accent = 'box-shadow:inset 3px 0 0 #DC2626;';
+    else if (isTest)    accent = 'box-shadow:inset 3px 0 0 #8B5CF6;';
 
     const flags = [];
-    if (rowFlagged) {
-      flags.push('<span data-tg-anom-row="1" style="font-size:10px;font-weight:700;background:#FEF3C7;color:#92400E;padding:1px 6px;border-radius:20px;cursor:pointer;">⚠ Unusual · click</span>');
-    }
-    if (isNew) {
-      flags.push('<span style="font-size:10px;font-weight:700;background:#DBEAFE;color:#1E40AF;padding:1px 6px;border-radius:20px;">New</span>');
-    }
+    if (isTest) flags.push('<span style="font-size:10px;font-weight:700;background:#EDE9FE;color:#5B21B6;padding:1px 6px;border-radius:20px;">🧪 Test</span>');
+    if (rowFlagged) flags.push('<span data-tg-anom-row="1" style="font-size:10px;font-weight:700;background:#FEF3C7;color:#92400E;padding:1px 6px;border-radius:20px;cursor:pointer;">⚠ Unusual · click</span>');
+    if (isNew) flags.push('<span style="font-size:10px;font-weight:700;background:#DBEAFE;color:#1E40AF;padding:1px 6px;border-radius:20px;">New</span>');
     if (isAirtime) flags.push('<span style="font-size:10px;font-weight:700;background:#EDE9FE;color:#5B21B6;padding:1px 6px;border-radius:20px;">Airtime</span>');
     if (isCharge)  flags.push('<span style="font-size:10px;font-weight:700;background:#FEE2E2;color:#991B1B;padding:1px 6px;border-radius:20px;">Charge</span>');
 
@@ -602,7 +608,39 @@
       <td style="text-align:right;font-family:monospace;color:var(--win-red);font-weight:600;white-space:nowrap;">
         ${isLiquidCredit(tx.credit) ? '-' + money(amt) : ''}
       </td>
+      <td class="tg-row-actions" style="width:36px;text-align:center;padding:8px 6px;">
+        <button class="tg-row-del" title="Delete transaction"
+                style="width:24px;height:24px;border-radius:6px;border:1px solid var(--win-border-2);
+                       background:rgba(0,0,0,0.03);color:var(--win-text-3);cursor:pointer;
+                       font-size:14px;line-height:1;opacity:0;transition:opacity .15s,background .15s,color .15s;
+                       font-family:inherit;">×</button>
+      </td>
     `;
+
+    // Show delete button on row hover.
+    tr.addEventListener('mouseenter', () => {
+      const b = tr.querySelector('.tg-row-del');
+      if (b) b.style.opacity = '1';
+    });
+    tr.addEventListener('mouseleave', () => {
+      const b = tr.querySelector('.tg-row-del');
+      if (b) b.style.opacity = '0';
+    });
+    const delBtn = tr.querySelector('.tg-row-del');
+    delBtn.addEventListener('mouseenter', () => {
+      delBtn.style.background = 'rgba(196,43,28,0.12)';
+      delBtn.style.color = 'var(--win-red)';
+      delBtn.style.borderColor = 'rgba(196,43,28,0.4)';
+    });
+    delBtn.addEventListener('mouseleave', () => {
+      delBtn.style.background = 'rgba(0,0,0,0.03)';
+      delBtn.style.color = 'var(--win-text-3)';
+      delBtn.style.borderColor = 'var(--win-border-2)';
+    });
+    delBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      confirmDeleteTx(tx);
+    });
 
     if (rowFlagged) {
       tr.querySelector('[data-tg-anom-row]').addEventListener('click', (e) => {
@@ -611,6 +649,163 @@
       });
     }
     return tr;
+  }
+
+  // ==================================================================
+  // Delete flow
+  // ==================================================================
+
+  function confirmDeleteTx(tx) {
+    const amt = Number(tx.amount) || 0;
+    const lines = [
+      'Delete this transaction?',
+      '',
+      'Date:   ' + new Date(tx.id).toLocaleDateString('en-KE'),
+      'Amount: KSh ' + money(amt),
+      'Debit:  ' + (tx.debit || '—'),
+      'Credit: ' + (tx.credit || '—'),
+      (tx.desc ? 'Note:   ' + tx.desc : ''),
+      '',
+      'This removes it from the ledger and the backup file.'
+    ].filter(Boolean).join('\n');
+
+    if (!window.confirm(lines)) return;
+    doDeleteTx(tx);
+  }
+
+  async function doDeleteTx(tx) {
+    try {
+      await deleteTx(tx.id);
+    } catch (e) {
+      warn('delete failed', e);
+      window.alert('Could not delete: ' + (e && e.message ? e.message : String(e)));
+      return;
+    }
+
+    // Update in-memory cache immediately so the UI feels instant.
+    TX_CACHE = TX_CACHE.filter(t => Number(t.id) !== Number(tx.id));
+    renderLedger();
+
+    // Ask the backup reconciler to mirror IDB. If permission is dead,
+    // this quietly returns null and the next boot's reconcile will sweep
+    // the deletion up.
+    syncBackup().catch(() => {});
+
+    showUndoToast(tx);
+  }
+
+  function showUndoToast(tx) {
+    const existing = document.getElementById('tg-undo-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'tg-undo-toast';
+    toast.style.cssText = [
+      'position:fixed','left:50%','bottom:24px','transform:translateX(-50%)',
+      'z-index:99997','min-width:280px','max-width:90vw',
+      'background:#1f1f1f','color:#fff','border-radius:10px',
+      'box-shadow:0 12px 32px rgba(0,0,0,0.35)',
+      'padding:12px 14px','display:flex','align-items:center','gap:12px',
+      'font:13px/1.4 system-ui,Segoe UI,Arial,sans-serif'
+    ].join(';');
+    toast.innerHTML = `
+      <div style="flex:1;">
+        <div style="font-weight:600;">Transaction deleted</div>
+        <div style="font-size:11px;opacity:0.75;margin-top:2px;">
+          KSh ${money(tx.amount)} · ${escapeHtml(tx.debit || '')} → ${escapeHtml(tx.credit || '')}
+        </div>
+      </div>
+      <button id="tg-undo-btn" style="
+        background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:6px;
+        padding:7px 12px;font:600 12px inherit;cursor:pointer;white-space:nowrap;">
+        Undo
+      </button>
+      <button id="tg-undo-close" style="
+        background:transparent;color:#aaa;border:none;font-size:16px;
+        cursor:pointer;line-height:1;padding:2px 4px;">×</button>
+    `;
+    document.body.appendChild(toast);
+
+    let timer = setTimeout(() => cleanup(), 6000);
+
+    function cleanup() {
+      clearTimeout(timer);
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }
+
+    toast.querySelector('#tg-undo-close').addEventListener('click', cleanup);
+    toast.querySelector('#tg-undo-btn').addEventListener('click', async () => {
+      clearTimeout(timer);
+      try {
+        await putTx(tx);
+        TX_CACHE.push(tx);
+        TX_CACHE.sort((a, b) => Number(b.id) - Number(a.id));
+        renderLedger();
+        syncBackup().catch(() => {});
+      } catch (e) {
+        warn('undo failed', e);
+      }
+      cleanup();
+    });
+  }
+
+  // ==================================================================
+  // Test anomaly injection
+  // ==================================================================
+
+  async function injectFakeAnomaly() {
+    const now = Date.now();
+    const day = 24 * 60 * 60 * 1000;
+
+    // Build a small history: 4 small "Sent ... to TestRecipient" over the
+    // last ~30 days, then one huge one today. That triggers the row-level
+    // detector (today's is 15× the trailing median).
+    const recipient = 'TEST-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+    const seed = [
+      { daysAgo: 27, amt: 400 },
+      { daysAgo: 19, amt: 500 },
+      { daysAgo: 12, amt: 450 },
+      { daysAgo: 5,  amt: 520 }
+    ];
+    const entries = seed.map((s, i) => ({
+      id: now - s.daysAgo * day - i,
+      debit: 'Send Money',
+      credit: 'M-Pesa',
+      amount: s.amt,
+      desc: `Sent KSh ${s.amt} to ${recipient} ${TEST_PREFIX}`
+    }));
+    entries.push({
+      id: now,
+      debit: 'Send Money',
+      credit: 'M-Pesa',
+      amount: 12000,
+      desc: `Sent KSh 12,000 to ${recipient} ${TEST_PREFIX}`
+    });
+
+    for (const e of entries) await putTx(e);
+    await refreshCache();
+
+    // Select this month so the anomaly is visible.
+    const d = new Date(now);
+    selection = { kind: 'month', y: d.getFullYear(), m: d.getMonth() };
+    persistSelection();
+
+    renderLedger();
+    syncBackup().catch(() => {});
+    log('injected test anomaly for recipient', recipient);
+    return { recipient, inserted: entries.length };
+  }
+
+  async function clearFakeAnomalies() {
+    const rows = TX_CACHE.filter(t => String(t.desc || '').startsWith(TEST_PREFIX));
+    for (const r of rows) {
+      try { await deleteTx(r.id); } catch (_) {}
+    }
+    await refreshCache();
+    renderLedger();
+    syncBackup().catch(() => {});
+    log('cleared', rows.length, 'test rows');
+    return rows.length;
   }
 
   // ==================================================================
@@ -650,7 +845,6 @@
       actions: [
         { label: 'This is normal', kind: 'normal', onClick: () => {
             dismissRow(tx.id);
-            markSeenCombo((extractMerchant(tx)?.name || tx.debit || '') + '|' + (tx.debit || ''));
             closeExplainer();
             renderLedger();
           } },
@@ -671,7 +865,6 @@
     const factor = finding.factor.toFixed(2);
     const type = finding.type;
 
-    // Which transactions contributed to this category in the current period?
     const contributing = TX_CACHE
       .filter(t => inSelection(t) && categoryOf(t) === cat)
       .sort((a, b) => Number(b.id) - Number(a.id));
@@ -743,7 +936,6 @@
           } }
       ] : [
         { label: 'This is normal', kind: 'normal', onClick: () => {
-            // Fold the current month into the baseline for future renders.
             const bm = loadMap(LS_BASELINE_BUMP);
             bm[finding.key] = Date.now();
             saveMap(LS_BASELINE_BUMP, bm);
@@ -759,8 +951,6 @@
       ]
     });
   }
-
-  // -------- Shared explainer shell --------
 
   let explainerEl = null;
 
@@ -830,14 +1020,12 @@
     document.body.appendChild(overlay);
     explainerEl = overlay;
 
-    // Wire actions
     (actions || []).forEach((a, i) => {
       const btn = card.querySelector(`[data-tg-action="${i}"]`);
       if (btn) btn.addEventListener('click', a.onClick);
     });
     card.querySelector('[data-tg-close="1"]').addEventListener('click', closeExplainer);
 
-    // Outside click to close
     overlay.addEventListener('mousedown', (e) => {
       if (e.target === overlay) closeExplainer();
     });
@@ -1017,7 +1205,7 @@
   }
 
   // ==================================================================
-  // Meta: net flow + top recipients + anomalies (two sections)
+  // Meta cards
   // ==================================================================
 
   function renderLedgerMeta(visible, driftFindings) {
@@ -1028,7 +1216,6 @@
     const outflow = visible.reduce((s, r) => s + (isLiquidCredit(r.credit) ? Number(r.amount) || 0 : 0), 0);
     const net     = inflow - outflow;
 
-    // -------- Top recipients (split in/out, min 3 occurrences) --------
     const outMap = new Map();
     const inMap  = new Map();
     for (const r of visible) {
@@ -1064,7 +1251,6 @@
         ${topIn.map(x => recipientLine(x, 'in')).join('')}
       `;
 
-    // -------- Anomalies: two sub-sections --------
     const driftBlocks = driftFindings.map(d => {
       const isIncome = d.type === 'income';
       const arrow    = isIncome ? '↓' : '↑';
@@ -1102,11 +1288,11 @@
       `;
     }).join('');
 
+    const history = buildRecipientHistory(TX_CACHE);
     const rowAnomalies = visible.filter(t => {
       if (isChargeRow(t)) return false;
       if (isRowDismissed(t.id)) return false;
-      const row = rowAnomaly(t, buildRecipientHistory(TX_CACHE));
-      return row.flagged;
+      return rowAnomaly(t, history).flagged;
     });
 
     const rowBlocks = rowAnomalies.slice(0, 5).map(t => {
@@ -1159,7 +1345,6 @@
         ` : ''}
       `;
 
-    // -------- Net-flow card --------
     const netColor = net >= 0 ? 'var(--win-green)' : 'var(--win-red)';
     const netSign  = net >= 0 ? '+' : '-';
 
@@ -1198,7 +1383,6 @@
       </div>
     `;
 
-    // Wire click handlers for drift findings.
     meta.querySelectorAll('[data-tg-drift]').forEach(el => {
       el.addEventListener('click', () => {
         const key = el.getAttribute('data-tg-drift');
@@ -1207,7 +1391,6 @@
       });
     });
 
-    // Wire click handlers for row anomalies.
     meta.querySelectorAll('[data-tg-rowanom]').forEach(el => {
       el.addEventListener('click', () => {
         const id = Number(el.getAttribute('data-tg-rowanom'));
@@ -1239,7 +1422,7 @@
     for (const rx of patterns) {
       const m = d.match(rx);
       if (m && m[1]) {
-        const name = m[1].replace(/\s*\[REF:.*$/, '').trim();
+        const name = m[1].replace(/\s*\[REF:.*$/, '').replace(new RegExp(TEST_PREFIX.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '.*'), '').trim();
         if (name.length >= 2) return { name, dir };
       }
     }
@@ -1247,7 +1430,7 @@
   }
 
   // ==================================================================
-  // M-Pesa button relocation (unchanged)
+  // M-Pesa button relocation
   // ==================================================================
 
   function relocateMpesaButton() {
@@ -1319,7 +1502,7 @@
   }
 
   window.TravisUITweaks = {
-    version: '3.1.0',
+    version: '3.2.0',
     refresh: async () => {
       await refreshCache();
       if (ledgerTableMounted()) renderLedger();
@@ -1342,14 +1525,26 @@
       if (ledgerTableMounted()) renderLedger();
       log('cleared dismissals');
     },
+    injectFakeAnomaly,
+    clearFakeAnomalies,
+    deleteTransaction: async (id) => {
+      const tx = TX_CACHE.find(t => Number(t.id) === Number(id));
+      if (!tx) return false;
+      await deleteTx(id);
+      TX_CACHE = TX_CACHE.filter(t => Number(t.id) !== Number(id));
+      renderLedger();
+      syncBackup().catch(() => {});
+      return true;
+    },
     status: async () => {
       await refreshCache();
       const months = monthsWithData(TX_CACHE);
       return {
-        version: '3.1.0',
+        version: '3.2.0',
         selection,
         period: periodLabel(),
         txCount: TX_CACHE.length,
+        testRowCount: TX_CACHE.filter(t => String(t.desc || '').startsWith(TEST_PREFIX)).length,
         monthCount: months.length,
         months: months.map(m => MONTHS_LONG[m.m] + ' ' + m.y + ' (' + m.count + ')'),
         mpesaInFinanceSection: (() => {
@@ -1357,7 +1552,8 @@
           const newEntry = document.querySelector('#nav-sidebar button[onclick*="showTxModal"]');
           return !!(btn && newEntry && newEntry.nextElementSibling === btn);
         })(),
-        barPresent: !!document.getElementById(LEDGER_BAR_ID)
+        barPresent: !!document.getElementById(LEDGER_BAR_ID),
+        debug: DEBUG
       };
     },
     rerun: () => {
@@ -1390,7 +1586,7 @@
       if (t) setTimeout(() => { if (ledgerTableMounted()) renderLedger(); }, 60);
     });
 
-    log('booted v3.1.0');
+    log('booted v3.2.0' + (DEBUG ? ' (debug mode)' : ''));
   }
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
