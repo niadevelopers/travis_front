@@ -1,36 +1,40 @@
 /**
- * ui-tweaks.js  ·  v3.3.0
+ * ui-tweaks.js  ·  v3.4.0
  * ------------------------------------------------------------------
- * v3.3.0 changes (from v3.2.1):
- *   • Anomaly detection now works on REAL data end-to-end.
- *   • Direction comes from double-entry (liquid side determines flow):
- *       credit liquid -> outflow, counterparty is on the debit side
- *       debit  liquid -> inflow,  counterparty is on the credit side
- *   • Party extraction (in priority order):
- *       1. If the non-liquid account side is not a known category,
- *          use it directly as the party name (M-Pesa auto-import path).
- *       2. Otherwise parse the desc for a name after a direction verb
- *          (manual entry path: "Paid Emilly Otieno", etc).
- *       3. Otherwise parse a leading name-like token sequence from the
- *          desc, gated by a capitalisation check + common-word stoplist
- *          (so "KPLC" and "Kenya Power" work, but "urgent rent" does not).
- *   • Row detector thresholds relaxed for 2-month histories:
- *       MIN_ROW_TX   = 3   (was 4)
- *       ROW_FLOOR    = 150 (was 500)
- *       90-day window with fallback to full history if <3 past entries.
- *   • Same-direction comparison only (out vs out, in vs in).
- *   • "New" chip and "Unusual" chip now coexist on the same row.
- *   • Test anomaly machinery REMOVED (no injectFakeAnomaly, no ?debug=1
- *     button, no [TEST ANOMALY] handling).
- *   • New diagnostic: TravisUITweaks.explainParty(name) — see exactly
- *     what the detector sees for a given party.
+ * v3.4.0 changes (from v3.3.0):
+ *   • Rolling-baseline anomaly. The detector no longer uses the entire
+ *     history of a party — it uses the last 5 same-direction prior
+ *     transactions with that party. Baseline adapts as the trend
+ *     changes; one mark-as-normal silently shifts the window forward.
  *
- * v3.2.x features retained:
- *   • Per-row delete (visible red ×) with system confirm + 6s undo toast
- *   • Category drift (1.8× trailing 3-month median; income flags on drops)
- *   • Glasmorphic explainers, localStorage dismissal stores
- *   • Top recipients (min 3, split in/out), charges pill
- *   • Month picker, row grouping, net-flow card, #nav-mpesa relocation
+ *   • "This is normal" and "Dismiss" now do different things:
+ *       - This is normal : permanent. Writes tg_ui_marked_normal.
+ *       - Dismiss        : session only. Writes tg_ui_snoozed, cleared
+ *                          on next boot. The amber row accent stays,
+ *                          only the clickable chip and the anomaly-card
+ *                          entry are hidden for this session.
+ *
+ *   • Anomaly fires when ALL of:
+ *       - tx.amount >= ROW_FLOOR_KSH        (150)
+ *       - tx.amount - median >= ROW_MIN_JUMP (300)
+ *       - tx.amount / max(median, 50) >= ROW_FACTOR (2.5)
+ *       - at least MIN_BASELINE (3) prior same-direction txs exist
+ *
+ *   • Median is floored at KSh 50 so micro-amounts don't over-fire.
+ *
+ *   • Explainer rewritten to quote the rolling window explicitly:
+ *     "Your last 5 outgoing to Emilly: 100, 100, 80, 30, 20.
+ *      Median: 80. This transaction: 15,000 — 187× the median."
+ *
+ *   • explainParty() diagnostic shows the rolling window too.
+ *
+ * v3.3.0 retained:
+ *   • Direction from double-entry, party from account side or desc
+ *   • Desc parsing with verb-first + capitalisation-gated fallback
+ *   • Row delete (visible red ×) with system confirm + 6s undo toast
+ *   • Category drift, charges pill, top recipients, net flow
+ *   • Month picker, #nav-mpesa relocation, backup sync
+ *   • No test anomaly machinery
  *
  * Load order: AFTER script.js / travis-mpesa.js / backup-reconcile.js
  *   <script src="ui-tweaks.js"></script>
@@ -60,10 +64,13 @@
   const FILTER_KEY     = 'travis_ledger_period';
   const CHARGE_DEBIT   = 'M-Pesa Charge';
 
-  // Row anomaly
-  const ROW_FACTOR     = 2.5;
-  const ROW_FLOOR_KSH  = 150;
-  const MIN_ROW_TX     = 3;
+  // Row anomaly (rolling-window model)
+  const BASELINE_WINDOW = 5;      // last N prior same-direction txs
+  const MIN_BASELINE    = 3;      // need at least this many to fire
+  const ROW_FACTOR      = 2.5;    // must be >= 2.5x the window median
+  const ROW_FLOOR_KSH   = 150;    // tx must be >= this absolute
+  const ROW_MIN_JUMP    = 300;    // tx must exceed median by >= this
+  const MEDIAN_FLOOR    = 50;     // median floor for the ratio
 
   // Category drift
   const DRIFT_FACTOR     = 1.8;
@@ -85,8 +92,6 @@
     'Sales Revenue','Service Revenue'
   ]);
 
-  // All known category names, lowercased, used to decide "is this account
-  // a category or a person?" and to reject category words inside descs.
   const KNOWN_CATEGORIES = new Set([
     ...[...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES].map(s => s.toLowerCase()),
     'm-pesa','m-pesa charge','mpesa','bank / m-pesa','bank account','cash',
@@ -95,8 +100,6 @@
     'loan repayment'
   ]);
 
-  // Small stoplist so leading-token desc parsing doesn't turn adjectives
-  // like "urgent", "weekly", or "bus" into fake counterparties.
   const COMMON_WORDS = new Set([
     'for','to','from','the','a','an','on','at','in','of','and','or','by',
     'with','via','payment','pay','paid','sent','send','received','recd',
@@ -119,13 +122,17 @@
   let TX_CACHE = [];
 
   // ==================================================================
-  // LocalStorage dismissal helpers
+  // LocalStorage stores
   // ==================================================================
 
   const LS_DRIFT_DISMISS = 'tg_ui_dismiss_drift';
-  const LS_ROW_DISMISS   = 'tg_ui_dismiss_row';
   const LS_BASELINE_BUMP = 'tg_ui_baseline_bump';
   const LS_NEW_SEEN      = 'tg_ui_new_seen';
+  const LS_MARKED_NORMAL = 'tg_ui_marked_normal';   // permanent
+  const LS_SNOOZED       = 'tg_ui_snoozed';         // session-only
+
+  // Clear session snoozes on every boot.
+  try { localStorage.removeItem(LS_SNOOZED); } catch (_) {}
 
   function loadMap(key) {
     try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : {}; }
@@ -139,14 +146,23 @@
     m[key] = Date.now();
     saveMap(mapKey, m);
   }
-  function isRowDismissed(txId) {
-    const m = loadMap(LS_ROW_DISMISS);
+  function isMarkedNormal(txId) {
+    const m = loadMap(LS_MARKED_NORMAL);
     return !!m[String(txId)];
   }
-  function dismissRow(txId) {
-    const m = loadMap(LS_ROW_DISMISS);
+  function markNormal(txId) {
+    const m = loadMap(LS_MARKED_NORMAL);
     m[String(txId)] = Date.now();
-    saveMap(LS_ROW_DISMISS, m);
+    saveMap(LS_MARKED_NORMAL, m);
+  }
+  function isSnoozed(txId) {
+    const m = loadMap(LS_SNOOZED);
+    return !!m[String(txId)];
+  }
+  function snooze(txId) {
+    const m = loadMap(LS_SNOOZED);
+    m[String(txId)] = Date.now();
+    saveMap(LS_SNOOZED, m);
   }
   function hasSeenCombo(combo) {
     const m = loadMap(LS_NEW_SEEN);
@@ -294,7 +310,7 @@
   }
 
   // ==================================================================
-  // Party extraction
+  // Party extraction (unchanged from v3.3.0)
   // ==================================================================
 
   function isCategoryName(s) {
@@ -316,7 +332,6 @@
     if (/^\d+$/.test(s)) return false;
     if (isCategoryName(s)) return false;
     if (COMMON_WORDS.has(s)) return false;
-    // Reject pure numbers-with-letters junk like "ksh12" already filtered above
     return true;
   }
 
@@ -331,7 +346,6 @@
   function parsePartyFromDesc(desc) {
     if (!desc) return null;
 
-    // Verb-first patterns.
     const VERBS = [
       /\bsent\s+(?:to\s+)?/i,
       /\bpaid\s+(?:to\s+)?/i,
@@ -356,17 +370,13 @@
       }
     }
 
-    // Leading-token fallback with capitalisation guard + stoplist.
-    // Only applies to non-verb descs like "KPLC", "Kenya Power", "KPLC Bill".
     const cleaned = desc.replace(/\[REF:[^\]]*\]/gi, ' ').trim();
     const rawTokens = cleaned.split(/\s+/).filter(Boolean);
-    // Guard: require at least one token that looks like a proper noun
-    // (all-caps acronym of >=3 letters, or a Capitalised non-first-person word).
     const hasProperToken = rawTokens.some(t => {
       const letters = t.replace(/[^A-Za-z]/g, '');
       if (letters.length < 2) return false;
-      if (/^[A-Z]{3,}$/.test(letters)) return true;       // KPLC, KCB, KRA
-      if (/^[A-Z][a-z]+/.test(letters)) return true;       // Kenya, Otieno
+      if (/^[A-Z]{3,}$/.test(letters)) return true;
+      if (/^[A-Z][a-z]+/.test(letters)) return true;
       return false;
     });
     if (!hasProperToken) return null;
@@ -388,8 +398,6 @@
     return null;
   }
 
-  // Direction from double-entry, party from account side if usable,
-  // else from desc.
   function extractParty(tx) {
     const debit  = String(tx.debit  || '').trim();
     const credit = String(tx.credit || '').trim();
@@ -407,20 +415,17 @@
       direction = 'in';
       counterpartyAccount = credit;
     } else if (debitIsLiquid && creditIsLiquid) {
-      return null;                      // internal transfer
+      return null;
     } else {
-      // Neither side liquid — fall back to whichever side is a category
       direction = 'out';
       counterpartyAccount = isCategoryName(debit) ? credit : debit;
     }
 
-    // 1. If the counterparty account is a real name, use it.
     const acctNorm = normalizeParty(counterpartyAccount);
     if (acctNorm && isUsableParty(acctNorm)) {
       return { name: acctNorm, direction };
     }
 
-    // 2. Else parse the desc.
     const fromDesc = parsePartyFromDesc(String(tx.desc || ''));
     if (fromDesc) return { name: fromDesc, direction };
 
@@ -428,21 +433,23 @@
   }
 
   // ==================================================================
-  // Row-level anomaly — built from extractParty
+  // Rolling-window row anomaly
   // ==================================================================
 
   function buildPartyHistory(allTx) {
-    // map: "<name>|<direction>" -> { amounts: [], dates: [] }
+    // map: "<name>|<direction>" -> { ids: [], amounts: [] }  (insertion order)
     const map = new Map();
-    for (const t of allTx) {
+    // Iterate oldest -> newest so appending keeps chronological order.
+    const sortedAsc = allTx.slice().sort((a, b) => Number(a.id) - Number(b.id));
+    for (const t of sortedAsc) {
       if (typeof t.id !== 'number') continue;
       if (isChargeRow(t)) continue;
       const p = extractParty(t);
       if (!p) continue;
       const key = p.name + '|' + p.direction;
-      const cur = map.get(key) || { amounts: [], dates: [], name: p.name, direction: p.direction };
+      const cur = map.get(key) || { ids: [], amounts: [], name: p.name, direction: p.direction };
+      cur.ids.push(t.id);
       cur.amounts.push(Number(t.amount) || 0);
-      cur.dates.push(t.id);
       map.set(key, cur);
     }
     return map;
@@ -454,45 +461,61 @@
     return p.name + '|' + p.direction;
   }
 
+  // Returns { flagged, median, factor, window, windowCount, jump, reason }
   function rowAnomaly(tx, history) {
     const amt = Number(tx.amount) || 0;
-    if (amt < ROW_FLOOR_KSH) return { flagged: false };
-    if (isChargeRow(tx)) return { flagged: false };
+    if (amt < ROW_FLOOR_KSH) return { flagged: false, reason: 'below-floor' };
+    if (isChargeRow(tx)) return { flagged: false, reason: 'charge' };
 
     const key = partyKeyOf(tx);
-    if (!key) return { flagged: false };
+    if (!key) return { flagged: false, reason: 'no-party' };
 
     const h = history.get(key);
-    if (!h) return { flagged: false };
+    if (!h) return { flagged: false, reason: 'no-history' };
 
-    // Past entries only (strictly older than this tx).
-    const t0 = tx.id;
-    const ninety = 90 * 24 * 60 * 60 * 1000;
-    const past90 = [];
-    for (let i = 0; i < h.amounts.length; i++) {
-      if (h.dates[i] < t0 && t0 - h.dates[i] <= ninety) past90.push(h.amounts[i]);
+    // Collect prior transactions, strictly older than this tx.
+    const priors = [];
+    for (let i = 0; i < h.ids.length; i++) {
+      if (h.ids[i] < tx.id) priors.push(h.amounts[i]);
     }
-    // Fallback: if fewer than 3 in 90d, use the full older history.
-    let past = past90;
-    if (past.length < MIN_ROW_TX) {
-      past = [];
-      for (let i = 0; i < h.amounts.length; i++) {
-        if (h.dates[i] < t0) past.push(h.amounts[i]);
-      }
-    }
-    if (past.length < MIN_ROW_TX) return { flagged: false };
+    // Rolling window = last BASELINE_WINDOW of the priors (they're already
+    // in chronological order, so slice from the end).
+    const window = priors.slice(-BASELINE_WINDOW);
 
-    const med = medianOf(past);
-    if (med <= 0) return { flagged: false };
+    if (window.length < MIN_BASELINE) {
+      return { flagged: false, reason: 'not-enough-baseline',
+               window, windowCount: window.length };
+    }
+
+    const rawMedian = medianOf(window);
+    const med = Math.max(rawMedian, MEDIAN_FLOOR);
     const factor = amt / med;
-    if (factor >= ROW_FACTOR) {
-      return { flagged: true, median: med, factor, pastCount: past.length, usedFallback: past90.length < MIN_ROW_TX };
+    const jump = amt - med;
+
+    if (jump < ROW_MIN_JUMP) {
+      return { flagged: false, reason: 'small-jump',
+               median: rawMedian, window, windowCount: window.length, factor, jump };
     }
-    return { flagged: false };
+    if (factor < ROW_FACTOR) {
+      return { flagged: false, reason: 'below-factor',
+               median: rawMedian, window, windowCount: window.length, factor, jump };
+    }
+    return { flagged: true, median: rawMedian, window, windowCount: window.length, factor, jump };
+  }
+
+  // Full decision including the two user stores.
+  function rowAnomalyVisible(tx, history) {
+    if (isMarkedNormal(tx.id)) return { flagged: false, reason: 'marked-normal' };
+    const r = rowAnomaly(tx, history);
+    if (!r.flagged) return r;
+    if (isSnoozed(tx.id)) {
+      return { ...r, flagged: true, snoozed: true };
+    }
+    return r;
   }
 
   // ==================================================================
-  // Category drift (unchanged from v3.2.x)
+  // Category drift (unchanged from v3.3.0)
   // ==================================================================
 
   function monthlyCategoryTotals(allTx) {
@@ -726,22 +749,27 @@
     const isAirtime  = tx.debit === 'Airtime Purchase';
     const isCharge   = isChargeRow(tx);
 
-    const row = isCharge ? { flagged: false } : rowAnomaly(tx, partyHistory);
-    const rowFlagged = row.flagged && !isRowDismissed(tx.id);
+    const rowInfo = isCharge
+      ? { flagged: false, reason: 'charge' }
+      : rowAnomalyVisible(tx, partyHistory);
 
-    // "New" is a soft blue chip — informational, not a verdict.
+    // Row accent: keep the amber bar visible even when snoozed (snooze
+    // only hides the clickable chip and the anomaly-card entry).
+    const showChip   = rowInfo.flagged && !rowInfo.snoozed;
+    const showAccent = rowInfo.flagged;   // amber stays while snoozed
+
     const p = extractParty(tx);
     const comboKey = p ? (p.name + '|' + p.direction) : null;
     const isNew = comboKey && !hasSeenCombo(comboKey) && !isCharge && !isAirtime;
     if (isNew) markSeenCombo(comboKey);
 
     let accent = '';
-    if (rowFlagged) accent = 'box-shadow:inset 3px 0 0 #F59E0B;';
+    if (showAccent) accent = 'box-shadow:inset 3px 0 0 #F59E0B;';
     else if (isAirtime) accent = 'box-shadow:inset 3px 0 0 #8B5CF6;';
     else if (isCharge)  accent = 'box-shadow:inset 3px 0 0 #DC2626;';
 
     const flags = [];
-    if (rowFlagged) flags.push('<span data-tg-anom-row="1" style="font-size:10px;font-weight:700;background:#FEF3C7;color:#92400E;padding:1px 6px;border-radius:20px;cursor:pointer;">⚠ Unusual · click</span>');
+    if (showChip) flags.push('<span data-tg-anom-row="1" style="font-size:10px;font-weight:700;background:#FEF3C7;color:#92400E;padding:1px 6px;border-radius:20px;cursor:pointer;">⚠ Unusual · click</span>');
     if (isNew) flags.push('<span style="font-size:10px;font-weight:700;background:#DBEAFE;color:#1E40AF;padding:1px 6px;border-radius:20px;">New</span>');
     if (isAirtime) flags.push('<span style="font-size:10px;font-weight:700;background:#EDE9FE;color:#5B21B6;padding:1px 6px;border-radius:20px;">Airtime</span>');
     if (isCharge)  flags.push('<span style="font-size:10px;font-weight:700;background:#FEE2E2;color:#991B1B;padding:1px 6px;border-radius:20px;">Charge</span>');
@@ -794,10 +822,10 @@
       confirmDeleteTx(tx);
     });
 
-    if (rowFlagged) {
+    if (showChip) {
       tr.querySelector('[data-tg-anom-row]').addEventListener('click', (e) => {
         e.stopPropagation();
-        showRowExplainer(tx, row);
+        showRowExplainer(tx, rowInfo);
       });
     }
     return tr;
@@ -833,7 +861,6 @@
       window.alert('Could not delete: ' + (e && e.message ? e.message : String(e)));
       return;
     }
-
     TX_CACHE = TX_CACHE.filter(t => Number(t.id) !== Number(tx.id));
     renderLedger();
     syncBackup().catch(() => {});
@@ -896,7 +923,7 @@
   }
 
   // ==================================================================
-  // Explainer panels (glasmorphic)
+  // Explainer panels
   // ==================================================================
 
   function showRowExplainer(tx, info) {
@@ -905,7 +932,14 @@
     const label = p ? p.name : (tx.debit || 'this recipient');
     const dirText = p && p.direction === 'in' ? 'received from' : 'sent to';
     const factor = info.factor.toFixed(2);
-    const median = info.median;
+    const window = info.window || [];
+    const windowCount = info.windowCount || 0;
+    const rawMedian = info.median || 0;
+    const jump = info.jump || (amt - rawMedian);
+
+    const windowStr = window.length === 0
+      ? 'no prior transactions'
+      : window.map(v => 'KSh ' + money(Math.round(v))).join(' · ');
 
     openExplainer({
       icon: '⚠',
@@ -917,30 +951,33 @@
           <span style="font-family:monospace;font-weight:700;">KSh ${money(amt)}</span>
         </div>
         <div style="background:rgba(245,158,11,0.10);border-radius:8px;padding:12px 14px;line-height:1.7;">
-          Comparing this <strong>${dirText} ${escapeHtml(label)}</strong> against your
-          prior history with them:
-          <br>
-          Your typical prior amount was about
-          <strong>KSh ${money(Math.round(median))}</strong>
-          (from ${info.pastCount} earlier transaction${info.pastCount === 1 ? '' : 's'}${info.usedFallback ? ', full history' : ', last 90 days'}).
+          Your last <strong>${windowCount}</strong> prior transactions that
+          were <strong>${dirText} ${escapeHtml(label)}</strong>:
+          <div style="font-family:monospace;font-size:12px;margin:6px 0 8px;color:var(--win-text-2);">
+            ${windowStr}
+          </div>
+          Median of that window: <strong>KSh ${money(Math.round(rawMedian))}</strong>.
           <br>
           This transaction is <strong>${factor}× larger</strong> — a jump of
-          <strong>KSh ${money(Math.round(amt - median))}</strong>.
+          <strong>KSh ${money(Math.round(jump))}</strong> above the median.
         </div>
         <div style="margin-top:12px;font-size:11px;color:var(--win-text-3);line-height:1.6;">
-          If this is a one-off (bonus, emergency, big purchase), dismiss it.
-          If this is your new normal with this recipient, mark it as normal and
-          Travis will adjust its baseline.
+          <strong>This is normal</strong> teaches Travis to treat this amount as
+          expected — it enters the rolling window and future large amounts to
+          this party will only fire again if the trend actually shifts.
+          <br><br>
+          <strong>Dismiss</strong> just hides the flag for this session. It will
+          come back next time you open the app.
         </div>
       `,
       actions: [
         { label: 'This is normal', kind: 'normal', onClick: () => {
-            dismissRow(tx.id);
+            markNormal(tx.id);
             closeExplainer();
             renderLedger();
           } },
-        { label: 'Dismiss', kind: 'muted', onClick: () => {
-            dismissRow(tx.id);
+        { label: 'Dismiss for now', kind: 'muted', onClick: () => {
+            snooze(tx.id);
             closeExplainer();
             renderLedger();
           } }
@@ -1307,7 +1344,6 @@
     const outflow = visible.reduce((s, r) => s + (isLiquidCredit(r.credit) ? Number(r.amount) || 0 : 0), 0);
     const net     = inflow - outflow;
 
-    // Top recipients — group by extractParty(), direction-aware.
     const outMap = new Map();
     const inMap  = new Map();
     for (const r of visible) {
@@ -1380,10 +1416,12 @@
       `;
     }).join('');
 
+    // Row anomalies shown in the card: flagged AND not snoozed. Marked-normal
+    // rows are already filtered out by rowAnomalyVisible().
     const rowAnomalies = visible.filter(t => {
       if (isChargeRow(t)) return false;
-      if (isRowDismissed(t.id)) return false;
-      return rowAnomaly(t, partyHistory).flagged;
+      const info = rowAnomalyVisible(t, partyHistory);
+      return info.flagged && !info.snoozed;
     });
 
     const rowBlocks = rowAnomalies.slice(0, 5).map(t => {
@@ -1566,7 +1604,7 @@
   }
 
   window.TravisUITweaks = {
-    version: '3.3.0',
+    version: '3.4.0',
     refresh: async () => {
       await refreshCache();
       if (ledgerTableMounted()) renderLedger();
@@ -1583,67 +1621,53 @@
       if (ledgerTableMounted()) renderLedger();
     },
     clearDismissals: () => {
-      [LS_DRIFT_DISMISS, LS_ROW_DISMISS, LS_BASELINE_BUMP].forEach(k => {
+      [LS_DRIFT_DISMISS, LS_BASELINE_BUMP, LS_MARKED_NORMAL, LS_SNOOZED].forEach(k => {
         try { localStorage.removeItem(k); } catch (_) {}
       });
       if (ledgerTableMounted()) renderLedger();
-      log('cleared dismissals');
+      log('cleared dismissals and normal-marks');
     },
-    // Diagnostic: inspect what the detector sees for a given party name.
+    // Diagnostic: show the rolling-window view for a party.
     // Example: await TravisUITweaks.explainParty('emilly otieno')
     explainParty: async (rawName) => {
       await refreshCache();
       const needle = normalizeParty(rawName);
       if (!needle) return { error: 'empty name' };
       const history = buildPartyHistory(TX_CACHE);
-      const matches = [];
+      const out = [];
       for (const [key, h] of history.entries()) {
         if (key.startsWith(needle + '|') || key === needle) {
-          matches.push({ key, ...h });
+          out.push({ key, totalTx: h.amounts.length, amounts: h.amounts.slice() });
         }
       }
-      if (matches.length === 0) {
-        // Also scan raw tx to help debug keying.
-        const raw = TX_CACHE.filter(t => {
-          const p = extractParty(t);
-          return p && p.name.indexOf(needle) !== -1;
+      // Also report which of this party's transactions are currently flagged.
+      const flagged = [];
+      for (const t of TX_CACHE) {
+        const p = extractParty(t);
+        if (!p) continue;
+        if (p.name !== needle) continue;
+        const info = rowAnomalyVisible(t, history);
+        flagged.push({
+          id: t.id,
+          amount: Number(t.amount) || 0,
+          direction: p.direction,
+          info
         });
-        return {
-          query: needle,
-          foundInHistory: false,
-          rawMatchingTx: raw.map(t => ({
-            id: t.id,
-            amount: t.amount,
-            debit: t.debit,
-            credit: t.credit,
-            desc: t.desc,
-            extracted: extractParty(t)
-          }))
-        };
       }
-      return matches.map(m => {
-        const sorted = m.amounts.slice().sort((a,b)=>a-b);
-        const med = medianOf(sorted);
-        return {
-          key: m.key,
-          totalTx: m.amounts.length,
-          amounts: sorted,
-          median: med,
-          factorOfLargest: med > 0 ? (Math.max(...sorted) / med) : null,
-          wouldFlagLargest: med > 0 && Math.max(...sorted) >= Math.max(ROW_FLOOR_KSH, ROW_FACTOR * med)
-        };
-      });
+      return { query: needle, histories: out, decisions: flagged };
     },
     status: async () => {
       await refreshCache();
       const months = monthsWithData(TX_CACHE);
       return {
-        version: '3.3.0',
+        version: '3.4.0',
         selection,
         period: periodLabel(),
         txCount: TX_CACHE.length,
         monthCount: months.length,
         months: months.map(m => MONTHS_LONG[m.m] + ' ' + m.y + ' (' + m.count + ')'),
+        markedNormal: Object.keys(loadMap(LS_MARKED_NORMAL)).length,
+        snoozed: Object.keys(loadMap(LS_SNOOZED)).length,
         mpesaInFinanceSection: (() => {
           const btn = document.getElementById('nav-mpesa');
           const newEntry = document.querySelector('#nav-sidebar button[onclick*="showTxModal"]');
@@ -1682,7 +1706,7 @@
       if (t) setTimeout(() => { if (ledgerTableMounted()) renderLedger(); }, 60);
     });
 
-    log('booted v3.3.0');
+    log('booted v3.4.0');
   }
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
