@@ -16,9 +16,23 @@
                 into your pocket, or cash deposited back into the wallet.
                 Net worth is unchanged; this moves value between the
                 liquid "Cash" account and the M-Pesa "wallet" account.
-   - CHARGE   : Safaricom transaction cost / Fuliza interest. Always logged
-                as its own "M-Pesa Charge" expense line, on top of whatever
-                the parent transaction was.
+   - CHARGE   : Safaricom transaction cost. Always logged as its own
+                "M-Pesa Charge" expense line, on top of whatever the parent
+                transaction was.
+
+   FULIZA MODEL (explicit, two distinct message shapes)
+   ----------------------------------------------------
+   - DRAWDOWN : "Fuliza M-PESA amount is Ksh X. Access Fee charged Ksh Y."
+                You received X as liquid cash, and you now owe X + Y.
+                Wallet grows; Accounts Payable grows.
+                Entry: Debit <wallet> X, Credit 'Accounts Payable' (X + Y).
+                The access fee is folded into the AP credit (cash-flow view;
+                we surface it as a label, we don't post a separate expense).
+
+   - REPAYMENT: "Ksh X from your M-PESA has been used to fully pay your
+                outstanding Fuliza M-PESA."
+                Wallet shrinks; Accounts Payable shrinks.
+                Entry: Credit <wallet> X, Debit 'Accounts Payable' X.
 
    The "wallet" account name matches whatever the main app's own dropdown
    already uses for this profile type, so balances stay consistent with
@@ -79,75 +93,69 @@
 
     // ------------------------------------------------------------------------
     // 3. DIRECTION / TYPE CLASSIFICATION
-    //    Checked in priority order — most specific patterns first, so that
-    //    e.g. a Fuliza repayment message doesn't get mis-read as a generic
-    //    "paid" expense, and a deposit doesn't get mis-read as "received".
+    //    Fuliza drawdown and Fuliza repayment are checked FIRST, explicitly,
+    //    so neither is ever mis-read as a generic expense / "paid" / "used
+    //    to pay" message.
     // ------------------------------------------------------------------------
 
-    //const PATTERNS = {
-      //  fulizaCharge: /fuliza m-?pesa charge of\s*(?:Ksh|KES)\s*[\d,]+\.?\d*/i,
-      //  fulizaRepay: /(fuliza)/i,
-      //  usedToPay: /(?:has been used to|you have used)\s*(?:ksh|kes)?[\d,.\s]*\s*to\s+(fully|partially)\s+pay/i,
-       // loanKeyword: /(loan|m-?shwari|kcb)/i,
-    //    deposit: /\b(cash )?deposit(ed)?\b/i,
-     //   withdraw: /\bwithdraw(n|al)?\b/i,
-      //  airtime: /(you have bought.*airtime|airtime.*you have bought|bought.*airtime)/i,
-      //  paybillAccount: /paid\s+(?:Ksh|KES)[\d,.]+\s+to\s+\d+.*for account/i,
-     //   paybillGeneric: /paid\s+(?:Ksh|KES)[\d,.]+\s+to\s+\d+/i,
-      //  buyGoodsTill: /paid to.+till no/i,
-       // buyGoodsGeneric: /\bpaid to\b/i,
-       // receive: /\byou have received\b|\breceived\s+(?:Ksh|KES)/i,
-      //  bankCredited: /\b(has been )?credited\b/i,
-       // sentTo: /\bsent to\b/i,
-       // purchased: /\b(purchased|purchase of)\b/i,
-     //   bought: /\bbought\b/i,
-       // give: /\bgive\b/i,
-       // reversal: /\breversed\b/i
-    //};//
+    const PATTERNS = {
+        // --- Fuliza DRAWDOWN (borrowing) -------------------------------------
+        // Shape: "Fuliza M-PESA amount is Ksh 100.00. Access Fee charged Ksh 1.00."
+        fulizaDraw: /fuliza\s+m-?pesa\s+amount\s+is\s+(?:Ksh|KES)\s*[\d,]+\.?\d*/i,
 
-   const PATTERNS = {
-    fulizaCharge: /fuliza m-?pesa charge of\s*(?:Ksh|KES)\s*[\d,]+\.?\d*/i,
-    fulizaRepay: /(fuliza)/i,
-    usedToPay: /(?:has been used to|you have used)\s*(?:ksh|kes)?[\d,.\s]*\s*to\s+(fully|partially)\s+pay/i,
-    loanKeyword: /(loan|m-?shwari|kcb)/i,
-    deposit: /\b(cash )?deposit(ed)?\b|\bgive\b/i,
-    withdraw: /withdraw(n|al)?\b/i,
-    airtime: /(you have bought.*airtime|airtime.*you have bought|bought.*airtime)/i,
-    paybillAccount: /paid\s+(?:Ksh|KES)[\d,.]+\s+to\s+\d+.*for account/i,
-    paybillGeneric: /paid\s+(?:Ksh|KES)[\d,.]+\s+to\s+\d+/i,
-    buyGoodsTill: /paid to.+till no/i,
-    buyGoodsGeneric: /\bpaid to\b/i,
-    receive: /\byou have received\b|\breceived\s+(?:Ksh|KES)/i,
-    bankCredited: /\b(has been )?credited\b/i,
-    sentTo: /\bsent to\b/i,
-    purchased: /\b(purchased|purchase of)\b/i,
-    bought: /\bbought\b/i,
-    reversal: /\breversed\b/i
-};
+        // --- Fuliza REPAYMENT (settlement) -----------------------------------
+        // Shape: "Ksh 400.74 from your M-PESA has been used to fully pay your
+        //         outstanding Fuliza M-PESA."
+        fulizaRepay: /(?:Ksh|KES)\s*[\d,]+\.?\d*\s+from\s+your\s+m-?pesa\s+has\s+been\s+used\s+to\s+(?:fully|partially)\s+pay\s+your\s+outstanding\s+fuliza/i,
+
+        // --- Generic "used to pay" fallback (non-Fuliza loans) ---------------
+        usedToPay: /(?:has been used to|you have used)\s*(?:ksh|kes)?[\d,.\s]*\s*to\s+(fully|partially)\s+pay/i,
+
+        // --- Other loan keywords (M-Shwari, KCB, Tala, etc.) -----------------
+        loanKeyword: /(loan|m-?shwari|kcb)/i,
+
+        deposit: /\b(cash )?deposit(ed)?\b|\bgive\b/i,
+        withdraw: /withdraw(n|al)?\b/i,
+        airtime: /(you have bought.*airtime|airtime.*you have bought|bought.*airtime)/i,
+        paybillAccount: /paid\s+(?:Ksh|KES)[\d,.]+\s+to\s+\d+.*for account/i,
+        paybillGeneric: /paid\s+(?:Ksh|KES)[\d,.]+\s+to\s+\d+/i,
+        buyGoodsTill: /paid to.+till no/i,
+        buyGoodsGeneric: /\bpaid to\b/i,
+        receive: /\byou have received\b|\breceived\s+(?:Ksh|KES)/i,
+        bankCredited: /\b(has been )?credited\b/i,
+        sentTo: /\bsent to\b/i,
+        purchased: /\b(purchased|purchase of)\b/i,
+        bought: /\bbought\b/i,
+        reversal: /\breversed\b/i
+    };
 
     /**
      * Determine WHAT the message is and its financial NATURE.
      * nature: 'income' | 'expense' | 'contra' | 'charge_only' | 'unknown'
+     *
+     * Fuliza drawdown  -> nature 'income'  (wallet grows; liability grows too,
+     *                                       but for cash-flow the wallet is up)
+     * Fuliza repayment -> nature 'expense' (wallet shrinks; liability shrinks)
      */
     function classifyMessage(text) {
         const t = text.trim();
 
-        // --- Fuliza: charge notice ---
-        if (PATTERNS.fulizaCharge.test(t)) {
-            return { type: 'fuliza_charge', nature: 'charge_only', label: 'Fuliza Charge', icon: '⚡' };
+        // --- Fuliza DRAWDOWN: checked before repayment and before anything else
+        if (PATTERNS.fulizaDraw.test(t)) {
+            return { type: 'fuliza_drawdown', nature: 'income', label: 'Fuliza Drawdown', icon: '⚡' };
         }
 
-        // --- "has been used to fully/partially pay ..." (Fuliza or loan repayment) ---
+        // --- Fuliza REPAYMENT: explicit shape from real SMS
+        if (PATTERNS.fulizaRepay.test(t)) {
+            return { type: 'fuliza_repayment', nature: 'expense', label: 'Fuliza Repayment', icon: '⚡' };
+        }
+
+        // --- "has been used to fully/partially pay ..." (Fuliza or other loan)
         if (PATTERNS.usedToPay.test(t)) {
-            if (PATTERNS.fulizaRepay.test(t)) {
+            if (/fuliza/i.test(t)) {
                 return { type: 'fuliza_repayment', nature: 'expense', label: 'Fuliza Repayment', icon: '⚡' };
             }
             return { type: 'loan_repayment', nature: 'expense', label: 'Loan Repayment', icon: '💳' };
-        }
-
-        // --- Fuliza repayment mentioned without "used to pay" phrasing ---
-        if (PATTERNS.fulizaRepay.test(t) && /(pay|repay|clear)/i.test(t)) {
-            return { type: 'fuliza_repayment', nature: 'expense', label: 'Fuliza Repayment', icon: '⚡' };
         }
 
         // --- Contra: deposit / withdraw (self-transfer, not income/expense) ---
@@ -188,8 +196,8 @@
             return { type: 'bank_credit', nature: 'income', label: 'Bank Credit', icon: '📥' };
         }
 
-        // --- Generic outgoing: sent to / purchased / bought / give ---
-        if (PATTERNS.sentTo.test(t) || PATTERNS.purchased.test(t) || PATTERNS.bought.test(t) || PATTERNS.give.test(t)) {
+        // --- Generic outgoing: sent to / purchased / bought ---
+        if (PATTERNS.sentTo.test(t) || PATTERNS.purchased.test(t) || PATTERNS.bought.test(t)) {
             return { type: 'send', nature: 'expense', label: 'Sent Money', icon: '📤' };
         }
 
@@ -211,14 +219,65 @@
     }
 
     /**
-     * Pulls the principal transacted amount and the Safaricom charge out of
-     * the message, deliberately stripping "transaction cost" / "new balance"
-     * / "Fuliza limit" figures first so they can't be mistaken for the
-     * principal amount.
+     * Pulls the principal transacted amount and the Safaricom / Fuliza charge
+     * out of the message, deliberately stripping "transaction cost" / "new
+     * balance" / "Fuliza limit" / "Fuliza outstanding" figures first so they
+     * can't be mistaken for the principal amount.
+     *
+     * Fuliza DRAWDOWN shape:
+     *   "...Fuliza M-PESA amount is Ksh 100.00. Access Fee charged Ksh 1.00.
+     *    Total Fuliza M-PESA outstanding amount is Ksh 340.11 due on ..."
+     *   principal = 100.00 (the "amount is" figure)
+     *   charge    = 1.00   (the "Access Fee charged" figure)
+     *   The outstanding (340.11) is ignored entirely.
+     *
+     * Fuliza REPAYMENT shape:
+     *   "Ksh 400.74 from your M-PESA has been used to fully pay your
+     *    outstanding Fuliza M-PESA. Available Fuliza M-PESA limit is Ksh 400.00.
+     *    Your M-PESA balance is 1599.26."
+     *   principal = 400.74 (the "from your M-PESA ... used to pay" figure)
+     *   charge    = 0      (there is no separate charge in this message)
      */
     function extractAmounts(text) {
         let working = text;
 
+        // ---- Fuliza DRAWDOWN: principal and access fee, explicitly ----------
+        const drawMatch = working.match(
+            /fuliza\s+m-?pesa\s+amount\s+is\s+(?:Ksh|KES)\s*([\d,]+\.?\d*)/i
+        );
+        if (drawMatch) {
+            const drawPrincipal = toNumber(drawMatch[1]);
+            let drawFee = 0;
+            const feeMatch = working.match(
+                /access\s+fee\s+charged\s+(?:Ksh|KES)\s*([\d,]+\.?\d*)/i
+            );
+            if (feeMatch) drawFee = toNumber(feeMatch[1]);
+
+            // Strip the outstanding + limit + balance lines so nothing else
+            // can ever be read as principal.
+            working = working
+                .replace(/total\s+fuliza\s+m-?pesa\s+outstanding\s+amount\s+is\s+(?:Ksh|KES)\s*[\d,]+\.?\d*(\s+due\s+on\s+[\d/]+)?/i, '')
+                .replace(/available\s+fuliza\s+m-?pesa\s+limit\s+is\s+(?:Ksh|KES)\s*[\d,]+\.?\d*/i, '')
+                .replace(/new\s+(?:m-?pesa\s+)?balance\s+is\s*(?:Ksh|KES)\s*[\d,]+\.?\d*/i, '')
+                .replace(/your\s+m-?pesa\s+balance\s+is\s*(?:Ksh|KES)?\s*[\d,]+\.?\d*/i, '');
+
+            return { principal: drawPrincipal, charge: drawFee };
+        }
+
+        // ---- Fuliza REPAYMENT: principal is the "from your M-PESA" figure ---
+        const repayMatch = working.match(
+            /(?:Ksh|KES)\s*([\d,]+\.?\d*)\s+from\s+your\s+m-?pesa\s+has\s+been\s+used\s+to\s+(?:fully|partially)\s+pay\s+your\s+outstanding\s+fuliza/i
+        );
+        if (repayMatch) {
+            const repayPrincipal = toNumber(repayMatch[1]);
+            working = working
+                .replace(/available\s+fuliza\s+m-?pesa\s+limit\s+is\s+(?:Ksh|KES)\s*[\d,]+\.?\d*/i, '')
+                .replace(/your\s+m-?pesa\s+balance\s+is\s*(?:Ksh|KES)?\s*[\d,]+\.?\d*/i, '')
+                .replace(/new\s+(?:m-?pesa\s+)?balance\s+is\s*(?:Ksh|KES)\s*[\d,]+\.?\d*/i, '');
+            return { principal: repayPrincipal, charge: 0 };
+        }
+
+        // ---- Generic path (everything else, unchanged) ----------------------
         const costMatch = working.match(/transaction cost[,:]?\s*(?:Ksh|KES)\s*([\d,]+\.?\d*)/i);
         const charge = costMatch ? toNumber(costMatch[1]) : 0;
         if (costMatch) working = working.replace(costMatch[0], '');
@@ -290,16 +349,13 @@
 
     // ------------------------------------------------------------------------
     // 5. SPLITTING A BULK PASTE INTO INDIVIDUAL MESSAGES + IN-BATCH DEDUPE
-    //    FIXED: Uses the unique 10-char alphanumeric code as the definitive
+    //    Uses the unique 10-char alphanumeric code as the definitive
     //    message delimiter. Every M-Pesa message starts with this code.
     // ------------------------------------------------------------------------
 
     function splitMessages(bulkText) {
-        // Each M-Pesa message starts with a 10-character alphanumeric code
-        // Pattern: exactly 10 uppercase alphanumeric characters, followed by space or newline
         const messageStartPattern = /\b([A-Z0-9]{10})\s+(?:Confirmed\.|You have|New M-PESA|received|paid|sent|deposited|withdrawn|bought|purchased|used|Fuliza|Loan|M-Shwari|KCB|Safaricom)/gi;
-        
-        // Find all message starts with their codes
+
         const starts = [];
         let match;
         while ((match = messageStartPattern.exec(bulkText)) !== null) {
@@ -309,29 +365,25 @@
                 length: match[0].length
             });
         }
-        
-        // If no message starts found, try fallback to split by double newlines or "Confirmed."
+
         if (starts.length === 0) {
-            // Try alternative splitting methods as fallback
             const chunks = bulkText.split(/\n{2,}|(?=Confirmed\.)/g)
                 .map(s => s.trim())
                 .filter(s => s.length > 10);
-            
-            // Verify each chunk has a valid code
+
             const validChunks = chunks.filter(chunk => {
                 const code = extractRef(chunk);
                 return code !== null;
             });
-            
+
             if (validChunks.length > 0) {
                 return validChunks;
             }
-            
-            // Last resort: split by lines and try to reconstruct
+
             const lines = bulkText.split('\n').filter(s => s.trim().length > 0);
             const reconstructed = [];
             let currentChunk = '';
-            
+
             for (const line of lines) {
                 const code = extractRef(line);
                 if (code !== null && currentChunk.length > 0) {
@@ -344,14 +396,13 @@
             if (currentChunk.length > 0) {
                 reconstructed.push(currentChunk.trim());
             }
-            
+
             return reconstructed.filter(chunk => {
                 const code = extractRef(chunk);
                 return code !== null && chunk.length > 10;
             });
         }
-        
-        // Extract each message using the start positions
+
         const messages = [];
         for (let i = 0; i < starts.length; i++) {
             const start = starts[i];
@@ -361,7 +412,7 @@
                 messages.push(messageText);
             }
         }
-        
+
         return messages;
     }
 
@@ -373,7 +424,6 @@
         for (const chunk of chunks) {
             const parsed = parseOne(chunk);
             if (!parsed) continue;
-            // Always use the explicit ref for dedupe if available
             const dedupeKey = parsed.hasExplicitRef ? parsed.ref : parsed.raw.slice(0, 60);
             if (seenInBatch.has(dedupeKey)) continue;
             seenInBatch.add(dedupeKey);
@@ -401,15 +451,11 @@
         try {
             const set = getLocalSeenRefs();
             set.add(ref);
-            // Keep the local cache bounded
             const arr = Array.from(set).slice(-5000);
             localStorage.setItem(LOCAL_SEEN_KEY, JSON.stringify(arr));
         } catch (e) { /* non-fatal */ }
     }
 
-    // Scans the actual ledger for refs already embedded in transaction
-    // descriptions. This is the layer that survives backup/restore, since
-    // localStorage doesn't travel with the encrypted backup file.
     function getLedgerSeenRefs() {
         return new Promise(resolve => {
             try {
@@ -428,10 +474,8 @@
                         const refs = new Set();
                         (getAllReq.result || []).forEach(row => {
                             const desc = row.desc || '';
-                            // current tag format
                             const tagged = desc.match(/\[REF:([A-Z0-9-]+)\]/);
                             if (tagged) refs.add(tagged[1]);
-                            // legacy format from the previous version of this module
                             const legacy = desc.match(/\(REF:\s*([A-Z0-9-]+)\)/);
                             if (legacy) refs.add(legacy[1]);
                         });
@@ -455,7 +499,7 @@
     }
 
     // ------------------------------------------------------------------------
-    // 7. LEDGER ENTRY CONSTRUCTION (this is where the contra fix lives)
+    // 7. LEDGER ENTRY CONSTRUCTION
     // ------------------------------------------------------------------------
 
     function getWalletAccountName() {
@@ -482,21 +526,53 @@
 
         switch (parsed.type) {
 
-            case 'fuliza_charge':
-                if (parsed.charge > 0) {
+            // ---- FULIZA DRAWDOWN ------------------------------------------------
+            // You received the drawn amount into your wallet; you now owe
+            // amount + access fee. Cash-flow view: wallet up, AP up.
+            //   Debit  <wallet>          principal
+            //   Credit 'Accounts Payable' (principal + access fee)
+            // The access fee is folded into the AP credit and surfaced in the
+            // description so the user can see it was charged.
+            case 'fuliza_drawdown': {
+                const principal = parsed.amount;
+                const fee = parsed.charge;
+                const apAmount = principal + fee;
+                if (principal > 0) {
                     entries.push({
-                        id: nextId(), debit: 'M-Pesa Charge', credit: wallet, amount: parsed.charge,
-                        desc: 'Fuliza charge KSh ' + money(parsed.charge) + ' ' + tag
+                        id: nextId(),
+                        debit: wallet,
+                        credit: 'Accounts Payable',
+                        amount: apAmount,
+                        desc: 'Fuliza drawdown KSh ' + money(principal)
+                            + (fee > 0 ? ' (access fee KSh ' + money(fee) + ' folded into payable)' : '')
+                            + ' ' + tag
+                    });
+                }
+                break;
+            }
+
+            // ---- FULIZA REPAYMENT -----------------------------------------------
+            // Wallet shrinks to settle the Fuliza payable.
+            //   Credit <wallet>            amount
+            //   Debit  'Accounts Payable'  amount
+            case 'fuliza_repayment':
+                if (parsed.amount > 0) {
+                    entries.push({
+                        id: nextId(),
+                        debit: 'Accounts Payable',
+                        credit: wallet,
+                        amount: parsed.amount,
+                        desc: 'Fuliza repayment KSh ' + money(parsed.amount) + ' ' + tag
                     });
                 }
                 break;
 
-            case 'fuliza_repayment':
+            // ---- Other loan repayment (M-Shwari, KCB, etc.) ---------------------
             case 'loan_repayment':
                 if (parsed.amount > 0) {
                     entries.push({
                         id: nextId(),
-                        debit: parsed.type === 'fuliza_repayment' ? 'Fuliza Repayment' : 'Loan Repayment',
+                        debit: 'Loan Repayment',
                         credit: wallet,
                         amount: parsed.amount,
                         desc: parsed.label + ' KSh ' + money(parsed.amount) + ' ' + tag
@@ -505,7 +581,6 @@
                 break;
 
             case 'deposit':
-                // CONTRA: physical cash -> wallet. Net worth unchanged.
                 if (parsed.amount > 0) {
                     entries.push({
                         id: nextId(), debit: wallet, credit: 'Cash', amount: parsed.amount,
@@ -515,7 +590,6 @@
                 break;
 
             case 'withdraw':
-                // CONTRA: wallet -> physical cash. Net worth unchanged.
                 if (parsed.amount > 0) {
                     entries.push({
                         id: nextId(), debit: 'Cash', credit: wallet, amount: parsed.amount,
@@ -525,7 +599,6 @@
                 break;
 
             case 'reversal':
-                // Best-effort: treat as a contra credit back into the wallet.
                 if (parsed.amount > 0) {
                     entries.push({
                         id: nextId(), debit: wallet, credit: 'Cash', amount: parsed.amount,
@@ -574,14 +647,13 @@
                 break;
 
             default:
-                // Unknown type — if there's a charge we can still log that.
                 break;
         }
 
-        // Any transaction cost, regardless of the parent type, gets logged
-        // as its own expense line (except fuliza_charge, which already IS
-        // the charge above).
-        if (parsed.type !== 'fuliza_charge' && parsed.charge > 0) {
+        // Standalone transaction-cost line for everything EXCEPT Fuliza drawdown
+        // (whose fee is already folded into the AP credit) and the standalone
+        // Fuliza charge notice type.
+        if (parsed.type !== 'fuliza_drawdown' && parsed.type !== 'fuliza_charge' && parsed.charge > 0) {
             entries.push({
                 id: nextId(), debit: 'M-Pesa Charge', credit: wallet, amount: parsed.charge,
                 desc: 'M-Pesa charge KSh ' + money(parsed.charge) + ' ' + tag
@@ -609,12 +681,6 @@
         });
     }
 
-    /**
-     * Posts a single parsed message to the ledger, using the main app's
-     * saveData/state/nav/saveBackup hooks when available (i.e. when this
-     * module is running inside the loaded app), falling back to a direct
-     * IndexedDB write otherwise.
-     */
     async function postParsedTransaction(parsed) {
         const entries = buildLedgerEntries(parsed);
         if (entries.length === 0) return null;
@@ -681,8 +747,9 @@
 
     const TYPE_ICON = {
         send: '📤', buy_goods: '🛒', paybill: '🧾', withdraw: '🏧', deposit: '🔁',
-        airtime: '📞', receive: '📥', bank_credit: '📥', fuliza_charge: '⚡',
-        fuliza_repayment: '⚡', loan_repayment: '💳', reversal: '↩️', unknown: '📱'
+        airtime: '📞', receive: '📥', bank_credit: '📥',
+        fuliza_drawdown: '⚡', fuliza_repayment: '⚡', loan_repayment: '💳',
+        reversal: '↩️', unknown: '📱'
     };
 
     const NATURE_BADGE = {
@@ -740,6 +807,7 @@
                             <li>Paste them below — any mix of send, receive, paybill, withdraw, deposit, Fuliza, etc.</li>
                             <li>Travis works out the direction of each and shows you before posting anything</li>
                             <li>Deposits and withdrawals are logged as transfers, not spending — your total balance won't change</li>
+                            <li>Fuliza drawdowns add to what you owe; Fuliza repayments reduce it</li>
                         </ol>
                     </div>
                     <label style="font-size:11px;font-weight:600;color:#5a5a5a;display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;">Paste M-Pesa SMS Message(s)</label>
@@ -918,7 +986,7 @@
                     </div>
                     ${p.charge > 0 ? `
                     <div style="text-align:right;flex-shrink:0;">
-                        <div style="font-size:11px;color:#6b7280;">Charge</div>
+                        <div style="font-size:11px;color:#6b7280;">${p.type === 'fuliza_drawdown' ? 'Access fee' : 'Charge'}</div>
                         <div style="font-size:17px;font-weight:800;color:#dc2626;">KSh ${money(p.charge)}</div>
                     </div>` : ''}
                 </div>
@@ -1061,7 +1129,7 @@
         };
         const typeMap = {
             send: 'send', paybill: 'paybill', withdraw: 'withdraw',
-            deposit: 'deposit', airtime: 'airtime', custom: 'fuliza_charge' // custom = charge-only entry
+            deposit: 'deposit', airtime: 'airtime', custom: 'fuliza_charge'
         };
 
         const parsed = {
@@ -1072,7 +1140,7 @@
             ref: 'MANUAL-' + Date.now(),
             hasExplicitRef: false,
             amount: type === 'custom' ? 0 : amount,
-            charge: type === 'custom' ? charge : charge,
+            charge: charge,
             recipient: desc,
             raw: 'MANUAL ENTRY'
         };
@@ -1120,7 +1188,7 @@
     }
 
     // ------------------------------------------------------------------------
-    // 11. UI INJECTION (nav sidebar + taskbar) — unchanged integration points
+    // 11. UI INJECTION (nav sidebar + taskbar)
     // ------------------------------------------------------------------------
 
     function injectEntryPoints() {
