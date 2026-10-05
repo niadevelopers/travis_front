@@ -43,7 +43,7 @@
   const BANNER_ID      = 'travis-backup-banner';
 
   // 10 minutes. Gives main app time to restore first.
-  const BOOT_DELAY_MS  = 10 * 60 * 1000;
+  const BOOT_DELAY_MS  = 5 * 60 * 1000;
 
   // ---------- Logger ----------
   const log  = (...a) => console.log(LOG, ...a);
