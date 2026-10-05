@@ -38,8 +38,11 @@
         return document.querySelectorAll('.metric-card');
     }
 
-    function getValueElement(card) {
-        return card ? card.querySelector('.metric-value') : null;
+    // Plural — the total-money card now holds TWO .metric-value elements
+    // (Cash on the left, M-Pesa / Bank on the right). All other cards still
+    // hold exactly one, so this returns a single-element array for them.
+    function getValueElements(card) {
+        return card ? Array.from(card.querySelectorAll('.metric-value')) : [];
     }
 
     function getLabelElement(card) {
@@ -93,47 +96,75 @@
     }
 
     function applyVisibilityToField(card, isVisible, config) {
-        const valueEl = getValueElement(card);
-        if (!valueEl) {
+        const valueEls = getValueElements(card);
+        if (!valueEls.length) {
             return;
         }
 
-        if (!card.dataset.originalValue) {
-            card.dataset.originalValue = valueEl.textContent;
+        // Store the original text of EACH value element separately so we can
+        // restore both the Cash and Bank figures correctly. Keyed by index
+        // so it survives re-renders as long as the count stays the same.
+        if (!card.dataset.originalValues) {
+            card.dataset.originalValues = JSON.stringify(
+                valueEls.map(el => el.textContent)
+            );
         }
 
-        if (isVisible) {
-            valueEl.textContent = card.dataset.originalValue;
-            valueEl.style.letterSpacing = 'normal';
-            valueEl.style.fontFamily = '';
-            valueEl.style.color = '';
-            valueEl.style.opacity = '1';
-            valueEl.style.transition = 'none';
+        let originals = [];
+        try {
+            originals = JSON.parse(card.dataset.originalValues || '[]');
+        } catch (e) {
+            originals = valueEls.map(el => el.textContent);
+        }
 
-            const indicator = card.querySelector('.privacy-indicator');
-            if (indicator) indicator.remove();
+        // If the main app has re-rendered the card and the value count
+        // changed (e.g. first time split was applied), refresh our snapshot.
+        if (originals.length !== valueEls.length) {
+            originals = valueEls.map(el => el.textContent);
+            card.dataset.originalValues = JSON.stringify(originals);
+        }
 
-        } else {
-            valueEl.textContent = '••••••';
-            valueEl.style.letterSpacing = '3px';
-            valueEl.style.fontFamily = 'monospace';
-            valueEl.style.color = '#999';
-            valueEl.style.opacity = '0.6';
-            valueEl.style.transition = 'none';
+        valueEls.forEach((valueEl, i) => {
+            const original = originals[i] !== undefined ? originals[i] : valueEl.textContent;
 
-            let indicator = card.querySelector('.privacy-indicator');
-            if (!indicator) {
-                indicator = document.createElement('span');
-                indicator.className = 'privacy-indicator';
-                indicator.textContent = ' ';
-                indicator.style.cssText = `
-                    font-size: 10px;
-                    margin-left: 4px;
-                    opacity: 0.7;
-                    display: inline-block;
-                `;
-                valueEl.parentNode.insertBefore(indicator, valueEl.nextSibling);
+            if (isVisible) {
+                valueEl.textContent = original;
+                valueEl.style.letterSpacing = 'normal';
+                valueEl.style.fontFamily = '';
+                valueEl.style.color = '';
+                valueEl.style.opacity = '1';
+                valueEl.style.transition = 'none';
+            } else {
+                valueEl.textContent = '••••••';
+                valueEl.style.letterSpacing = '3px';
+                valueEl.style.fontFamily = 'monospace';
+                valueEl.style.color = '#999';
+                valueEl.style.opacity = '0.6';
+                valueEl.style.transition = 'none';
             }
+        });
+
+        // One privacy indicator per value element, kept in sync.
+        const existingIndicators = card.querySelectorAll('.privacy-indicator');
+        if (isVisible) {
+            existingIndicators.forEach(ind => ind.remove());
+        } else {
+            valueEls.forEach((valueEl) => {
+                const next = valueEl.nextSibling;
+                const hasIndicator = next && next.classList && next.classList.contains('privacy-indicator');
+                if (!hasIndicator) {
+                    const indicator = document.createElement('span');
+                    indicator.className = 'privacy-indicator';
+                    indicator.textContent = ' ';
+                    indicator.style.cssText = `
+                        font-size: 10px;
+                        margin-left: 4px;
+                        opacity: 0.7;
+                        display: inline-block;
+                    `;
+                    valueEl.parentNode.insertBefore(indicator, valueEl.nextSibling);
+                }
+            });
         }
 
         const existingBtn = card.querySelector('.vis-toggle-btn');
