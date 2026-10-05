@@ -23,16 +23,19 @@
    FULIZA MODEL (explicit, two distinct message shapes)
    ----------------------------------------------------
    - DRAWDOWN : "Fuliza M-PESA amount is Ksh X. Access Fee charged Ksh Y."
-                You received X as liquid cash, and you now owe X + Y.
-                Wallet grows; Accounts Payable grows.
-                Entry: Debit <wallet> X, Credit 'Accounts Payable' (X + Y).
-                The access fee is folded into the AP credit (cash-flow view;
-                we surface it as a label, we don't post a separate expense).
+                Two separate ledger movements:
+                  1) Debit  <wallet>            X
+                     Credit 'Accounts Payable'  X
+                  2) Debit  'Fuliza Access Fee' Y   (only if Y > 0)
+                     Credit <wallet>            Y
+                Net wallet effect: +X − Y. The access fee never enters your
+                wallet, so it must not inflate liquid cash — it's a real
+                cost that leaves the ecosystem at drawdown time.
 
-   - REPAYMENT: "Ksh X from your M-PESA has been used to fully pay your
-                outstanding Fuliza M-PESA."
-                Wallet shrinks; Accounts Payable shrinks.
-                Entry: Credit <wallet> X, Debit 'Accounts Payable' X.
+   - REPAYMENT: "Ksh X from your M-PESA has been used to fully/partially
+                pay your outstanding Fuliza M-PESA."
+                   Credit <wallet>            X
+                   Debit  'Accounts Payable'  X
 
    The "wallet" account name matches whatever the main app's own dropdown
    already uses for this profile type, so balances stay consistent with
@@ -103,9 +106,10 @@
         // Shape: "Fuliza M-PESA amount is Ksh 100.00. Access Fee charged Ksh 1.00."
         fulizaDraw: /fuliza\s+m-?pesa\s+amount\s+is\s+(?:Ksh|KES)\s*[\d,]+\.?\d*/i,
 
-        // --- Fuliza REPAYMENT (settlement) -----------------------------------
+        // --- Fuliza REPAYMENT (settlement, full OR partial) ------------------
         // Shape: "Ksh 400.74 from your M-PESA has been used to fully pay your
         //         outstanding Fuliza M-PESA."
+        //      or "... to partially pay your outstanding Fuliza M-PESA."
         fulizaRepay: /(?:Ksh|KES)\s*[\d,]+\.?\d*\s+from\s+your\s+m-?pesa\s+has\s+been\s+used\s+to\s+(?:fully|partially)\s+pay\s+your\s+outstanding\s+fuliza/i,
 
         // --- Generic "used to pay" fallback (non-Fuliza loans) ---------------
@@ -145,7 +149,7 @@
             return { type: 'fuliza_drawdown', nature: 'income', label: 'Fuliza Drawdown', icon: '⚡' };
         }
 
-        // --- Fuliza REPAYMENT: explicit shape from real SMS
+        // --- Fuliza REPAYMENT: explicit shape from real SMS (full or partial)
         if (PATTERNS.fulizaRepay.test(t)) {
             return { type: 'fuliza_repayment', nature: 'expense', label: 'Fuliza Repayment', icon: '⚡' };
         }
@@ -527,31 +531,50 @@
         switch (parsed.type) {
 
             // ---- FULIZA DRAWDOWN ------------------------------------------------
-            // You received the drawn amount into your wallet; you now owe
-            // amount + access fee. Cash-flow view: wallet up, AP up.
-            //   Debit  <wallet>          principal
-            //   Credit 'Accounts Payable' (principal + access fee)
-            // The access fee is folded into the AP credit and surfaced in the
-            // description so the user can see it was charged.
+            // Two separate movements:
+            //
+            //   1) The drawdown itself — you receive the principal into your
+            //      wallet and owe it back as a payable.
+            //        Debit  <wallet>            principal
+            //        Credit 'Accounts Payable'  principal
+            //
+            //   2) The access fee — a real cost that leaves your ecosystem at
+            //      drawdown time. It never enters your wallet, so it must NOT
+            //      inflate liquid cash. Posted as its own expense line:
+            //        Debit  'Fuliza Access Fee'  fee
+            //        Credit <wallet>             fee
+            //
+            // Net wallet effect: +principal − fee. The fee entry is skipped
+            // entirely when the access fee is exactly zero (some drawdowns
+            // carry no fee; fractional fees like 0.23 / 0.32 / 0.40 are
+            // preserved exactly).
             case 'fuliza_drawdown': {
                 const principal = parsed.amount;
                 const fee = parsed.charge;
-                const apAmount = principal + fee;
+
                 if (principal > 0) {
                     entries.push({
                         id: nextId(),
                         debit: wallet,
                         credit: 'Accounts Payable',
-                        amount: apAmount,
-                        desc: 'Fuliza drawdown KSh ' + money(principal)
-                            + (fee > 0 ? ' (access fee KSh ' + money(fee) + ' folded into payable)' : '')
-                            + ' ' + tag
+                        amount: principal,
+                        desc: 'Fuliza drawdown KSh ' + money(principal) + ' ' + tag
+                    });
+                }
+
+                if (fee > 0) {
+                    entries.push({
+                        id: nextId(),
+                        debit: 'Fuliza Access Fee',
+                        credit: wallet,
+                        amount: fee,
+                        desc: 'Fuliza access fee KSh ' + money(fee) + ' ' + tag
                     });
                 }
                 break;
             }
 
-            // ---- FULIZA REPAYMENT -----------------------------------------------
+            // ---- FULIZA REPAYMENT (full or partial) -----------------------------
             // Wallet shrinks to settle the Fuliza payable.
             //   Credit <wallet>            amount
             //   Debit  'Accounts Payable'  amount
@@ -651,8 +674,8 @@
         }
 
         // Standalone transaction-cost line for everything EXCEPT Fuliza drawdown
-        // (whose fee is already folded into the AP credit) and the standalone
-        // Fuliza charge notice type.
+        // (whose fee is already posted as its own 'Fuliza Access Fee' line) and
+        // the standalone Fuliza charge notice type.
         if (parsed.type !== 'fuliza_drawdown' && parsed.type !== 'fuliza_charge' && parsed.charge > 0) {
             entries.push({
                 id: nextId(), debit: 'M-Pesa Charge', credit: wallet, amount: parsed.charge,
