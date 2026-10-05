@@ -3,50 +3,54 @@
  * ------------------------------------------------------------------
  * Standalone backup reconciliation for Travis Guardian.
  *
- * Purpose:
- *   The original saveBackup() silently dies when the FileSystemDirectoryHandle
- *   loses its readwrite permission (which happens on browser close, tab
- *   reload, or site-data clear). After that, IndexedDB keeps growing but the
- *   encrypted backup file on disk freezes in time. On restore, only data up
- *   to the freeze point resurfaces.
+ * PURPOSE
+ *   Keep travis-finance-backup.enc in sync with IndexedDB without
+ *   interfering with the main app's own backup/restore flow.
  *
- * This file:
- *   - Opens its own IDB connection (TravisGuardian_v1.0)
- *   - Reads the stored backup dir handle from meta
- *   - On boot, checks permission. If 'granted' -> reconcile immediately.
- *   - If 'prompt'/'denied'/missing -> show a small banner with a button.
- *     Click re-requests permission (user gesture required by spec) or
- *     re-picks the folder, then reconciles.
- *   - Reconcile = decrypt backup, union-by-id with IDB, write back.
- *     Backup is a strict mirror of IDB (IDB wins on conflicts).
+ * DESIGN
+ *   - Reads ONLY transaction records (store 'tx') from IDB.
+ *   - Reads the existing encrypted backup file.
+ *   - Merges tx records by id (IDB wins on conflict, file entries
+ *     preserved if IDB doesn't have them).
+ *   - Writes the merged tx list back into the encrypted file, leaving
+ *     the 'meta' array inside the file UNTOUCHED (byte-for-byte in
+ *     terms of contents, re-serialized).
+ *   - NEVER touches the 'meta' store in IDB (so 'config',
+ *     'backupHandle', fingerprints, activation flags, etc. are all
+ *     under the main app's sole control).
  *
- * Zero coupling: does not touch window.* from the main app, does not
- * require any existing function. Talks only to IndexedDB + File System API.
+ * SAFETY
+ *   - If IDB has no 'config' meta record, this script treats the
+ *     browser as "fresh" and does NOT overwrite the backup file.
+ *   - If the merged tx count would be smaller than the backup file's
+ *     existing tx count, this script refuses to write (this prevents
+ *     an empty IDB from wiping a good backup).
+ *   - All writes happen 10 minutes after page load so the main app's
+ *     own restore flow always has time to complete first.
  * ------------------------------------------------------------------
  */
 (function () {
   'use strict';
 
   // ---------- Config (must match the main app) ----------
-  const DB_NAME      = 'TravisGuardian_v1.0';
-  const DB_VERSION   = 1;
-  const STORES       = ['meta', 'tx'];
-  const BACKUP_FILE  = 'travis-finance-backup.enc';
+  const DB_NAME        = 'TravisGuardian_v1.0';
+  const DB_VERSION     = 1;
+  const BACKUP_FILE    = 'travis-finance-backup.enc';
   const BACKUP_META_ID = 'backupHandle';
-  const PASSWORD     = 'Travisguardian';       // hardcoded, matches app
-  const LOG          = '[TravisBackup]';
-  const BANNER_ID    = 'travis-backup-banner';
+  const CONFIG_META_ID = 'config';
+  const PASSWORD       = 'Travisguardian';
+  const LOG            = '[TravisBackup]';
+  const BANNER_ID      = 'travis-backup-banner';
 
-  // >>> CHANGE #1: how long to wait after the app loads before the
-  // >>> backup reconcile fires automatically. 10 minutes in milliseconds.
-  const BOOT_DELAY_MS = 10 * 60 * 1000;        // 600,000 ms = 10 minutes
+  // 10 minutes. Gives main app time to restore first.
+  const BOOT_DELAY_MS  = 10 * 60 * 1000;
 
-  // ---------- Tiny logger ----------
+  // ---------- Logger ----------
   const log  = (...a) => console.log(LOG, ...a);
   const warn = (...a) => console.warn(LOG, ...a);
   const err  = (...a) => console.error(LOG, ...a);
 
-  // ---------- Crypto (matches main app format) ----------
+  // ---------- Crypto (matches main app format exactly) ----------
   // File layout: salt(16) || iv(12) || ciphertext
   async function deriveKey(password, salt) {
     const enc = new TextEncoder();
@@ -65,9 +69,9 @@
   async function encryptData(obj, password) {
     const enc = new TextEncoder();
     const plaintext = JSON.stringify(obj);
-    const iv  = crypto.getRandomValues(new Uint8Array(12));
+    const iv   = crypto.getRandomValues(new Uint8Array(12));
     const salt = crypto.getRandomValues(new Uint8Array(16));
-    const key = await deriveKey(password, salt);
+    const key  = await deriveKey(password, salt);
     const ct = await crypto.subtle.encrypt(
       { name: 'AES-GCM', iv }, key, enc.encode(plaintext)
     );
@@ -82,21 +86,19 @@
     const salt = bytes.slice(0, 16);
     const iv   = bytes.slice(16, 28);
     const ct   = bytes.slice(28);
-    const key = await deriveKey(password, salt);
-    const pt = await crypto.subtle.decrypt(
+    const key  = await deriveKey(password, salt);
+    const pt   = await crypto.subtle.decrypt(
       { name: 'AES-GCM', iv }, key, ct
     );
     return JSON.parse(new TextDecoder().decode(pt));
   }
 
-  // ---------- IDB (own connection, no coupling) ----------
+  // ---------- IDB (own connection) ----------
   function openDB() {
     return new Promise((resolve, reject) => {
       const req = indexedDB.open(DB_NAME, DB_VERSION);
       req.onsuccess = () => resolve(req.result);
       req.onerror   = () => reject(req.error);
-      // If the main app hasn't created stores yet, we create them so we
-      // don't blow up. If they exist, onupgradeneeded won't fire.
       req.onupgradeneeded = (e) => {
         const db = e.target.result;
         if (!db.objectStoreNames.contains('meta'))
@@ -109,7 +111,7 @@
 
   function idbGet(db, store, key) {
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(store, 'readonly');
+      const tx  = db.transaction(store, 'readonly');
       const req = tx.objectStore(store).get(key);
       req.onsuccess = () => resolve(req.result);
       req.onerror   = () => reject(req.error);
@@ -118,23 +120,25 @@
 
   function idbGetAll(db, store) {
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(store, 'readonly');
+      const tx  = db.transaction(store, 'readonly');
       const req = tx.objectStore(store).getAll();
       req.onsuccess = () => resolve(req.result || []);
       req.onerror   = () => reject(req.error);
     });
   }
 
-  function idbPut(db, store, value) {
+  // NOTE: we intentionally do NOT provide an idbPut for the 'meta' store.
+  // This script must never modify 'meta' in IDB.
+  function idbPutTx(db, value) {
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(store, 'readwrite');
-      tx.objectStore(store).put(value);
+      const tx = db.transaction('tx', 'readwrite');
+      tx.objectStore('tx').put(value);
       tx.oncomplete = () => resolve();
       tx.onerror    = () => reject(tx.error);
     });
   }
 
-  // ---------- Permission helpers ----------
+  // ---------- Permissions ----------
   async function permissionState(handle) {
     if (!handle || !handle.queryPermission) return 'unsupported';
     try {
@@ -215,7 +219,6 @@
       return await decryptData(buf, PASSWORD);
     } catch (e) {
       if (e && e.name === 'NotFoundError') return null;
-      // Corrupt or wrong password -> treat as empty, we'll overwrite
       warn('readBackupFile: could not decrypt, treating as empty', e);
       return null;
     }
@@ -224,85 +227,76 @@
   async function writeBackupFile(dirHandle, payload) {
     const bytes = await encryptData(payload, PASSWORD);
     const fh = await dirHandle.getFileHandle(BACKUP_FILE, { create: true });
-    const w = await fh.createWritable();
+    const w  = await fh.createWritable();
     await w.write(bytes);
     await w.close();
   }
 
   // ---------- Reconciliation core ----------
-  // Backup = strict mirror of IDB. IDB wins on conflicts.
+  // Rules:
+  //   - Only 'tx' records are read from IDB and written to the file.
+  //   - The 'meta' array inside the backup file is preserved verbatim.
+  //   - If IDB is "fresh" (no 'config' meta record), we skip the write.
+  //   - If the merged tx count < existing file tx count, we skip the write.
   async function reconcile(dirHandle) {
     log('starting reconcile…');
 
     const db = await openDB();
     try {
-      // 1. Read everything from IDB
-      const idbMeta = await idbGetAll(db, 'meta');
-      const idbTx   = await idbGetAll(db, 'tx');
+      // 1. Safety: is this a fresh browser / cleared IDB?
+      const configRec = await idbGet(db, 'meta', CONFIG_META_ID);
+      if (!configRec) {
+        log('IDB has no "config" record — treating browser as fresh, skipping reconcile');
+        return { ok: false, reason: 'fresh-browser' };
+      }
 
-      // 2. Read existing backup (may be null / stale)
+      // 2. Read tx records from IDB only.
+      const idbTx = await idbGetAll(db, 'tx');
+
+      // 3. Read existing backup.
       const existing = await readBackupFile(dirHandle);
-      const backupMeta = (existing && Array.isArray(existing.meta)) ? existing.meta : [];
-      const backupTx   = (existing && Array.isArray(existing.tx))   ? existing.tx   : [];
 
-      // 3. Build union maps keyed by id. IDB wins on conflict.
-      const metaMap = new Map();
-      for (const r of backupMeta) if (r && r.id != null) metaMap.set(r.id, r);
-      for (const r of idbMeta)   if (r && r.id != null) metaMap.set(r.id, r);
+      // If we can't decrypt the existing file, do NOT overwrite it.
+      // This is the backup the user may still need to restore from.
+      if (existing === null) {
+        warn('backup file missing or undecryptable — refusing to overwrite');
+        return { ok: false, reason: 'no-readable-backup' };
+      }
 
+      const backupMeta = Array.isArray(existing.meta) ? existing.meta : [];
+      const backupTx   = Array.isArray(existing.tx)   ? existing.tx   : [];
+
+      // 4. Merge tx by id. IDB wins on conflict.
       const txMap = new Map();
       for (const r of backupTx) if (r && r.id != null) txMap.set(r.id, r);
       for (const r of idbTx)   if (r && r.id != null) txMap.set(r.id, r);
 
-      // Don't leak the directory handle itself into the encrypted file.
-      // (It's not serializable anyway, but be defensive.)
-      metaMap.delete(BACKUP_META_ID);
-
-      // 4. Sort tx by id ascending for stable file contents
       const mergedTx = Array.from(txMap.values())
         .sort((a, b) => (a.id > b.id ? 1 : a.id < b.id ? -1 : 0));
 
-      const mergedMeta = Array.from(metaMap.values());
-
-      const payload = {
-        meta: mergedMeta,
-        tx: mergedTx,
-        reconciledAt: Date.now(),
-        version: 1
-      };
-
-      // 5. Skip write if nothing changed since last reconcile
-      const last = await idbGet(db, 'meta', '__backupReconcileState');
-      const signature = JSON.stringify({
-        m: mergedMeta.length,
-        t: mergedTx.length,
-        lastTxId: mergedTx.length ? mergedTx[mergedTx.length - 1].id : null,
-        lastMetaId: mergedMeta.length ? mergedMeta[mergedMeta.length - 1].id : null
-      });
-      if (last && last.signature === signature) {
-        log('nothing to update (signature unchanged)');
-        await idbPut(db, 'meta', {
-          id: '__backupReconcileState',
-          signature,
-          reconciledAt: Date.now(),
-          skipped: true
-        });
-        return { ok: true, skipped: true, txCount: mergedTx.length, metaCount: mergedMeta.length };
+      // 5. Safety: refuse to shrink the backup's tx list.
+      if (mergedTx.length < backupTx.length) {
+        warn(`refusing to shrink tx list (file=${backupTx.length}, merged=${mergedTx.length})`);
+        return { ok: false, reason: 'would-shrink' };
       }
 
-      // 6. Write merged backup to disk
+      // 6. No-op check.
+      if (mergedTx.length === backupTx.length &&
+          mergedTx.every((r, i) => r.id === backupTx[i]?.id)) {
+        log('tx list unchanged — no write needed');
+        return { ok: true, skipped: true, txCount: mergedTx.length };
+      }
+
+      // 7. Write merged file. Preserve meta exactly as read.
+      const payload = {
+        meta: backupMeta,
+        tx: mergedTx
+      };
+
       await writeBackupFile(dirHandle, payload);
-      log(`wrote backup: ${mergedTx.length} tx, ${mergedMeta.length} meta`);
+      log(`wrote backup: ${mergedTx.length} tx (meta preserved: ${backupMeta.length})`);
 
-      // 7. Persist signature
-      await idbPut(db, 'meta', {
-        id: '__backupReconcileState',
-        signature,
-        reconciledAt: Date.now(),
-        skipped: false
-      });
-
-      return { ok: true, skipped: false, txCount: mergedTx.length, metaCount: mergedMeta.length };
+      return { ok: true, skipped: false, txCount: mergedTx.length, metaCount: backupMeta.length };
     } finally {
       try { db.close(); } catch (_) {}
     }
@@ -319,14 +313,9 @@
     }
   }
 
-  async function storeHandle(db, handle) {
-    await idbPut(db, 'meta', { id: BACKUP_META_ID, value: handle });
-  }
-
-  // Attempt an unattended reconcile. Returns true if it ran.
   async function tryUnattendedReconcile() {
     if (!('showDirectoryPicker' in window)) {
-      warn('File System Access API not supported in this browser');
+      warn('File System Access API not supported');
       return false;
     }
     const db = await openDB();
@@ -334,8 +323,6 @@
     try {
       handle = await getStoredHandle(db);
     } finally {
-      // keep db open a moment longer for reconcile; reconcile opens its own,
-      // so closing here is fine.
       try { db.close(); } catch (_) {}
     }
     if (!handle) {
@@ -348,15 +335,14 @@
 
     try {
       const res = await reconcile(handle);
-      log('unattended reconcile ok', res);
-      return true;
+      log('unattended reconcile result', res);
+      return res.ok === true;
     } catch (e) {
       err('unattended reconcile failed', e);
       return false;
     }
   }
 
-  // User-gesture path: re-request or re-pick, then reconcile.
   async function manualReconnect() {
     const db = await openDB();
     let handle = null;
@@ -366,17 +352,15 @@
       try { db.close(); } catch (_) {}
     }
 
-    // Case A: handle exists but permission is dead -> requestPermission
     if (handle) {
       const state = await permissionState(handle);
       if (state !== 'granted') {
         const req = await requestPermission(handle);
         log('requestPermission ->', req);
-        if (req !== 'granted') handle = null; // fall through to re-pick
+        if (req !== 'granted') handle = null;
       }
     }
 
-    // Case B: no handle, or permission was denied -> re-pick folder
     if (!handle) {
       try {
         handle = await window.showDirectoryPicker({
@@ -391,15 +375,25 @@
         err('showDirectoryPicker failed', e);
         return { ok: false, reason: 'picker-failed' };
       }
+      // Store the handle in IDB's meta so the main app can find it later.
+      // This is the ONLY meta write this script performs.
       const db2 = await openDB();
-      try { await storeHandle(db2, handle); }
-      finally { try { db2.close(); } catch (_) {} }
-      log('stored new handle');
+      try {
+        await new Promise((resolve, reject) => {
+          const tx = db2.transaction('meta', 'readwrite');
+          tx.objectStore('meta').put({ id: BACKUP_META_ID, value: handle });
+          tx.oncomplete = () => resolve();
+          tx.onerror    = () => reject(tx.error);
+        });
+      } finally {
+        try { db2.close(); } catch (_) {}
+      }
+      log('stored new handle in IDB meta');
     }
 
     try {
       const res = await reconcile(handle);
-      log('manual reconcile ok', res);
+      log('manual reconcile result', res);
       return { ok: true, ...res };
     } catch (e) {
       err('manual reconcile failed', e);
@@ -407,25 +401,31 @@
     }
   }
 
-  // ---------- Boot orchestration ----------
+  // ---------- Boot ----------
   async function boot() {
-    if (!('indexedDB' in window)) {
-      warn('no indexedDB, aborting');
-      return;
-    }
-    if (!('showDirectoryPicker' in window)) {
-      // Silent — old browsers. Nothing we can do.
-      return;
-    }
+    if (!('indexedDB' in window)) { warn('no indexedDB'); return; }
+    if (!('showDirectoryPicker' in window)) return;
 
-    // Small delay so the main app's initDB() finishes first if it's racing.
     await new Promise(r => setTimeout(r, 400));
 
-    // 1) Try unattended
+    // Sanity: if the main app hasn't loaded yet, bail. The main app sets
+    // `state.user` in its own boot(); if it's missing, we're probably
+    // looking at a fresh install and there's nothing to reconcile.
+    const db0 = await openDB();
+    let hasConfig = false;
+    try {
+      hasConfig = !!(await idbGet(db0, 'meta', CONFIG_META_ID));
+    } finally {
+      try { db0.close(); } catch (_) {}
+    }
+    if (!hasConfig) {
+      log('no config record — main app not initialized yet, skipping boot');
+      return;
+    }
+
     const ok = await tryUnattendedReconcile();
     if (ok) { hideBanner(); return; }
 
-    // 2) Figure out why and show the right banner
     const db = await openDB();
     let handle = null;
     try { handle = await getStoredHandle(db); }
@@ -434,14 +434,16 @@
     if (!handle) {
       showBanner({
         title: 'Backup not set up',
-        msg: 'Choose a folder to keep an encrypted copy of your data.',
+        msg: 'Choose a folder to keep an encrypted copy of your transactions.',
         btn: 'Set up backup',
         onClick: async () => {
           const r = await manualReconnect();
           if (r.ok) {
             showBanner({
               title: 'Backup active',
-              msg: `Synced ${r.txCount ?? 0} transactions.`,
+              msg: r.skipped
+                ? 'Already up to date.'
+                : `Synced ${r.txCount ?? 0} transactions.`,
               btn: 'OK',
               onClick: hideBanner
             });
@@ -458,7 +460,6 @@
       return;
     }
 
-    // Handle exists but permission isn't granted
     showBanner({
       title: 'Backup needs permission',
       msg: 'Reconnect your backup folder to keep saving new transactions.',
@@ -488,7 +489,7 @@
 
   // ---------- Public surface ----------
   window.TravisBackup = {
-    version: '1.0.0',
+    version: '1.1.0',
     reconcileNow: async () => {
       const db = await openDB();
       let handle = null;
@@ -503,10 +504,7 @@
     boot
   };
 
-  // Auto-boot
-  // >>> CHANGE #2: the auto-boot is now scheduled with BOOT_DELAY_MS (10 min)
-  // >>> instead of 0 ms. The timer starts once the app/page has loaded.
-  // >>> (Calling window.TravisBackup.boot() manually still runs immediately.)
+  // Auto-boot after 10 minutes.
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     setTimeout(boot, BOOT_DELAY_MS);
   } else {
