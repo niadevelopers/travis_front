@@ -37,6 +37,10 @@
   const LOG          = '[TravisBackup]';
   const BANNER_ID    = 'travis-backup-banner';
 
+  // >>> CHANGE #1: how long to wait after the app loads before the
+  // >>> backup reconcile fires automatically. 10 minutes in milliseconds.
+  const BOOT_DELAY_MS = 10 * 60 * 1000;        // 600,000 ms = 10 minutes
+
   // ---------- Tiny logger ----------
   const log  = (...a) => console.log(LOG, ...a);
   const warn = (...a) => console.warn(LOG, ...a);
@@ -500,9 +504,12 @@
   };
 
   // Auto-boot
+  // >>> CHANGE #2: the auto-boot is now scheduled with BOOT_DELAY_MS (10 min)
+  // >>> instead of 0 ms. The timer starts once the app/page has loaded.
+  // >>> (Calling window.TravisBackup.boot() manually still runs immediately.)
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    setTimeout(boot, 0);
+    setTimeout(boot, BOOT_DELAY_MS);
   } else {
-    window.addEventListener('DOMContentLoaded', () => setTimeout(boot, 0));
+    window.addEventListener('DOMContentLoaded', () => setTimeout(boot, BOOT_DELAY_MS));
   }
 })();
