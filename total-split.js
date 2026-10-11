@@ -102,12 +102,12 @@
                 <div style="display:flex;align-items:stretch;gap:0;margin-top:6px;">
                     <div style="flex:1;min-width:0;padding-right:10px;">
                         <div style="font-size:10px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;">Cash</div>
-                        <div class="metric-value" style="font-size:16px;font-weight:800;color:#107C10;line-height:1.25;word-break:break-all;">KSh ${money(cash)}</div>
+                        <div class="metric-value" style="font-size:16px;font-weight:800;color:#228B22 !important;line-height:1.25;word-break:break-all;">KSh ${money(cash)}</div>
                     </div>
                     <div style="width:1px;background:#e5e7eb;flex-shrink:0;"></div>
                     <div style="flex:1;min-width:0;padding-left:10px;">
                         <div style="font-size:10px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;">M-Pesa / Bank</div>
-                        <div class="metric-value" style="font-size:16px;font-weight:800;color:#0078D4;line-height:1.25;word-break:break-all;">KSh ${money(bank)}</div>
+                        <div class="metric-value" style="font-size:16px;font-weight:800;color:#0078D4 !important;line-height:1.25;word-break:break-all;">KSh ${money(bank)}</div>
                     </div>
                 </div>
             `;
@@ -131,7 +131,13 @@
             setTimeout(applySplit, 0);
         });
 
-        observer.observe(container, { childList: true, subtree: true });
+        observer.observe(container, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            characterData: true,
+            attributeFilter: ['class', 'style']
+        });
     }
 
     // ---- Boot: wait for the app to render, then split --------------------
@@ -153,7 +159,7 @@
             let extra = 0;
             const extraTimer = setInterval(() => {
                 applySplit();
-                if (++extra >= 8) clearInterval(extraTimer);
+                if (++extra >= 30) clearInterval(extraTimer); // ~12s of safety re-applies
             }, 400);
             return;
         }
