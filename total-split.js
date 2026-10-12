@@ -16,7 +16,9 @@
    - Uses the main app's own globals (getBalance, getFin, state, nav) so
      values always match what the rest of the app shows.
    - Re-applies automatically whenever the main app rewrites the header,
-     via a MutationObserver.
+     via a MutationObserver, plus a long safety re-apply loop.
+   - Colors are applied via an injected stylesheet (with !important), NOT
+     inline styles, so the main app's own CSS cannot override them.
    - Self-disables silently on any error. Never throws, never blocks the
      main app, never modifies anything except that one card's innerHTML.
 
@@ -36,6 +38,20 @@
 
     // A marker we put on the card once we've split it, so we don't loop.
     const SPLIT_MARK = 'data-total-split-applied';
+
+    // ---- One-time stylesheet injection ------------------------------------
+    // Using a stylesheet with !important guarantees the colors win against
+    // the main app's own CSS, regardless of what it does to the card.
+    function ensureStyles() {
+        if (document.getElementById('tg-total-split-styles')) return;
+        const style = document.createElement('style');
+        style.id = 'tg-total-split-styles';
+        style.textContent = `
+            .tg-cash-val { color: #228B22 !important; }
+            .tg-bank-val { color: #0078D4 !important; }
+        `;
+        (document.head || document.documentElement).appendChild(style);
+    }
 
     // ---- Small helpers ----------------------------------------------------
     function money(n) {
@@ -102,12 +118,12 @@
                 <div style="display:flex;align-items:stretch;gap:0;margin-top:6px;">
                     <div style="flex:1;min-width:0;padding-right:10px;">
                         <div style="font-size:10px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;">Cash</div>
-                        <div class="metric-value" style="font-size:16px;font-weight:800;color:#228B22 !important;line-height:1.25;word-break:break-all;">KSh ${money(cash)}</div>
+                        <div class="metric-value tg-cash-val" style="font-size:16px;font-weight:800;line-height:1.25;word-break:break-all;">KSh ${money(cash)}</div>
                     </div>
                     <div style="width:1px;background:#e5e7eb;flex-shrink:0;"></div>
                     <div style="flex:1;min-width:0;padding-left:10px;">
                         <div style="font-size:10px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;">M-Pesa / Bank</div>
-                        <div class="metric-value" style="font-size:16px;font-weight:800;color:#0078D4 !important;line-height:1.25;word-break:break-all;">KSh ${money(bank)}</div>
+                        <div class="metric-value tg-bank-val" style="font-size:16px;font-weight:800;line-height:1.25;word-break:break-all;">KSh ${money(bank)}</div>
                     </div>
                 </div>
             `;
@@ -147,6 +163,8 @@
     function boot() {
         attempts++;
 
+        ensureStyles();
+
         const ready =
             typeof window.getBalance === 'function' &&
             document.querySelector('.metric-card');
@@ -154,10 +172,11 @@
         if (ready) {
             applySplit();
             attachObserver();
-            // Safety net: run a few more times over the next couple of
-            // seconds in case the app re-renders late.
+            // Safety net: keep re-applying for a while in case the app
+            // re-renders late (or repeatedly, e.g. on a timer).
             let extra = 0;
             const extraTimer = setInterval(() => {
+                ensureStyles();
                 applySplit();
                 if (++extra >= 30) clearInterval(extraTimer); // ~12s of safety re-applies
             }, 400);
