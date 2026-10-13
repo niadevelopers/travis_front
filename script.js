@@ -1450,12 +1450,24 @@ const _travisThread = {
     lastIntent: null,
     lastTimeframeDays: 7,
     lastAmount: 0,
-    // NEPQ flow state
     mode: 'idle',        // 'idle' | 'nepq' | 'clarifying'
-    nepqStep: 0,         // 0..4 (0 = not started; 4 = committed)
-    nepqAnswers: {},     // user's answers to each step
-    silentTurns: 0       // for detecting conversation end
+    nepqStep: 0,
+    nepqAnswers: {},
+    silentTurns: 0,
+    // NEW: which topics we've already probed this money talk
+    covered: {
+        spending: false,
+        income: false,
+        habit: false,
+        bill: false,
+        savings: false
+    },
+    focusName: null,
+    focusPayer: null,
+    focusHabit: null,
+    lastMirror: ''
 };
+
 const _TRAVIS_MAX_DEPTH = 4;
 
 function _travisTopicOf(intent) {
@@ -1470,12 +1482,12 @@ function _travisTopicOf(intent) {
 /* ---------- NEPQ SCRIPT ---------- */
 /* Four questions max, each drawn from real ledger data.
    Never ask something we already know. */
+/* ---------- NEPQ OPENER (used only at chat start) ---------- */
 function _travisNepqQuestion(step, analysis, fin) {
     const isBiz = state.user?.type === 'business';
-    const biz = isBiz ? 'your hustle' : 'you';
+    const biz = isBiz ? 'the hustle' : 'you';
 
     if (step === 0) {
-        // Situation: mirror back what we see and ask what they want to change
         const [cat, amt] = analysis.outCats[0] || [null, 0];
         const [src, inc] = analysis.inSources[0] || [null, 0];
         let anchor = '';
@@ -1486,41 +1498,15 @@ function _travisNepqQuestion(step, analysis, fin) {
         } else if (amt > 0) {
             anchor = `This week ${biz} spent ${_travisMoney(analysis.totalOut)}.`;
         } else {
-            anchor = `I don't see much movement yet.`;
+            anchor = `I do not see much movement yet, so let us start from what is on hand.`;
         }
         const focus = cat
             ? ` The biggest outgoing was ${cat} at ${_travisMoney(amt)}. If you could change one thing about how money moves for ${biz}, what would it be?`
             : ` What would you like to change about how money moves for ${biz}?`;
         return anchor + focus;
     }
-
-    if (step === 1) {
-        // Problem: deepen the pain around the earlier focus
-        const [cat] = analysis.outCats[0] || [null];
-        if (cat) {
-            return `You mentioned wanting to change something. Help me understand, what does it cost ${biz} when ${cat} keeps climbing the way it is?`;
-        }
-        return `What is the part of ${biz} money that keeps bothering you the most?`;
-    }
-
-    if (step === 2) {
-        // Implication: future cost of not changing
-        const fin2 = getFin();
-        const daily = Math.max(0, fin2.daily);
-        if (daily < 100) {
-            return `If nothing changes, ${biz} will keep living on about ${_travisMoney(daily)} a day. Where does that leave you in three months?`;
-        }
-        return `If this pattern continues, ${biz} has about ${fin2.daysRem} days of breathing room before bills bite. How does that sit with you?`;
-    }
-
-    if (step === 3) {
-        // Need-payoff: get them to say the benefit out loud
-        const fin3 = getFin();
-        const target = Math.floor(Math.max(0, fin3.daily) * 0.15);
-        return `Say ${biz} could reliably keep ${_travisMoney(target)} a day safe. What would that free up for you?`;
-    }
-
-    return `What is the first small move you want to make this week?`;
+    // Fallback if opener is called at a later step by mistake
+    return _travisProbeNext(analysis, fin) || `Where do you want to go from here?`;
 }
 
 /* ---------- STATUS LINE ---------- */
@@ -1938,6 +1924,83 @@ function _travisBusiness(intent, p) {
     return `Ask me about the hustle's spending, earning, bills, or how it is doing, and I will look at the numbers.`;
 }
 
+
+/* ---------- MIRROR (makes user feel heard) ---------- */
+function _travisMirror(userSaid, topic, analysis) {
+    const s = String(userSaid || '').trim();
+    const short = s.length > 90 ? s.slice(0, 88).trim() + '...' : s;
+    const pick = [
+        `So what I hear is, ${short.toLowerCase()}`,
+        `Let me make sure I have this right: ${short.toLowerCase()}`,
+        `Okay. ${short.charAt(0).toUpperCase() + short.slice(1)}`,
+        `Noted. ${short.charAt(0).toUpperCase() + short.slice(1)}`
+    ];
+    return pick[Math.floor(Math.random() * pick.length)];
+}
+
+/* ---------- PROBE PICKER (decides the next topic) ---------- */
+function _travisProbeNext(analysis, fin) {
+    const t = _travisThread;
+    const isBiz = state.user?.type === 'business';
+    const biz = isBiz ? 'the hustle' : 'you';
+
+    // Order of interest: biggest outgoing name → top payer → airtime/small leaks
+    // → unsettled bill → savings → decision prompt.
+
+    // 1. Someone is the biggest single outgoing by name (a person, not a category)
+    if (!t.covered.spending && analysis.topOut[0]) {
+        const top = analysis.topOut[0];
+        t.covered.spending = true;
+        t.focusName = top.desc;
+        return `Looking at this week, the biggest single payment went to ${top.desc} at ${_travisMoney(top.amount)}. Is that someone or something you pay often?`;
+    }
+
+    // 2. A specific payer shows up repeatedly (regular income source)
+    if (!t.covered.income && analysis.topIn[0]) {
+        const top = analysis.topIn[0];
+        // Look for other transactions from the same source in the window
+        const sameSource = analysis.inTx.filter(x => x.source === top.source);
+        const repeatCount = sameSource.length;
+        t.covered.income = true;
+        t.focusPayer = top.source;
+        if (repeatCount > 1) {
+            return `Let me switch to income. ${top.source} sent ${_travisMoney(top.amount)} this week, and I see ${repeatCount} payments from them in this window. Is ${top.source} a regular for ${biz} or was this a one-off?`;
+        }
+        return `Let me switch to income. The biggest came from ${top.source} at ${_travisMoney(top.amount)}. Is ${top.source} someone ${biz} counts on, or was this once?`;
+    }
+
+    // 3. Small repeated charges — habit probe
+    if (!t.covered.habit && analysis.outCats.length) {
+        const smallRepeat = analysis.outTx
+            .filter(x => x.amount <= 100)
+            .sort((a, b) => b.amount - a.amount)[0];
+        if (smallRepeat) {
+            t.covered.habit = true;
+            t.focusHabit = smallRepeat.desc;
+            return `Now something quieter. I see small amounts going out, like ${_travisMoney(smallRepeat.amount)} on ${smallRepeat.desc}. Do these feel small to ${biz}, or do you think they add up over a month?`;
+        }
+    }
+
+    // 4. Unsettled bill
+    if (!t.covered.bill && fin.obsStatus && fin.obsStatus.length) {
+        const due = fin.obsStatus.find(o => o.pending > 0);
+        if (due) {
+            t.covered.bill = true;
+            return `There is also ${due.label} with ${_travisMoney(due.pending)} still due. What happens if that sits unpaid for two or three weeks?`;
+        }
+    }
+
+    // 5. Savings frame
+    if (!t.covered.savings && fin.daily > 50) {
+        t.covered.savings = true;
+        const target = Math.floor(fin.daily * 0.1);
+        return `Say ${biz} could keep ${_travisMoney(target)} a day untouched. Not spending it, just letting it grow. What would that change for ${biz} in three months?`;
+    }
+
+    // 6. Close the arc
+    return null; // signals end of money talk
+}
+
 /* ============================================================
    handleAsk() — with tone handling, NEPQ flow, and closing sense
    ============================================================ */
@@ -2005,11 +2068,17 @@ async function handleAsk() {
     const topic = _travisTopicOf(intent);
 
     // ---- ENTER NEPQ MODE ----
+        // ---- ENTER NEPQ MODE ----
     if (intent === 'chat') {
         _travisThread.mode = 'nepq';
         _travisThread.nepqStep = 0;
         _travisThread.nepqAnswers = {};
         _travisThread.topic = 'nepq';
+        _travisThread.covered = { spending: false, income: false, habit: false, bill: false, savings: false };
+        _travisThread.focusName = null;
+        _travisThread.focusPayer = null;
+        _travisThread.focusHabit = null;
+        _travisThread.lastMirror = '';
 
         const opener = voice('chat', { amount, analysis, timeLabel: tf.label });
         const q = _travisNepqQuestion(0, analysis, fin);
@@ -2020,36 +2089,41 @@ async function handleAsk() {
         return;
     }
 
-    // ---- CONTINUE NEPQ ----
+    // ---- CONTINUE NEPQ (mirroring + probing) ----
     if (_travisThread.mode === 'nepq') {
-        // Any meaningful reply advances the flow, unless it clearly switches intent
-        if (intent === 'unknown' || tone === 'sharing' || tone === 'statement' || tone === 'question' || tone === 'advice_seeking' || tone === 'confirm') {
-            const step = _travisThread.nepqStep;
-            _travisThread.nepqAnswers[`step${step}`] = raw;
+        const midTalk = ['sharing','statement','question','advice_seeking','confirm','short','silence'].includes(tone)
+                     || intent === 'unknown';
 
-            if (step >= 4) {
-                // Conversation arc complete
-                const close = `Asante for sharing all that. You have done the hard part, which is looking at it honestly. Take one small step this week and we will build from there.`;
+        if (midTalk) {
+            // Mirror the user's last message
+            const mirror = _travisMirror(raw, _travisThread.topic, analysis);
+            _travisThread.lastMirror = mirror;
+
+            // Pick the next probe based on what we've already covered
+            const nextQ = _travisProbeNext(analysis, fin);
+
+            if (!nextQ) {
+                // Arc complete
+                const close = `Asante for walking through all that with me. You have looked at this honestly, and that is more than most people do. Take one small step this week and come back when you want to go deeper.`;
                 chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${close}</div></div>`;
                 chatBox.scrollTop = chatBox.scrollHeight;
                 _travisThread.mode = 'idle';
                 _travisThread.nepqStep = 0;
                 _travisThread.nepqAnswers = {};
+                _travisThread.covered = { spending: false, income: false, habit: false, bill: false, savings: false };
                 return;
             }
 
-            // Mirror back what they said, then ask next NEPQ question
-            const ack = _travisAcknowledge(tone);
-            const nextQ = _travisNepqQuestion(step, analysis, fin);
-            const reply = `${ack ? ack + ' ' : ''}${nextQ}`;
+            const reply = `${mirror} ${nextQ}`;
             chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${reply}</div></div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
-            _travisThread.nepqStep = step + 1;
+            _travisThread.nepqStep += 1;
             return;
         }
-        // User changed topic mid-NEPQ, fall through to normal handling
+
+        // User changed topic mid-talk: exit NEPQ, fall through to normal handling
         _travisThread.mode = 'idle';
-        _travisThread.nepqStep = 0;
+        _travisThread.covered = { spending: false, income: false, habit: false, bill: false, savings: false };
     }
 
     // ---- TRUE OFF-TOPIC ----
