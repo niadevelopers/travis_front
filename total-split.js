@@ -108,7 +108,7 @@
             const accent = card.querySelector('.metric-accent');
             const accentBg = accent ? accent.style.background : '#0078D4';
             const icon = card.querySelector('.metric-icon');
-            const iconText = icon ? icon.textContent : '💰';
+            const iconText = icon ? icon.textContent : ' ';
 
             card.innerHTML = `
                 <div class="metric-accent" style="background:${accentBg};"></div>
