@@ -911,7 +911,7 @@ function nav(_0x53a580) {
             <div id="rule-suggestion-container" style="display:none;">
                 <div class="suggestion-card">
                     <div class="suggestion-header">
-                        <span class="icon">💡</span>
+                        <span class="icon"> </span>
                         <span class="title">Money Management Suggestion</span>
                         <span class="sub">50/30/20 approach</span>
                     </div>
@@ -922,17 +922,17 @@ function nav(_0x53a580) {
                     
                     <div class="suggestion-grid">
                         <div class="suggestion-item wants">
-                            <div class="label">🛍️ Daily Living</div>
+                            <div class="label"> Daily Living</div>
                             <div class="amount" id="rule-wants-amount">KSh 0</div>
                             <div class="desc">Food, transport, shopping</div>
                         </div>
                         <div class="suggestion-item savings">
-                            <div class="label">💰 Set Aside</div>
+                            <div class="label"> Set Aside</div>
                             <div class="amount" id="rule-savings-amount">KSh 0</div>
                             <div class="desc">Emergency fund, savings</div>
                         </div>
                         <div class="suggestion-item buffer">
-                            <div class="label">🛡️ Just in Case</div>
+                            <div class="label"> Just in Case</div>
                             <div class="amount" id="rule-buffer-amount">KSh 0</div>
                             <div class="desc">Unexpected bills, overages</div>
                         </div>
@@ -1082,22 +1082,22 @@ function updateHeader(_0x5a58f5) {
             'label': 'Total\x20Money\x20You\x20Have',
             'value': _0x22db41(0x327) + _0x5a58f5[_0x22db41(0x263)][_0x22db41(0x3c9)](),
             'color': _0x22db41(0x227),
-            'icon': '💰'
+            'icon': ' '
         }, {
             'label': _0x22db41(0x414),
             'value': 'KSh\x20' + _0x5a58f5[_0x22db41(0x30d)]['toLocaleString'](),
             'color': _0x22db41(0x275),
-            'icon': '📋'
+            'icon': ' '
         }, {
             'label': _0x22db41(0x32f),
             'value': _0x5a58f5['daysRem'] + _0x22db41(0x2e8),
             'color': '#107C10',
-            'icon': '📅'
+            'icon': ' '
         }, {
             'label': _0x22db41(0x294),
             'value': _0x22db41(0x327) + Math[_0x22db41(0x249)](0x0, _0x5a58f5['daily'])[_0x22db41(0x3b2)](0x0),
             'color': _0x216c0d['color'],
-            'icon': '📊'
+            'icon': ' '
         }];
     _0x155eb7[_0x22db41(0x2cd)][_0x22db41(0x3f9)] = _0x22db41(0x1ca);
     window[_0x22db41(0x322)] < 0x258 && (_0x155eb7[_0x22db41(0x2cd)][_0x22db41(0x3f9)] = _0x22db41(0x3a6));
