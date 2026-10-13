@@ -814,9 +814,9 @@
                     <button id="mpesa-close" style="background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;">×</button>
                 </div>
                 <div style="display:flex;gap:4px;margin-top:14px;background:rgba(0,0,0,0.15);border-radius:8px;padding:3px;">
-                    <button class="mpesa-tab active" data-tab="paste" style="flex:1;padding:7px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:white;color:#007a3d;">📋 Paste SMS</button>
-                    <button class="mpesa-tab" data-tab="manual" style="flex:1;padding:7px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:rgba(255,255,255,0.8);">✏️ Manual Entry</button>
-                    <button class="mpesa-tab" data-tab="tariff" style="flex:1;padding:7px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:rgba(255,255,255,0.8);">📊 Tariff Table</button>
+                    <button class="mpesa-tab active" data-tab="paste" style="flex:1;padding:7px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:white;color:#007a3d;"> Paste SMS</button>
+                    <button class="mpesa-tab" data-tab="manual" style="flex:1;padding:7px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:rgba(255,255,255,0.8);"> Manual Entry</button>
+                    <button class="mpesa-tab" data-tab="tariff" style="flex:1;padding:7px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:rgba(255,255,255,0.8);"> Tariff Table</button>
                 </div>
             </div>
 
@@ -1070,7 +1070,7 @@
             }
         }
 
-        showStatus(overlay, `✅ ${posted} transaction${posted !== 1 ? 's' : ''} logged (KSh ${money(totalCharges)} in charges).`);
+        showStatus(overlay, ` ${posted} transaction${posted !== 1 ? 's' : ''} logged (KSh ${money(totalCharges)} in charges).`);
         btn.textContent = `✓ ${posted} Logged`;
         btn.style.background = '#16a34a';
         btn.disabled = false;
@@ -1133,7 +1133,7 @@
         const btn = overlay.querySelector('#manual-log-btn');
 
         if (amount <= 0) {
-            showStatus(overlay, '❌ Enter an amount first.');
+            showStatus(overlay, ' Enter an amount first.');
             return;
         }
 
@@ -1172,12 +1172,12 @@
         btn.textContent = 'Logging…';
         try {
             await postParsedTransaction(parsed);
-            showStatus(overlay, '✅ Logged to your ledger.');
+            showStatus(overlay, ' Logged to your ledger.');
             overlay.querySelector('#manual-amount').value = '';
             overlay.querySelector('#manual-desc').value = '';
             overlay.querySelector('#manual-lookup-result').style.display = 'none';
         } catch (err) {
-            showStatus(overlay, '❌ Failed to log: ' + err.message);
+            showStatus(overlay, ' Failed to log: ' + err.message);
         }
         btn.disabled = false;
         btn.textContent = 'Log This Transaction';
