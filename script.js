@@ -1233,11 +1233,50 @@ function closeHelpModal() {
 
 // ---------- SILENT HELPERS (never shown to user) ----------
 
+
+/* ============================================================
+   TRAVIS AI CORE v3 — Wallet-framed, conversational, 4-deep
+   MONEY DIRECTION (final, user-confirmed):
+     Debit a wallet (Cash/M-Pesa/Bank)  = money IN  = INCOME
+     Credit a wallet                    = money OUT = EXPENSE
+     Wallet <-> Wallet                  = transfer, ignore
+     Neither side is a wallet           = internal, ignore
+   Counter-account is the category ("from X" or "on X").
+   ============================================================ */
+
+/* ---------- WALLET DETECTION ---------- */
+function _travisIsWallet(account) {
+    if (!account) return false;
+    const n = account.toLowerCase();
+    return n.includes('cash')
+        || n.includes('m-pesa') || n.includes('mpesa') || n.includes('m pesa')
+        || n.includes('bank');
+}
+
+function _travisCleanName(name) {
+    if (!name) return 'Other';
+    return String(name).trim();
+}
+
+/* ---------- HUMAN FORMATTERS ---------- */
+function _travisMoney(n) {
+    n = Math.round(n || 0);
+    if (n === 0) return 'nothing';
+    return 'KSh ' + n.toLocaleString();
+}
+
+function _travisWhen(ts) {
+    const diff = Math.floor((Date.now() - ts) / 86400000);
+    if (diff <= 0) return 'today';
+    if (diff === 1) return 'yesterday';
+    if (diff < 7) return diff + ' days ago';
+    return new Date(ts).toLocaleDateString('en-KE', { weekday: 'long' });
+}
+
+/* ---------- PARSERS ---------- */
 function _travisParseMoney(text) {
-    // Pulls a shilling amount out of free text.
-    // "500", "500ksh", "1.2k", "3 million", "800,000" all work.
     if (!text) return 0;
-    const cleaned = text.toLowerCase().replace(/,/g, '');
+    const cleaned = String(text).toLowerCase().replace(/,/g, '');
     const m = cleaned.match(/(\d+(?:\.\d+)?)\s*(k|thousand|million|m|ksh|shillings|bob)?/i);
     if (!m) return 0;
     let n = parseFloat(m[1]);
@@ -1249,440 +1288,473 @@ function _travisParseMoney(text) {
 }
 
 function _travisParseTimeframe(text) {
-    // Returns { days, label } — defaults to 7 days.
     if (!text) return { days: 7, label: 'this week' };
-    const t = text.toLowerCase();
-    if (/\btoday\b/.test(t))       return { days: 1,   label: 'today' };
-    if (/yesterday/.test(t))       return { days: 2,   label: 'these two days' };
-    if (/this week|last 7|past week|last week/.test(t)) return { days: 7,   label: 'this week' };
-    if (/last 30|past month|this month/.test(t))        return { days: 30,  label: 'this month' };
-    if (/last month|previous month/.test(t))            return { days: 60,  label: 'the last two months' };
-    if (/this year|ytd/.test(t))   return { days: 365, label: 'this year' };
-    if (/all time|everything|ever/.test(t)) return { days: 3650, label: 'since you started' };
+    const t = String(text).toLowerCase();
+    if (/\btoday\b/.test(t))                        return { days: 1,   label: 'today' };
+    if (/yesterday/.test(t))                        return { days: 2,   label: 'since yesterday' };
+    if (/this week|last 7|past week/.test(t))       return { days: 7,   label: 'this week' };
+    if (/last week/.test(t))                        return { days: 14,  label: 'the last two weeks' };
+    if (/this month|last 30|past month/.test(t))    return { days: 30,  label: 'this month' };
+    if (/last month|previous month/.test(t))        return { days: 60,  label: 'the last two months' };
+    if (/this year|ytd/.test(t))                    return { days: 365, label: 'this year' };
+    if (/all time|ever|since i started/.test(t))    return { days: 3650, label: 'since you started' };
     return { days: 7, label: 'this week' };
 }
 
-function _travisDescribeTime(ts) {
-    const now = Date.now();
-    const diff = Math.floor((now - ts) / 86400000);
-    if (diff <= 0) return 'today';
-    if (diff === 1) return 'yesterday';
-    if (diff < 7) return diff + ' days ago';
-    return new Date(ts).toLocaleDateString('en-KE', { weekday: 'long' });
-}
-
-function _travisDescribeMoney(n) {
-    n = Math.round(n || 0);
-    if (n === 0) return 'nothing';
-    return 'KSh ' + n.toLocaleString();
-}
-
-function _travisNormalizeAccount(name) {
-    // Group similar names so the AI doesn't say "M-Pesa" one line and
-    // "Mpesa" the next. Purely cosmetic.
-    if (!name) return 'Other';
-    const n = name.toLowerCase().trim();
-    if (n.includes('m-pesa') || n === 'mpesa') return 'M-Pesa';
-    if (n.includes('bank')) return 'Bank';
-    if (n === 'cash') return 'Cash';
-    if (n.includes('food') || n.includes('grocer')) return 'Food & Groceries';
-    if (n.includes('transport') || n.includes('travel') || n.includes('matatu')) return 'Transport';
-    if (n.includes('rent')) return 'Rent';
-    if (n.includes('school') || n.includes('fees')) return 'School';
-    if (n.includes('inventory') || n.includes('stock')) return 'Stock';
-    if (n.includes('sales')) return 'Sales';
-    if (n.includes('service')) return 'Service';
-    if (n.includes('salary') || n.includes('wage')) return 'Salary';
-    if (n.includes('payroll') || n.includes('staff')) return 'Payroll';
-    if (n.includes('utility') || n.includes('utilities') || n.includes('power') || n.includes('water')) return 'Utilities';
-    if (n.includes('tax') || n.includes('kra')) return 'Tax';
-    return name; // fall back to what the user typed
-}
-
-/* -------------------------------------------------------------
-   _travisAnalyze(days)
-   Silent ledger reader.
-   Understands money direction: debit = money OUT, credit = money IN
-   for asset accounts. Uses getBalance() as source of truth.
-   ------------------------------------------------------------- */
+/* ---------- LEDGER ANALYZER (WALLET-FRAMED) ---------- */
 function _travisAnalyze(days = 7) {
     const cutoff = Date.now() - days * 86400000;
     const txs = (state.transactions || []).filter(t => t.id >= cutoff);
-    const isBiz = state.user?.type === 'business';
 
-    // Asset accounts (where balances live). Debit = out, Credit = in.
-    const assetNames = isBiz
-        ? ['Cash', 'Bank / M-Pesa', 'M-Pesa', 'Inventory', 'Fixed Assets', 'Accounts Receivable']
-        : ['Cash', 'Bank / M-Pesa', 'M-Pesa', 'Savings', 'Bank Account', 'Accounts Receivable'];
-
-    // For each tx, decide which side touched an asset account.
-    // debit touching asset  = money OUT
-    // credit touching asset = money IN
-    const outTx = [];
-    const inTx  = [];
+    const inTx  = [];  // wallet debited  → money IN
+    const outTx = [];  // wallet credited → money OUT
 
     txs.forEach(t => {
-        const debitIsAsset  = assetNames.some(a => (t.debit  || '').toLowerCase().includes(a.toLowerCase()));
-        const creditIsAsset = assetNames.some(a => (t.credit || '').toLowerCase().includes(a.toLowerCase()));
+        const debitIsWallet  = _travisIsWallet(t.debit);
+        const creditIsWallet = _travisIsWallet(t.credit);
 
-        if (debitIsAsset && !creditIsAsset) {
-            // e.g. M-Pesa → Food  → money left the wallet
-            outTx.push({
-                amount: t.amount,
-                category: _travisNormalizeAccount(t.credit), // the "why"
-                source:   _travisNormalizeAccount(t.debit),  // the wallet
-                desc: t.desc || t.credit || 'expense',
-                id: t.id
-            });
-        } else if (creditIsAsset && !debitIsAsset) {
-            // e.g. Sales → M-Pesa  → money entered the wallet
+        if (debitIsWallet && !creditIsWallet) {
+            // e.g. debit M-Pesa / credit Kevin Juma  → INCOME from Kevin Juma
             inTx.push({
-                amount: t.amount,
-                category: _travisNormalizeAccount(t.debit),  // the "where from"
-                sink:     _travisNormalizeAccount(t.credit), // the wallet
-                desc: t.desc || t.debit || 'income',
-                id: t.id
+                amount:   t.amount,
+                source:   _travisCleanName(t.credit),
+                wallet:   _travisCleanName(t.debit),
+                desc:     t.desc || t.credit || 'income',
+                id:       t.id
             });
-        } else {
-            // Both sides are asset accounts (transfer) OR neither.
-            // Treat as a transfer — not a true expense or income.
-            // Still keep it for balance math, but exclude from spend/earn totals.
+        } else if (creditIsWallet && !debitIsWallet) {
+            // e.g. debit Food / credit M-Pesa       → EXPENSE on Food
+            outTx.push({
+                amount:   t.amount,
+                category: _travisCleanName(t.debit),
+                wallet:   _travisCleanName(t.credit),
+                desc:     t.desc || t.debit || 'expense',
+                id:       t.id
+            });
         }
+        // wallet<->wallet transfer or non-wallet internal → ignore totals
     });
 
-    const totalOut = outTx.reduce((s, t) => s + t.amount, 0);
     const totalIn  = inTx.reduce((s, t) => s + t.amount, 0);
+    const totalOut = outTx.reduce((s, t) => s + t.amount, 0);
 
-    // Category breakdown (spending)
+    // Income breakdown by source (payer)
+    const inBySource = {};
+    inTx.forEach(t => { inBySource[t.source] = (inBySource[t.source] || 0) + t.amount; });
+    const inSources = Object.entries(inBySource).sort((a, b) => b[1] - a[1]);
+
+    // Expense breakdown by category (what it was for)
     const outByCat = {};
     outTx.forEach(t => { outByCat[t.category] = (outByCat[t.category] || 0) + t.amount; });
     const outCats = Object.entries(outByCat).sort((a, b) => b[1] - a[1]);
 
-    // Category breakdown (income)
-    const inByCat = {};
-    inTx.forEach(t => { inByCat[t.category] = (inByCat[t.category] || 0) + t.amount; });
-    const inCats = Object.entries(inByCat).sort((a, b) => b[1] - a[1]);
-
-    // Top individual transactions
-    const topOut = [...outTx].sort((a, b) => b.amount - a.amount);
     const topIn  = [...inTx].sort((a, b) => b.amount - a.amount);
+    const topOut = [...outTx].sort((a, b) => b.amount - a.amount);
 
-    // Previous-period comparison (same length, immediately before)
+    // Previous-period comparison
     const prevCutoff = cutoff - days * 86400000;
     const prevTxs = (state.transactions || []).filter(t => t.id >= prevCutoff && t.id < cutoff);
-    let prevOut = 0, prevIn = 0;
+    let prevIn = 0, prevOut = 0;
     prevTxs.forEach(t => {
-        const debitIsAsset  = assetNames.some(a => (t.debit  || '').toLowerCase().includes(a.toLowerCase()));
-        const creditIsAsset = assetNames.some(a => (t.credit || '').toLowerCase().includes(a.toLowerCase()));
-        if (debitIsAsset && !creditIsAsset) prevOut += t.amount;
-        else if (creditIsAsset && !debitIsAsset) prevIn += t.amount;
+        const dw = _travisIsWallet(t.debit);
+        const cw = _travisIsWallet(t.credit);
+        if (dw && !cw) prevIn  += t.amount;
+        else if (cw && !dw) prevOut += t.amount;
     });
 
-    // Balance snapshot from getBalance (source of truth)
-    const balances = {};
-    if (typeof getBalance === 'function') {
-        assetNames.forEach(a => { try { balances[a] = getBalance(a); } catch (e) {} });
-    }
-
     return {
-        days,
-        txCount: txs.length,
-        outTx, inTx,
-        totalOut, totalIn,
+        days, txCount: txs.length,
+        inTx, outTx, totalIn, totalOut,
         net: totalIn - totalOut,
-        outCats, inCats,
-        topOut, topIn,
-        prevOut, prevIn,
-        balances
+        inSources, outCats, topIn, topOut,
+        prevIn, prevOut
     };
 }
 
-/* -------------------------------------------------------------
-   _travisStatusLine()
-   One-line plain summary of current money position.
-   Uses getFin() (already in file) + the analyzer.
-   ------------------------------------------------------------- */
+/* ---------- INTENT CLASSIFIER ---------- */
+function _travisClassify(text) {
+    const t = String(text).toLowerCase().trim();
+    const amount = _travisParseMoney(t);
+    const has = (...words) => words.some(w => t.includes(w));
+
+    if (has('what can you do', 'what do you do', 'help me', 'how do you work', 'your help', 'what can i ask'))
+        return { intent: 'help', amount };
+
+    if (has('biggest spend', 'most spend', 'where does my money go', 'where did my money go',
+            'top spend', 'biggest expense', 'highest spending', 'largest spend', 'where does money go'))
+        return { intent: 'topSpending', amount };
+
+    if (has('single biggest', 'one biggest', 'biggest thing i paid', 'largest single', 'biggest payment'))
+        return { intent: 'topExpenseItem', amount };
+
+    if (has('earn most', 'earned most', 'biggest income', 'top income', 'where did i earn',
+            'where do i earn', 'main source', 'who paid me most', 'biggest payer', 'who pays me most',
+            'where does money come from', 'where did money come from'))
+        return { intent: 'topIncome', amount };
+
+    if (has('my expenses', 'all expenses', 'break down my spend', 'breakdown of spend',
+            'what did i spend on', 'list my spending', 'my spending'))
+        return { intent: 'expenseBreakdown', amount };
+
+    if (has('my income', 'all income', 'break down my income', 'list my income', 'income sources'))
+        return { intent: 'incomeBreakdown', amount };
+
+    if (has('growing', 'declining', 'trend', 'improving', 'getting worse',
+            'this week vs last', 'compared to last', 'am i up', 'am i down'))
+        return { intent: 'trend', amount };
+
+    if (has('ahead', 'behind', 'net', 'surplus', 'shortfall', 'am i positive', 'am i negative'))
+        return { intent: 'net', amount };
+
+    if (has('bill', 'bills', 'obligation', 'owe', 'due'))
+        return { intent: 'obligations', amount };
+
+    if (has('afford', 'can i buy', 'can i pay', 'should i buy', 'is it okay to buy', 'can i spend'))
+        return { intent: 'afford', amount };
+
+    if (has('loan', 'borrow', 'fuliza', 'mshwari', 'tala', 'zenka', 'deni', 'credit'))
+        return { intent: 'loan', amount };
+
+    if (has('hire', 'employee', 'worker', 'staff', 'helper'))
+        return { intent: 'hiring', amount };
+
+    if (has('save', 'saving', 'set aside', 'emergency', 'keep aside'))
+        return { intent: 'saving', amount };
+
+    if (has('habit', 'leak', 'wasting', 'overspend', 'where am i losing'))
+        return { intent: 'habit', amount };
+
+    if (has('status', 'how am i', 'how is my', 'how are we', 'overview', 'summary',
+            'doing', 'cash flow', 'runway', 'how is business', 'how is my hustle',
+            'how is my business'))
+        return { intent: 'status', amount };
+
+    return { intent: 'unknown', amount };
+}
+
+/* ---------- CONVERSATION THREAD (4-deep, no slop) ---------- */
+const _travisThread = {
+    topic: null,
+    depth: 0,
+    lastIntent: null,
+    lastTimeframeDays: 7,
+    lastAmount: 0
+};
+const _TRAVIS_MAX_DEPTH = 4;
+
+function _travisTopicOf(intent) {
+    if (['topSpending','expenseBreakdown','topExpenseItem','habit'].includes(intent)) return 'spending';
+    if (['topIncome','incomeBreakdown'].includes(intent))                            return 'income';
+    if (['trend','net','status'].includes(intent))                                   return 'status';
+    if (['obligations'].includes(intent))                                            return 'bills';
+    if (['afford','loan','hiring','saving'].includes(intent))                        return 'decision';
+    return 'other';
+}
+
+function _travisFollowUpHint(topic, depth) {
+    if (depth >= _TRAVIS_MAX_DEPTH) {
+        return `\n\n— That's as deep as I can go on ${topic} for now. Want to look at something else? —`;
+    }
+    const hints = {
+        spending: ['"and last month?"', '"single biggest payment?"', '"where am I leaking?"', '"how do I cut it?"'],
+        income:   ['"who paid me most?"', '"and last month?"', '"am I growing?"', '"where else can I earn?"'],
+        status:   ['"am I growing?"', '"what are my bills?"', '"what can I save?"', '"should I take a loan?"'],
+        bills:    ['"what can I save?"', '"can I afford 500?"', '"how am I doing?"', '"where am I leaking?"'],
+        decision: ['"how am I doing?"', '"am I growing?"', '"what are my bills?"', '"how do I save?"'],
+        other:    ['"what\'s my biggest spending?"', '"where did I earn most?"', '"am I growing?"', '"what bills do I have?"']
+    };
+    const list = (hints[topic] || hints.other).slice(0, 2).join(' or ');
+    return `\n\n— You can ask ${list} —`;
+}
+
+/* ---------- STATUS LINE ---------- */
 function _travisStatusLine() {
     const fin = getFin();
     const isBiz = state.user?.type === 'business';
-    const cash = _travisDescribeMoney(fin.liquid);
-    const daily = _travisDescribeMoney(Math.max(0, fin.daily));
-    const days = fin.daysRem;
-
-    if (isBiz) {
-        if (fin.liquid < 0)
-            return `Your hustle is short by ${_travisDescribeMoney(Math.abs(fin.liquid))}. Money is going out faster than it comes in.`;
-        return `Your hustle has ${cash} in hand. After bills, that's about ${daily} a day for the next ${days} days.`;
-    }
+    const cash = _travisMoney(fin.liquid);
+    const daily = _travisMoney(Math.max(0, fin.daily));
     if (fin.liquid < 0)
-        return `You're short by ${_travisDescribeMoney(Math.abs(fin.liquid))}. You're spending more than you have.`;
-    return `You have ${cash} in hand. After bills, that's about ${daily} a day for the next ${days} days.`;
+        return isBiz
+            ? `Your hustle is short by ${_travisMoney(Math.abs(fin.liquid))}. More is going out than coming in.`
+            : `You're short by ${_travisMoney(Math.abs(fin.liquid))}. You're spending more than you have.`;
+    return isBiz
+        ? `Your hustle has ${cash} in hand. After bills, about ${daily} a day for the next ${fin.daysRem} days.`
+        : `You have ${cash} in hand. After bills, about ${daily} a day for the next ${fin.daysRem} days.`;
 }
 
-/* -------------------------------------------------------------
-   _travisPersonalReply(intent, payload)
-   Personal voice. Plain, warm, direct.
-   ------------------------------------------------------------- */
-function _travisPersonalReply(intent, p) {
+/* ---------- PERSONAL VOICE ---------- */
+function _travisPersonal(intent, p) {
     const a = p.analysis;
+    const tL = p.timeLabel;
+    const TL = tL.charAt(0).toUpperCase() + tL.slice(1);
 
-    // ---- STATUS ----
+    if (intent === 'help')
+        return `I read your own money and answer plainly. Ask me things like:\n• "What's my biggest spending?"\n• "Where did I earn most?"\n• "Am I growing or declining?"\n• "Can I afford 2,000?"\n• "What bills do I have?"\nKeep asking — I'll keep the thread going.`;
+
+    if (intent === 'offTopic')
+        return `That's outside what I can help with. I stick to your money — spending, earning, bills, and how you're doing. Want to look at any of those?`;
+
     if (intent === 'status') {
         let s = _travisStatusLine();
         if (a.totalIn > 0 || a.totalOut > 0) {
-            s += ` This ${p.timeLabel}, you took in ${_travisDescribeMoney(a.totalIn)} and spent ${_travisDescribeMoney(a.totalOut)}.`;
-            if (a.net >= 0) s += ` You're ahead by ${_travisDescribeMoney(a.net)}.`;
-            else s += ` You're behind by ${_travisDescribeMoney(Math.abs(a.net))}.`;
+            s += ` ${TL}, money in was ${_travisMoney(a.totalIn)}, money out was ${_travisMoney(a.totalOut)}.`;
+            s += a.net >= 0
+                ? ` You're ahead by ${_travisMoney(a.net)}.`
+                : ` You're behind by ${_travisMoney(Math.abs(a.net))}.`;
         }
         return s;
     }
 
-    // ---- BIGGEST SPENDING ----
+    if (intent === 'net') {
+        if (a.totalIn === 0 && a.totalOut === 0) return `No money moved ${tL} yet.`;
+        return a.net >= 0
+            ? `${TL} you took in ${_travisMoney(a.totalIn)} and spent ${_travisMoney(a.totalOut)}. You're ahead by ${_travisMoney(a.net)}.`
+            : `${TL} you took in ${_travisMoney(a.totalIn)} and spent ${_travisMoney(a.totalOut)}. You're behind by ${_travisMoney(Math.abs(a.net))}.`;
+    }
+
     if (intent === 'topSpending') {
-        if (!a.totalOut) return `You haven't spent anything ${p.timeLabel}. Good job.`;
+        if (!a.totalOut) return `You haven't spent anything ${tL}. Good.`;
         const [cat, amt] = a.outCats[0];
         const pct = Math.round((amt / a.totalOut) * 100);
         const t1 = a.topOut[0];
-        let s = `${p.timeLabel.charAt(0).toUpperCase() + p.timeLabel.slice(1)} you spent ${_travisDescribeMoney(a.totalOut)}.`;
-        if (t1) s += ` The biggest one was ${_travisDescribeMoney(t1.amount)} on ${t1.desc} (${_travisDescribeTime(t1.id)}).`;
-        s += ` Most of it went to ${cat} — ${_travisDescribeMoney(amt)} (${pct}%).`;
-        if (a.topOut[1]) s += ` After that, ${_travisDescribeMoney(a.topOut[1].amount)} on ${a.topOut[1].desc}.`;
+        let s = `${TL} you spent ${_travisMoney(a.totalOut)}.`;
+        if (t1) s += ` The biggest was ${_travisMoney(t1.amount)} on ${t1.desc} (${_travisWhen(t1.id)}).`;
+        s += ` Most went to ${cat} — ${_travisMoney(amt)} (${pct}%).`;
+        if (a.topOut[1]) s += ` Then ${_travisMoney(a.topOut[1].amount)} on ${a.topOut[1].desc}.`;
         return s;
     }
 
-    // ---- TOP INCOME ----
+    if (intent === 'topExpenseItem') {
+        if (!a.topOut.length) return `No spending recorded ${tL}.`;
+        const t = a.topOut[0];
+        return `Your single biggest payment ${tL} was ${_travisMoney(t.amount)} on ${t.desc} (${_travisWhen(t.id)}). It left your ${t.wallet}.`;
+    }
+
+    if (intent === 'expenseBreakdown') {
+        if (!a.outCats.length) return `No spending ${tL}.`;
+        const top = a.outCats.slice(0, 3).map(([c, v]) => `${c}: ${_travisMoney(v)}`).join(' · ');
+        return `${TL} you spent ${_travisMoney(a.totalOut)}. ${top}.`;
+    }
+
     if (intent === 'topIncome') {
-        if (!a.totalIn) return `No money came in ${p.timeLabel}.`;
-        const [cat, amt] = a.inCats[0];
+        if (!a.totalIn) return `No money came in ${tL}.`;
+        const [src, amt] = a.inSources[0];
         const pct = Math.round((amt / a.totalIn) * 100);
         const t1 = a.topIn[0];
-        let s = `${p.timeLabel.charAt(0).toUpperCase() + p.timeLabel.slice(1)} you received ${_travisDescribeMoney(a.totalIn)}.`;
-        if (t1) s += ` The biggest was ${_travisDescribeMoney(t1.amount)} from ${t1.desc} (${_travisDescribeTime(t1.id)}).`;
-        s += ` Most came from ${cat} — ${_travisDescribeMoney(amt)} (${pct}%).`;
+        let s = `${TL} you received ${_travisMoney(a.totalIn)}.`;
+        if (t1) s += ` The biggest was ${_travisMoney(t1.amount)} from ${t1.desc} (${_travisWhen(t1.id)}).`;
+        s += ` Most came from ${src} — ${_travisMoney(amt)} (${pct}%).`;
         return s;
     }
 
-    // ---- EXPENSE BREAKDOWN ----
-    if (intent === 'expenseBreakdown') {
-        if (!a.outCats.length) return `You haven't spent anything ${p.timeLabel}.`;
-        const top = a.outCats.slice(0, 3);
-        const lines = top.map(([c, v]) => `${c}: ${_travisDescribeMoney(v)}`).join(', ');
-        return `${p.timeLabel.charAt(0).toUpperCase() + p.timeLabel.slice(1)} you spent ${_travisDescribeMoney(a.totalOut)} in total. The main ones: ${lines}.`;
-    }
-
-    // ---- INCOME BREAKDOWN ----
     if (intent === 'incomeBreakdown') {
-        if (!a.inCats.length) return `No money came in ${p.timeLabel}.`;
-        const top = a.inCats.slice(0, 3);
-        const lines = top.map(([c, v]) => `${c}: ${_travisDescribeMoney(v)}`).join(', ');
-        return `${p.timeLabel.charAt(0).toUpperCase() + p.timeLabel.slice(1)} you received ${_travisDescribeMoney(a.totalIn)} in total. Where it came from: ${lines}.`;
+        if (!a.inSources.length) return `No money came in ${tL}.`;
+        const top = a.inSources.slice(0, 3).map(([c, v]) => `${c}: ${_travisMoney(v)}`).join(' · ');
+        return `${TL} you received ${_travisMoney(a.totalIn)}. ${top}.`;
     }
 
-    // ---- TREND ----
     if (intent === 'trend') {
-        if (a.prevIn === 0 && a.prevOut === 0) {
-            return `I don't have enough history yet to compare. Keep recording and ask me again in a few days.`;
-        }
+        if (a.prevIn === 0 && a.prevOut === 0)
+            return `I don't have enough history to compare yet. Keep recording and ask me again in a few days.`;
         const incChg = a.prevIn  ? Math.round(((a.totalIn  - a.prevIn)  / a.prevIn)  * 100) : 0;
         const outChg = a.prevOut ? Math.round(((a.totalOut - a.prevOut) / a.prevOut) * 100) : 0;
-        let s = `Compared to the week before, `;
-        if (a.totalIn > 0 || a.prevIn > 0) {
-            if (incChg > 5)  s += `your money in is up by ${incChg}%. `;
-            else if (incChg < -5) s += `your money in is down by ${Math.abs(incChg)}%. `;
-            else s += `your money in is about the same. `;
+        let s = `Compared to the same stretch before: `;
+        if (a.totalIn || a.prevIn) {
+            if (incChg > 5)  s += `money in is up ${incChg}%. `;
+            else if (incChg < -5) s += `money in is down ${Math.abs(incChg)}%. `;
+            else s += `money in is steady. `;
         }
-        if (a.totalOut > 0 || a.prevOut > 0) {
-            if (outChg > 5)  s += `Your spending is up by ${outChg}%.`;
-            else if (outChg < -5) s += `Your spending is down by ${Math.abs(outChg)}%. Good.`;
-            else s += `Your spending is steady.`;
+        if (a.totalOut || a.prevOut) {
+            if (outChg > 5)  s += `Spending is up ${outChg}%.`;
+            else if (outChg < -5) s += `Spending is down ${Math.abs(outChg)}%. Good.`;
+            else s += `Spending is steady.`;
         }
         return s.trim();
     }
 
-    // ---- OBLIGATIONS ----
     if (intent === 'obligations') {
         const fin = getFin();
         if (!fin.obsStatus || !fin.obsStatus.length)
-            return `You haven't listed any regular bills yet. Add them in the Bills page and I'll track them for you.`;
+            return `You haven't listed regular bills yet. Add them in the Bills page and I'll track what's due.`;
         const lines = fin.obsStatus.map(o =>
-            `${o.label}: ${_travisDescribeMoney(o.amount)}${o.pending > 0 ? ` (${_travisDescribeMoney(o.pending)} still due)` : ' (settled)'}`
+            `${o.label}: ${_travisMoney(o.amount)}${o.pending > 0 ? ` (${_travisMoney(o.pending)} due)` : ' (settled)'}`
         ).join('. ');
-        return `Your bills: ${lines}. Total still due: ${_travisDescribeMoney(fin.pending)}.`;
+        return `Your bills: ${lines}. Still due: ${_travisMoney(fin.pending)}.`;
     }
 
-    // ---- AFFORD ----
     if (intent === 'afford') {
         const fin = getFin();
         const cost = p.amount;
-        if (!cost) return `How much does it cost? Tell me a number and I'll check.`;
+        if (!cost) return `How much does it cost? Tell me a number.`;
         if (fin.liquid <= 0)
-            return `You have nothing left to spend. You can't afford ${_travisDescribeMoney(cost)} right now.`;
+            return `You have nothing spare. ${_travisMoney(cost)} is not possible right now.`;
         if (cost > fin.liquid)
-            return `${_travisDescribeMoney(cost)} is more than you have (${_travisDescribeMoney(fin.liquid)}). You can't afford it right now.`;
+            return `${_travisMoney(cost)} is more than you have (${_travisMoney(fin.liquid)}). Can't afford it right now.`;
         const after = fin.liquid - cost;
         const perDay = fin.daysRem > 0 ? Math.floor(after / fin.daysRem) : 0;
         if (after < fin.pending)
-            return `${_travisDescribeMoney(cost)} is possible, but after buying you'll have ${_travisDescribeMoney(after)} — and you still owe ${_travisDescribeMoney(fin.pending)} in bills. That's tight.`;
+            return `${_travisMoney(cost)} is possible, but afterwards you'll have ${_travisMoney(after)} and still owe ${_travisMoney(fin.pending)} in bills. Tight.`;
         if (perDay < 100)
-            return `${_travisDescribeMoney(cost)} is possible, but afterwards you'll be living on about ${_travisDescribeMoney(perDay)} a day. Be very careful.`;
-        return `Yes, you can afford ${_travisDescribeMoney(cost)}. After buying you'll have ${_travisDescribeMoney(after)} left for ${fin.daysRem} days.`;
+            return `${_travisMoney(cost)} is possible, but you'd be living on about ${_travisMoney(perDay)} a day after. Be careful.`;
+        return `Yes, you can afford ${_travisMoney(cost)}. After that you'll have ${_travisMoney(after)} for ${fin.daysRem} days.`;
     }
 
-    // ---- LOAN ----
     if (intent === 'loan') {
         const fin = getFin();
         const amt = p.amount;
         if (!amt) return `How much do you want to borrow?`;
         if (fin.liquid <= 0)
-            return `You're already in the red. Do not borrow. Focus on bringing money in first.`;
+            return `You're already in the red. Don't borrow — bring money in first.`;
         const daily = Math.max(1, fin.daily);
-        const monthsToPay = Math.ceil(amt / (daily * 30));
-        if (monthsToPay > 6)
-            return `A ${_travisDescribeMoney(amt)} loan would take you around ${monthsToPay} months to clear at your current pace. That's too long. Avoid it if you can.`;
-        return `A ${_travisDescribeMoney(amt)} loan would take roughly ${monthsToPay} month${monthsToPay > 1 ? 's' : ''} to clear at your current pace. Only borrow if you're sure you can pay it back.`;
+        const months = Math.ceil(amt / (daily * 30));
+        if (months > 6)
+            return `A ${_travisMoney(amt)} loan would take about ${months} months to clear at your pace. That's long. Avoid it if you can.`;
+        return `A ${_travisMoney(amt)} loan would take roughly ${months} month${months > 1 ? 's' : ''} to clear. Only borrow if you're sure.`;
     }
 
-    // ---- HIRING ----
     if (intent === 'hiring') {
         const fin = getFin();
         const daily = Math.max(0, fin.daily);
         const monthly = Math.floor(daily * 30 * 0.4);
-        if (monthly < 5000)
-            return `Right now you can't comfortably pay someone. Focus on building your own income first.`;
-        return `You could afford to pay someone up to about ${_travisDescribeMoney(monthly)} a month without hurting yourself. Start with part-time help.`;
+        if (monthly < 5000) return `You can't comfortably pay someone yet. Grow your own income first.`;
+        return `You could pay up to about ${_travisMoney(monthly)} a month without hurting yourself. Start part-time.`;
     }
 
-    // ---- SAVE ----
     if (intent === 'saving') {
         const fin = getFin();
         const daily = Math.max(0, fin.daily);
-        if (daily < 50) return `There's nothing spare to save right now. First grow what comes in.`;
+        if (daily < 50) return `Nothing spare to save right now. Focus on bringing more in.`;
         const target = Math.floor(daily * 0.1) * 30;
-        return `Try to set aside about ${_travisDescribeMoney(target)} a month. That's roughly ${_travisDescribeMoney(Math.floor(daily * 0.1))} a day. Even small, it adds up.`;
+        return `Try to set aside about ${_travisMoney(target)} a month. That's roughly ${_travisMoney(Math.floor(daily * 0.1))} a day. Small adds up.`;
     }
 
-    // ---- HABIT / LEAKS ----
     if (intent === 'habit') {
-        if (!a.outCats.length) return `I don't see enough spending yet to spot a habit.`;
+        if (!a.outCats.length) return `Not enough activity to spot a habit.`;
         const [cat, amt] = a.outCats[0];
         const pct = Math.round((amt / a.totalOut) * 100);
-        return `Your biggest spending is ${cat} — ${_travisDescribeMoney(amt)} (${pct}% of everything ${p.timeLabel}). If you can trim that, the rest gets easier.`;
+        return `Your biggest spending is ${cat} — ${_travisMoney(amt)} (${pct}% of everything ${tL}). If you trim that, the rest gets easier.`;
     }
 
-    // ---- FALLBACK ----
-    return `Ask me things like: "What's my biggest spending?", "Where did I earn most?", "Am I growing or declining?", "Can I afford 2000?", "What bills do I have?" — I'll look at your own numbers and answer.`;
+    return `Ask me about your spending, earning, bills, or how you're doing — I'll look at your own numbers.`;
 }
 
-/* -------------------------------------------------------------
-   _travisBusinessReply(intent, payload)
-   Business voice. "Your hustle", investment-minded, but still plain.
-   ------------------------------------------------------------- */
-function _travisBusinessReply(intent, p) {
+/* ---------- BUSINESS VOICE ---------- */
+function _travisBusiness(intent, p) {
     const a = p.analysis;
+    const tL = p.timeLabel;
+    const TL = tL.charAt(0).toUpperCase() + tL.slice(1);
 
-    // ---- STATUS ----
+    if (intent === 'help')
+        return `I read your hustle's money and answer plainly. Ask me things like:\n• "What's my biggest spending?"\n• "Where did I earn most?"\n• "Am I growing or declining?"\n• "Can I afford 20,000?"\n• "What bills do I have?"\nKeep asking — I'll keep the thread going.`;
+
+    if (intent === 'offTopic')
+        return `That's outside what I can help with. I stick to your hustle's money — spending, earning, bills, and how it's doing. Want to look at any of those?`;
+
     if (intent === 'status') {
         let s = _travisStatusLine();
         if (a.totalIn > 0 || a.totalOut > 0) {
-            s += ` This ${p.timeLabel}, money in was ${_travisDescribeMoney(a.totalIn)}, money out was ${_travisDescribeMoney(a.totalOut)}.`;
-            if (a.net >= 0) s += ` Your hustle is up ${_travisDescribeMoney(a.net)}. Keep pushing.`;
-            else s += ` Your hustle is down ${_travisDescribeMoney(Math.abs(a.net))}. Time to look at what's going out.`;
+            s += ` ${TL}, money in was ${_travisMoney(a.totalIn)}, money out was ${_travisMoney(a.totalOut)}.`;
+            s += a.net >= 0
+                ? ` Your hustle is up ${_travisMoney(a.net)}. Keep pushing.`
+                : ` Your hustle is down ${_travisMoney(Math.abs(a.net))}. Time to look at what's going out.`;
         }
         return s;
     }
 
-    // ---- BIGGEST SPENDING ----
+    if (intent === 'net') {
+        if (a.totalIn === 0 && a.totalOut === 0) return `No money moved ${tL} for your hustle.`;
+        return a.net >= 0
+            ? `${TL} your hustle brought in ${_travisMoney(a.totalIn)} and sent out ${_travisMoney(a.totalOut)}. You're up ${_travisMoney(a.net)}.`
+            : `${TL} your hustle brought in ${_travisMoney(a.totalIn)} and sent out ${_travisMoney(a.totalOut)}. You're down ${_travisMoney(Math.abs(a.net))}.`;
+    }
+
     if (intent === 'topSpending') {
-        if (!a.totalOut) return `Nothing has gone out of your hustle ${p.timeLabel}.`;
+        if (!a.totalOut) return `Nothing has gone out of your hustle ${tL}.`;
         const [cat, amt] = a.outCats[0];
         const pct = Math.round((amt / a.totalOut) * 100);
         const t1 = a.topOut[0];
-        let s = `${p.timeLabel.charAt(0).toUpperCase() + p.timeLabel.slice(1)} your hustle spent ${_travisDescribeMoney(a.totalOut)}.`;
-        if (t1) s += ` The biggest one was ${_travisDescribeMoney(t1.amount)} on ${t1.desc} (${_travisDescribeTime(t1.id)}).`;
-        s += ` Most went to ${cat} — ${_travisDescribeMoney(amt)} (${pct}%).`;
-        if (a.topOut[1]) s += ` Then ${_travisDescribeMoney(a.topOut[1].amount)} on ${a.topOut[1].desc}.`;
+        let s = `${TL} your hustle spent ${_travisMoney(a.totalOut)}.`;
+        if (t1) s += ` The biggest was ${_travisMoney(t1.amount)} on ${t1.desc} (${_travisWhen(t1.id)}).`;
+        s += ` Most went to ${cat} — ${_travisMoney(amt)} (${pct}%).`;
+        if (a.topOut[1]) s += ` Then ${_travisMoney(a.topOut[1].amount)} on ${a.topOut[1].desc}.`;
         return s;
     }
 
-    // ---- TOP INCOME ----
+    if (intent === 'topExpenseItem') {
+        if (!a.topOut.length) return `No spending recorded ${tL}.`;
+        const t = a.topOut[0];
+        return `Biggest single payment ${tL}: ${_travisMoney(t.amount)} on ${t.desc} (${_travisWhen(t.id)}). It left your ${t.wallet}.`;
+    }
+
+    if (intent === 'expenseBreakdown') {
+        if (!a.outCats.length) return `Nothing has gone out ${tL}.`;
+        const top = a.outCats.slice(0, 3).map(([c, v]) => `${c}: ${_travisMoney(v)}`).join(' · ');
+        return `${TL} your hustle spent ${_travisMoney(a.totalOut)}. Where it went: ${top}.`;
+    }
+
     if (intent === 'topIncome') {
-        if (!a.totalIn) return `No money came into your hustle ${p.timeLabel}.`;
-        const [cat, amt] = a.inCats[0];
+        if (!a.totalIn) return `No money came into your hustle ${tL}.`;
+        const [src, amt] = a.inSources[0];
         const pct = Math.round((amt / a.totalIn) * 100);
         const t1 = a.topIn[0];
-        let s = `${p.timeLabel.charAt(0).toUpperCase() + p.timeLabel.slice(1)} your hustle received ${_travisDescribeMoney(a.totalIn)}.`;
-        if (t1) s += ` The biggest was ${_travisDescribeMoney(t1.amount)} from ${t1.desc} (${_travisDescribeTime(t1.id)}).`;
-        s += ` Most came from ${cat} — ${_travisDescribeMoney(amt)} (${pct}%).`;
+        let s = `${TL} your hustle received ${_travisMoney(a.totalIn)}.`;
+        if (t1) s += ` Biggest: ${_travisMoney(t1.amount)} from ${t1.desc} (${_travisWhen(t1.id)}).`;
+        s += ` Most came from ${src} — ${_travisMoney(amt)} (${pct}%).`;
         return s;
     }
 
-    // ---- EXPENSE BREAKDOWN ----
-    if (intent === 'expenseBreakdown') {
-        if (!a.outCats.length) return `Nothing has gone out ${p.timeLabel}.`;
-        const top = a.outCats.slice(0, 3);
-        const lines = top.map(([c, v]) => `${c}: ${_travisDescribeMoney(v)}`).join(', ');
-        return `${p.timeLabel.charAt(0).toUpperCase() + p.timeLabel.slice(1)} your hustle spent ${_travisDescribeMoney(a.totalOut)}. Where it went: ${lines}.`;
-    }
-
-    // ---- INCOME BREAKDOWN ----
     if (intent === 'incomeBreakdown') {
-        if (!a.inCats.length) return `No money came in ${p.timeLabel}.`;
-        const top = a.inCats.slice(0, 3);
-        const lines = top.map(([c, v]) => `${c}: ${_travisDescribeMoney(v)}`).join(', ');
-        return `${p.timeLabel.charAt(0).toUpperCase() + p.timeLabel.slice(1)} your hustle received ${_travisDescribeMoney(a.totalIn)}. From: ${lines}.`;
+        if (!a.inSources.length) return `No money came in ${tL}.`;
+        const top = a.inSources.slice(0, 3).map(([c, v]) => `${c}: ${_travisMoney(v)}`).join(' · ');
+        return `${TL} your hustle received ${_travisMoney(a.totalIn)}. From: ${top}.`;
     }
 
-    // ---- TREND ----
     if (intent === 'trend') {
-        if (a.prevIn === 0 && a.prevOut === 0) {
-            return `I need a bit more history to see if your hustle is growing. Keep recording sales and expenses.`;
-        }
+        if (a.prevIn === 0 && a.prevOut === 0)
+            return `I need a bit more history to see if your hustle is growing. Keep recording.`;
         const incChg = a.prevIn  ? Math.round(((a.totalIn  - a.prevIn)  / a.prevIn)  * 100) : 0;
         const outChg = a.prevOut ? Math.round(((a.totalOut - a.prevOut) / a.prevOut) * 100) : 0;
-        let s = `Compared to the week before, `;
-        if (a.totalIn > 0 || a.prevIn > 0) {
+        let s = `Compared to the stretch before: `;
+        if (a.totalIn || a.prevIn) {
             if (incChg > 5)  s += `money coming in is up ${incChg}%. Your hustle is growing. `;
             else if (incChg < -5) s += `money coming in is down ${Math.abs(incChg)}%. Watch out. `;
             else s += `money coming in is steady. `;
         }
-        if (a.totalOut > 0 || a.prevOut > 0) {
-            if (outChg > 5)  s += `Money going out is up ${outChg}% — check if that's buying more stock or just leaks.`;
+        if (a.totalOut || a.prevOut) {
+            if (outChg > 5)  s += `Money going out is up ${outChg}% — check if that's restocking or leaks.`;
             else if (outChg < -5) s += `Money going out is down ${Math.abs(outChg)}%. Good.`;
             else s += `Money going out is steady.`;
         }
         return s.trim();
     }
 
-    // ---- OBLIGATIONS ----
     if (intent === 'obligations') {
         const fin = getFin();
         if (!fin.obsStatus || !fin.obsStatus.length)
             return `You haven't listed regular bills yet. Add them in the Bills page and I'll track what's due.`;
         const lines = fin.obsStatus.map(o =>
-            `${o.label}: ${_travisDescribeMoney(o.amount)}${o.pending > 0 ? ` (${_travisDescribeMoney(o.pending)} still due)` : ' (settled)'}`
+            `${o.label}: ${_travisMoney(o.amount)}${o.pending > 0 ? ` (${_travisMoney(o.pending)} due)` : ' (settled)'}`
         ).join('. ');
-        return `Your hustle's bills: ${lines}. Still due: ${_travisDescribeMoney(fin.pending)}.`;
+        return `Your hustle's bills: ${lines}. Still due: ${_travisMoney(fin.pending)}.`;
     }
 
-    // ---- AFFORD ----
     if (intent === 'afford') {
         const fin = getFin();
         const cost = p.amount;
-        if (!cost) return `How much does it cost?`;
+        if (!cost) return `How much does it cost? Tell me a number.`;
         if (fin.liquid <= 0)
-            return `Your hustle has nothing spare right now. Can't do ${_travisDescribeMoney(cost)}.`;
+            return `Your hustle has nothing spare right now. Can't do ${_travisMoney(cost)}.`;
         if (cost > fin.liquid)
-            return `${_travisDescribeMoney(cost)} is more than your hustle has (${_travisDescribeMoney(fin.liquid)}). Not right now.`;
+            return `${_travisMoney(cost)} is more than your hustle has (${_travisMoney(fin.liquid)}). Not right now.`;
         const after = fin.liquid - cost;
         if (after < fin.pending)
-            return `${_travisDescribeMoney(cost)} is possible, but after paying it your hustle will have ${_travisDescribeMoney(after)} and still owes ${_travisDescribeMoney(fin.pending)} in bills. Risky.`;
+            return `${_travisMoney(cost)} is possible, but after paying it your hustle will have ${_travisMoney(after)} and still owes ${_travisMoney(fin.pending)} in bills. Risky.`;
         const perDay = fin.daysRem > 0 ? Math.floor(after / fin.daysRem) : 0;
         if (perDay < 200)
-            return `${_travisDescribeMoney(cost)} is possible, but it will leave your hustle thin — about ${_travisDescribeMoney(perDay)} a day. Only if it will bring money back.`;
-        return `${_travisDescribeMoney(cost)} is okay for your hustle. After that you'll have ${_travisDescribeMoney(after)} left. Make sure whatever you're buying will bring that money back.`;
+            return `${_travisMoney(cost)} is possible, but it will leave your hustle thin — about ${_travisMoney(perDay)} a day. Only if it brings money back.`;
+        return `${_travisMoney(cost)} is okay for your hustle. After that you'll have ${_travisMoney(after)} left. Make sure what you're buying will bring that money back.`;
     }
 
-    // ---- LOAN ----
     if (intent === 'loan') {
         const fin = getFin();
         const amt = p.amount;
@@ -1690,96 +1762,42 @@ function _travisBusinessReply(intent, p) {
         if (fin.liquid <= 0)
             return `Your hustle is already in the red. Don't borrow. Bring money in first.`;
         const daily = Math.max(1, fin.daily);
-        const monthsToPay = Math.ceil(amt / (daily * 30));
-        if (monthsToPay > 6)
-            return `A ${_travisDescribeMoney(amt)} loan would take around ${monthsToPay} months to clear. That's a long time. Only take it if the money will come back multiplied.`;
-        return `A ${_travisDescribeMoney(amt)} loan would take about ${monthsToPay} month${monthsToPay > 1 ? 's' : ''} to clear. If the money goes into something that brings back more than it costs, it can work. Otherwise skip it.`;
+        const months = Math.ceil(amt / (daily * 30));
+        if (months > 6)
+            return `A ${_travisMoney(amt)} loan would take around ${months} months to clear. That's a long time. Only take it if the money will come back multiplied.`;
+        return `A ${_travisMoney(amt)} loan would take about ${months} month${months > 1 ? 's' : ''} to clear. If the money goes into something that brings back more than it costs, it can work. Otherwise skip it.`;
     }
 
-    // ---- HIRING ----
     if (intent === 'hiring') {
         const fin = getFin();
         const daily = Math.max(0, fin.daily);
         const monthly = Math.floor(daily * 30 * 0.4);
         if (monthly < 8000)
             return `Your hustle can't comfortably carry a salary yet. Grow the daily takings first.`;
-        return `Your hustle could pay someone up to about ${_travisDescribeMoney(monthly)} a month. Only hire if that person will bring in more than they cost.`;
+        return `Your hustle could pay someone up to about ${_travisMoney(monthly)} a month. Only hire if that person will bring in more than they cost.`;
     }
 
-    // ---- SAVE (business: reserve/restock) ----
     if (intent === 'saving') {
         const fin = getFin();
         const daily = Math.max(0, fin.daily);
         if (daily < 100) return `Nothing spare to set aside yet. Grow the hustle first.`;
         const target = Math.floor(daily * 0.15) * 30;
-        return `Try to set aside about ${_travisDescribeMoney(target)} a month. That's your backup for slow days and for restocking without borrowing.`;
+        return `Try to set aside about ${_travisMoney(target)} a month. That's your backup for slow days and for restocking without borrowing.`;
     }
 
-    // ---- HABIT / LEAKS ----
     if (intent === 'habit') {
         if (!a.outCats.length) return `Not enough activity yet to spot where money is leaking.`;
         const [cat, amt] = a.outCats[0];
         const pct = Math.round((amt / a.totalOut) * 100);
-        return `Money is going out mostly on ${cat} — ${_travisDescribeMoney(amt)} (${pct}% of everything ${p.timeLabel}). If that's buying stock, fine. If it's not bringing money back, trim it.`;
+        return `Money is going out mostly on ${cat} — ${_travisMoney(amt)} (${pct}% of everything ${tL}). If that's buying stock, fine. If it's not bringing money back, trim it.`;
     }
 
-    // ---- FALLBACK ----
-    return `Ask me things like: "What's my biggest spending?", "Where did I earn most?", "Am I growing or declining?", "Can I afford 20000?", "What bills do I have?" — I'll look at your hustle's numbers.`;
+    return `Ask me about your hustle's spending, earning, bills, or how it's doing — I'll look at your own numbers.`;
 }
 
-/* -------------------------------------------------------------
-   _travisClassifyIntent(text)
-   Returns { intent, amount } using keywords + amount detection.
-   Never uses AI, never calls out. Pure pattern match.
-   ------------------------------------------------------------- */
-function _travisClassifyIntent(text) {
-    const t = text.toLowerCase();
-    const amount = _travisParseMoney(t);
-
-    const has = (...words) => words.some(w => t.includes(w));
-
-    if (has('biggest spend', 'most spend', 'where does my money go', 'where did my money go', 'top spend', 'biggest expense', 'highest spending'))
-        return { intent: 'topSpending', amount };
-
-    if (has('earn most', 'earned most', 'biggest income', 'top income', 'where did i earn', 'where do i earn', 'main source'))
-        return { intent: 'topIncome', amount };
-
-    if (has('my expenses', 'all expenses', 'break down my spend', 'breakdown of spend', 'what did i spend on', 'list my spending'))
-        return { intent: 'expenseBreakdown', amount };
-
-    if (has('my income', 'all income', 'break down my income', 'list my income', 'where does money come from'))
-        return { intent: 'incomeBreakdown', amount };
-
-    if (has('growing', 'declining', 'trend', 'improving', 'getting worse', 'this week vs last', 'compared to last'))
-        return { intent: 'trend', amount };
-
-    if (has('bill', 'bills', 'obligation', 'owe', 'due'))
-        return { intent: 'obligations', amount };
-
-    if (has('afford', 'can i buy', 'can i pay', 'should i buy', 'is it okay to buy'))
-        return { intent: 'afford', amount };
-
-    if (has('loan', 'borrow', 'fuliza', 'mshwari', 'tala', 'zenka', 'deni'))
-        return { intent: 'loan', amount };
-
-    if (has('hire', 'employee', 'worker', 'staff', 'helper'))
-        return { intent: 'hiring', amount };
-
-    if (has('save', 'saving', 'set aside', 'emergency'))
-        return { intent: 'saving', amount };
-
-    if (has('habit', 'leak', 'wasting', 'overspend'))
-        return { intent: 'habit', amount };
-
-    if (has('status', 'how am i', 'how is my', 'how are we', 'overview', 'summary', 'doing', 'cash flow', 'runway'))
-        return { intent: 'status', amount };
-
-    return { intent: 'unknown', amount };
-}
-
-/* =============================================================
-   handleAsk() — THE NEW BRAIN
-   ============================================================= */
+/* ============================================================
+   handleAsk() — THE BRAIN
+   ============================================================ */
 async function handleAsk() {
     const input = document.getElementById('chat-input');
     const chatBox = document.getElementById('chat-box');
@@ -1791,7 +1809,7 @@ async function handleAsk() {
     input.value = '';
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    // Thinking indicator
+    // Thinking ripple
     const thinking = document.createElement('div');
     thinking.innerHTML = `<div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai" id="thinking-bubble"><div class="travis-ripple"><div class="ripple-ball ball-r"></div><div class="ripple-ball ball-g"></div><div class="ripple-ball ball-b"></div></div></div>`;
     chatBox.appendChild(thinking);
@@ -1799,34 +1817,58 @@ async function handleAsk() {
     await new Promise(r => setTimeout(r, 250 + Math.random() * 200));
     thinking.remove();
 
-    // ---- PENDING CLARIFICATION (follow-up like "800k") ----
+    const isBiz = state.user?.type === 'business';
+    const voice = isBiz ? _travisBusiness : _travisPersonal;
+
+    // ---- Pending clarification (follow-up like "800k") ----
     if (hasPendingClarification()) {
         const pending = conversationState.pendingClarification;
         const amount = _travisParseMoney(raw);
         if (amount > 0) {
-            const analysis = _travisAnalyze(_travisParseTimeframe(raw).days);
-            const payload = { amount, analysis, timeLabel: _travisParseTimeframe(raw).label };
-            const reply = (state.user?.type === 'business')
-                ? _travisBusinessReply(pending.originalIntent, payload)
-                : _travisPersonalReply(pending.originalIntent, payload);
+            const tf = _travisParseTimeframe(raw);
+            const analysis = _travisAnalyze(tf.days);
+            const reply = voice(pending.originalIntent, { amount, analysis, timeLabel: tf.label });
             chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${reply}</div></div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
             clearPendingClarification();
             return;
-        } else {
-            const reply = `I need the amount to answer properly. How many shillings?`;
-            chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${reply}</div></div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-            return;
         }
+        const reply = `I need the amount to answer properly. How many shillings?`;
+        chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${reply}</div></div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        return;
     }
 
-    // ---- CLASSIFY ----
-    const { intent, amount } = _travisClassifyIntent(raw);
+    // ---- Classify ----
+    const { intent, amount } = _travisClassify(raw);
     const tf = _travisParseTimeframe(raw);
     const analysis = _travisAnalyze(tf.days);
+    const topic = _travisTopicOf(intent);
 
-    // ---- If intent needs an amount and none given, ask ----
+    // ---- Off-topic guard ----
+    if (intent === 'unknown') {
+        // If we were mid-thread, stay polite and offer options.
+        const reply = voice('offTopic', { amount, analysis, timeLabel: tf.label });
+        chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${reply}</div></div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        // Reset thread since user steered away
+        _travisThread.topic = null;
+        _travisThread.depth = 0;
+        return;
+    }
+
+    // ---- Thread depth handling ----
+    if (_travisThread.topic === topic && _travisThread.lastIntent !== intent) {
+        _travisThread.depth += 1;
+    } else if (_travisThread.topic !== topic) {
+        _travisThread.topic = topic;
+        _travisThread.depth = 0;
+    }
+    _travisThread.lastIntent = intent;
+    _travisThread.lastTimeframeDays = tf.days;
+    _travisThread.lastAmount = amount;
+
+    // ---- Intent needs an amount? Ask for it once. ----
     if ((intent === 'afford' || intent === 'loan') && amount <= 0) {
         setPendingClarification(intent, raw, 'amount');
         const q = intent === 'afford'
@@ -1837,16 +1879,17 @@ async function handleAsk() {
         return;
     }
 
-    // ---- Build payload and reply ----
-    const payload = { amount, analysis, timeLabel: tf.label };
-    const reply = (state.user?.type === 'business')
-        ? _travisBusinessReply(intent, payload)
-        : _travisPersonalReply(intent, payload);
+    // ---- Build reply ----
+    let reply = voice(intent, { amount, analysis, timeLabel: tf.label });
+
+    // Add follow-up hint (unless help/offTopic)
+    if (intent !== 'help') {
+        reply += _travisFollowUpHint(topic, _travisThread.depth);
+    }
 
     chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${reply}</div></div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
-}   
-    
+}
 
 
 function escapeHtml(_0x35ae84) {
