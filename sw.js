@@ -91,6 +91,7 @@ self.addEventListener('push', event => {
       tag:   'travis-ledger-reminder',
       renotify: true,
       vibrate: [200, 100, 200, 100, 200],
+      requireInteraction: true,
       data: { url: '/travis_core.html' },
       actions: [
         { action: 'open',    title: 'Record now' },
