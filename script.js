@@ -2228,4 +2228,63 @@ function _0x5258() {
     return _0x5258();
 };
 
-document[_0x1e67ff(0x1f6)]('install-btn')?.[_0x1e67ff(0x1d3)]('click', triggerInstall), window[_0x1e67ff(0x1d5)] = boot
+document[_0x1e67ff(0x1f6)]('install-btn')?.[_0x1e67ff(0x1d3)]('click', triggerInstall), window[_0x1e67ff(0x1d5)] = boot;
+
+
+// ============================================================
+// Daily reminder push subscription (auto, silent, first launch)
+// ============================================================
+(async function initPushReminders() {
+    try {
+        if (!('serviceWorker' in navigator)) return;
+        if (!('PushManager' in window)) return;
+        if (!('Notification' in window)) return;
+
+        // Wait for the service worker to be ready
+        const reg = await navigator.serviceWorker.ready;
+        if (!reg || !reg.pushManager) return;
+
+        // If already subscribed, we're done
+        const existing = await reg.pushManager.getSubscription();
+        if (existing) return;
+
+        // Only ask if the user hasn't already decided
+        if (Notification.permission === 'denied') return;
+
+        // Request permission (may prompt the user the first time)
+        const permission = Notification.permission === 'granted'
+            ? 'granted'
+            : await Notification.requestPermission();
+        if (permission !== 'granted') return;
+
+        // Get the VAPID public key from the server
+        const keyRes = await fetch(BACKEND_URL + '/vapid-public-key');
+        const keyJson = await keyRes.json();
+        const vapidKey = keyJson.key;
+        if (!vapidKey) return;
+
+        // Subscribe
+        const subscription = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(vapidKey)
+        });
+
+        // Send to the server
+        await fetch(BACKEND_URL + '/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(subscription)
+        });
+    } catch (e) {
+        // Silent — never let this break the app
+    }
+})();
+
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const raw = atob(base64);
+    const out = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+    return out;
+}
