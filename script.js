@@ -713,65 +713,28 @@ async function manualRestoreFlow() {
     }
 }
 
+
 async function runRecoveryOnStart() {
-    const overlay = document.getElementById('recovery-overlay');
-    if (!overlay) return;
-
-    // Hide until we decide whether to show it
-    overlay.style.display = 'none';
-
-    // Restore backup directory handle if we have one
+    const _0x2edc42 = _0x1e67ff,
+        _0x51721b = document['getElementById'](_0x2edc42(0x400));
+    if (!_0x51721b) return;
+    _0x51721b[_0x2edc42(0x2cd)]['display'] = 'none';
     try {
-        const dirRow = await getData('meta', 'backupHandle');
-        if (dirRow && dirRow.value) backupDirHandle = dirRow.value;
-    } catch (_) {}
-
-    // Check both gate conditions
-    const cfgRow = await getData('meta', 'config');
-    const hasValidConfig = !!(cfgRow && cfgRow.activated && cfgRow.fingerprint);
-    let hasFP = !!localStorage.getItem('fp');
-
-    // Self-heal #1: config exists but localStorage lost fp → copy it back
-    if (hasValidConfig && !hasFP) {
-        localStorage.setItem('fp', cfgRow.fingerprint);
-        hasFP = true;
-    }
-
-    // Self-heal #2: localStorage has fp but config row missing → rebuild config
-    if (hasFP && !hasValidConfig) {
-        await saveData('meta', {
-            id: 'config',
-            activated: true,
-            fingerprint: localStorage.getItem('fp'),
-            activatedAt: Date.now()
-        });
-    }
-
-    // Both present now? Return quietly, no popup.
-    if (hasValidConfig && hasFP) return;
-    if (hasFP && !hasValidConfig) return; // healed above, next reload will have config
-
-    // Try to rebuild UI assets from the device folder before showing recovery
+        const _0x348d87 = await getData('meta', _0x2edc42(0x3f3));
+        if (_0x348d87?.['value']) backupDirHandle = _0x348d87[_0x2edc42(0x27f)];
+    } catch (_0x3da65e) {}
+    const _0xcb8bc = !!await getData('meta', _0x2edc42(0x2c2)),
+        _0x28684f = !!localStorage[_0x2edc42(0x2e1)]('fp');
+    if (_0xcb8bc && _0x28684f) return;
     if (backupDirHandle) await rebuildUIFromDevice();
-
-    // Show the recovery overlay
-    overlay.style.display = 'flex';
-    overlay.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:inherit;"><div style="background:white;border-radius:16px;max-width:460px;width:92%;box-shadow:0 25px 70px rgba(0,0,0,0.3);overflow:hidden;"><div style="background:linear-gradient(135deg,#0078D4,#005A9E);color:white;padding:24px;text-align:center;"><h2 style="margin:0 0 6px;font-size:1.3rem;">🔒 Travis Guardian</h2><p style="margin:0;opacity:0.85;font-size:13px;">Your Personal Financial Advisor</p></div><div style="padding:28px;text-align:center;"><div style="width:60px;height:60px;background:#f0f7ff;color:#0078D4;font-size:28px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">📁</div><h3 style="margin:0 0 12px;font-size:1.1rem;color:#1a1a1a;">Restore Your Data?</h3><p style="color:#5a5a5a;line-height:1.6;margin-bottom:24px;font-size:13px;">Browser data was cleared.<br>Select your backup file to restore financial records.</p><div style="display:flex;flex-direction:column;gap:10px;"><button id="restore-btn" style="background:#0078D4;color:white;border:none;padding:13px;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;">📂 Select Backup File &amp; Restore</button><button id="skip-btn" style="background:transparent;color:#5a5a5a;border:1px solid #ddd;padding:12px;font-size:13px;border-radius:8px;cursor:pointer;">Continue as New User</button></div><p style="margin:12px 0 0;font-size:11px;color:#8a8a8a;">First-time users: choose "Continue as New User"</p></div></div></div>';
-
-    document.getElementById('restore-btn').onclick = async () => {
-        const btn = document.getElementById('restore-btn');
-        btn.disabled = true;
-        btn.textContent = 'Restoring…';
-        const result = await manualRestoreFlow();
-        if (result.success) {
-            overlay.innerHTML = '<div style="padding:40px;text-align:center;background:white;border-radius:16px;max-width:360px;"><p style="color:green;font-size:16px;">✓ Everything restored! Reloading…</p></div>';
-            setTimeout(() => location.reload(), 1200);
-        } else {
-            overlay.innerHTML = '<div style="padding:28px;text-align:center;color:red;background:white;border-radius:16px;"><p>' + (result.error || 'Restore failed') + '</p><button onclick="location.reload()" style="margin-top:12px;padding:10px 20px;border-radius:8px;border:none;background:#0078D4;color:white;cursor:pointer;">Try Again</button></div>';
-        }
-    };
-    
-document.getElementById('skip-btn').onclick = () => overlay.style.display = 'none';
+    _0x51721b['style']['display'] = 'flex', _0x51721b[_0x2edc42(0x3ec)] = '<div\x20style=\x22position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:inherit;\x22><div\x20style=\x22background:white;border-radius:16px;max-width:460px;width:92%;box-shadow:0\x2025px\x2070px\x20rgba(0,0,0,0.3);overflow:hidden;\x22><div\x20style=\x22background:linear-gradient(135deg,#0078D4,#005A9E);color:white;padding:24px;text-align:center;\x22><h2\x20style=\x22margin:0\x200\x206px;font-size:1.3rem;\x22>🔒\x20Travis\x20Guardian</h2><p\x20style=\x22margin:0;opacity:0.85;font-size:13px;\x22>Your\x20Personal\x20Financial\x20Advisor</p></div><div\x20style=\x22padding:28px;text-align:center;\x22><div\x20style=\x22width:60px;height:60px;background:#f0f7ff;color:#0078D4;font-size:28px;border-radius:50%;margin:0\x20auto\x2016px;display:flex;align-items:center;justify-content:center;\x22>📁</div><h3\x20style=\x22margin:0\x200\x2012px;font-size:1.1rem;color:#1a1a1a;\x22>Restore\x20Your\x20Data?</h3><p\x20style=\x22color:#5a5a5a;line-height:1.6;margin-bottom:24px;font-size:13px;\x22>Browser\x20data\x20was\x20cleared.<br>Select\x20your\x20backup\x20file\x20to\x20restore\x20financial\x20records.</p><div\x20style=\x22display:flex;flex-direction:column;gap:10px;\x22><button\x20id=\x22restore-btn\x22\x20style=\x22background:#0078D4;color:white;border:none;padding:13px;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;\x22>📂\x20Select\x20Backup\x20File\x20&\x20Restore</button><button\x20id=\x22skip-btn\x22\x20style=\x22background:transparent;color:#5a5a5a;border:1px\x20solid\x20#ddd;padding:12px;font-size:13px;border-radius:8px;cursor:pointer;\x22>Continue\x20as\x20New\x20User</button></div><p\x20style=\x22margin:12px\x200\x200;font-size:11px;color:#8a8a8a;\x22>First-time\x20users:\x20choose\x20\x22Continue\x20as\x20New\x20User\x22</p></div></div></div>', document[_0x2edc42(0x1f6)]('restore-btn')['onclick'] = async () => {
+        const _0x11e0dc = _0x2edc42,
+            _0x3729f0 = document[_0x11e0dc(0x1f6)](_0x11e0dc(0x285));
+        _0x3729f0[_0x11e0dc(0x35c)] = !![], _0x3729f0[_0x11e0dc(0x38d)] = _0x11e0dc(0x211);
+        const _0x4b898d = await manualRestoreFlow();
+        _0x4b898d[_0x11e0dc(0x408)] ? (_0x51721b['innerHTML'] = _0x11e0dc(0x2a2), setTimeout(() => location[_0x11e0dc(0x1ea)](), 0x4b0)) : _0x51721b['innerHTML'] = _0x11e0dc(0x1f3) + (_0x4b898d[_0x11e0dc(0x2ad)] || _0x11e0dc(0x398)) + _0x11e0dc(0x3eb);
+    }, document[_0x2edc42(0x1f6)](_0x2edc42(0x367))[_0x2edc42(0x316)] = () => _0x51721b[_0x2edc42(0x2cd)][_0x2edc42(0x31d)] = _0x2edc42(0x38c);
+}
     
 async function startFingerprintBackgroundProbe() {
     const _0x322228 = async () => {
