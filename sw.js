@@ -1,4 +1,4 @@
-const CACHE_NAME = 'Travis_guardian-v1_0';
+const CACHE_NAME = 'Travis_guardian-v1_1';
 
 const STATIC_ASSETS = [
   '/',
@@ -90,6 +90,7 @@ self.addEventListener('push', event => {
       badge: '/travis_192.png',
       tag:   'travis-ledger-reminder',
       renotify: true,
+      vibrate: [200, 100, 200, 100, 200],
       data: { url: '/travis_core.html' },
       actions: [
         { action: 'open',    title: 'Record now' },
