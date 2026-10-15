@@ -17,40 +17,8 @@ const STATIC_ASSETS = [
   '/total-split.js',
   '/ui-tweaks.js',
   '/manifest.json',
-  '/jspdf.umd.min.js' // my latest update on the sw.js file
-
+  '/jspdf.umd.min.js'
 ];
-
-
-
-const REMINDERS = [
-  { hour: 19, minute: 0  },  
-  { hour: 21, minute: 30 },   
-];
-
-const REMINDER_MESSAGES = [
-  {
-    title: 'Hey, quick check-in',
-    body:  "Have you recorded today's transactions? Travis needs them to keep your advice accurate — it takes under a minute.",
-  },
-  {
-    title: 'Your ledger is waiting',
-    body:  "A day without entries means Travis is working with yesterday's numbers. Tap to log what came in and went out today.",
-  },
-  {
-    title: "Don't let today slip by",
-    body:  "Accurate records are what make Travis's advice useful. Take a moment to log today's transactions.",
-  },
-  {
-    title: 'One small habit, big difference',
-    body:  "Recording today's transactions keeps your financial picture sharp. It only takes a moment — tap to open Travis.",
-  },
-  {
-    title: 'Travis reminder',
-    body:  "Today's numbers aren't in yet. The more current your records, the more accurate your advice. Tap to update your ledger.",
-  },
-];
-
 
 self.addEventListener('install', event => {
   self.skipWaiting();
@@ -68,10 +36,7 @@ self.addEventListener('activate', event => {
           names.filter(n => n !== CACHE_NAME).map(n => caches.delete(n))
         )
       )
-      .then(() => {
-        self.clients.claim();
-        scheduleNextReminder(); 
-      })
+      .then(() => self.clients.claim())
   );
 });
 
@@ -111,10 +76,32 @@ self.addEventListener('fetch', event => {
   );
 });
 
+self.addEventListener('push', event => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch (e) {}
+
+  const title = data.title || 'Travis Guardian';
+  const body  = data.body  || 'Time to record your transactions.';
+
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon:  '/travis_192.png',
+      badge: '/travis_192.png',
+      tag:   'travis-ledger-reminder',
+      renotify: true,
+      data: { url: '/travis_core.html' },
+      actions: [
+        { action: 'open',    title: 'Record now' },
+        { action: 'dismiss', title: 'Later'      }
+      ]
+    })
+  );
+});
+
 self.addEventListener('notificationclick', event => {
   event.notification.close();
 
-  // 'Later' action — just dismiss, next reminder still fires tonight
   if (event.action === 'dismiss') return;
 
   const targetUrl = (event.notification.data && event.notification.data.url) || '/travis_core.html';
@@ -134,90 +121,4 @@ self.addEventListener('notificationclick', event => {
         }
       })
   );
-
-  scheduleNextReminder();
 });
-
-self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'RESCHEDULE') {
-    scheduleNextReminder();
-  }
-});
-
-function scheduleNextReminder() {
-  const now     = new Date();
-  let nearest   = null;
-  let minDiff   = Infinity;
-
-  for (const r of REMINDERS) {
-    const target = new Date(now);
-    target.setHours(r.hour, r.minute, 0, 0);
-
-    // If this slot already passed today, push to tomorrow
-    if (target <= now) target.setDate(target.getDate() + 1);
-
-    const diff = target - now;
-    if (diff < minDiff) {
-      minDiff = diff;
-      nearest = { target, hour: r.hour, minute: r.minute };
-    }
-  }
-
-  if (!nearest) return;
-
-  setTimeout(async () => {
-    await maybeFireReminder();
-    scheduleNextReminder(); 
-  }, minDiff);
-}
-
-async function maybeFireReminder() {
-  const alreadyRecorded = await getTodayFlag();
-  if (alreadyRecorded) return; // user was disciplined — stay quiet
-
-  const msg = REMINDER_MESSAGES[new Date().getDate() % REMINDER_MESSAGES.length];
-
-  await self.registration.showNotification(msg.title, {
-    body:             msg.body,
-    icon:             '/travis_192.png',  
-    badge:            '/travis_192.png',   
-    tag:              'travis-ledger-reminder', 
-    renotify:         false,
-    requireInteraction: false,
-    silent:           false,
-    data: {
-      url: '/travis_core.html',           
-    },
-    actions: [
-      { action: 'open',    title: 'Record now' },
-      { action: 'dismiss', title: 'Later'      },
-    ],
-  });
-}
-
-function getTodayFlag() {
-  return new Promise(resolve => {
-    const req = indexedDB.open('travis-notif-db', 1);
-
-    req.onupgradeneeded = e => {
-      e.target.result.createObjectStore('flags', { keyPath: 'key' });
-    };
-
-    req.onsuccess = e => {
-      const db    = e.target.result;
-      const tx    = db.transaction('flags', 'readonly');
-      const store = tx.objectStore('flags');
-      const get   = store.get('today-recorded');
-
-      get.onsuccess = () => {
-        const rec = get.result;
-        if (!rec) { resolve(false); return; }
-        // Only valid if the flag was written today
-        resolve(rec.date === new Date().toDateString());
-      };
-      get.onerror = () => resolve(false);
-    };
-
-    req.onerror = () => resolve(false);
-  });
-}
