@@ -2225,25 +2225,3 @@ function _0x5258() {
 };
 
 document[_0x1e67ff(0x1f6)]('install-btn')?.[_0x1e67ff(0x1d3)]('click', triggerInstall), window[_0x1e67ff(0x1d5)] = boot;
-
-
-// ---- RESTORE LOOP FIX ----
-const _origRecovery = runRecoveryOnStart;
-runRecoveryOnStart = async function () {
-  try {
-    if (!localStorage.getItem('fp') && await getData('meta', 'config')) {
-      generateFingerprint();
-    }
-  } catch (e) {}
-  return _origRecovery.apply(this, arguments);
-};
-
-const _origSave = saveData;
-saveData = async function (store, value) {
-  if (store === 'meta' && value && value.id === 'config') {
-    const old = await getData('meta', 'config');
-    if (old) value = { ...old, ...value };
-  }
-  return _origSave.call(this, store, value);
-};
-// ---- END FIX ----
