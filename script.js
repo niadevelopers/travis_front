@@ -578,64 +578,64 @@ async function readBackupContent() {
     }
 }
 
+
 async function restoreFromBackup() {
-    const _0xe230b9 = _0x1e67ff,
-        {
-            data: _0x43e983,
-            error: _0x27443f
-        } = await readBackupContent();
-    if (_0x27443f) return {
-        'success': ![],
-        'error': _0xe230b9(0x3e8) + _0x27443f
-    };
-    if (!_0x43e983) return {
-        'success': ![],
-        'error': 'Backup\x20file\x20was\x20empty\x20or\x20invalid'
-    };
+    const { data, error } = await readBackupContent();
+    if (error) return { success: false, error: 'Restore failed: ' + error };
+    if (!data) return { success: false, error: 'Backup file was empty or invalid' };
+
     try {
-        for (const _0x1ebfb4 of [_0xe230b9(0x30f), 'tx']) {
-            if (!_0x43e983[_0x1ebfb4] || !Array[_0xe230b9(0x319)](_0x43e983[_0x1ebfb4])) continue;
-            const _0x3bd6e7 = db[_0xe230b9(0x1dc)](_0x1ebfb4, _0xe230b9(0x37f)),
-                _0x3bf3d0 = _0x3bd6e7[_0xe230b9(0x2a8)](_0x1ebfb4);
-            await new Promise((_0x213975, _0x304d70) => {
-                const _0x40b24c = _0xe230b9,
-                    _0x5e6a31 = _0x3bf3d0[_0x40b24c(0x264)]();
-                _0x5e6a31[_0x40b24c(0x218)] = _0x213975, _0x5e6a31['onerror'] = () => _0x304d70(_0x5e6a31['error']);
+        for (const storeName of ['meta', 'tx']) {
+            if (!data[storeName] || !Array.isArray(data[storeName])) continue;
+
+            const tx = db.transaction(storeName, 'readwrite');
+            const store = tx.objectStore(storeName);
+
+            // Clear existing records first
+            await new Promise((resolve, reject) => {
+                const req = store.clear();
+                req.onsuccess = resolve;
+                req.onerror = () => reject(req.error);
             });
-            for (const _0x5c1916 of _0x43e983[_0x1ebfb4]) {
-                await new Promise((_0x22aa74, _0x4e0eb8) => {
-                    const _0xf18e87 = _0xe230b9,
-                        _0x10095c = _0x3bf3d0[_0xf18e87(0x1e1)](_0x5c1916);
-                    _0x10095c['onsuccess'] = _0x22aa74, _0x10095c[_0xf18e87(0x3a4)] = () => _0x4e0eb8(_0x10095c['error']);
+
+            // Write every record
+            for (const record of data[storeName]) {
+                await new Promise((resolve, reject) => {
+                    const req = store.put(record);
+                    req.onsuccess = resolve;
+                    req.onerror = () => reject(req.error);
                 });
             }
-            await new Promise(_0x5c0886 => {
-                const _0x464bb3 = _0xe230b9;
-                _0x3bd6e7[_0x464bb3(0x36d)] = _0x5c0886;
-            });
+
+            await new Promise(resolve => { tx.oncomplete = resolve; });
         }
-        let _0x1b9bf8 = null;
-        const _0x37a2e7 = await getData(_0xe230b9(0x30f), _0xe230b9(0x2c2));
-        if (_0x37a2e7?.[_0xe230b9(0x299)]) _0x1b9bf8 = _0x37a2e7['fingerprint'];
-        else {
-            if (_0x43e983['meta']) {
-                const _0x135ea7 = _0x43e983[_0xe230b9(0x30f)][_0xe230b9(0x39a)](_0x16c676 => _0x16c676 && _0x16c676['id'] === _0xe230b9(0x2c2));
-                _0x1b9bf8 = _0x135ea7?.[_0xe230b9(0x299)] || null;
-            }
+
+        // --- FINGERPRINT FIX ---
+        let fp = null;
+
+        const restoredConfig = await getData('meta', 'config');
+        if (restoredConfig && restoredConfig.activated) {
+            fp = restoredConfig.fingerprint;
+        } else if (data.meta) {
+            const cfg = data.meta.find(x => x && x.id === 'config');
+            if (cfg) fp = cfg.fingerprint || null;
         }
-        if (_0x1b9bf8) localStorage[_0xe230b9(0x274)]('fp', _0x1b9bf8);
-        return {
-            'success': !![],
-            'error': null
-        };
-    } catch (_0xb6dddf) {
-        return {
-            'success': ![],
-            'error': _0xe230b9(0x397) + (_0xb6dddf[_0xe230b9(0x314)] || String(_0xb6dddf))
-        };
+
+        // If the backup had no fingerprint, make one now so this device
+        // is bound to the restored data and the restore modal stops looping.
+        if (!fp) {
+            fp = generateFingerprint();
+        }
+
+        // Always persist — this is what breaks the restore loop.
+        localStorage.setItem('fp', fp);
+
+        return { success: true, error: null };
+
+    } catch (e) {
+        return { success: false, error: 'Failed to write data to database: ' + (e.message || String(e)) };
     }
 }
-
 
 async function setupBackupFolder() {
     const _0x447b64 = _0x1e67ff;
@@ -692,26 +692,59 @@ async function manualRestoreFlow() {
 }
 
 
+
 async function runRecoveryOnStart() {
-    const _0x2edc42 = _0x1e67ff,
-        _0x51721b = document['getElementById'](_0x2edc42(0x400));
-    if (!_0x51721b) return;
-    _0x51721b[_0x2edc42(0x2cd)]['display'] = 'none';
+    const overlay = document.getElementById('recovery-overlay');
+    if (!overlay) return;
+
+    overlay.style.display = 'none';
+
+    // Try to restore the saved backup folder handle
     try {
-        const _0x348d87 = await getData('meta', _0x2edc42(0x3f3));
-        if (_0x348d87?.['value']) backupDirHandle = _0x348d87[_0x2edc42(0x27f)];
-    } catch (_0x3da65e) {}
-    const _0xcb8bc = !!await getData('meta', _0x2edc42(0x2c2)),
-        _0x28684f = !!localStorage[_0x2edc42(0x2e1)]('fp');
-    if (_0xcb8bc && _0x28684f) return;
+        const saved = await getData('meta', 'backupHandle');
+        if (saved && saved.value) backupDirHandle = saved.value;
+    } catch (e) {}
+
+    // --- FIXED GUARD ---
+    // If a config record exists, the user HAS data. Don't force a restore.
+    const hasConfig = !!await getData('meta', 'config');
+    const hasFp     = !!localStorage.getItem('fp');
+
+    if (hasConfig) {
+        // Backfill a fingerprint if it's missing so the rest of the app
+        // (activation, submit-phone, etc.) still works.
+        if (!hasFp) {
+            try {
+                localStorage.setItem('fp', generateFingerprint());
+            } catch (e) {}
+        }
+        return; // skip modal — dashboard will load normally
+    }
+
+    // No config at all → genuinely empty database → offer restore
     if (backupDirHandle) await rebuildUIFromDevice();
-    _0x51721b['style']['display'] = 'flex', _0x51721b[_0x2edc42(0x3ec)] = '<div\x20style=\x22position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:inherit;\x22><div\x20style=\x22background:white;border-radius:16px;max-width:460px;width:92%;box-shadow:0\x2025px\x2070px\x20rgba(0,0,0,0.3);overflow:hidden;\x22><div\x20style=\x22background:linear-gradient(135deg,#0078D4,#005A9E);color:white;padding:24px;text-align:center;\x22><h2\x20style=\x22margin:0\x200\x206px;font-size:1.3rem;\x22>🔒\x20Travis\x20Guardian</h2><p\x20style=\x22margin:0;opacity:0.85;font-size:13px;\x22>Your\x20Personal\x20Financial\x20Advisor</p></div><div\x20style=\x22padding:28px;text-align:center;\x22><div\x20style=\x22width:60px;height:60px;background:#f0f7ff;color:#0078D4;font-size:28px;border-radius:50%;margin:0\x20auto\x2016px;display:flex;align-items:center;justify-content:center;\x22>📁</div><h3\x20style=\x22margin:0\x200\x2012px;font-size:1.1rem;color:#1a1a1a;\x22>Restore\x20Your\x20Data?</h3><p\x20style=\x22color:#5a5a5a;line-height:1.6;margin-bottom:24px;font-size:13px;\x22>Browser\x20data\x20was\x20cleared.<br>Select\x20your\x20backup\x20file\x20to\x20restore\x20financial\x20records.</p><div\x20style=\x22display:flex;flex-direction:column;gap:10px;\x22><button\x20id=\x22restore-btn\x22\x20style=\x22background:#0078D4;color:white;border:none;padding:13px;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;\x22>📂\x20Select\x20Backup\x20File\x20&\x20Restore</button><button\x20id=\x22skip-btn\x22\x20style=\x22background:transparent;color:#5a5a5a;border:1px\x20solid\x20#ddd;padding:12px;font-size:13px;border-radius:8px;cursor:pointer;\x22>Continue\x20as\x20New\x20User</button></div><p\x20style=\x22margin:12px\x200\x200;font-size:11px;color:#8a8a8a;\x22>First-time\x20users:\x20choose\x20\x22Continue\x20as\x20New\x20User\x22</p></div></div></div>', document[_0x2edc42(0x1f6)]('restore-btn')['onclick'] = async () => {
-        const _0x11e0dc = _0x2edc42,
-            _0x3729f0 = document[_0x11e0dc(0x1f6)](_0x11e0dc(0x285));
-        _0x3729f0[_0x11e0dc(0x35c)] = !![], _0x3729f0[_0x11e0dc(0x38d)] = _0x11e0dc(0x211);
-        const _0x4b898d = await manualRestoreFlow();
-        _0x4b898d[_0x11e0dc(0x408)] ? (_0x51721b['innerHTML'] = _0x11e0dc(0x2a2), setTimeout(() => location[_0x11e0dc(0x1ea)](), 0x4b0)) : _0x51721b['innerHTML'] = _0x11e0dc(0x1f3) + (_0x4b898d[_0x11e0dc(0x2ad)] || _0x11e0dc(0x398)) + _0x11e0dc(0x3eb);
-    }, document[_0x2edc42(0x1f6)](_0x2edc42(0x367))[_0x2edc42(0x316)] = () => _0x51721b[_0x2edc42(0x2cd)][_0x2edc42(0x31d)] = _0x2edc42(0x38c);
+
+    overlay.style.display = 'flex';
+    overlay.innerHTML = `<!-- ...your existing modal HTML... -->`;
+
+    document.getElementById('restore-btn').onclick = async () => {
+        const btn = document.getElementById('restore-btn');
+        btn.disabled = true;
+        btn.textContent = 'Restoring…';
+
+        const result = await manualRestoreFlow();
+
+        if (result.success) {
+            overlay.innerHTML = `<div style="padding:40px;text-align:center;background:white;border-radius:16px;max-width:360px;"><p style="color:green;font-size:16px;">Everything restored! Reloading…</p></div>`;
+            setTimeout(() => location.reload(), 1200);
+        } else {
+            overlay.innerHTML = `<div style="padding:28px;text-align:center;color:red;background:white;border-radius:16px;"><p>${result.error || 'Restore failed'}</p><button onclick="location.reload()" style="margin-top:12px;padding:10px 20px;border-radius:8px;border:none;background:#0078D4;color:white;cursor:pointer;">Try Again</button></div>`;
+        }
+    };
+
+    document.getElementById('skip-btn').onclick = () => {
+        overlay.style.display = 'none';
+    };
 }
     
 async function startFingerprintBackgroundProbe() {
