@@ -2243,7 +2243,66 @@ async function handleAsk() {
 
 
 
+async function boot() {
+    const _0x10f6b5 = _0x1e67ff;
+    await initDB();
 
+    let _0x31db53 = await getData(_0x10f6b5(0x30f), _0x10f6b5(0x2c2));
+
+    // If config row is missing entirely, create a locked default so the
+    // gate is real and the DB reflects state.
+    if (!_0x31db53) {
+        _0x31db53 = { 'id': 'config', 'activated': ![], 'fingerprint': null, 'activatedAt': null };
+        try { await saveData(_0x10f6b5(0x30f), _0x31db53); } catch (_) {}
+    }
+
+    const _0x78025b =
+        window[_0x10f6b5(0x2a4)](_0x10f6b5(0x1c9))[_0x10f6b5(0x1d0)] ||
+        window.matchMedia('(display-mode: fullscreen)').matches ||
+        window.matchMedia('(display-mode: minimal-ui)').matches ||
+        navigator[_0x10f6b5(0x332)] === true ||
+        window.matchMedia('(display-mode: window-controls-overlay)').matches;
+
+    await new Promise(_0x52fff4 => setTimeout(_0x52fff4, 0x190));
+
+    // Always hide the dashboard shell first. We only reveal it if fully set up.
+    const _dash = document.getElementById('dashboard-grid');
+    const _install = document.getElementById(_0x10f6b5(0x416));
+    const _act = document.getElementById(_0x10f6b5(0x296));
+    const _setup = document.getElementById(_0x10f6b5(0x2cb));
+
+    if (_install) { _install.style.display = 'none'; _install.classList.add('hidden'); }
+    if (_act) { _act.style.display = 'none'; }
+    if (_setup) { _setup.classList.add('hidden'); }
+
+    // --- CASE 1: not activated ---
+    if (!_0x31db53[_0x10f6b5(0x280)]) {
+        if (_0x78025b) {
+            if (_act) _act.style.display = 'flex';
+        } else {
+            if (_install) { _install.classList.remove('hidden'); _install.style.display = 'flex'; }
+        }
+        return;
+    }
+
+    // --- CASE 2: activated but no profile ---
+    if (!_0x31db53[_0x10f6b5(0x2ed)]) {
+        if (_setup) _setup.classList.remove('hidden');
+        return;
+    }
+
+    // --- CASE 3: fully set up ---
+    state[_0x10f6b5(0x2ed)] = _0x31db53[_0x10f6b5(0x2ed)];
+    state[_0x10f6b5(0x25a)] = _0x31db53[_0x10f6b5(0x25a)] || [];
+    state[_0x10f6b5(0x26b)] = (await getAllData('tx'))[_0x10f6b5(0x344)]((_0x1968af, _0x1f7cae) => _0x1f7cae['id'] - _0x1968af['id']);
+    document['getElementById'](_0x10f6b5(0x3db))[_0x10f6b5(0x1de)] = state['user'][_0x10f6b5(0x200)];
+    document[_0x10f6b5(0x1f6)](_0x10f6b5(0x224))['innerText'] = state['user'][_0x10f6b5(0x2a9)]['toUpperCase']() + '\x20ADVISOR';
+    document[_0x10f6b5(0x1f6)](_0x10f6b5(0x3b0))['innerText'] = state[_0x10f6b5(0x2ed)][_0x10f6b5(0x200)];
+    document[_0x10f6b5(0x1f6)]('sidebar-type')[_0x10f6b5(0x1de)] = state[_0x10f6b5(0x2ed)][_0x10f6b5(0x2a9)][_0x10f6b5(0x253)](0x0)['toUpperCase']() + state['user'][_0x10f6b5(0x2a9)][_0x10f6b5(0x370)](0x1);
+    document[_0x10f6b5(0x1f6)](_0x10f6b5(0x37a))[_0x10f6b5(0x1de)] = state[_0x10f6b5(0x2ed)][_0x10f6b5(0x200)][_0x10f6b5(0x253)](0x0)[_0x10f6b5(0x24f)]();
+    nav('dash');
+    if (typeof travisNotif !== _0x10f6b5(0x3a2)) travisNotif[_0x10f6b5(0x35e)]();
+}
 
 
 function escapeHtml(_0x35ae84) {
@@ -2266,63 +2325,7 @@ window[_0x1e67ff(0x1d3)](_0x1e67ff(0x2ae), () => {
 });
 
 
-async function boot() {
-    const _0x10f6b5 = _0x1e67ff;
-    await initDB();
-    let _0x31db53 = await getData(_0x10f6b5(0x30f), _0x10f6b5(0x2c2)) || {
-        'activated': ![]
-    };
 
-    // Detect "installed / launched from home screen" via multiple signals.
-    // Any one being true means: treat as installed → skip install overlay.
-    const _0x78025b =
-        window[_0x10f6b5(0x2a4)](_0x10f6b5(0x1c9))[_0x10f6b5(0x1d0)] ||           // display-mode: standalone
-        window.matchMedia('(display-mode: fullscreen)').matches ||
-        window.matchMedia('(display-mode: minimal-ui)').matches ||
-        navigator[_0x10f6b5(0x332)] === true ||                                    // iOS standalone
-        window.matchMedia('(display-mode: window-controls-overlay)').matches;
-
-    await new Promise(_0x52fff4 => setTimeout(_0x52fff4, 0x190));
-
-    // --- CASE 1: not activated yet ---
-    if (!_0x31db53[_0x10f6b5(0x280)]) {
-        if (_0x78025b) {
-            // Installed → hide install overlay, SHOW activation overlay
-            document[_0x10f6b5(0x1f6)](_0x10f6b5(0x416))['classList'][_0x10f6b5(0x38e)](_0x10f6b5(0x1d9));
-            document[_0x10f6b5(0x1f6)](_0x10f6b5(0x416))['style']['display'] = 'none';
-            document[_0x10f6b5(0x1f6)](_0x10f6b5(0x296))['style']['display'] = 'flex';
-        } else {
-            // Not installed → show install overlay, hide activation
-            document[_0x10f6b5(0x1f6)](_0x10f6b5(0x296))['style']['display'] = 'none';
-            document[_0x10f6b5(0x1f6)](_0x10f6b5(0x416))['style']['display'] = 'flex';
-        }
-        return;
-    }
-
-    // --- CASE 2: activated but profile setup incomplete ---
-    if (!_0x31db53[_0x10f6b5(0x2ed)]) {
-        document[_0x10f6b5(0x1f6)](_0x10f6b5(0x416))['style']['display'] = 'none';
-        document[_0x10f6b5(0x1f6)](_0x10f6b5(0x296))['style']['display'] = 'none';
-        document[_0x10f6b5(0x1f6)](_0x10f6b5(0x2cb))['classList']['remove']('hidden');
-        return;
-    }
-
-    // --- CASE 3: fully set up ---
-    document[_0x10f6b5(0x1f6)](_0x10f6b5(0x416))['style']['display'] = 'none';
-    document[_0x10f6b5(0x1f6)](_0x10f6b5(0x296))['style']['display'] = 'none';
-
-    state[_0x10f6b5(0x2ed)] = _0x31db53[_0x10f6b5(0x2ed)];
-    state[_0x10f6b5(0x25a)] = _0x31db53[_0x10f6b5(0x25a)] || [];
-    state[_0x10f6b5(0x26b)] = (await getAllData('tx'))[_0x10f6b5(0x344)]((_0x1968af, _0x1f7cae) => _0x1f7cae['id'] - _0x1968af['id']);
-    document['getElementById'](_0x10f6b5(0x3db))[_0x10f6b5(0x1de)] = state['user'][_0x10f6b5(0x200)];
-    document[_0x10f6b5(0x1f6)](_0x10f6b5(0x224))['innerText'] = state['user'][_0x10f6b5(0x2a9)]['toUpperCase']() + '\x20ADVISOR';
-    document[_0x10f6b5(0x1f6)](_0x10f6b5(0x3b0))['innerText'] = state[_0x10f6b5(0x2ed)][_0x10f6b5(0x200)];
-    document[_0x10f6b5(0x1f6)]('sidebar-type')[_0x10f6b5(0x1de)] = state[_0x10f6b5(0x2ed)][_0x10f6b5(0x2a9)][_0x10f6b5(0x253)](0x0)['toUpperCase']() + state['user'][_0x10f6b5(0x2a9)][_0x10f6b5(0x370)](0x1);
-    document[_0x10f6b5(0x1f6)](_0x10f6b5(0x37a))[_0x10f6b5(0x1de)] = state[_0x10f6b5(0x2ed)][_0x10f6b5(0x200)][_0x10f6b5(0x253)](0x0)[_0x10f6b5(0x24f)]();
-    document[_0x10f6b5(0x1f6)](_0x10f6b5(0x296))[_0x10f6b5(0x2cd)][_0x10f6b5(0x31d)] = _0x10f6b5(0x38c);
-    nav('dash');
-    if (typeof travisNotif !== _0x10f6b5(0x3a2)) travisNotif[_0x10f6b5(0x35e)]();
-}
 
 
 function _0x5258() {
