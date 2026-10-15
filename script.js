@@ -771,10 +771,22 @@ async function runRecoveryOnStart() {
         }
     };
 
-    document.getElementById('skip-btn').onclick = () => {
-        overlay.style.display = 'none';
-    };
-}
+    document.getElementById('skip-btn').onclick = async () => {
+    // Mark config as "exists but not activated" so boot() routes correctly
+    try {
+        const existing = await getData('meta', 'config') || {};
+        await saveData('meta', {
+            ...existing,
+            id: 'config',
+            activated: false,
+            fingerprint: existing.fingerprint || null,
+            activatedAt: existing.activatedAt || null
+        });
+    } catch (_) {}
+    overlay.style.display = 'none';
+    // Reload so boot() runs the full gated flow again
+    location.reload();
+};
 
 async function startFingerprintBackgroundProbe() {
     const _0x322228 = async () => {
