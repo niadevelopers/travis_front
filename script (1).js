@@ -577,6 +577,8 @@ async function readBackupContent() {
         };
     }
 }
+
+
 async function restoreFromBackup() {
     const _0xe230b9 = _0x1e67ff,
         {
@@ -622,7 +624,8 @@ async function restoreFromBackup() {
                 _0x1b9bf8 = _0x135ea7?.[_0xe230b9(0x299)] || null;
             }
         }
-        if (_0x1b9bf8) localStorage[_0xe230b9(0x274)]('fp', _0x1b9bf8);
+        if (!_0x1b9bf8) _0x1b9bf8 = generateFingerprint();
+        localStorage[_0xe230b9(0x274)]('fp', _0x1b9bf8);
         return {
             'success': !![],
             'error': null
@@ -634,6 +637,8 @@ async function restoreFromBackup() {
         };
     }
 }
+
+
 async function setupBackupFolder() {
     const _0x447b64 = _0x1e67ff;
     if (_0x447b64(0x267) in window) try {
@@ -687,6 +692,9 @@ async function manualRestoreFlow() {
         };
     }
 }
+
+
+
 async function runRecoveryOnStart() {
     const _0x2edc42 = _0x1e67ff,
         _0x51721b = document['getElementById'](_0x2edc42(0x400));
@@ -696,9 +704,8 @@ async function runRecoveryOnStart() {
         const _0x348d87 = await getData('meta', _0x2edc42(0x3f3));
         if (_0x348d87?.['value']) backupDirHandle = _0x348d87[_0x2edc42(0x27f)];
     } catch (_0x3da65e) {}
-    const _0xcb8bc = !!await getData('meta', _0x2edc42(0x2c2)),
-        _0x28684f = !!localStorage[_0x2edc42(0x2e1)]('fp');
-    if (_0xcb8bc && _0x28684f) return;
+    const _0xcb8bc = !!await getData('meta', _0x2edc42(0x2c2));
+    if (_0xcb8bc) return;
     if (backupDirHandle) await rebuildUIFromDevice();
     _0x51721b['style']['display'] = 'flex', _0x51721b[_0x2edc42(0x3ec)] = '<div\x20style=\x22position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:inherit;\x22><div\x20style=\x22background:white;border-radius:16px;max-width:460px;width:92%;box-shadow:0\x2025px\x2070px\x20rgba(0,0,0,0.3);overflow:hidden;\x22><div\x20style=\x22background:linear-gradient(135deg,#0078D4,#005A9E);color:white;padding:24px;text-align:center;\x22><h2\x20style=\x22margin:0\x200\x206px;font-size:1.3rem;\x22>🔒\x20Travis\x20Guardian</h2><p\x20style=\x22margin:0;opacity:0.85;font-size:13px;\x22>Your\x20Personal\x20Financial\x20Advisor</p></div><div\x20style=\x22padding:28px;text-align:center;\x22><div\x20style=\x22width:60px;height:60px;background:#f0f7ff;color:#0078D4;font-size:28px;border-radius:50%;margin:0\x20auto\x2016px;display:flex;align-items:center;justify-content:center;\x22>📁</div><h3\x20style=\x22margin:0\x200\x2012px;font-size:1.1rem;color:#1a1a1a;\x22>Restore\x20Your\x20Data?</h3><p\x20style=\x22color:#5a5a5a;line-height:1.6;margin-bottom:24px;font-size:13px;\x22>Browser\x20data\x20was\x20cleared.<br>Select\x20your\x20backup\x20file\x20to\x20restore\x20financial\x20records.</p><div\x20style=\x22display:flex;flex-direction:column;gap:10px;\x22><button\x20id=\x22restore-btn\x22\x20style=\x22background:#0078D4;color:white;border:none;padding:13px;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;\x22>📂\x20Select\x20Backup\x20File\x20&\x20Restore</button><button\x20id=\x22skip-btn\x22\x20style=\x22background:transparent;color:#5a5a5a;border:1px\x20solid\x20#ddd;padding:12px;font-size:13px;border-radius:8px;cursor:pointer;\x22>Continue\x20as\x20New\x20User</button></div><p\x20style=\x22margin:12px\x200\x200;font-size:11px;color:#8a8a8a;\x22>First-time\x20users:\x20choose\x20\x22Continue\x20as\x20New\x20User\x22</p></div></div></div>', document[_0x2edc42(0x1f6)]('restore-btn')['onclick'] = async () => {
         const _0x11e0dc = _0x2edc42,
@@ -708,6 +715,7 @@ async function runRecoveryOnStart() {
         _0x4b898d[_0x11e0dc(0x408)] ? (_0x51721b['innerHTML'] = _0x11e0dc(0x2a2), setTimeout(() => location[_0x11e0dc(0x1ea)](), 0x4b0)) : _0x51721b['innerHTML'] = _0x11e0dc(0x1f3) + (_0x4b898d[_0x11e0dc(0x2ad)] || _0x11e0dc(0x398)) + _0x11e0dc(0x3eb);
     }, document[_0x2edc42(0x1f6)](_0x2edc42(0x367))[_0x2edc42(0x316)] = () => _0x51721b[_0x2edc42(0x2cd)][_0x2edc42(0x31d)] = _0x2edc42(0x38c);
 }
+    
 async function startFingerprintBackgroundProbe() {
     const _0x322228 = async () => {
         const _0x2a080a = _0x6036;
@@ -1223,225 +1231,956 @@ function closeHelpModal() {
         _0x1d55e8 = document[_0x1279c4(0x1f6)](_0x1279c4(0x348));
     _0x1d55e8[_0x1279c4(0x2cd)]['display'] = _0x1279c4(0x38c);
 }
-async function handleAsk() {
-    const _0x1e2f7a = _0x1e67ff,
-        _0x250c06 = document[_0x1e2f7a(0x1f6)](_0x1e2f7a(0x34b)),
-        _0x4cbe05 = document[_0x1e2f7a(0x1f6)](_0x1e2f7a(0x399)),
-        _0x1c411a = _0x250c06[_0x1e2f7a(0x27f)][_0x1e2f7a(0x1be)]();
-    if (!_0x1c411a) return;
-    _0x4cbe05['innerHTML'] += _0x1e2f7a(0x2b5) + escapeHtml(_0x1c411a) + _0x1e2f7a(0x221), _0x250c06[_0x1e2f7a(0x27f)] = '', _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)];
-    const _0x392027 = document[_0x1e2f7a(0x30e)](_0x1e2f7a(0x36f));
-    _0x392027['innerHTML'] = _0x1e2f7a(0x36a), _0x4cbe05[_0x1e2f7a(0x26d)](_0x392027), _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)], await new Promise(_0x1f6942 => setTimeout(_0x1f6942, 0x258 + Math[_0x1e2f7a(0x3aa)]() * 0x1f4)), _0x392027['remove']();
-    if (hasPendingClarification()) {
-        const _0xcd2970 = conversationState['pendingClarification'],
-            _0x112dfb = _0x1c411a[_0x1e2f7a(0x313)](/(\d+(?:,\d+)?(?:\s*k|\s*thousand|\s*million)?)/i);
-        let _0x1b7721 = 0x0;
-        if (_0x112dfb) {
-            let _0x118560 = _0x112dfb[0x1]['replace'](/,/g, '');
-            if (_0x118560[_0x1e2f7a(0x3ee)]()[_0x1e2f7a(0x243)]('k')) _0x118560 = parseFloat(_0x118560) * 0x3e8;
-            else {
-                if (_0x118560[_0x1e2f7a(0x3ee)]()[_0x1e2f7a(0x243)](_0x1e2f7a(0x2da))) _0x118560 = parseFloat(_0x118560) * 0xf4240;
-            }
-            _0x1b7721 = parseFloat(_0x118560);
-        }
-        if (!isNaN(_0x1b7721) && _0x1b7721 > 0x0) {
-            const _0x4b6515 = getFin(),
-                _0x17b735 = getStatusSummary(),
-                _0x70bc39 = _0x17b735['wealthTier'],
-                _0x1349ed = _0x17b735[_0x1e2f7a(0x3c3)],
-                _0x586347 = _0x17b735[_0x1e2f7a(0x2be)],
-                _0x1ab91d = _0x17b735[_0x1e2f7a(0x3e7)];
-            let _0x482ec3 = '',
-                _0x15184e = '';
-            if (_0xcd2970[_0x1e2f7a(0x1e3)] === _0x1e2f7a(0x3ed)) {
-                if (_0x70bc39[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x372)) {
-                    if (_0x1b7721 > _0x1349ed) _0x482ec3 = _0x1e2f7a(0x3ac) + _0x1b7721 + _0x1e2f7a(0x392) + _0xcd2970[_0x1e2f7a(0x1ce)] + _0x1e2f7a(0x2e2) + _0x1349ed + '\x20shillings\x20TOTAL\x20for\x20the\x20next\x20' + _0x1ab91d + _0x1e2f7a(0x303), _0x15184e = 'Do\x20not\x20buy\x20this.\x20Focus\x20only\x20on\x20food\x20and\x20rent.';
-                    else {
-                        if (_0x1b7721 > _0x586347) {
-                            const _0x4f09f1 = Math[_0x1e2f7a(0x2ba)](_0x1b7721 / _0x586347);
-                            _0x482ec3 = _0xcd2970[_0x1e2f7a(0x1ce)] + _0x1e2f7a(0x1d4) + _0x1b7721 + _0x1e2f7a(0x30c) + Math['floor'](_0x586347) + _0x1e2f7a(0x41c), _0x15184e = _0x1e2f7a(0x26e) + _0x4f09f1 + _0x1e2f7a(0x362) + (_0x4f09f1 > 0x1 ? 's' : '') + _0x1e2f7a(0x389);
-                        } else {
-                            const _0x40bd03 = _0x1349ed - _0x1b7721,
-                                _0x5007eb = _0x40bd03 / _0x1ab91d;
-                            _0x482ec3 = '\x20' + _0xcd2970[_0x1e2f7a(0x1ce)] + _0x1e2f7a(0x1d4) + _0x1b7721 + _0x1e2f7a(0x242) + _0x40bd03 + _0x1e2f7a(0x28a) + _0x1ab91d + _0x1e2f7a(0x31c), _0x15184e = _0x1e2f7a(0x3e3) + Math[_0x1e2f7a(0x3d0)](_0x5007eb) + _0x1e2f7a(0x246);
-                        }
-                    }
-                } else {
-                    if (_0x70bc39['adviceStyle'] === _0x1e2f7a(0x2f0)) {
-                        const _0x3170e2 = Math[_0x1e2f7a(0x3d8)](_0x1b7721 / _0x1349ed * 0x64);
-                        _0x3170e2 > 0x1e ? (_0x482ec3 = _0x1e2f7a(0x409) + _0xcd2970[_0x1e2f7a(0x1ce)] + _0x1e2f7a(0x1d4) + _0x1b7721 + _0x1e2f7a(0x410) + _0x3170e2 + _0x1e2f7a(0x2c9), _0x15184e = 'That\x27s\x20a\x20big\x20chunk.\x20Can\x20you\x20wait\x20a\x20few\x20days\x20or\x20find\x20a\x20cheaper\x20option?') : (_0x482ec3 = '\x20' + _0xcd2970[_0x1e2f7a(0x1ce)] + _0x1e2f7a(0x1d4) + _0x1b7721 + _0x1e2f7a(0x3e2), _0x15184e = _0x1e2f7a(0x273));
-                    } else _0x482ec3 = _0x1e2f7a(0x2f7) + _0xcd2970[_0x1e2f7a(0x1ce)] + '\x20costs\x20' + _0x1b7721 + _0x1e2f7a(0x403), _0x15184e = _0x1e2f7a(0x41b);
-                }
-            } else {
-                if (_0xcd2970[_0x1e2f7a(0x1e3)] === 'loan') {
-                    if (_0x70bc39[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x372)) _0x482ec3 = _0x1e2f7a(0x345) + _0x1b7721 + '\x20shilling\x20loan.\x20With\x20your\x20current\x20situation,\x20any\x20loan\x20is\x20dangerous.', _0x15184e = _0x1e2f7a(0x2fe);
-                    else {
-                        const _0x1139cd = Math['round'](_0x1b7721 * 0.15);
-                        _0x482ec3 = _0x1e2f7a(0x2c8) + _0x1b7721 + '\x20shilling\x20loan\x20would\x20cost\x20about\x20' + _0x1139cd + '\x20shillings\x20per\x20month\x20in\x20interest.', _0x15184e = _0x1e2f7a(0x411) + _0x1139cd + _0x1e2f7a(0x3fc);
-                    }
-                }
-            }
-            const _0x2e61c2 = _0x482ec3 + _0x1e2f7a(0x290) + _0x15184e,
-                _0x3b7db1 = _0x564ef0(_0x2e61c2, _0x70bc39, _0x586347, _0x1349ed, _0x1ab91d);
-            _0x4cbe05[_0x1e2f7a(0x3ec)] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x3b7db1 + _0x1e2f7a(0x221), _0x4cbe05['scrollTop'] = _0x4cbe05[_0x1e2f7a(0x286)], clearPendingClarification();
-            return;
-        } else {
-            const _0x5a5705 = 'I\x20need\x20the\x20amount\x20to\x20give\x20you\x20accurate\x20advice.\x20How\x20many\x20shillings\x20are\x20we\x20talking\x20about?',
-                _0x2c952f = _0x564ef0(_0x5a5705, getStatusSummary()[_0x1e2f7a(0x37e)], 0x0, 0x0, 0x0);
-            _0x4cbe05['innerHTML'] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x2c952f + _0x1e2f7a(0x221), _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)];
-            return;
-        }
-    }
-    const _0x128690 = _0x1c411a['toLowerCase']()[_0x1e2f7a(0x1be)](),
-        _0x233e85 = getFin(),
-        _0x57a6ad = getStatusSummary(),
-        _0x1b43e4 = state['user']?.[_0x1e2f7a(0x2a9)] === 'business',
-        _0xddfb89 = _0x57a6ad[_0x1e2f7a(0x37e)],
-        _0x24136c = _0x57a6ad[_0x1e2f7a(0x3c3)],
-        _0x12f9e8 = _0x57a6ad[_0x1e2f7a(0x2be)],
-        _0xa6adc0 = _0x57a6ad[_0x1e2f7a(0x3e7)];
-    let _0x3898ea = 0x0;
-    const _0x3a4eea = _0x128690[_0x1e2f7a(0x1c5)](/,/g, ''),
-        _0x1e2f98 = _0x3a4eea['match'](/(\d+(?:\.\d+)?)\s*(k|thousand|ksh|shillings|bob|million)?/i);
-    if (_0x1e2f98) {
-        _0x3898ea = parseFloat(_0x1e2f98[0x1]);
-        if (_0x1e2f98[0x2] && /k|thousand/i [_0x1e2f7a(0x20e)](_0x1e2f98[0x2])) _0x3898ea *= 0x3e8;
-        if (_0x1e2f98[0x2] && /million/i ['test'](_0x1e2f98[0x2])) _0x3898ea *= 0xf4240;
-    }
-    const _0x400464 = (..._0x46f6a4) => _0x46f6a4[_0x1e2f7a(0x32b)](_0x310753 => _0x128690[_0x1e2f7a(0x243)](_0x310753)),
-        _0x3fd775 = {
-            'spend': _0x400464(_0x1e2f7a(0x241), 'spend', _0x1e2f7a(0x1e5), _0x1e2f7a(0x1bb), _0x1e2f7a(0x404), _0x1e2f7a(0x1d1), _0x1e2f7a(0x283), _0x1e2f7a(0x337), _0x1e2f7a(0x306), 'sugar', _0x1e2f7a(0x377), _0x1e2f7a(0x20b), 'milk', _0x1e2f7a(0x258), 'chocolate', 'soda', _0x1e2f7a(0x262), _0x1e2f7a(0x1dd)),
-            'loan': _0x400464('loan', _0x1e2f7a(0x1b0), _0x1e2f7a(0x21b), 'fuliza', 'mshwari', _0x1e2f7a(0x40c), _0x1e2f7a(0x328), _0x1e2f7a(0x1f0)),
-            'status': _0x400464(_0x1e2f7a(0x38b), _0x1e2f7a(0x270), 'days\x20time', _0x1e2f7a(0x239), 'doing', _0x1e2f7a(0x407), _0x1e2f7a(0x23c), 'summary', _0x1e2f7a(0x28d)),
-            'hiring': _0x400464('hire', _0x1e2f7a(0x1af), _0x1e2f7a(0x27c), _0x1e2f7a(0x20a), _0x1e2f7a(0x383), _0x1e2f7a(0x39d), _0x1e2f7a(0x34f)),
-            'saving': _0x400464('save', _0x1e2f7a(0x2b6), 'emergency', _0x1e2f7a(0x379), 'set\x20aside'),
-            'profit': _0x400464(_0x1e2f7a(0x291), _0x1e2f7a(0x228), _0x1e2f7a(0x40f), 'allowance', _0x1e2f7a(0x34d), _0x1e2f7a(0x334), _0x1e2f7a(0x387)),
-            'habit': _0x400464(_0x1e2f7a(0x238), _0x1e2f7a(0x259), _0x1e2f7a(0x1c6))
-        };
 
-    function _0x564ef0(_0x1b9feb, _0x55922d, _0x405ead, _0x176d0e, _0x16ca77) {
-        const _0x3268c7 = _0x1e2f7a,
-            _0x258da6 = _0x55922d['color'],
-            _0x1a9f3d = _0x55922d[_0x3268c7(0x391)],
-            _0x5e9eb3 = _0x405ead > 0x0 ? _0x3268c7(0x327) + Math['floor'](_0x405ead)[_0x3268c7(0x3c9)]() : _0x3268c7(0x413),
-            _0x27c0cf = _0x176d0e > 0x0 ? 'KSh\x20' + _0x176d0e[_0x3268c7(0x3c9)]() : _0x3268c7(0x2ce),
-            _0x280e21 = '<div\x20style=\x22display:flex;flex-wrap:wrap;align-items:center;gap:6px\x2010px;padding:10px\x2012px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:14px;font-size:13px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;align-items:center;gap:5px;\x22><span\x20style=\x22color:var(--color-text-secondary);\x22>Status</span><span\x20style=\x22font-weight:500;color:' + _0x258da6 + _0x3268c7(0x1d7) + _0x1a9f3d + _0x3268c7(0x1ee) + _0x5e9eb3 + _0x3268c7(0x2d5) + _0x27c0cf + '</span></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20' + (_0x16ca77 > 0x0 ? _0x3268c7(0x21f) + _0x16ca77 + _0x3268c7(0x2a6) : '') + _0x3268c7(0x1b2),
-            _0x244c13 = '<div\x20style=\x22margin-top:16px;padding:12px\x2014px;border-left:3px\x20solid\x20' + _0x258da6 + _0x3268c7(0x3d4) + _0x1b9feb + _0x3268c7(0x221);
-        return '' + _0x280e21 + _0x244c13;
-    }
-    let _0x51cada = '';
-    if (_0x3fd775[_0x1e2f7a(0x270)]) {
-        _0x51cada = humanReadableStatus(_0x24136c, _0x12f9e8, _0xa6adc0, _0xddfb89);
-        if (_0xddfb89[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x372)) _0x51cada += _0x1e2f7a(0x1b1) + _0xddfb89[_0x1e2f7a(0x3a5)];
-        else _0xddfb89['adviceStyle'] === _0x1e2f7a(0x2f0) ? _0x51cada += _0x1e2f7a(0x271) : _0x51cada += '<br><br><strong>Suggestion:</strong>\x20Consider\x20saving\x20' + Math['floor'](_0x24136c * 0.1)['toLocaleString']() + _0x1e2f7a(0x3ae);
-        const _0x4ba549 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
-        _0x4cbe05[_0x1e2f7a(0x3ec)] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x4ba549 + _0x1e2f7a(0x221), _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)];
-        return;
-    }
-    if (_0x3fd775[_0x1e2f7a(0x3ed)]) {
-        if (_0x3898ea === 0x0) {
-            const _0x4ee6f9 = _0x128690[_0x1e2f7a(0x313)](/(?:buy|get|spend on|purchase)\s+([a-z\s]+)/i),
-                _0x18c745 = _0x4ee6f9 ? _0x4ee6f9[0x1][_0x1e2f7a(0x1be)]() : _0x1e2f7a(0x3a1);
-            setPendingClarification(_0x1e2f7a(0x3ed), _0x18c745, 'amount'), _0x51cada = 'To\x20give\x20you\x20straight\x20advice,\x20I\x20need\x20to\x20know:\x20How\x20many\x20shillings\x20does\x20' + _0x18c745 + '\x20cost\x20in\x20your\x20area?';
-            const _0x63d695 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
-            _0x4cbe05[_0x1e2f7a(0x3ec)] += _0x1e2f7a(0x1c3) + _0x63d695 + _0x1e2f7a(0x221), _0x4cbe05['scrollTop'] = _0x4cbe05[_0x1e2f7a(0x286)];
-            return;
-        }
-        if (_0x24136c < 0x0) {
-            _0x51cada = _0x1e2f7a(0x353) + Math['abs'](_0x24136c)[_0x1e2f7a(0x3c9)]() + '\x20shillings.\x20You\x20cannot\x20afford\x20to\x20spend\x20ANY\x20money\x20right\x20now\x20-\x20not\x20even\x20' + _0x3898ea + _0x1e2f7a(0x23f);
-            const _0x5dad20 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
-            _0x4cbe05[_0x1e2f7a(0x3ec)] += _0x1e2f7a(0x1c3) + _0x5dad20 + _0x1e2f7a(0x221), _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05['scrollHeight'];
-            return;
-        }
-        if (_0xddfb89[_0x1e2f7a(0x1cc)] === 'survival') {
-            if (_0x3898ea > _0x24136c) _0x51cada = _0x1e2f7a(0x3cf) + _0x3898ea + _0x1e2f7a(0x3b9) + _0x24136c + _0x1e2f7a(0x342) + _0xa6adc0 + _0x1e2f7a(0x303);
-            else {
-                if (_0x3898ea > _0x12f9e8) {
-                    const _0x58fbec = Math[_0x1e2f7a(0x2ba)](_0x3898ea / _0x12f9e8);
-                    _0x51cada = _0x1e2f7a(0x236) + _0x3898ea + _0x1e2f7a(0x2b0) + Math[_0x1e2f7a(0x3d0)](_0x12f9e8) + _0x1e2f7a(0x3a7) + _0x58fbec + _0x1e2f7a(0x362) + (_0x58fbec > 0x1 ? 's' : '') + _0x1e2f7a(0x2f6);
-                } else {
-                    const _0x155b80 = _0x24136c - _0x3898ea,
-                        _0x3d2565 = _0x155b80 / _0xa6adc0;
-                    _0x51cada = _0x1e2f7a(0x31f) + _0x155b80 + _0x1e2f7a(0x28a) + _0xa6adc0 + _0x1e2f7a(0x2c4) + Math['floor'](_0x3d2565) + _0x1e2f7a(0x20d);
-                }
-            }
-        } else {
-            if (_0xddfb89[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x2f0)) {
-                const _0x305593 = Math[_0x1e2f7a(0x3d8)](_0x3898ea / _0x24136c * 0x64);
-                _0x305593 > 0x1e ? _0x51cada = _0x1e2f7a(0x236) + _0x3898ea + '\x20shillings,\x20which\x20is\x20' + _0x305593 + '%\x20of\x20your\x20savings.\x20That\x27s\x20significant.\x20Can\x20you\x20wait\x20a\x20few\x20days?' : _0x51cada = '\x20' + _0x3898ea + '\x20shillings\x20is\x20reasonable\x20for\x20your\x20situation.\x20Go\x20ahead\x20but\x20track\x20it.';
-            } else {
-                if (_0xddfb89[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x232)) {
-                    const _0x8e43bf = Math[_0x1e2f7a(0x3d8)](_0x3898ea / _0x24136c * 0x64);
-                    _0x8e43bf > 0x32 ? _0x51cada = 'This\x20costs\x20' + _0x3898ea + _0x1e2f7a(0x2a0) + _0x8e43bf + _0x1e2f7a(0x2dc) : _0x51cada = _0x1e2f7a(0x335);
-                } else _0x51cada = '💎\x20At\x20your\x20wealth\x20level,\x20' + _0x3898ea + _0x1e2f7a(0x378);
-            }
-        }
-        const _0x52605d = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
-        _0x4cbe05['innerHTML'] += _0x1e2f7a(0x1c3) + _0x52605d + '</div></div>', _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)];
-        return;
-    }
-    if (_0x3fd775['loan']) {
-        if (_0x3898ea === 0x0) {
-            setPendingClarification(_0x1e2f7a(0x240), _0x1e2f7a(0x240), _0x1e2f7a(0x1c1)), _0x51cada = _0x1e2f7a(0x3f1);
-            const _0x21770e = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
-            _0x4cbe05[_0x1e2f7a(0x3ec)] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x21770e + _0x1e2f7a(0x221), _0x4cbe05['scrollTop'] = _0x4cbe05['scrollHeight'];
-            return;
-        }
-        if (_0xddfb89[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x372)) _0x51cada = 'Do\x20not\x20borrow\x20' + _0x3898ea + _0x1e2f7a(0x25e);
-        else {
-            if (_0xddfb89[_0x1e2f7a(0x1cc)] === 'conservative') {
-                const _0x29498c = Math[_0x1e2f7a(0x3d8)](_0x3898ea * 0.15);
-                _0x51cada = _0x1e2f7a(0x349) + _0x3898ea + _0x1e2f7a(0x3d7) + _0x29498c + '\x20shillings\x20per\x20month\x20in\x20interest.\x20Only\x20borrow\x20if\x20absolutely\x20necessary.';
-            } else {
-                const _0x4efe36 = Math['round'](_0x3898ea * 0.12);
-                _0x51cada = '💎\x20A\x20' + _0x3898ea + _0x1e2f7a(0x3b4) + _0x4efe36 + _0x1e2f7a(0x375);
-            }
-        }
-        const _0x349584 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
-        _0x4cbe05[_0x1e2f7a(0x3ec)] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x349584 + '</div></div>', _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)];
-        return;
-    }
-    if (_0x3fd775[_0x1e2f7a(0x27b)]) {
-        if (_0xddfb89['adviceStyle'] === _0x1e2f7a(0x372)) _0x51cada = _0x1e2f7a(0x2f4);
-        else {
-            if (_0xddfb89[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x2f0)) {
-                const _0x497de6 = Math[_0x1e2f7a(0x3d0)](_0x24136c * 0.25);
-                _0x51cada = _0x1e2f7a(0x3fe) + _0x497de6[_0x1e2f7a(0x3c9)]() + '\x20shillings.\x20Can\x20you\x20pay\x20that\x20consistently?\x20If\x20yes,\x20consider\x20a\x20part-time\x20person\x20first.';
-            } else _0x51cada = '💎\x20At\x20your\x20wealth\x20level,\x20hiring\x20decisions\x20should\x20be\x20about\x20ROI.\x20A\x20good\x20hire\x20should\x20generate\x20at\x20least\x203x\x20their\x20salary\x20in\x20value.\x20What\x20role\x20are\x20you\x20considering?';
-        }
-        const _0x10d637 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
-        _0x4cbe05[_0x1e2f7a(0x3ec)] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x10d637 + _0x1e2f7a(0x221), _0x4cbe05['scrollTop'] = _0x4cbe05['scrollHeight'];
-        return;
-    }
-    if (_0x3fd775[_0x1e2f7a(0x2b6)]) {
-        if (_0xddfb89['adviceStyle'] === _0x1e2f7a(0x372)) _0x51cada = _0x1e2f7a(0x1ff);
-        else {
-            if (_0xddfb89[_0x1e2f7a(0x1cc)] === _0x1e2f7a(0x2f0)) {
-                const _0x2509ab = Math[_0x1e2f7a(0x3d0)](_0x24136c * 0.07);
-                _0x51cada = 'Try\x20to\x20save\x20' + _0x2509ab[_0x1e2f7a(0x3c9)]() + _0x1e2f7a(0x339);
-            } else {
-                const _0x517880 = Math[_0x1e2f7a(0x3d0)](_0x24136c * 0.15);
-                _0x51cada = _0x1e2f7a(0x2f3) + _0x517880[_0x1e2f7a(0x3c9)]() + _0x1e2f7a(0x376);
-            }
-        }
-        const _0x1b0672 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
-        _0x4cbe05[_0x1e2f7a(0x3ec)] += _0x1e2f7a(0x1c3) + _0x1b0672 + '</div></div>', _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)];
-        return;
-    }
-    if (_0x3fd775[_0x1e2f7a(0x291)] || _0x3fd775[_0x1e2f7a(0x238)]) {
-        const _0x26093c = _0x233e85[_0x1e2f7a(0x30b)]['filter'](_0x489b54 => _0x489b54[_0x1e2f7a(0x318)] > 0x0);
-        if (_0x26093c['length'] > 0x0) {
-            const _0x2373ae = _0x26093c[0x0];
-            _0x51cada = '\x20I\x20found\x20a\x20leak:\x20You\x20spent\x20' + _0x2373ae[_0x1e2f7a(0x318)][_0x1e2f7a(0x3c9)]() + _0x1e2f7a(0x2d0) + _0x2373ae[_0x1e2f7a(0x203)] + _0x1e2f7a(0x295);
-        } else _0x51cada = _0x1e2f7a(0x1b4) + (_0x233e85['obsStatus'][_0x1e2f7a(0x344)]((_0x37f1d8, _0x7dc8c3) => _0x7dc8c3[_0x1e2f7a(0x336)] - _0x37f1d8[_0x1e2f7a(0x336)])[0x0]?.[_0x1e2f7a(0x203)] || _0x1e2f7a(0x3a9)) + '\x20at\x20' + Math[_0x1e2f7a(0x249)](..._0x233e85[_0x1e2f7a(0x30b)][_0x1e2f7a(0x2b8)](_0x26b430 => _0x26b430[_0x1e2f7a(0x336)]))['toLocaleString']() + '\x20shillings.\x20Can\x20you\x20reduce\x20that\x20by\x2010%?';
-        const _0x5c1ed0 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
-        _0x4cbe05[_0x1e2f7a(0x3ec)] += '<div><div\x20class=\x22travis-label\x22><span>🤖</span>\x20Travis</div><div\x20class=\x22chat-bubble-ai\x22>' + _0x5c1ed0 + _0x1e2f7a(0x221), _0x4cbe05['scrollTop'] = _0x4cbe05[_0x1e2f7a(0x286)];
-        return;
-    }
-    _0x51cada = _0x1e2f7a(0x21d);
-    const _0xbe0eb7 = _0x564ef0(_0x51cada, _0xddfb89, _0x12f9e8, _0x24136c, _0xa6adc0);
-    _0x4cbe05[_0x1e2f7a(0x3ec)] += _0x1e2f7a(0x1c3) + _0xbe0eb7 + _0x1e2f7a(0x221), _0x4cbe05[_0x1e2f7a(0x24b)] = _0x4cbe05[_0x1e2f7a(0x286)];
+
+ /* ============================================================
+   TRAVIS AI CORE — Intelligent, data-aware, account-type aware
+   Replaces the old handleAsk() and its helpers.
+   Everything below is self-contained. No UI changes.
+   ============================================================ */
+
+
+/* ============================================================
+   TRAVIS AI CORE v4 — Round character CFO / PA
+   Money frame: debit wallet = income, credit wallet = expense.
+   ============================================================ */
+
+/* ---------- BASIC FORMATTERS ---------- */
+function _travisIsWallet(account) {
+    if (!account) return false;
+    const n = String(account).toLowerCase();
+    return n.includes('cash')
+        || n.includes('m-pesa') || n.includes('mpesa') || n.includes('m pesa')
+        || n.includes('bank');
 }
+
+function _travisCleanName(name) {
+    if (!name) return 'Other';
+    return String(name).trim();
+}
+
+function _travisMoney(n) {
+    n = Math.round(n || 0);
+    if (n === 0) return 'nothing';
+    return 'KSh ' + n.toLocaleString();
+}
+
+function _travisWhen(ts) {
+    const diff = Math.floor((Date.now() - ts) / 86400000);
+    if (diff <= 0) return 'today';
+    if (diff === 1) return 'yesterday';
+    if (diff < 7) return diff + ' days ago';
+    return new Date(ts).toLocaleDateString('en-KE', { weekday: 'long' });
+}
+
+function _travisParseMoney(text) {
+    if (!text) return 0;
+    const cleaned = String(text).toLowerCase().replace(/,/g, '');
+    const m = cleaned.match(/(\d+(?:\.\d+)?)\s*(k|thousand|million|m|ksh|shillings|bob)?/i);
+    if (!m) return 0;
+    let n = parseFloat(m[1]);
+    if (isNaN(n)) return 0;
+    const unit = (m[2] || '').toLowerCase();
+    if (unit === 'k' || unit === 'thousand') n *= 1000;
+    if (unit === 'm' || unit === 'million') n *= 1000000;
+    return Math.round(n);
+}
+
+function _travisParseTimeframe(text) {
+    if (!text) return { days: 7, label: 'this week' };
+    const t = String(text).toLowerCase();
+    if (/\btoday\b/.test(t))                        return { days: 1,   label: 'today' };
+    if (/yesterday/.test(t))                        return { days: 2,   label: 'since yesterday' };
+    if (/this week|last 7|past week/.test(t))       return { days: 7,   label: 'this week' };
+    if (/last week/.test(t))                        return { days: 14,  label: 'the last two weeks' };
+    if (/this month|last 30|past month/.test(t))    return { days: 30,  label: 'this month' };
+    if (/last month|previous month/.test(t))        return { days: 60,  label: 'the last two months' };
+    if (/this year|ytd/.test(t))                    return { days: 365, label: 'this year' };
+    if (/all time|ever|since i started/.test(t))    return { days: 3650, label: 'since you started' };
+    return { days: 7, label: 'this week' };
+}
+
+/* ---------- LEDGER ANALYZER ---------- */
+function _travisAnalyze(days = 7) {
+    const cutoff = Date.now() - days * 86400000;
+    const txs = (state.transactions || []).filter(t => t.id >= cutoff);
+
+    const inTx  = [];
+    const outTx = [];
+
+    txs.forEach(t => {
+        const dw = _travisIsWallet(t.debit);
+        const cw = _travisIsWallet(t.credit);
+        if (dw && !cw) {
+            inTx.push({
+                amount: t.amount,
+                source: _travisCleanName(t.credit),
+                wallet: _travisCleanName(t.debit),
+                desc:   t.desc || t.credit || 'income',
+                id:     t.id
+            });
+        } else if (cw && !dw) {
+            outTx.push({
+                amount:   t.amount,
+                category: _travisCleanName(t.debit),
+                wallet:   _travisCleanName(t.credit),
+                desc:     t.desc || t.debit || 'expense',
+                id:       t.id
+            });
+        }
+    });
+
+    const totalIn  = inTx.reduce((s, t) => s + t.amount, 0);
+    const totalOut = outTx.reduce((s, t) => s + t.amount, 0);
+
+    const inBySource = {};
+    inTx.forEach(t => { inBySource[t.source] = (inBySource[t.source] || 0) + t.amount; });
+    const inSources = Object.entries(inBySource).sort((a, b) => b[1] - a[1]);
+
+    const outByCat = {};
+    outTx.forEach(t => { outByCat[t.category] = (outByCat[t.category] || 0) + t.amount; });
+    const outCats = Object.entries(outByCat).sort((a, b) => b[1] - a[1]);
+
+    const topIn  = [...inTx].sort((a, b) => b.amount - a.amount);
+    const topOut = [...outTx].sort((a, b) => b.amount - a.amount);
+
+    const prevCutoff = cutoff - days * 86400000;
+    const prevTxs = (state.transactions || []).filter(t => t.id >= prevCutoff && t.id < cutoff);
+    let prevIn = 0, prevOut = 0;
+    prevTxs.forEach(t => {
+        const dw = _travisIsWallet(t.debit);
+        const cw = _travisIsWallet(t.credit);
+        if (dw && !cw) prevIn  += t.amount;
+        else if (cw && !dw) prevOut += t.amount;
+    });
+
+    // Wallet balances straight from getBalance
+    const wallets = ['Cash', 'M-Pesa', 'Bank / M-Pesa', 'Bank'];
+    const balances = {};
+    if (typeof getBalance === 'function') {
+        wallets.forEach(w => { try { balances[w] = getBalance(w); } catch (e) {} });
+    }
+
+    return {
+        days, txCount: txs.length,
+        inTx, outTx, totalIn, totalOut,
+        net: totalIn - totalOut,
+        inSources, outCats, topIn, topOut,
+        prevIn, prevOut,
+        balances
+    };
+}
+
+/* ---------- TONE DETECTION ---------- */
+function _travisDetectTone(text) {
+    const t = String(text).toLowerCase().trim();
+    if (!t) return 'silence';
+    if (/^(hi|hello|hey|habari|niaje|sasa|mambo|good (morning|afternoon|evening))/.test(t))
+        return 'greeting';
+    if (/^(thanks|thank you|asante|ok|okay|sawa|got it|noted|cool|nice|good)$/.test(t))
+        return 'closing';
+    if (/\?$/.test(t)) return 'question';
+    if (/^(should i|do you think|would you|is it (wise|ok|okay|good)|would it be)/.test(t))
+        return 'advice_seeking';
+    if (/^(i think|maybe|i feel|i want to|i plan to|i am thinking|i'm thinking)/.test(t))
+        return 'sharing';
+    if (/^(can you|could you|would you|tell me|show me|give me|list)/.test(t))
+        return 'request';
+    if (/^(yes|yeah|yep|no|nope|nah|not really|sure|alright)/.test(t))
+        return 'confirm';
+    if (t.length < 6) return 'short';
+    return 'statement';
+}
+
+/* ---------- INTENT CLASSIFIER v3 (phrase-scored) ---------- */
+/* Each intent has a set of weighted keywords. We score every intent
+   against the whole phrase and pick the highest. This handles long
+   sentences and unusual phrasings gracefully. */
+const _TRAVIS_INTENT_MAP = [
+    { intent: 'help',       w: [['what can you do',3],['how do you work',3],['help me',2],['what can i ask',3],['your help',2]] },
+    { intent: 'chat',       w: [['money chat',4],['little chat',3],['talk about money',4],['can we talk',3],['chat about',3],['money talk',3],['lets chat',3],['let us talk',3]] },
+    { intent: 'owedToMe',   w: [['who owes me',5],['am i owed',4],['anyone owe me',4],['who is to pay me',4],['who is supposed to pay me',4]] },
+    { intent: 'net',        w: [['spending more than',5],['spend more than',5],['more going out',4],['more coming in',4],['ahead or behind',4],['am i ahead',4],['am i behind',4],['surplus',3],['shortfall',3],['making money',3],['losing money',3]] },
+    { intent: 'advice',     w: [['what should i focus',5],['what should i do',4],['any advice',4],['suggestions',3],['what would you do',4],['what next',3],['advise me',4],['give me advice',4],['help me plan',4],['what should i save',3],['focus on this week',4],['focus this week',4]] },
+    { intent: 'topExpenseItem', w: [['biggest single expenditure',5],['biggest single expense',5],['single biggest',4],['largest single',4],['biggest payment',4],['biggest thing i paid',4]] },
+    { intent: 'topSpending',w: [['biggest spend',4],['most spend',4],['where does my money go',5],['where did my money go',5],['where is my money going',5],['where does money go',4],['top spend',3],['biggest expense',4],['highest spending',4],['largest spend',3]] },
+    { intent: 'expenseBreakdown', w: [['spending breakdown',5],['expense breakdown',5],['breakdown for this week',4],['breakdown this week',4],['my expenses',4],['all expenses',4],['break down my spend',4],['what did i spend on',4],['list my spending',4],['my spending',3]] },
+    { intent: 'topIncome',  w: [['earn most',4],['earned most',4],['biggest income',4],['top income',3],['where did i earn',4],['where do i earn',4],['main source',3],['who paid me most',5],['biggest payer',4],['who pays me most',5],['where does money come from',4],['where did money come from',4],['income status',3],['my income status',4]] },
+    { intent: 'incomeBreakdown', w: [['income breakdown',5],['my income',3],['all income',4],['break down my income',4],['list my income',4],['income sources',4],['where does income come',4]] },
+    { intent: 'trend',      w: [['growing',3],['declining',3],['trend',3],['improving',3],['getting worse',3],['compared to last',4],['am i up',3],['am i down',3],['better than last',4],['worse than last',4]] },
+    { intent: 'obligations',w: [['bill',3],['bills',3],['obligation',3],['owe',2],['due',2],['who do i owe',5],['what do i owe',5],['whom do i owe',5]] },
+    { intent: 'afford',     w: [['afford',4],['can i buy',4],['can i pay',4],['should i buy',4],['is it okay to buy',4],['can i spend',3],['do i have enough',4],['possible to buy',4],['can i get',2],['i want to buy',3],['i need to buy',3],['i want to get',3],['i need to get',3],['can i contribute',4],['contribution',2],['i need to buy',3]] },
+    { intent: 'loan',       w: [['loan',4],['borrow',4],['fuliza',4],['mshwari',4],['tala',4],['zenka',4],['deni',3],['credit',2]] },
+    { intent: 'hiring',     w: [['hire',4],['employee',3],['worker',3],['staff',3],['helper',3]] },
+    { intent: 'saving',     w: [['save',3],['saving',3],['set aside',4],['emergency',3],['keep aside',4]] },
+    { intent: 'habit',      w: [['habit',4],['leak',4],['wasting',4],['overspend',4],['where am i losing',5]] },
+    { intent: 'status',     w: [['how am i',3],['how is my',3],['overview',3],['summary',3],['cash flow',4],['runway',4],['how is business',4],['how is my hustle',4],['state of',3],['position',2],['how much money do i have',5],['how much do i have',5],['my balance',4],['my money',3],['cash on hand',4]] }
+];
+
+function _travisClassify(text, prevIntent) {
+    const t = String(text).toLowerCase();
+    const amount = _travisParseMoney(t);
+
+    // Follow-up resolution first
+    if (prevIntent && /^(and|what about|how about|and what|same for|then)/.test(t.trim())) {
+        if (/\b(income|earn|earned|received|paid me)\b/.test(t))       return { intent: 'topIncome', amount };
+        if (/\b(spend|spent|expense|expenditure)\b/.test(t))           return { intent: 'topSpending', amount };
+        if (/\b(bill|owe|due|obligation)\b/.test(t))                   return { intent: 'obligations', amount };
+        if (/\b(save|saving|set aside)\b/.test(t))                     return { intent: 'saving', amount };
+        if (/\b(afford|buy|pay)\b/.test(t))                            return { intent: 'afford', amount };
+        return { intent: prevIntent, amount };
+    }
+
+    // Score every intent
+    let best = { intent: 'unknown', score: 0 };
+    for (const row of _TRAVIS_INTENT_MAP) {
+        let score = 0;
+        for (const [kw, weight] of row.w) {
+            if (t.includes(kw)) score += weight;
+        }
+        if (score > best.score) best = { intent: row.intent, score };
+    }
+
+    if (best.score > 0) return { intent: best.intent, amount };
+
+    // Money-flavored fallback
+    if (/\b(money|cash|shilling|ksh|spend|spent|earn|earned|pay|paid|income|expense|budget|balance|transaction|account)\b/.test(t))
+        return { intent: 'status', amount };
+
+    return { intent: 'unknown', amount };
+}
+
+/* ---------- CONVERSATION STATE ---------- */
+/* Rich state so Travis can lead a NEPQ conversation across turns. */
+const _travisThread = {
+    topic: null,
+    depth: 0,
+    lastIntent: null,
+    lastTimeframeDays: 7,
+    lastAmount: 0,
+    mode: 'idle',        // 'idle' | 'nepq' | 'clarifying'
+    nepqStep: 0,
+    nepqAnswers: {},
+    silentTurns: 0,
+    // NEW: which topics we've already probed this money talk
+    covered: {
+        spending: false,
+        income: false,
+        habit: false,
+        bill: false,
+        savings: false
+    },
+    focusName: null,
+    focusPayer: null,
+    focusHabit: null,
+    lastMirror: ''
+};
+
+const _TRAVIS_MAX_DEPTH = 4;
+
+function _travisTopicOf(intent) {
+    if (['topSpending','expenseBreakdown','topExpenseItem','habit'].includes(intent)) return 'spending';
+    if (['topIncome','incomeBreakdown'].includes(intent))                            return 'income';
+    if (['trend','net','status'].includes(intent))                                   return 'status';
+    if (['obligations','owedToMe'].includes(intent))                                 return 'bills';
+    if (['afford','loan','hiring','saving','advice'].includes(intent))               return 'decision';
+    return 'other';
+}
+
+/* ---------- NEPQ SCRIPT ---------- */
+/* Four questions max, each drawn from real ledger data.
+   Never ask something we already know. */
+/* ---------- NEPQ OPENER (used only at chat start) ---------- */
+function _travisNepqQuestion(step, analysis, fin) {
+    const isBiz = state.user?.type === 'business';
+    const biz = isBiz ? 'the hustle' : 'you';
+
+    if (step === 0) {
+        const [cat, amt] = analysis.outCats[0] || [null, 0];
+        const [src, inc] = analysis.inSources[0] || [null, 0];
+        let anchor = '';
+        if (inc > 0 && amt > 0) {
+            anchor = `This week ${biz} brought in ${_travisMoney(analysis.totalIn)} and sent out ${_travisMoney(analysis.totalOut)}.`;
+        } else if (inc > 0) {
+            anchor = `This week ${biz} brought in ${_travisMoney(analysis.totalIn)}.`;
+        } else if (amt > 0) {
+            anchor = `This week ${biz} spent ${_travisMoney(analysis.totalOut)}.`;
+        } else {
+            anchor = `I do not see much movement yet, so let us start from what is on hand.`;
+        }
+        const focus = cat
+            ? ` The biggest outgoing was ${cat} at ${_travisMoney(amt)}. If you could change one thing about how money moves for ${biz}, what would it be?`
+            : ` What would you like to change about how money moves for ${biz}?`;
+        return anchor + focus;
+    }
+    // Fallback if opener is called at a later step by mistake
+    return _travisProbeNext(analysis, fin) || `Where do you want to go from here?`;
+}
+
+/* ---------- STATUS LINE ---------- */
+function _travisStatusLine() {
+    const fin = getFin();
+    const isBiz = state.user?.type === 'business';
+    const cash = _travisMoney(fin.liquid);
+    const daily = _travisMoney(Math.max(0, fin.daily));
+    if (fin.liquid < 0)
+        return isBiz
+            ? `Your hustle is short by ${_travisMoney(Math.abs(fin.liquid))}. More is going out than coming in.`
+            : `You are short by ${_travisMoney(Math.abs(fin.liquid))}. You are spending more than you have.`;
+    return isBiz
+        ? `Your hustle has ${cash} on hand. After bills, that is about ${daily} a day for the next ${fin.daysRem} days.`
+        : `You have ${cash} on hand. After bills, that is about ${daily} a day for the next ${fin.daysRem} days.`;
+}
+
+/* ---------- EMPATHETIC OPENERS / CLOSERS ---------- */
+function _travisAcknowledge(tone) {
+    const map = {
+        greeting: ['Karibu.', 'Niaje.', 'Sasa.'],
+        advice_seeking: ['Good you are asking.', 'Wise to check first.', 'I like that you asked.'],
+        sharing: ['Noted.', 'I hear you.', 'Okay.'],
+        request: ['On it.', 'Here you go.', 'Right.'],
+        confirm: ['Good.', 'Okay.', 'Sawa.'],
+        question: ['Let me check.', 'Here is what I see.', ''],
+        statement: ['', 'Okay.', 'I see.'],
+        silence: ['', '', ''],
+        closing: ['Karibu.', 'Poa.', 'Sawa.']
+    };
+    const list = map[tone] || [''];
+    return list[Math.floor(Math.random() * list.length)];
+}
+
+function _travisClosingHint() {
+    const hints = [
+        'Ask me anything else about your money.',
+        'You can keep going, I am here.',
+        'What else would you like to look at?',
+        'Want to dig further, or shall we stop here?'
+    ];
+    return hints[Math.floor(Math.random() * hints.length)];
+}
+
+/* ---------- PERSONAL VOICE ---------- */
+function _travisPersonal(intent, p) {
+    const a = p.analysis;
+    const tL = p.timeLabel;
+    const TL = tL.charAt(0).toUpperCase() + tL.slice(1);
+
+    if (intent === 'help')
+        return `I read your own money and answer plainly. Ask me things like what is my biggest spending, where did I earn most, am I growing, can I afford 2,000, what bills do I have. Or just say let us have a money chat and I will ask you a few questions to understand your situation better.`;
+
+    if (intent === 'offTopic')
+        return `That is outside what I can help with. I stick to your money, spending, earning, bills and how you are doing. Want to look at any of those?`;
+
+    if (intent === 'chat')
+        return `Karibu. Let us talk money. I will ask you a few things and you answer freely. Here we go.`;
+
+    if (intent === 'status') {
+        let s = _travisStatusLine();
+        if (a.totalIn > 0 || a.totalOut > 0) {
+            s += ` ${TL}, money in was ${_travisMoney(a.totalIn)}, money out was ${_travisMoney(a.totalOut)}.`;
+            s += a.net >= 0
+                ? ` You are ahead by ${_travisMoney(a.net)}.`
+                : ` You are behind by ${_travisMoney(Math.abs(a.net))}.`;
+        }
+        return s;
+    }
+
+    if (intent === 'net') {
+        if (a.totalIn === 0 && a.totalOut === 0) return `No money moved ${tL} yet.`;
+        if (a.net >= 0)
+            return `${TL} you took in ${_travisMoney(a.totalIn)} and sent out ${_travisMoney(a.totalOut)}. You are ahead by ${_travisMoney(a.net)}.`;
+        return `${TL} you took in ${_travisMoney(a.totalIn)} and sent out ${_travisMoney(a.totalOut)}. You are behind by ${_travisMoney(Math.abs(a.net))}. Time to slow the outflow.`;
+    }
+
+    if (intent === 'advice') {
+        const fin = getFin();
+        const lines = [];
+        lines.push(_travisStatusLine());
+        const leak = a.outCats[0];
+        if (leak && leak[1] > 0) {
+            lines.push(`Your biggest spend ${tL} was ${leak[0]} at ${_travisMoney(leak[1])}. If you trim that, the rest gets easier.`);
+        }
+        if (fin.pending > 0) {
+            lines.push(`You still owe ${_travisMoney(fin.pending)} in bills. Clear that first.`);
+        }
+        const dailySave = Math.floor(Math.max(0, fin.daily) * 0.1);
+        if (dailySave >= 20) {
+            lines.push(`Then try to set aside ${_travisMoney(dailySave)} a day. Small, but it builds.`);
+        }
+        return lines.join(' ');
+    }
+
+    if (intent === 'topSpending') {
+        if (!a.totalOut) return `You have not spent anything ${tL}. Good.`;
+        const [cat, amt] = a.outCats[0];
+        const pct = Math.round((amt / a.totalOut) * 100);
+        const t1 = a.topOut[0];
+        let s = `${TL} you spent ${_travisMoney(a.totalOut)}.`;
+        if (t1) s += ` The biggest was ${_travisMoney(t1.amount)} on ${t1.desc} ${_travisWhen(t1.id)}.`;
+        s += ` Most went to ${cat} at ${_travisMoney(amt)}, about ${pct} percent.`;
+        if (a.topOut[1]) s += ` Then ${_travisMoney(a.topOut[1].amount)} on ${a.topOut[1].desc}.`;
+        return s;
+    }
+
+    if (intent === 'topExpenseItem') {
+        if (!a.topOut.length) return `No spending recorded ${tL}.`;
+        const t = a.topOut[0];
+        return `Your single biggest payment ${tL} was ${_travisMoney(t.amount)} on ${t.desc} ${_travisWhen(t.id)}. It left your ${t.wallet}.`;
+    }
+
+    if (intent === 'expenseBreakdown') {
+        if (!a.outCats.length) return `No spending ${tL}.`;
+        const top = a.outCats.slice(0, 3).map(([c, v]) => `${c}: ${_travisMoney(v)}`).join('. ');
+        return `${TL} you spent ${_travisMoney(a.totalOut)} in total. ${top}.`;
+    }
+
+    if (intent === 'topIncome') {
+        if (!a.totalIn) return `No money came in ${tL}.`;
+        const [src, amt] = a.inSources[0];
+        const pct = Math.round((amt / a.totalIn) * 100);
+        const t1 = a.topIn[0];
+        let s = `${TL} you received ${_travisMoney(a.totalIn)}.`;
+        if (t1) s += ` The biggest was ${_travisMoney(t1.amount)} from ${t1.desc} ${_travisWhen(t1.id)}.`;
+        s += ` Most came from ${src} at ${_travisMoney(amt)}, about ${pct} percent.`;
+        return s;
+    }
+
+    if (intent === 'incomeBreakdown') {
+        if (!a.inSources.length) return `No money came in ${tL}.`;
+        const top = a.inSources.slice(0, 3).map(([c, v]) => `${c}: ${_travisMoney(v)}`).join('. ');
+        return `${TL} you received ${_travisMoney(a.totalIn)}. ${top}.`;
+    }
+
+    if (intent === 'trend') {
+        if (a.prevIn === 0 && a.prevOut === 0)
+            return `I do not have enough history to compare yet. Keep recording and ask me again in a few days.`;
+        const incChg = a.prevIn  ? Math.round(((a.totalIn  - a.prevIn)  / a.prevIn)  * 100) : 0;
+        const outChg = a.prevOut ? Math.round(((a.totalOut - a.prevOut) / a.prevOut) * 100) : 0;
+        let s = `Compared to the same stretch before: `;
+        if (a.totalIn || a.prevIn) {
+            if (incChg > 5) s += `money in is up ${incChg} percent. `;
+            else if (incChg < -5) s += `money in is down ${Math.abs(incChg)} percent. `;
+            else s += `money in is steady. `;
+        }
+        if (a.totalOut || a.prevOut) {
+            if (outChg > 5) s += `Spending is up ${outChg} percent.`;
+            else if (outChg < -5) s += `Spending is down ${Math.abs(outChg)} percent. Good.`;
+            else s += `Spending is steady.`;
+        }
+        return s.trim();
+    }
+
+    if (intent === 'obligations') {
+        const fin = getFin();
+        if (!fin.obsStatus || !fin.obsStatus.length)
+            return `You have not listed regular bills yet. Add them in the Bills page and I will track what is due.`;
+        const lines = fin.obsStatus.map(o =>
+            `${o.label}: ${_travisMoney(o.amount)}${o.pending > 0 ? `, ${_travisMoney(o.pending)} due` : ', settled'}`
+        ).join('. ');
+        return `Your bills: ${lines}. Still due in total: ${_travisMoney(fin.pending)}.`;
+    }
+
+    if (intent === 'owedToMe') {
+        const fin = getFin();
+        const owed = (fin.obsStatus || []).filter(o => o.pending > 0);
+        if (!owed.length) return `Nobody owes you anything right now.`;
+        const total = owed.reduce((s, o) => s + o.pending, 0);
+        const lines = owed.map(o => `${o.label}: ${_travisMoney(o.pending)}`).join('. ');
+        return `Still to come to you: ${lines}. That is ${_travisMoney(total)} in total.`;
+    }
+
+    if (intent === 'afford') {
+        const fin = getFin();
+        const cost = p.amount;
+        if (!cost) return `How much does it cost? Tell me a number.`;
+        if (fin.liquid <= 0)
+            return `You have nothing spare. ${_travisMoney(cost)} is not possible right now.`;
+        if (cost > fin.liquid)
+            return `${_travisMoney(cost)} is more than you have, and you have ${_travisMoney(fin.liquid)}. Not possible right now.`;
+        const after = fin.liquid - cost;
+        const perDay = fin.daysRem > 0 ? Math.floor(after / fin.daysRem) : 0;
+        if (after < fin.pending)
+            return `${_travisMoney(cost)} is possible, but afterwards you will have ${_travisMoney(after)} and still owe ${_travisMoney(fin.pending)} in bills. That is tight.`;
+        if (perDay < 100)
+            return `${_travisMoney(cost)} is possible, but you would be living on about ${_travisMoney(perDay)} a day after. Be careful.`;
+        return `Yes, you can afford ${_travisMoney(cost)}. After that you will have ${_travisMoney(after)} for ${fin.daysRem} days.`;
+    }
+
+    if (intent === 'loan') {
+        const fin = getFin();
+        const amt = p.amount;
+        if (!amt) return `How much do you want to borrow?`;
+        if (fin.liquid <= 0)
+            return `You are already in the red. Do not borrow. Bring money in first.`;
+        const daily = Math.max(1, fin.daily);
+        const months = Math.ceil(amt / (daily * 30));
+        if (months > 6)
+            return `A ${_travisMoney(amt)} loan would take about ${months} months to clear at your pace. That is long. Avoid it if you can.`;
+        return `A ${_travisMoney(amt)} loan would take roughly ${months} month${months > 1 ? 's' : ''} to clear. Only borrow if you are sure.`;
+    }
+
+    if (intent === 'hiring') {
+        const fin = getFin();
+        const daily = Math.max(0, fin.daily);
+        const monthly = Math.floor(daily * 30 * 0.4);
+        if (monthly < 5000) return `You cannot comfortably pay someone yet. Grow your own income first.`;
+        return `You could pay up to about ${_travisMoney(monthly)} a month without hurting yourself. Start part time.`;
+    }
+
+    if (intent === 'saving') {
+        const fin = getFin();
+        const daily = Math.max(0, fin.daily);
+        if (daily < 50) return `Nothing spare to save right now. Focus on bringing more in.`;
+        const target = Math.floor(daily * 0.1) * 30;
+        return `Try to set aside about ${_travisMoney(target)} a month. That is roughly ${_travisMoney(Math.floor(daily * 0.1))} a day. Small adds up.`;
+    }
+
+    if (intent === 'habit') {
+        if (!a.outCats.length) return `Not enough activity yet to spot a habit.`;
+        const [cat, amt] = a.outCats[0];
+        const pct = Math.round((amt / a.totalOut) * 100);
+        return `Your biggest spending is ${cat} at ${_travisMoney(amt)}, about ${pct} percent of everything ${tL}. If you trim that, the rest gets easier.`;
+    }
+
+    return `Ask me about your spending, earning, bills, or how you are doing, and I will look at your own numbers.`;
+}
+
+/* ---------- BUSINESS VOICE ---------- */
+function _travisBusiness(intent, p) {
+    const a = p.analysis;
+    const tL = p.timeLabel;
+    const TL = tL.charAt(0).toUpperCase() + tL.slice(1);
+
+    if (intent === 'help')
+        return `I read the hustle's money and answer plainly. Ask me things like what is the biggest spending, where did the hustle earn most, is it growing, can it afford 20,000, what bills are due. Or just say let us have a money chat and I will ask a few questions to understand the situation better.`;
+
+    if (intent === 'offTopic')
+        return `That is outside what I can help with. I stick to the hustle's money, spending, earning, bills and how it is doing. Want to look at any of those?`;
+
+    if (intent === 'chat')
+        return `Karibu. Let us talk about the hustle's money. I will ask a few things and you answer freely. Here we go.`;
+
+    if (intent === 'status') {
+        let s = _travisStatusLine();
+        if (a.totalIn > 0 || a.totalOut > 0) {
+            s += ` ${TL}, money in was ${_travisMoney(a.totalIn)}, money out was ${_travisMoney(a.totalOut)}.`;
+            s += a.net >= 0
+                ? ` The hustle is up ${_travisMoney(a.net)}. Keep pushing.`
+                : ` The hustle is down ${_travisMoney(Math.abs(a.net))}. Time to look at what is going out.`;
+        }
+        return s;
+    }
+
+    if (intent === 'net') {
+        if (a.totalIn === 0 && a.totalOut === 0) return `No money moved ${tL} for the hustle.`;
+        if (a.net >= 0)
+            return `${TL} the hustle brought in ${_travisMoney(a.totalIn)} and sent out ${_travisMoney(a.totalOut)}. Up ${_travisMoney(a.net)}.`;
+        return `${TL} the hustle brought in ${_travisMoney(a.totalIn)} and sent out ${_travisMoney(a.totalOut)}. Down ${_travisMoney(Math.abs(a.net))}. Watch the outflow.`;
+    }
+
+    if (intent === 'advice') {
+        const fin = getFin();
+        const lines = [];
+        lines.push(_travisStatusLine());
+        const leak = a.outCats[0];
+        if (leak && leak[1] > 0) {
+            lines.push(`Biggest outgoing ${tL} was ${leak[0]} at ${_travisMoney(leak[1])}. Check if that is restocking or a leak.`);
+        }
+        if (fin.pending > 0) {
+            lines.push(`Still owe ${_travisMoney(fin.pending)} in bills. Clear those first.`);
+        }
+        const dailySave = Math.floor(Math.max(0, fin.daily) * 0.15);
+        if (dailySave >= 50) {
+            lines.push(`Then set aside ${_travisMoney(dailySave)} a day as backup for slow days and restocking.`);
+        }
+        return lines.join(' ');
+    }
+
+    if (intent === 'topSpending') {
+        if (!a.totalOut) return `Nothing has gone out of the hustle ${tL}.`;
+        const [cat, amt] = a.outCats[0];
+        const pct = Math.round((amt / a.totalOut) * 100);
+        const t1 = a.topOut[0];
+        let s = `${TL} the hustle spent ${_travisMoney(a.totalOut)}.`;
+        if (t1) s += ` The biggest was ${_travisMoney(t1.amount)} on ${t1.desc} ${_travisWhen(t1.id)}.`;
+        s += ` Most went to ${cat} at ${_travisMoney(amt)}, about ${pct} percent.`;
+        if (a.topOut[1]) s += ` Then ${_travisMoney(a.topOut[1].amount)} on ${a.topOut[1].desc}.`;
+        return s;
+    }
+
+    if (intent === 'topExpenseItem') {
+        if (!a.topOut.length) return `No spending recorded ${tL}.`;
+        const t = a.topOut[0];
+        return `Biggest single payment ${tL}: ${_travisMoney(t.amount)} on ${t.desc} ${_travisWhen(t.id)}. It left the ${t.wallet}.`;
+    }
+
+    if (intent === 'expenseBreakdown') {
+        if (!a.outCats.length) return `Nothing has gone out ${tL}.`;
+        const top = a.outCats.slice(0, 3).map(([c, v]) => `${c}: ${_travisMoney(v)}`).join('. ');
+        return `${TL} the hustle spent ${_travisMoney(a.totalOut)}. Where it went: ${top}.`;
+    }
+
+    if (intent === 'topIncome') {
+        if (!a.totalIn) return `No money came into the hustle ${tL}.`;
+        const [src, amt] = a.inSources[0];
+        const pct = Math.round((amt / a.totalIn) * 100);
+        const t1 = a.topIn[0];
+        let s = `${TL} the hustle received ${_travisMoney(a.totalIn)}.`;
+        if (t1) s += ` Biggest was ${_travisMoney(t1.amount)} from ${t1.desc} ${_travisWhen(t1.id)}.`;
+        s += ` Most came from ${src} at ${_travisMoney(amt)}, about ${pct} percent.`;
+        return s;
+    }
+
+    if (intent === 'incomeBreakdown') {
+        if (!a.inSources.length) return `No money came in ${tL}.`;
+        const top = a.inSources.slice(0, 3).map(([c, v]) => `${c}: ${_travisMoney(v)}`).join('. ');
+        return `${TL} the hustle received ${_travisMoney(a.totalIn)}. From: ${top}.`;
+    }
+
+    if (intent === 'trend') {
+        if (a.prevIn === 0 && a.prevOut === 0)
+            return `I need a bit more history to see if the hustle is growing. Keep recording.`;
+        const incChg = a.prevIn  ? Math.round(((a.totalIn  - a.prevIn)  / a.prevIn)  * 100) : 0;
+        const outChg = a.prevOut ? Math.round(((a.totalOut - a.prevOut) / a.prevOut) * 100) : 0;
+        let s = `Compared to the stretch before: `;
+        if (a.totalIn || a.prevIn) {
+            if (incChg > 5) s += `money coming in is up ${incChg} percent. The hustle is growing. `;
+            else if (incChg < -5) s += `money coming in is down ${Math.abs(incChg)} percent. Watch out. `;
+            else s += `money coming in is steady. `;
+        }
+        if (a.totalOut || a.prevOut) {
+            if (outChg > 5) s += `Money going out is up ${outChg} percent. Check if that is restocking or leaks.`;
+            else if (outChg < -5) s += `Money going out is down ${Math.abs(outChg)} percent. Good.`;
+            else s += `Money going out is steady.`;
+        }
+        return s.trim();
+    }
+
+    if (intent === 'obligations') {
+        const fin = getFin();
+        if (!fin.obsStatus || !fin.obsStatus.length)
+            return `No regular bills listed yet. Add them in the Bills page and I will track what is due.`;
+        const lines = fin.obsStatus.map(o =>
+            `${o.label}: ${_travisMoney(o.amount)}${o.pending > 0 ? `, ${_travisMoney(o.pending)} due` : ', settled'}`
+        ).join('. ');
+        return `The hustle's bills: ${lines}. Still due in total: ${_travisMoney(fin.pending)}.`;
+    }
+
+    if (intent === 'owedToMe') {
+        const fin = getFin();
+        const owed = (fin.obsStatus || []).filter(o => o.pending > 0);
+        if (!owed.length) return `Nobody owes the hustle anything right now.`;
+        const total = owed.reduce((s, o) => s + o.pending, 0);
+        const lines = owed.map(o => `${o.label}: ${_travisMoney(o.pending)}`).join('. ');
+        return `Still to come to the hustle: ${lines}. That is ${_travisMoney(total)} in total.`;
+    }
+
+    if (intent === 'afford') {
+        const fin = getFin();
+        const cost = p.amount;
+        if (!cost) return `How much does it cost? Tell me a number.`;
+        if (fin.liquid <= 0)
+            return `The hustle has nothing spare right now. ${_travisMoney(cost)} is not possible.`;
+        if (cost > fin.liquid)
+            return `${_travisMoney(cost)} is more than the hustle has, and it has ${_travisMoney(fin.liquid)}. Not right now.`;
+        const after = fin.liquid - cost;
+        if (after < fin.pending)
+            return `${_travisMoney(cost)} is possible, but after paying it the hustle will have ${_travisMoney(after)} and still owes ${_travisMoney(fin.pending)} in bills. Risky.`;
+        const perDay = fin.daysRem > 0 ? Math.floor(after / fin.daysRem) : 0;
+        if (perDay < 200)
+            return `${_travisMoney(cost)} is possible, but it will leave the hustle thin, about ${_travisMoney(perDay)} a day. Only if it brings money back.`;
+        return `${_travisMoney(cost)} is okay for the hustle. After that it will have ${_travisMoney(after)} left. Make sure what you are buying will bring that money back.`;
+    }
+
+    if (intent === 'loan') {
+        const fin = getFin();
+        const amt = p.amount;
+        if (!amt) return `How much is the loan?`;
+        if (fin.liquid <= 0)
+            return `The hustle is already in the red. Do not borrow. Bring money in first.`;
+        const daily = Math.max(1, fin.daily);
+        const months = Math.ceil(amt / (daily * 30));
+        if (months > 6)
+            return `A ${_travisMoney(amt)} loan would take around ${months} months to clear. That is a long time. Only take it if the money will come back multiplied.`;
+        return `A ${_travisMoney(amt)} loan would take about ${months} month${months > 1 ? 's' : ''} to clear. If the money goes into something that brings back more than it costs, it can work. Otherwise skip it.`;
+    }
+
+    if (intent === 'hiring') {
+        const fin = getFin();
+        const daily = Math.max(0, fin.daily);
+        const monthly = Math.floor(daily * 30 * 0.4);
+        if (monthly < 8000)
+            return `The hustle cannot comfortably carry a salary yet. Grow the daily takings first.`;
+        return `The hustle could pay someone up to about ${_travisMoney(monthly)} a month. Only hire if that person will bring in more than they cost.`;
+    }
+
+    if (intent === 'saving') {
+        const fin = getFin();
+        const daily = Math.max(0, fin.daily);
+        if (daily < 100) return `Nothing spare to set aside yet. Grow the hustle first.`;
+        const target = Math.floor(daily * 0.15) * 30;
+        return `Try to set aside about ${_travisMoney(target)} a month. That is the backup for slow days and for restocking without borrowing.`;
+    }
+
+    if (intent === 'habit') {
+        if (!a.outCats.length) return `Not enough activity yet to spot where money is leaking.`;
+        const [cat, amt] = a.outCats[0];
+        const pct = Math.round((amt / a.totalOut) * 100);
+        return `Money is going out mostly on ${cat} at ${_travisMoney(amt)}, about ${pct} percent of everything ${tL}. If that is buying stock, fine. If it is not bringing money back, trim it.`;
+    }
+
+    return `Ask me about the hustle's spending, earning, bills, or how it is doing, and I will look at the numbers.`;
+}
+
+
+/* ---------- MIRROR (makes user feel heard) ---------- */
+function _travisMirror(userSaid, topic, analysis) {
+    const s = String(userSaid || '').trim();
+    const short = s.length > 90 ? s.slice(0, 88).trim() + '...' : s;
+    const pick = [
+        `So what I hear is, ${short.toLowerCase()}`,
+        `Let me make sure I have this right: ${short.toLowerCase()}`,
+        `Okay. ${short.charAt(0).toUpperCase() + short.slice(1)}`,
+        `Noted. ${short.charAt(0).toUpperCase() + short.slice(1)}`
+    ];
+    return pick[Math.floor(Math.random() * pick.length)];
+}
+
+/* ---------- PROBE PICKER (decides the next topic) ---------- */
+function _travisProbeNext(analysis, fin) {
+    const t = _travisThread;
+    const isBiz = state.user?.type === 'business';
+    const biz = isBiz ? 'the hustle' : 'you';
+
+    // Order of interest: biggest outgoing name → top payer → airtime/small leaks
+    // → unsettled bill → savings → decision prompt.
+
+    // 1. Someone is the biggest single outgoing by name (a person, not a category)
+    if (!t.covered.spending && analysis.topOut[0]) {
+        const top = analysis.topOut[0];
+        t.covered.spending = true;
+        t.focusName = top.desc;
+        return `Looking at this week, the biggest single payment went to ${top.desc} at ${_travisMoney(top.amount)}. Is that someone or something you pay often?`;
+    }
+
+    // 2. A specific payer shows up repeatedly (regular income source)
+    if (!t.covered.income && analysis.topIn[0]) {
+        const top = analysis.topIn[0];
+        // Look for other transactions from the same source in the window
+        const sameSource = analysis.inTx.filter(x => x.source === top.source);
+        const repeatCount = sameSource.length;
+        t.covered.income = true;
+        t.focusPayer = top.source;
+        if (repeatCount > 1) {
+            return `Let me switch to income. ${top.source} sent ${_travisMoney(top.amount)} this week, and I see ${repeatCount} payments from them in this window. Is ${top.source} a regular for ${biz} or was this a one-off?`;
+        }
+        return `Let me switch to income. The biggest came from ${top.source} at ${_travisMoney(top.amount)}. Is ${top.source} someone ${biz} counts on, or was this once?`;
+    }
+
+    // 3. Small repeated charges — habit probe
+    if (!t.covered.habit && analysis.outCats.length) {
+        const smallRepeat = analysis.outTx
+            .filter(x => x.amount <= 100)
+            .sort((a, b) => b.amount - a.amount)[0];
+        if (smallRepeat) {
+            t.covered.habit = true;
+            t.focusHabit = smallRepeat.desc;
+            return `Now something quieter. I see small amounts going out, like ${_travisMoney(smallRepeat.amount)} on ${smallRepeat.desc}. Do these feel small to ${biz}, or do you think they add up over a month?`;
+        }
+    }
+
+    // 4. Unsettled bill
+    if (!t.covered.bill && fin.obsStatus && fin.obsStatus.length) {
+        const due = fin.obsStatus.find(o => o.pending > 0);
+        if (due) {
+            t.covered.bill = true;
+            return `There is also ${due.label} with ${_travisMoney(due.pending)} still due. What happens if that sits unpaid for two or three weeks?`;
+        }
+    }
+
+    // 5. Savings frame
+    if (!t.covered.savings && fin.daily > 50) {
+        t.covered.savings = true;
+        const target = Math.floor(fin.daily * 0.1);
+        return `Say ${biz} could keep ${_travisMoney(target)} a day untouched. Not spending it, just letting it grow. What would that change for ${biz} in three months?`;
+    }
+
+    // 6. Close the arc
+    return null; // signals end of money talk
+}
+
+/* ============================================================
+   handleAsk() — with tone handling, NEPQ flow, and closing sense
+   ============================================================ */
+async function handleAsk() {
+    const input = document.getElementById('chat-input');
+    const chatBox = document.getElementById('chat-box');
+    const raw = input.value.trim();
+    if (!raw) return;
+
+    // Echo user
+    chatBox.innerHTML += `<div style="text-align:right;"><div class="chat-bubble-user">${escapeHtml(raw)}</div></div>`;
+    input.value = '';
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Thinking ripple
+    const thinking = document.createElement('div');
+    thinking.innerHTML = `<div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai" id="thinking-bubble"><div class="travis-ripple"><div class="ripple-ball ball-r"></div><div class="ripple-ball ball-g"></div><div class="ripple-ball ball-b"></div></div></div>`;
+    chatBox.appendChild(thinking);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    await new Promise(r => setTimeout(r, 250 + Math.random() * 200));
+    thinking.remove();
+
+    const isBiz = state.user?.type === 'business';
+    const voice = isBiz ? _travisBusiness : _travisPersonal;
+    const tone = _travisDetectTone(raw);
+
+    // ---- CLOSING SENSE ----
+    if (tone === 'closing') {
+        const reply = `Sawa. I am here whenever you want to look at your money again.`;
+        chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${reply}</div></div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        _travisThread.mode = 'idle';
+        _travisThread.nepqStep = 0;
+        _travisThread.nepqAnswers = {};
+        _travisThread.lastIntent = null;
+        _travisThread.topic = null;
+        _travisThread.depth = 0;
+        return;
+    }
+
+    // ---- PENDING CLARIFICATION ----
+    if (hasPendingClarification()) {
+        const pending = conversationState.pendingClarification;
+        const amount = _travisParseMoney(raw);
+        if (amount > 0) {
+            const tf = _travisParseTimeframe(raw);
+            const analysis = _travisAnalyze(tf.days);
+            const reply = voice(pending.originalIntent, { amount, analysis, timeLabel: tf.label });
+            chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${reply}</div></div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            clearPendingClarification();
+            return;
+        }
+        const reply = `I need the amount to answer properly. How many shillings?`;
+        chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${reply}</div></div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        return;
+    }
+
+    // ---- CLASSIFY ----
+    const { intent, amount } = _travisClassify(raw, _travisThread.lastIntent);
+    const tf = _travisParseTimeframe(raw);
+    const analysis = _travisAnalyze(tf.days);
+    const fin = getFin();
+    const topic = _travisTopicOf(intent);
+
+    // ---- ENTER NEPQ MODE ----
+        // ---- ENTER NEPQ MODE ----
+    if (intent === 'chat') {
+        _travisThread.mode = 'nepq';
+        _travisThread.nepqStep = 0;
+        _travisThread.nepqAnswers = {};
+        _travisThread.topic = 'nepq';
+        _travisThread.covered = { spending: false, income: false, habit: false, bill: false, savings: false };
+        _travisThread.focusName = null;
+        _travisThread.focusPayer = null;
+        _travisThread.focusHabit = null;
+        _travisThread.lastMirror = '';
+
+        const opener = voice('chat', { amount, analysis, timeLabel: tf.label });
+        const q = _travisNepqQuestion(0, analysis, fin);
+        const reply = `${opener} ${q}`;
+        chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${reply}</div></div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        _travisThread.nepqStep = 1;
+        return;
+    }
+
+    // ---- CONTINUE NEPQ (mirroring + probing) ----
+    if (_travisThread.mode === 'nepq') {
+        const midTalk = ['sharing','statement','question','advice_seeking','confirm','short','silence'].includes(tone)
+                     || intent === 'unknown';
+
+        if (midTalk) {
+            // Mirror the user's last message
+            const mirror = _travisMirror(raw, _travisThread.topic, analysis);
+            _travisThread.lastMirror = mirror;
+
+            // Pick the next probe based on what we've already covered
+            const nextQ = _travisProbeNext(analysis, fin);
+
+            if (!nextQ) {
+                // Arc complete
+                const close = `Asante for walking through all that with me. You have looked at this honestly, and that is more than most people do. Take one small step this week and come back when you want to go deeper.`;
+                chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${close}</div></div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+                _travisThread.mode = 'idle';
+                _travisThread.nepqStep = 0;
+                _travisThread.nepqAnswers = {};
+                _travisThread.covered = { spending: false, income: false, habit: false, bill: false, savings: false };
+                return;
+            }
+
+            const reply = `${mirror} ${nextQ}`;
+            chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${reply}</div></div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            _travisThread.nepqStep += 1;
+            return;
+        }
+
+        // User changed topic mid-talk: exit NEPQ, fall through to normal handling
+        _travisThread.mode = 'idle';
+        _travisThread.covered = { spending: false, income: false, habit: false, bill: false, savings: false };
+    }
+
+    // ---- TRUE OFF-TOPIC ----
+    if (intent === 'unknown') {
+        const reply = voice('offTopic', { amount, analysis, timeLabel: tf.label });
+        chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${reply}</div></div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        _travisThread.topic = null;
+        _travisThread.depth = 0;
+        _travisThread.lastIntent = null;
+        return;
+    }
+
+    // ---- THREAD DEPTH ----
+    if (_travisThread.topic === topic && _travisThread.lastIntent !== intent) {
+        _travisThread.depth += 1;
+    } else if (_travisThread.topic !== topic) {
+        _travisThread.topic = topic;
+        _travisThread.depth = 0;
+    }
+    _travisThread.lastIntent = intent;
+    _travisThread.lastTimeframeDays = tf.days;
+    _travisThread.lastAmount = amount;
+
+    // ---- NEED AMOUNT? ----
+    if ((intent === 'afford' || intent === 'loan') && amount <= 0) {
+        setPendingClarification(intent, raw, 'amount');
+        const q = intent === 'afford'
+            ? `How much does it cost? Tell me a number.`
+            : `How much is the loan? Tell me a number.`;
+        chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${q}</div></div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        return;
+    }
+
+    // ---- BUILD REPLY ----
+    const ack = _travisAcknowledge(tone);
+    let reply = voice(intent, { amount, analysis, timeLabel: tf.label });
+    if (ack && !/^Karibu|^Niaje|^Sasa/.test(reply)) {
+        reply = ack + ' ' + reply.charAt(0).toLowerCase() + reply.slice(1);
+    }
+    if (intent !== 'help') {
+        reply += ' ' + _travisClosingHint();
+    }
+
+    chatBox.innerHTML += `<div><div class="travis-label"><span>🤖</span> Travis</div><div class="chat-bubble-ai">${reply}</div></div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
 
 function escapeHtml(_0x35ae84) {
     const _0x192cea = _0x1e67ff;
@@ -1490,3 +2229,62 @@ function _0x5258() {
 };
 
 document[_0x1e67ff(0x1f6)]('install-btn')?.[_0x1e67ff(0x1d3)]('click', triggerInstall), window[_0x1e67ff(0x1d5)] = boot;
+
+
+// ============================================================
+// Daily reminder push subscription (auto, silent, first launch)
+// ============================================================
+(async function initPushReminders() {
+    try {
+        if (!('serviceWorker' in navigator)) return;
+        if (!('PushManager' in window)) return;
+        if (!('Notification' in window)) return;
+
+        // Wait for the service worker to be ready
+        const reg = await navigator.serviceWorker.ready;
+        if (!reg || !reg.pushManager) return;
+
+        // If already subscribed, we're done
+        const existing = await reg.pushManager.getSubscription();
+        if (existing) return;
+
+        // Only ask if the user hasn't already decided
+        if (Notification.permission === 'denied') return;
+
+        // Request permission (may prompt the user the first time)
+        const permission = Notification.permission === 'granted'
+            ? 'granted'
+            : await Notification.requestPermission();
+        if (permission !== 'granted') return;
+
+        // Get the VAPID public key from the server
+        const keyRes = await fetch(BACKEND_URL + '/vapid-public-key');
+        const keyJson = await keyRes.json();
+        const vapidKey = keyJson.key;
+        if (!vapidKey) return;
+
+        // Subscribe
+        const subscription = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(vapidKey)
+        });
+
+        // Send to the server
+        await fetch(BACKEND_URL + '/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(subscription)
+        });
+    } catch (e) {
+        // Silent — never let this break the app
+    }
+})();
+
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const raw = atob(base64);
+    const out = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+    return out;
+}
