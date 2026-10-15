@@ -624,7 +624,8 @@ async function restoreFromBackup() {
                 _0x1b9bf8 = _0x135ea7?.[_0xe230b9(0x299)] || null;
             }
         }
-        if (_0x1b9bf8) localStorage[_0xe230b9(0x274)]('fp', _0x1b9bf8);
+        if (!_0x1b9bf8) _0x1b9bf8 = generateFingerprint();
+        localStorage[_0xe230b9(0x274)]('fp', _0x1b9bf8);
         return {
             'success': !![],
             'error': null
