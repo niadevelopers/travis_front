@@ -579,85 +579,63 @@ async function readBackupContent() {
 }
 
 async function restoreFromBackup() {
-    const { data, error } = await readBackupContent();
-    if (error) return { success: false, error: 'Restore failed: ' + error };
-    if (!data) return { success: false, error: 'Backup file was empty or invalid' };
-
+    const _0xe230b9 = _0x1e67ff,
+        {
+            data: _0x43e983,
+            error: _0x27443f
+        } = await readBackupContent();
+    if (_0x27443f) return {
+        'success': ![],
+        'error': _0xe230b9(0x3e8) + _0x27443f
+    };
+    if (!_0x43e983) return {
+        'success': ![],
+        'error': 'Backup\x20file\x20was\x20empty\x20or\x20invalid'
+    };
     try {
-        for (const storeName of ['meta', 'tx']) {
-            if (!data[storeName] || !Array.isArray(data[storeName])) continue;
-
-            const tx = db.transaction(storeName, 'readwrite');
-            const store = tx.objectStore(storeName);
-
-            // Clear existing rows so we don't leave stale data
-            await new Promise((resolve, reject) => {
-                const clearReq = store.clear();
-                clearReq.onsuccess = resolve;
-                clearReq.onerror = () => reject(clearReq.error);
+        for (const _0x1ebfb4 of [_0xe230b9(0x30f), 'tx']) {
+            if (!_0x43e983[_0x1ebfb4] || !Array[_0xe230b9(0x319)](_0x43e983[_0x1ebfb4])) continue;
+            const _0x3bd6e7 = db[_0xe230b9(0x1dc)](_0x1ebfb4, _0xe230b9(0x37f)),
+                _0x3bf3d0 = _0x3bd6e7[_0xe230b9(0x2a8)](_0x1ebfb4);
+            await new Promise((_0x213975, _0x304d70) => {
+                const _0x40b24c = _0xe230b9,
+                    _0x5e6a31 = _0x3bf3d0[_0x40b24c(0x264)]();
+                _0x5e6a31[_0x40b24c(0x218)] = _0x213975, _0x5e6a31['onerror'] = () => _0x304d70(_0x5e6a31['error']);
             });
-
-            for (const row of data[storeName]) {
-                await new Promise((resolve, reject) => {
-                    const putReq = store.put(row);
-                    putReq.onsuccess = resolve;
-                    putReq.onerror = () => reject(putReq.error);
+            for (const _0x5c1916 of _0x43e983[_0x1ebfb4]) {
+                await new Promise((_0x22aa74, _0x4e0eb8) => {
+                    const _0xf18e87 = _0xe230b9,
+                        _0x10095c = _0x3bf3d0[_0xf18e87(0x1e1)](_0x5c1916);
+                    _0x10095c['onsuccess'] = _0x22aa74, _0x10095c[_0xf18e87(0x3a4)] = () => _0x4e0eb8(_0x10095c['error']);
                 });
             }
-
-            // Wait for the whole transaction to commit before moving on
-            await new Promise(resolve => { tx.oncomplete = resolve; });
+            await new Promise(_0x5c0886 => {
+                const _0x464bb3 = _0xe230b9;
+                _0x3bd6e7[_0x464bb3(0x36d)] = _0x5c0886;
+            });
         }
-
-        // ---- Fingerprint recovery (bulletproof) ----
-        let fp = null;
-
-        // 1. Try the freshly-written config row
-        const cfg = await getData('meta', 'config');
-        if (cfg && cfg.fingerprint && cfg.fingerprint.length === 32) {
-            fp = cfg.fingerprint;
-        }
-
-        // 2. Try the backup payload directly
-        if (!fp && data.meta) {
-            const row = data.meta.find(m => m && m.id === 'config');
-            if (row && row.fingerprint && row.fingerprint.length === 32) {
-                fp = row.fingerprint;
+        let _0x1b9bf8 = null;
+        const _0x37a2e7 = await getData(_0xe230b9(0x30f), _0xe230b9(0x2c2));
+        if (_0x37a2e7?.[_0xe230b9(0x299)]) _0x1b9bf8 = _0x37a2e7['fingerprint'];
+        else {
+            if (_0x43e983['meta']) {
+                const _0x135ea7 = _0x43e983[_0xe230b9(0x30f)][_0xe230b9(0x39a)](_0x16c676 => _0x16c676 && _0x16c676['id'] === _0xe230b9(0x2c2));
+                _0x1b9bf8 = _0x135ea7?.[_0xe230b9(0x299)] || null;
             }
         }
-
-        // 3. Try whatever is already in localStorage
-        if (!fp) {
-            const existing = localStorage.getItem('fp');
-            if (existing && existing.length === 32) fp = existing;
-        }
-
-        // 4. Nothing found — regenerate a fresh 32-char fingerprint
-        if (!fp) {
-            const rand = crypto.getRandomValues(new Uint8Array(16));
-            fp = Array.from(rand).map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        // Persist to localStorage so the boot gate closes
-        localStorage.setItem('fp', fp);
-
-        // Force the config row to exist AND be activated
-        await saveData('meta', {
-            ...(cfg || {}),
-            id: 'config',
-            activated: true,
-            fingerprint: fp,
-            activatedAt: (cfg && cfg.activatedAt) || Date.now()
-        });
-
-        return { success: true, error: null };
-    } catch (e) {
+        if (_0x1b9bf8) localStorage[_0xe230b9(0x274)]('fp', _0x1b9bf8);
         return {
-            success: false,
-            error: 'Failed to write data to database: ' + (e.message || String(e))
+            'success': !![],
+            'error': null
+        };
+    } catch (_0xb6dddf) {
+        return {
+            'success': ![],
+            'error': _0xe230b9(0x397) + (_0xb6dddf[_0xe230b9(0x314)] || String(_0xb6dddf))
         };
     }
 }
+
 
 async function setupBackupFolder() {
     const _0x447b64 = _0x1e67ff;
